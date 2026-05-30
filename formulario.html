@@ -19,7 +19,7 @@
                 </svg>
             </div>
             <h1 class="text-2xl font-bold text-gray-800">Contáctanos</h1>
-            <p class="text-gray-500 text-sm">Completa el formulario y te responderemos algún di.....a</p>
+            <p class="text-gray-500 text-sm">Completa el formulario y te responderemos pronto</p>
         </div>
 
         <form id="contactForm" class="space-y-4">
@@ -57,8 +57,8 @@
     </div>
 
     <script>
-        // URL de tu webhook de n8n local mediante Tunnelmole
-        const N8N_WEBHOOK_URL = "https://cocvag-ip-38-224-153-29.tunnelmole.net/webhook/formulario-telegram";
+        // ⚠️ CORREGIDO: Cambiado a /webhook-test/ para que funcione con tu pantalla de n8n abierta
+        const N8N_WEBHOOK_URL = "https://cocvag-ip-38-224-153-29.tunnelmole.net/webhook-test/formulario-telegram";
 
         const form = document.getElementById('contactForm');
         const respuestaDiv = document.getElementById('mensajeRespuesta');
@@ -82,8 +82,7 @@
                 userAgent: navigator.userAgent
             };
 
-            // MODIFICACIÓN DE SEGURIDAD PARA EVITAR CORS PREFLIGHT (OPTIONS)
-            // Convertimos el JSON estructurado a formato clásico de formulario
+            // Formatear los datos como formulario clásico (evita peticiones OPTIONS molestas)
             const datosFormateados = new URLSearchParams();
             for (const [key, value] of Object.entries(datosRaw)) {
                 datosFormateados.append(key, value);
@@ -93,7 +92,6 @@
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
-                        // Cambiado para forzar una "Petición Simple" en el navegador
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: datosFormateados
@@ -101,7 +99,7 @@
 
                 if (response.ok) {
                     respuestaDiv.className = 'mt-4 p-3 bg-green-100 text-green-700 rounded-lg text-center';
-                    respuestaDiv.textContent = '✅ ¡Mensaje enviado con éxito! Te contactaremos gemini.';
+                    respuestaDiv.textContent = '✅ ¡Mensaje enviado con éxito! Te contactaremos pronto.';
                     respuestaDiv.classList.remove('hidden');
                     form.reset();
                 } else {
