@@ -57,7 +57,7 @@
     </div>
 
     <script>
-        // ⚠️ IMPORTANTE: Reemplaza esta URL con la de tu webhook de n8n
+        // URL de tu webhook de n8n local mediante Tunnelmole
         const N8N_WEBHOOK_URL = "https://cnnrlx-ip-38-224-153-29.tunnelmole.net/webhook/formulario-telegram";
 
         const form = document.getElementById('contactForm');
@@ -66,14 +66,14 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Mostrar loading
+            // Mostrar loading en el botón
             const btn = form.querySelector('button');
             const originalText = btn.textContent;
             btn.textContent = 'Enviando... ⏳';
             btn.disabled = true;
 
-            // Recoger datos del formulario
-            const datos = {
+            // Recoger datos básicos
+            const datosRaw = {
                 nombre: document.getElementById('nombre').value,
                 email: document.getElementById('email').value,
                 telefono: document.getElementById('telefono').value,
@@ -82,18 +82,26 @@
                 userAgent: navigator.userAgent
             };
 
+            // MODIFICACIÓN DE SEGURIDAD PARA EVITAR CORS PREFLIGHT (OPTIONS)
+            // Convertimos el JSON estructurado a formato clásico de formulario
+            const datosFormateados = new URLSearchParams();
+            for (const [key, value] of Object.entries(datosRaw)) {
+                datosFormateados.append(key, value);
+            }
+
             try {
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        // Cambiado para forzar una "Petición Simple" en el navegador
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: JSON.stringify(datos)
+                    body: datosFormateados
                 });
 
                 if (response.ok) {
                     respuestaDiv.className = 'mt-4 p-3 bg-green-100 text-green-700 rounded-lg text-center';
-                    respuestaDiv.textContent = '✅ ¡Mensaje enviado con éxito! Te contactaremos pronto.';
+                    respuestaDiv.textContent = '✅ ¡Mensaje enviado con éxito! Te contactaremos gemini.';
                     respuestaDiv.classList.remove('hidden');
                     form.reset();
                 } else {
