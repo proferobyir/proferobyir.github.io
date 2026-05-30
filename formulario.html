@@ -57,7 +57,7 @@
     </div>
 
     <script>
-        // ⚠️ CORREGIDO: Cambiado a /webhook-test/ para que funcione con tu pantalla de n8n abierta
+        // ⚠️ URL de prueba para n8n
         const N8N_WEBHOOK_URL = "https://cocvag-ip-38-224-153-29.tunnelmole.net/webhook-test/formulario-telegram";
 
         const form = document.getElementById('contactForm');
@@ -82,7 +82,7 @@
                 userAgent: navigator.userAgent
             };
 
-            // Formatear los datos como formulario clásico (evita peticiones OPTIONS molestas)
+            // Formatear los datos como formulario clásico (evita peticiones OPTIONS)
             const datosFormateados = new URLSearchParams();
             for (const [key, value] of Object.entries(datosRaw)) {
                 datosFormateados.append(key, value);
@@ -98,25 +98,30 @@
                 });
 
                 if (response.ok) {
-                    respuestaDiv.className = 'mt-4 p-3 bg-green-100 text-green-700 rounded-lg text-center';
-                    respuestaDiv.textContent = '✅ ¡Mensaje enviado con éxito! Te contactaremos pronto.';
+                    // Convertimos la respuesta de n8n a JSON
+                    const data = await response.json();
+
+                    // Si el JSON trae el mensaje que configuramos
+                    respuestaDiv.className = 'mt-4 p-3 bg-green-100 text-green-700 rounded-lg text-center font-medium';
+                    respuestaDiv.textContent = `✅ ¡Telegram: ${data.message || 'registro enviado'}!`;
                     respuestaDiv.classList.remove('hidden');
                     form.reset();
                 } else {
-                    throw new Error('Error en el servidor');
+                    throw new Error('El webhook respondió con un error');
                 }
             } catch (error) {
-                respuestaDiv.className = 'mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center';
-                respuestaDiv.textContent = '❌ Error al enviar. Intenta nuevamente.';
+                // Alerta en caso de caída del servidor o fallo de red
+                respuestaDiv.className = 'mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-medium';
+                respuestaDiv.textContent = '❌ Error: No se pudo enviar a Telegram. Intenta nuevamente.';
                 respuestaDiv.classList.remove('hidden');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
 
-                // Ocultar mensaje después de 5 segundos
+                // Ocultar la alerta después de 6 segundos
                 setTimeout(() => {
                     respuestaDiv.classList.add('hidden');
-                }, 5000);
+                }, 6000);
             }
         });
     </script>
