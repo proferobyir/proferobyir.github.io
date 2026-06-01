@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explora Venezuela</title>
+    <style>
+        /* --- ESTILOS GLOBALES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL (FLEXBOX) --- */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Sección del Mapa */
+        .map-section {
+            flex: 1 1 450px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .map-container img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sección de Interacción */
+        .interaction-section {
+            flex: 1 1 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .interaction-section h2 {
+            color: #003366;
+            font-size: 1.8rem;
+        }
+
+        .buttons-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Botones de los Estados */
+        .state-btn {
+            background-color: #fff;
+            border: 2px solid #003366;
+            color: #003366;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1 1 calc(50% - 1rem);
+            /* Flexbox para ajustar botones en filas */
+            text-align: center;
+        }
+
+        .state-btn:hover {
+            background-color: #003366;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- MODAL (OCULTO POR DEFECTO) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Clase para mostrar el modal */
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 1rem;
+            color: #003366;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #f4f7f6;
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #222;
+            color: #ccc;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Regiones de Venezuela</h1>
+        <p>Selecciona un estado para conocer más sobre su historia y geografía</p>
+    </header>
+
+    <main class="main-container">
+
+        <section class="map-section">
+            <div class="map-container">
+                <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&w=600&q=80"
+                    alt="Mapa de Venezuela explicativo">
+            </div>
+        </section>
+
+        <section class="interaction-section">
+            <h2>Estados Disponibles</h2>
+            <p>Haz clic en cualquiera de los siguientes estados para desplegar la información detallada:</p>
+
+            <div class="buttons-grid">
+                <button class="state-btn"
+                    onclick="openModal('Distrito Capital', 'Sede de los poderes públicos de la Nación. Alberga a Caracas, la ciudad capital, un valle rodeado por el majestuoso Cerro El Ávila (Parque Nacional Waraira Repano).')">
+                    Distrito Capital
+                </button>
+
+                <button class="state-btn"
+                    onclick="openModal('Zulia', 'Ubicado al occidente del país. Es famoso por el Lago de Maracaibo, el fenómeno del Relámpago del Catatumbo y su enorme riqueza petrolera y cultural.')">
+                    Zulia
+                </button>
+
+                <button class="state-btn"
+                    onclick="openModal('Bolívar', 'El estado más grande de Venezuela. Hogar del Salto Ángel (la caída de agua más alta del mundo), los imponentes tepuyes de la Gran Sabana y el río Orinoco.')">
+                    Bolívar
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="infoModal" onclick="closeModalOutside(event)">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h3 id="modalTitle">Nombre del Estado</h3>
+            <p id="modalDescription">Descripción detallada aquí...</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 - Geografía Interactiva de Venezuela. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        const modal = document.getElementById('infoModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+
+        // Función para abrir el modal y rellenar los datos dinámicamente
+        function openModal(stateName, stateInfo) {
+            modalTitle.textContent = stateName;
+            modalDescription.textContent = stateInfo;
+            modal.classList.add('active');
+        }
+
+        // Función para cerrar el modal
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // Función para cerrar el modal si el usuario hace clic fuera de la caja blanca
+        function closeModalOutside(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Permitir cerrar el modal también con la tecla Escape
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
