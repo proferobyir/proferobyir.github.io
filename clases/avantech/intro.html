@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentos de AWS: Los 4 Pilares</title>
+    <style>
+        /* Variables de diseño - Paleta Tecnológica y Profesional */
+        :root {
+            --bg-principal: #f4f6f9;
+            --bg-tarjeta: #ffffff;
+            --texto-primario: #232f3e;
+            /* Azul oscuro AWS */
+            --texto-secundario: #545b64;
+            --color-acento: #ff9900;
+            /* Naranja AWS */
+            --borde: #eaeded;
+
+            /* Colores temáticos para cada servicio */
+            --ec2-color: #ec7211;
+            --s3-color: #3b7f58;
+            --cloudwatch-color: #0073bb;
+            --iam-color: #dd0000;
+        }
+
+        /* Reset general y tipografía limpia */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto-primario);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Estructura con CSS Grid para el diseño del contenedor principal */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Encabezado */
+        .header {
+            text-align: center;
+            padding: 20px 10px;
+            border-bottom: 3px solid var(--color-acento);
+            background-color: var(--bg-tarjeta);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--texto-primario);
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 1.1rem;
+            color: var(--texto-secundario);
+        }
+
+        /* Grid para las tarjetas de servicios (Se vuelve de 2 columnas en pantallas grandes) */
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Estilos base de las Tarjetas */
+        .card {
+            background-color: var(--bg-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Encabezado de la tarjeta usando FLEXBOX */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .service-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .card-title-area h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .card-title-area .subtitle {
+            margin: 2px 0 0 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .card-body p {
+            margin: 0 0 16px 0;
+            color: var(--texto-secundario);
+        }
+
+        /* Contenedor de Analogía destacado con FLEXBOX */
+        .analogy-box {
+            display: flex;
+            gap: 12px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--color-acento);
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 16px;
+        }
+
+        .analogy-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .analogy-text p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--texto-primario);
+        }
+
+        /* Lista de Casos de Uso */
+        .use-cases {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .use-cases li {
+            font-size: 0.95rem;
+            color: var(--texto-secundario);
+            margin-bottom: 6px;
+        }
+
+        /* Colores temáticos por servicio aplicados dinámicamente */
+        .ec2 {
+            border-top: 4px solid var(--ec2-color);
+        }
+
+        .ec2 .service-badge {
+            background-color: var(--ec2-color);
+        }
+
+        .ec2 .card-title-area .subtitle {
+            color: var(--ec2-color);
+        }
+
+        .s3 {
+            border-top: 4px solid var(--s3-color);
+        }
+
+        .s3 .service-badge {
+            background-color: var(--s3-color);
+        }
+
+        .s3 .card-title-area .subtitle {
+            color: var(--s3-color);
+        }
+
+        .cloudwatch {
+            border-top: 4px solid var(--cloudwatch-color);
+        }
+
+        .cloudwatch .service-badge {
+            background-color: var(--cloudwatch-color);
+        }
+
+        .cloudwatch .card-title-area .subtitle {
+            color: var(--cloudwatch-color);
+        }
+
+        .iam {
+            border-top: 4px solid var(--iam-color);
+        }
+
+        .iam .service-badge {
+            background-color: var(--iam-color);
+        }
+
+        .iam .card-title-area .subtitle {
+            color: var(--iam-color);
+        }
+
+        /* Pie de página */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: var(--texto-secundario);
+            border-top: 1px solid var(--borde);
+            background-color: var(--bg-tarjeta);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard">
+        <header class="header">
+            <h1>Los 4 Pilares de AWS</h1>
+            <p>Estructura fundamental de infraestructura en la nube explicada de forma didáctica</p>
+        </header>
+
+        <main class="services-grid">
+
+            <article class="card ec2">
+                <div class="card-header">
+                    <div class="service-badge">EC2</div>
+                    <div class="card-title-area">
+                        <h2>Amazon EC2</h2>
+                        <div class="subtitle">Elastic Compute Cloud</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>Es el servicio que te permite aprovisionar y ejecutar <strong>servidores virtuales</strong> en la
+                        nube (instancias). Configuras el sistema operativo, memoria RAM y el procesador que requieras.
+                    </p>
+
+                    <div class="analogy-box">
+                        <div class="analogy-icon">💻</div>
+                        <div class="analogy-text">
+                            <p><strong>Analogía Práctica:</strong> Es como comprar computadoras físicas para un
+                                laboratorio, pero están en la nube; puedes encenderlas, apagarlas o mejorar sus
+                                componentes en segundos desde un panel.</p>
+                        </div>
+                    </div>
+
+                    <ul class="use-cases">
+                        <li><strong>Uso:</strong> Alojar el backend o la API de tus aplicaciones.</li>
+                        <li><strong>Uso:</strong> Ejecutar scripts automatizados o bots de software.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article class="card s3">
+                <div class="card-header">
+                    <div class="service-badge">S3</div>
+                    <div class="card-title-area">
+                        <h2>Amazon S3</h2>
+                        <div class="subtitle">Simple Storage Service</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>Es un servicio de <strong>almacenamiento de objetos</strong> diseñado para guardar y recuperar
+                        cualquier cantidad de archivos pesados de manera segura a través de contenedores llamados
+                        <strong>buckets</strong>.</p>
+
+                    <div class="analogy-box">
+                        <div class="analogy-icon">🪣</div>
+                        <div class="analogy-text">
+                            <p><strong>Analogía Práctica:</strong> Es como tener un disco duro externo o una cuenta de
+                                Google Drive gigante e infinita, ideal para almacenar contenido que tus sistemas
+                                necesitan jalar por internet.</p>
+                        </div>
+                    </div>
+
+                    <ul class="use-cases">
+                        <li><strong>Uso:</strong> Guardar fotos, videos e instaladores pesados de los usuarios.</li>
+                        <li><strong>Uso:</strong> Resguardar backups masivos y bases de datos empaquetadas.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article class="card cloudwatch">
+                <div class="card-header">
+                    <div class="service-badge">CW</div>
+                    <div class="card-title-area">
+                        <h2>Amazon CloudWatch</h2>
+                        <div class="subtitle">Monitoreo y Gestión</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>Herramienta dedicada a la **supervisión y métricas** en tiempo real. Te da una visión completa de
+                        la salud y el rendimiento operativo de todos tus servicios activos.</p>
+
+                    <div class="analogy-box">
+                        <div class="analogy-icon">🚨</div>
+                        <div class="analogy-text">
+                            <p><strong>Analogía Práctica:</strong> Es el guardia de seguridad y el tablero con medidores
+                                del sistema. Te avisa con alarmas si una computadora se está saturando o si un flujo de
+                                código arroja un error.</p>
+                        </div>
+                    </div>
+
+                    <ul class="use-cases">
+                        <li><strong>Uso:</strong> Ver gráficos del porcentaje de procesamiento (CPU) usado.</li>
+                        <li><strong>Uso:</strong> Configurar alertas de correo si los consumos suben sospechosamente.
+                        </li>
+                    </ul>
+                </div>
+            </article>
+
+            <article class="card iam">
+                <div class="card-header">
+                    <div class="service-badge">IAM</div>
+                    <div class="card-title-area">
+                        <h2>AWS IAM</h2>
+                        <div class="subtitle">Identity & Access Management</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>Centro de administración de **seguridad, accesos y credenciales**. Permite definir de forma
+                        robusta quién tiene permiso para manipular qué cosas dentro de la cuenta.</p>
+
+                    <div class="analogy-box">
+                        <div class="analogy-icon">🔑</div>
+                        <div class="analogy-text">
+                            <p><strong>Analogía Práctica:</strong> Es la recepción del edificio y el llavero maestro de
+                                la empresa. Asigna roles individuales para que nadie use la cuenta principal y se eviten
+                                hackeos.</p>
+                        </div>
+                    </div>
+
+                    <ul class="use-cases">
+                        <li><strong>Uso:</strong> Dar accesos restringidos a alumnos o colaboradores externos.</li>
+                        <li><strong>Uso:</strong> Generar tokens de acceso seguros para integrar apps de automatización.
+                        </li>
+                    </ul>
+                </div>
+            </article>
+
+        </main>
+
+        <footer class="footer">
+            <p>Estructura modular limpia optimizada para visualización móvil y de escritorio.</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>
