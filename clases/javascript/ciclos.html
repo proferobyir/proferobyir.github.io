@@ -4,21 +4,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Clase JS: Bucles + Diagramas de Flujo SVG | Aprendizaje Visual</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#667eea',
-                        secondary: '#764ba2',
-                    }
-                }
-            }
-        }
-    </script>
+    <title>Clase JS: Bucles + Manejo de Arreglos | Aprendizaje Visual</title>
     <style>
+        /* ==========================================================================
+           1. VARIABLES CSS (Reemplazo de la configuración del tema de Tailwind)
+           ========================================================================== */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --blue-gradient: linear-gradient(to right, #2563eb, #4f46e5);
+            --cyan-gradient: linear-gradient(to right, #0891b2, #0284c7);
+            --pink-gradient: linear-gradient(to right, #db2777, #e11d48);
+            --soft-bg-gradient: linear-gradient(to right, #eff6ff, #f3e8ff);
+
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        /* ==========================================================================
+           2. ESTILOS BASE Y RESETS
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--primary-gradient);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .max-w-7xl {
+            max-width: 80rem;
+            /* 1280px */
+            margin: 0 auto;
+        }
+
+        /* Utility helper for interactive logs */
+        .font-mono {
+            font-family: 'Courier New', Monaco, monospace;
+        }
+
+        /* ==========================================================================
+           3. DISEÑO DE CONTENEDORES PRINCIPALES (Flexbox & Grid Layouts)
+           ========================================================================== */
+
+        /* Encabezado Principal */
+        .header-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .header-logo {
+            font-size: 3.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .header-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-subtitle .tag {
+            background-color: #f1f5f9;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-weight: bold;
+        }
+
+        /* Caja de Objetivos Didácticos (Flexbox Interno) */
+        .objectives-box {
+            background: var(--soft-bg-gradient);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .objectives-box h2 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .objectives-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .objectives-list code {
+            font-weight: bold;
+            color: #4f46e5;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+        }
+
+        /* Grid de 3 Columnas para los Diagramas de Bucles */
+        .diagrams-layout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Tarjetas de Diagramas Individuales (Flexbox estructural) */
+        .diagram-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .diagram-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        .diagram-card-title {
+            padding: 0.75rem;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Modificadores de color para los headers de los bucles */
+        .bg-for {
+            background: var(--blue-gradient);
+        }
+
+        .bg-while {
+            background: var(--cyan-gradient);
+        }
+
+        .bg-dowhile {
+            background: var(--pink-gradient);
+        }
+
+        .diagram-card-body {
+            padding: 1rem;
+            background-color: #f8fafc;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .diagram-card-body p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.5rem;
+        }
+
+        /* Paneles Anchos de Contenido */
+        .wide-panel-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ==========================================================================
+           4. COMPONENTES DE INTERFAZ E INTERACTIVOS
+           ========================================================================== */
+
+        /* Botones del Sistema */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-light {
+            background-color: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .btn-light:hover {
+            background-color: #c7d2fe;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-blue {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .btn-blue:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-red {
+            background-color: #dc2626;
+            color: #ffffff;
+        }
+
+        .btn-red:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-emerald {
+            background-color: #10b981;
+            color: #ffffff;
+        }
+
+        .btn-emerald:hover {
+            background-color: #059669;
+        }
+
+        .btn-amber {
+            background-color: #f59e0b;
+            color: #ffffff;
+        }
+
+        .btn-amber:hover {
+            background-color: #d97706;
+        }
+
+        .btn-purple {
+            background-color: #9333ea;
+            color: #ffffff;
+        }
+
+        .btn-purple:hover {
+            background-color: #7e22ce;
+        }
+
+        /* Consola Oscura RAM */
+        .ram-console {
+            background-color: #1a1a2e;
+            border-radius: var(--radius-xl);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .ram-badge-title {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #f59e0b;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* Flexbox para los slots de memoria RAM */
+        .ram-slots-flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            min-height: 110px;
+            align-items: center;
+        }
+
+        .ram-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #0f172a;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            min-width: 90px;
+            transition: var(--transition);
+        }
+
+        .ram-cell:hover {
+            transform: scale(1.05);
+        }
+
+        .ram-cell .index {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+
+        .ram-cell .box-val {
+            width: 100%;
+            text-center: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .ram-length-display {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-t: 1px solid #1e293b;
+            color: #f87171;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        /* Grid de Control de Operaciones CRUD en Matrices */
+        .matrix-crud-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .crud-box {
+            background-color: #f8fafc;
+            border-radius: var(--radius-xl);
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .crud-box-title {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .buttons-action-layout {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .buttons-action-layout .btn span {
+            display: block;
+            font-weight: normal;
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .splice-inputs-flex {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+        }
+
+        .splice-inputs-flex label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #475569;
+        }
+
+        .input-number {
+            width: 60px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+        }
+
+        .processing-list-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-full-left {
+            width: 100%;
+            text-align: left;
+            justify-content: flex-start;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .console-output-box {
+            margin-top: 1rem;
+            background-color: #ffffff;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #64748b;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Formularios Ejecutables (Zonas de ejemplos) */
+        .interactive-split-row {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-text-field {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-inline-action {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .output-runtime-log {
+            margin-top: 0.75rem;
+            background-color: #ffffff;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+
+        .diagram-preview-box {
+            background-color: #fdfbe7;
+            border-radius: var(--radius-xl);
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .diagram-preview-box .tag-diagram {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        /* ==========================================================================
+           5. BLOQUES DE CÓDIGO Y MODAL INTEGRADO
+           ========================================================================== */
         .code-block {
             background: #1e1e2e;
             color: #f8f8f2;
@@ -36,10 +528,78 @@
             word-break: break-word;
         }
 
-        .transition-all {
-            transition: all 0.3s ease;
+        /* Modal Overlay */
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            /* Controlado por JS */
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
+        .modal-mask.is-active {
+            display: flex;
+        }
+
+        /* Ventana del Modal */
+        .modal-window {
+            background-color: #ffffff;
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 48rem;
+            /* 768px */
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-titlebar {
+            padding: 1rem;
+            background: var(--primary-gradient);
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-titlebar h3 {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .modal-close-trigger {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            border-radius: 9999px;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .modal-close-trigger:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .modal-content-scroll {
+            padding: 1rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* SVG Global transitions */
         svg text,
         svg rect,
         svg polygon,
@@ -48,13 +608,45 @@
             cursor: default;
         }
 
-        .diagram-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        /* ==========================================================================
+           6. RESPONSIVE DESIGN (Media Queries)
+           ========================================================================== */
+        @media (min-width: 640px) {
+            .panel-header-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .form-inline-action {
+                flex-direction: row;
+            }
+
+            .interactive-split-row {
+                flex-direction: row;
+            }
+
+            .interactive-split-row>div {
+                flex: 1;
+            }
         }
 
-        .diagram-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -12 rgba(0, 0, 0, 0.2);
+        @media (min-width: 768px) {
+            body {
+                padding: 1.5rem 2rem;
+            }
+
+            .header-card {
+                padding: 2rem 4rem;
+            }
+
+            .header-title {
+                font-size: 2.5rem;
+            }
+
+            .matrix-crud-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 640px) {
@@ -65,45 +657,41 @@
             svg {
                 height: auto;
             }
+
+            .buttons-action-layout {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-primary to-secondary p-4 md:p-6 font-sans">
+<body>
 
-    <div class="max-w-7xl mx-auto">
-        <!-- HEADER -->
-        <div class="bg-white rounded-2xl shadow-2xl p-4 md:p-8 mb-6 md:mb-8">
-            <div class="text-center">
-                <div class="text-5xl md:text-6xl mb-3">🔄📊</div>
-                <h1
-                    class="text-2xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Ciclos y Estructuras en JavaScript
-                </h1>
-                <p class="text-gray-600 mt-2 text-sm md:text-base">Eventos: <span
-                        class="font-mono bg-gray-100 px-2 py-1 rounded">onclick</span> y <span
-                        class="font-mono bg-gray-100 px-2 py-1 rounded">oninput</span> | Aprendizaje visual con
-                    flujogramas animados</p>
-                <div
-                    class="mt-4 md:mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3 md:p-4 inline-block w-full md:w-auto">
-                    <h2 class="font-bold text-primary text-sm md:text-base mb-2">🎯 Objetivos visuales</h2>
-                    <ul class="text-left text-gray-700 text-xs md:text-sm space-y-1">
+    <div class="max-w-7xl">
+        <div class="header-card">
+            <div>
+                <div class="header-logo">🔄🧮</div>
+                <h1 class="header-title">Ciclos, Arreglos y Funciones de Datos en JavaScript</h1>
+                <p class="header-subtitle">
+                    Eventos: <span class="tag">onclick</span>, <span class="tag">oninput</span> | Gestión mutable de
+                    Arrays con bloques visuales
+                </p>
+                <div class="objectives-box">
+                    <h2>🎯 Objetivos visuales</h2>
+                    <ul class="objectives-list">
                         <li>✓ Ver el flujo de cada bucle (for, while, do-while) con diagramas SVG perfectos</li>
                         <li>✓ Comprender condición, acción e incremento gráficamente</li>
-                        <li>✓ Entender el almacenamiento en memoria indexada de los Arrays y su recorrido secuencial
-                        </li>
+                        <li>✓ Dominar funciones de manipulación: <code>push, pop, shift, unshift, splice</code> y
+                            transformadores funcionales</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- DIAGRAMAS DE FLUJO PRINCIPALES (RESTAURADOS) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- FOR -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden diagram-card">
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 text-white font-bold text-center">🔄 BUCLE
-                    FOR</div>
-                <div class="p-4 bg-gray-50">
+        <div class="diagrams-layout-grid">
+            <div class="diagram-card">
+                <div class="diagram-card-title bg-for">🔄 BUCLE FOR</div>
+                <div class="diagram-card-body">
                     <svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
                         <defs>
                             <marker id="arrowF" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
@@ -150,16 +738,13 @@
                         <ellipse cx="292" cy="167" rx="25" ry="15" fill="#EF4444" stroke="#DC2626" stroke-width="1.5" />
                         <text x="292" y="171" fill="white" text-anchor="middle" font-size="10">FIN</text>
                     </svg>
-                    <p class="text-xs text-gray-600 mt-2 text-center">📌 <strong>FOR:</strong> inicialización →
-                        condición → {código} → incremento → repite</p>
+                    <p>📌 <strong>FOR:</strong> inicialización → condición → {código} → incremento → repite</p>
                 </div>
             </div>
 
-            <!-- WHILE -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden diagram-card">
-                <div class="bg-gradient-to-r from-cyan-600 to-blue-600 p-3 text-white font-bold text-center">🔄 BUCLE
-                    WHILE</div>
-                <div class="p-4 bg-gray-50">
+            <div class="diagram-card">
+                <div class="diagram-card-title bg-while">🔄 BUCLE WHILE</div>
+                <div class="diagram-card-body">
                     <svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
                         <defs>
                             <marker id="arrowW" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
@@ -201,16 +786,13 @@
                         <ellipse cx="288" cy="112" rx="25" ry="14" fill="#EF4444" stroke="#DC2626" stroke-width="1.5" />
                         <text x="288" y="116" fill="white" text-anchor="middle" font-size="10">FIN</text>
                     </svg>
-                    <p class="text-xs text-gray-600 mt-2 text-center">📌 <strong>WHILE:</strong> Evalúa condición ANTES
-                        de ejecutar. Si es falsa inicial, no entra.</p>
+                    <p>📌 <strong>WHILE:</strong> Evalúa condición ANTES de ejecutar. Si es falsa inicial, no entra.</p>
                 </div>
             </div>
 
-            <!-- DO...WHILE -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden diagram-card">
-                <div class="bg-gradient-to-r from-pink-600 to-rose-600 p-3 text-white font-bold text-center">🔄 BUCLE
-                    DO...WHILE</div>
-                <div class="p-4 bg-gray-50">
+            <div class="diagram-card">
+                <div class="diagram-card-title bg-dowhile">🔄 BUCLE DO...WHILE</div>
+                <div class="diagram-card-body">
                     <svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
                         <defs>
                             <marker id="arrowD" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
@@ -252,18 +834,17 @@
                         <ellipse cx="288" cy="230" rx="25" ry="14" fill="#EF4444" stroke="#DC2626" stroke-width="1.5" />
                         <text x="288" y="234" fill="white" text-anchor="middle" font-size="10">FIN</text>
                     </svg>
-                    <p class="text-xs text-gray-600 mt-2 text-center">📌 <strong>DO...WHILE:</strong> ejecuta al menos
-                        una vez, luego evalúa condición.</p>
+                    <p>📌 <strong>DO...WHILE:</strong> ejecuta al menos una vez, luego evalúa condición.</p>
                 </div>
             </div>
         </div>
 
-        <!-- EVOLUCIÓN GRÁFICA DE VARIABLE -->
-        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6">
-            <h2 class="text-xl md:text-2xl font-bold text-secondary mb-3 flex items-center gap-2"><span>📈</span>
-                Evolución gráfica de la variable de control</h2>
-            <div class="bg-gray-900 rounded-xl p-3 md:p-5 overflow-x-auto">
-                <svg width="100%" height="260" viewBox="0 0 800 240" xmlns="http://www.w3.org/2000/svg" class="mx-auto">
+        <div class="wide-panel-card">
+            <h2 class="panel-title"><span>📈</span> Evolución gráfica de la variable de control</h2>
+            <div
+                style="background-color: #1a1a2e; border-radius: var(--radius-xl); padding: 1.25rem; overflow-x: auto; margin-top: 1rem;">
+                <svg width="100%" height="240" viewBox="0 0 800 240" xmlns="http://www.w3.org/2000/svg"
+                    style="display: block; margin: 0 auto;">
                     <rect width="800" height="240" fill="#1a1a2e" rx="15" />
                     <text x="400" y="30" fill="#F59E0B" text-anchor="middle" font-size="13">Iteración vs Valor de i
                         (Ejemplo: i=0 hasta i=4)</text>
@@ -273,136 +854,121 @@
                         (vuelta)</text>
                     <text x="55" y="110" fill="white" text-anchor="middle" font-size="11"
                         transform="rotate(-90,55,110)">Valor de i</text>
+
                     <rect x="120" y="180" width="55" height="10" fill="#10B981" rx="3" />
                     <text x="147" y="170" fill="#10B981" text-anchor="middle" font-size="11">i=0</text>
                     <text x="147" y="210" fill="#ccc" text-anchor="middle" font-size="10">Vuelta 1</text>
+
                     <rect x="235" y="160" width="55" height="30" fill="#3B82F6" rx="3" />
                     <text x="262" y="150" fill="#3B82F6" text-anchor="middle" font-size="11">i=1</text>
                     <text x="262" y="210" fill="#ccc" text-anchor="middle" font-size="10">Vuelta 2</text>
+
                     <rect x="350" y="130" width="55" height="60" fill="#F97316" rx="3" />
                     <text x="377" y="120" fill="#F97316" text-anchor="middle" font-size="11">i=2</text>
                     <text x="377" y="210" fill="#ccc" text-anchor="middle" font-size="10">Vuelta 3</text>
+
                     <rect x="465" y="90" width="55" height="100" fill="#8B5CF6" rx="3" />
                     <text x="492" y="80" fill="#8B5CF6" text-anchor="middle" font-size="11">i=3</text>
                     <text x="492" y="210" fill="#ccc" text-anchor="middle" font-size="10">Vuelta 4</text>
+
                     <rect x="580" y="40" width="55" height="150" fill="#EC4899" rx="3" />
                     <text x="607" y="32" fill="#EC4899" text-anchor="middle" font-size="11">i=4</text>
                     <text x="607" y="210" fill="#ccc" text-anchor="middle" font-size="10">Vuelta 5</text>
                 </svg>
             </div>
-            <div class="mt-3 bg-blue-50 border-l-4 border-blue-400 p-3 rounded-lg text-sm"><strong
-                    class="text-blue-700">📊 Visualización:</strong> Cada vuelta (iteración) la variable i aumenta,
-                hasta que se rompe la condición.</div>
         </div>
 
-        <!-- SECCIÓN ARRAYS Y RECORRIDOS -->
-        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                <h2 class="text-xl md:text-2xl font-bold text-secondary flex items-center gap-2">
-                    <span>📦</span> Estructuras de Datos: Arrays y su Recorrido
+        <div class="wide-panel-card">
+            <div class="panel-header-row">
+                <h2 class="panel-title">
+                    <span>📦</span> Métodos y Estructuras de Datos: Arrays Completo
                 </h2>
-                <button onclick="openModal('codeArrays')"
-                    class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-semibold px-4 py-1.5 rounded-lg text-sm transition-colors">
-                    🔍 Visualizar Código
+                <button onclick="openModal('codeArrays')" class="btn btn-light">
+                    🔍 Visualizar Código de Arreglos
                 </button>
             </div>
 
-            <p class="text-gray-700 text-sm mb-4">
-                Un <strong>Array</strong> (arreglo/vector) contiene múltiples valores indexados consecutivamente
-                empezando desde la posición <code class="bg-gray-100 px-1 rounded font-mono">0</code>. Para leer cada
-                recuadro, usamos un ciclo <code class="bg-gray-100 px-1 rounded font-mono">for</code> donde el índice
-                avanza dinámicamente.
+            <p style="font-size: 0.95rem; color: #334155; margin-bottom: 1rem;">
+                Los arreglos poseen <strong>funciones internas (métodos)</strong> que permiten alterar su contenido
+                dinámicamente en memoria. Abajo puedes ver la representación gráfica actual del vector y usar la consola
+                interactiva para modificar sus datos en tiempo real.
             </p>
 
-            <div class="flex flex-col lg:flex-row gap-6">
-                <!-- Representación del Vector Gráfico SVG -->
-                <div class="flex-1 bg-slate-900 rounded-xl p-4 flex flex-col justify-center">
-                    <div class="text-center text-xs font-bold text-amber-400 mb-2">📦 Representación del Vector en
-                        Memoria</div>
-                    <svg viewBox="0 0 450 140" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto mx-auto">
-                        <!-- Celda 0 -->
-                        <rect x="20" y="45" width="100" height="60" fill="#3B82F6" stroke="#1E40AF" stroke-width="2"
-                            rx="4" />
-                        <text x="70" y="30" fill="#93C5FD" text-anchor="middle" font-size="12"
-                            font-family="monospace">índice [0]</text>
-                        <text x="70" y="80" fill="white" text-anchor="middle" font-size="14"
-                            font-weight="bold">"HTML"</text>
+            <div class="ram-console">
+                <div class="ram-badge-title">📦 Estado del Vector en Memoria RAM</div>
+                <div id="vectorMemoryContainer" class="ram-slots-flex"></div>
+                <div class="ram-length-display" id="arrayLengthDisplay">tecnologias.length = 4</div>
+            </div>
 
-                        <!-- Celda 1 -->
-                        <rect x="120" y="45" width="100" height="60" fill="#10B981" stroke="#065F46" stroke-width="2"
-                            rx="4" />
-                        <text x="170" y="30" fill="#A7F3D0" text-anchor="middle" font-size="12"
-                            font-family="monospace">índice [1]</text>
-                        <text x="170" y="80" fill="white" text-anchor="middle" font-size="14"
-                            font-weight="bold">"CSS"</text>
-
-                        <!-- Celda 2 -->
-                        <rect x="220" y="45" width="100" height="60" fill="#F59E0B" stroke="#92400E" stroke-width="2"
-                            rx="4" />
-                        <text x="270" y="30" fill="#FDE68A" text-anchor="middle" font-size="12"
-                            font-family="monospace">índice [2]</text>
-                        <text x="270" y="80" fill="white" text-anchor="middle" font-size="14"
-                            font-weight="bold">"JS"</text>
-
-                        <!-- Celda 3 -->
-                        <rect x="320" y="45" width="100" height="60" fill="#8B5CF6" stroke="#5B21B6" stroke-width="2"
-                            rx="4" />
-                        <text x="370" y="30" fill="#DDD6FE" text-anchor="middle" font-size="12"
-                            font-family="monospace">índice [3]</text>
-                        <text x="370" y="80" fill="white" text-anchor="middle" font-size="14"
-                            font-weight="bold">"n8n"</text>
-
-                        <!-- Línea indicadora de Longitud (length) -->
-                        <line x1="20" y1="120" x2="420" y2="120" stroke="#EF4444" stroke-width="2"
-                            stroke-dasharray="4 4" />
-                        <text x="220" y="135" fill="#EF4444" text-anchor="middle" font-size="11"
-                            font-weight="bold">tecnologias.length = 4</text>
-                    </svg>
-                </div>
-
-                <!-- Simulación Interactiva de Recorrido -->
-                <div
-                    class="flex-1 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4 flex flex-col justify-between">
-                    <div>
-                        <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Consola de
-                            Salida Práctica</span>
-                        <button id="btnRecorrerArray"
-                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
-                            🚀 Ejecutar Recorrido Completo
+            <div class="matrix-crud-grid">
+                <div class="crud-box">
+                    <span class="crud-box-title">🛠️ Métodos Modificadores (Mutan el Arreglo)</span>
+                    <div class="buttons-action-layout">
+                        <button onclick="ejecutarPush()" class="btn btn-blue">
+                            .push('Git') <span>Añade al final</span>
+                        </button>
+                        <button onclick="ejecutarPop()" class="btn btn-red">
+                            .pop() <span>Elimina el último</span>
+                        </button>
+                        <button onclick="ejecutarUnshift()" class="btn btn-emerald">
+                            .unshift('WSL') <span>Añade al inicio</span>
+                        </button>
+                        <button onclick="ejecutarShift()" class="btn btn-amber">
+                            .shift() <span>Elimina el primero</span>
                         </button>
                     </div>
-                    <div id="resultadoArray"
-                        class="mt-4 bg-white p-4 rounded-xl border border-gray-200 font-mono text-sm shadow-inner min-h-[90px] flex flex-col justify-center text-gray-400">
-                        Haga clic en el botón para iniciar el bucle sobre el vector...
+                    <div class="splice-inputs-flex">
+                        <label for="spliceIndex">Índice:</label>
+                        <input type="number" id="spliceIndex" value="1" min="0" class="input-number">
+                        <label for="spliceCount">Cant:</label>
+                        <input type="number" id="spliceCount" value="1" min="0" class="input-number">
+                        <button onclick="ejecutarSplice()" class="btn btn-purple" style="flex: 1; padding: 0.35rem;">
+                            Ejecutar .splice()
+                        </button>
+                    </div>
+                </div>
+
+                <div class="crud-box" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <span class="crud-box-title">🚀 Métodos de Recorrido y Procesamiento</span>
+                        <div class="processing-list-layout">
+                            <button id="btnRecorrerArray" class="btn btn-blue btn-full-left">
+                                🔄 Recorrer con Bucle clásico For (Secuencial)
+                            </button>
+                            <button onclick="ejecutarMap()" class="btn btn-cyan-gradient btn-full-left"
+                                style="color:white;">
+                                🧪 Transformar con .map() (Pasar todo a MAYÚSCULAS)
+                            </button>
+                            <button onclick="ejecutarFilter()" class="btn btn-pink-gradient btn-full-left"
+                                style="color:white;">
+                                🔍 Filtrar con .filter() (Solo textos de más de 3 letras)
+                            </button>
+                        </div>
+                    </div>
+                    <div id="resultadoArray" class="console-output-box font-mono">
+                        Haga clic en cualquier método para ejecutar y ver la traza de operaciones...
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- EJEMPLO 1: FOR -->
-        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                <h2 class="text-xl md:text-2xl font-bold text-secondary">🎯 Ejemplo 1: FOR + Ejemplo de evento onclick
-                    de un botón (Números consecutivos)</h2>
-                <button onclick="openModal('codeFor')"
-                    class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-semibold px-4 py-1.5 rounded-lg text-sm transition-colors">
-                    🔍 Visualizar Código
-                </button>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-4">
-                <div class="flex-1 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4">
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="number" id="limiteNumero" placeholder="Número límite (ej: 8)"
-                            class="flex-1 px-4 py-2 border rounded-lg">
-                        <button id="btnMostrarNumeros"
-                            class="bg-primary hover:bg-secondary text-white font-bold px-6 py-2 rounded-lg">🔁 Mostrar
-                            con FOR</button>
-                    </div>
-                    <div id="resultadoFor" class="mt-3 bg-white p-3 rounded-lg border font-mono text-sm">Esperando
-                        acción...</div>
+        <div class="interactive-split-row">
+            <div class="wide-panel-card">
+                <div class="panel-header-row" style="margin-bottom: 0.75rem;">
+                    <h2 class="panel-title" style="font-size: 1.1rem;">🎯 Ejemplo 1: FOR + onclick (Consecutivos)</h2>
+                    <button onclick="openModal('codeFor')" class="btn btn-light"
+                        style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">🔍 Código</button>
                 </div>
-                <div class="flex-1 bg-gray-50 rounded-xl p-2 border border-gray-200">
-                    <div class="text-center text-sm font-bold text-primary mb-1">📐 Diagrama de flujo (for)</div>
+                <div class="form-inline-action">
+                    <input type="number" id="limiteNumero" placeholder="Número límite (ej: 8)" class="input-text-field"
+                        style="flex: 1;">
+                    <button id="btnMostrarNumeros" class="btn btn-primary" style="white-space: nowrap;">🔁 Mostrar con
+                        FOR</button>
+                </div>
+                <div id="resultadoFor" class="output-runtime-log font-mono">Esperando acción...</div>
+
+                <div class="diagram-preview-box" style="margin-top: 1rem;">
+                    <div class="tag-diagram">📐 Diagrama de flujo simplificado (for)</div>
                     <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
                         <rect x="10" y="10" width="220" height="180" fill="#fef9e3" rx="10" />
                         <ellipse cx="120" cy="25" rx="30" ry="12" fill="#10B981" />
@@ -420,7 +986,7 @@
                             marker-end="url(#miniFG)" />
                         <text x="125" y="137" fill="green" font-size="7" font-weight="bold">Sí</text>
                         <rect x="70" y="143" width="100" height="16" rx="4" fill="#8B5CF6" />
-                        <text x="120" y="154" fill="white" text-anchor="middle">mostrar i</text>
+                        <text x="120" y="154" fill="white" text-anchor="middle" font-size="8">mostrar i</text>
                         <path d="M70 151 L35 151 L35 77 L115 77" stroke="#6366f1" stroke-width="1" fill="none"
                             marker-end="url(#miniF)" />
                         <text x="40" y="145" fill="#6366f1" font-size="6" font-weight="bold">i++</text>
@@ -428,7 +994,8 @@
                             marker-end="url(#miniFR)" />
                         <text x="170" y="100" fill="red" font-size="7" font-weight="bold">No</text>
                         <ellipse cx="210" cy="105" rx="20" ry="10" fill="#EF4444" />
-                        <text x="210" y="108" fill="white" text-anchor="middle" font-weight="bold">FIN</text>
+                        <text x="210" y="108" fill="white" text-anchor="middle" font-weight="bold"
+                            font-size="8">FIN</text>
                         <defs>
                             <marker id="miniF" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
                                 <path d="M0,0 L8,4 L0,8 Z" fill="black" />
@@ -443,279 +1010,221 @@
                     </svg>
                 </div>
             </div>
-        </div>
 
-        <!-- EJEMPLO 2: WHILE -->
-        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                <h2 class="text-xl md:text-2xl font-bold text-secondary">🎯 Ejemplo 2: WHILE + Ejemplo de evento oninput
-                    de un campo input (Tabla multiplicar)</h2>
-                <button onclick="openModal('codeWhile')"
-                    class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-semibold px-4 py-1.5 rounded-lg text-sm transition-colors">
-                    🔍 Visualizar Código
-                </button>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-4">
-                <div class="flex-1 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4">
-                    <input type="number" id="numeroTabla" placeholder="Número" value="5"
-                        class="w-full px-4 py-2 border rounded-lg">
-                    <div id="resultadoWhile" class="mt-3 bg-white p-3 rounded-lg border font-mono text-sm">Tabla aquí...
-                    </div>
+            <div class="wide-panel-card">
+                <div class="panel-header-row" style="margin-bottom: 0.75rem;">
+                    <h2 class="panel-title" style="font-size: 1.1rem;">🎯 Ejemplo 2: WHILE + oninput (Tabla)</h2>
+                    <button onclick="openModal('codeWhile')" class="btn btn-light"
+                        style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">🔍 Código</button>
                 </div>
-                <div class="flex-1 bg-gray-50 rounded-xl p-2 border">
-                    <div class="text-center text-sm font-bold text-cyan-600">📐 Flujo while</div>
-                    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-                        <rect x="5" y="5" width="250" height="190" fill="#f0f9ff" rx="8" />
-                        <defs>
-                            <marker id="wMin" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3"
-                                orient="auto-start-reverse">
-                                <path d="M0,0 L6,3 L0,6 Z" fill="black" />
-                            </marker>
-                            <marker id="wMinG" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3"
-                                orient="auto-start-reverse">
-                                <path d="M0,0 L6,3 L0,6 Z" fill="green" />
-                            </marker>
-                            <marker id="wMinR" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3"
-                                orient="auto-start-reverse">
-                                <path d="M0,0 L6,3 L0,6 Z" fill="red" />
-                            </marker>
-                        </defs>
-                        <ellipse cx="120" cy="25" rx="28" ry="11" fill="#10B981" />
-                        <text x="120" y="28" fill="white" font-size="7" font-family="sans-serif" text-anchor="middle"
-                            dominant-baseline="middle">Inicio</text>
-                        <line x1="120" y1="36" x2="120" y2="52" stroke="black" stroke-width="1.5"
-                            marker-end="url(#wMin)" />
-                        <polygon points="120,52 175,75 120,98 65,75" fill="#F97316" />
-                        <text x="120" y="75" fill="white" font-size="8" font-family="sans-serif" text-anchor="middle"
-                            dominant-baseline="middle">i ≤ 10?</text>
-                        <line x1="120" y1="98" x2="120" y2="118" stroke="green" stroke-width="1.5"
-                            marker-end="url(#wMinG)" />
-                        <text x="127" y="108" fill="green" font-size="8" font-family="sans-serif"
-                            font-weight="bold">Sí</text>
-                        <rect x="55" y="118" width="130" height="18" rx="4" fill="#8B5CF6" />
-                        <text x="120" y="127" fill="white" font-size="7" font-family="sans-serif" text-anchor="middle"
-                            dominant-baseline="middle">mostrar multiplicación</text>
-                        <line x1="120" y1="136" x2="120" y2="152" stroke="black" stroke-width="1.5"
-                            marker-end="url(#wMin)" />
-                        <rect x="85" y="152" width="70" height="16" rx="4" fill="#EC4899" />
-                        <text x="120" y="160" fill="white" font-size="8" font-family="sans-serif" text-anchor="middle"
-                            dominant-baseline="middle">i++</text>
-                        <path d="M 85,160 L 35,160 L 35,75 L 60,75" stroke="black" stroke-width="1.5" fill="none"
-                            marker-end="url(#wMin)" />
-                        <line x1="175" y1="75" x2="195" y2="75" stroke="red" stroke-width="1.5"
-                            marker-end="url(#wMinR)" />
-                        <text x="180" y="68" fill="red" font-size="8" font-family="sans-serif"
-                            font-weight="bold">No</text>
-                        <ellipse cx="223" cy="75" rx="20" ry="11" fill="#EF4444" />
-                        <text x="223" y="75" fill="white" font-size="7" font-family="sans-serif" text-anchor="middle"
-                            dominant-baseline="middle">FIN</text>
-                    </svg>
+                <div class="form-inline-action">
+                    <input type="number" id="numeroTabla" placeholder="Número" value="5" class="input-text-field">
                 </div>
-            </div>
-        </div>
+                <div id="resultadoWhile" class="output-runtime-log font-mono">Tabla aquí...</div>
 
-        <!-- EJEMPLO 3: DO...WHILE -->
-        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                <h2 class="text-xl md:text-2xl font-bold text-secondary">🎯 Ejemplo 3: DO...WHILE + Ejemplo de evento
-                    onclick de botones (Acumulador)</h2>
-                <button onclick="openModal('codeDoWhile')"
-                    class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-semibold px-4 py-1.5 rounded-lg text-sm transition-colors">
-                    🔍 Visualizar Código
-                </button>
-            </div>
-            <div class="flex flex-wrap gap-3 mb-3">
-                <input type="number" id="numeroParaAgregar" placeholder="Número"
-                    class="flex-1 px-4 py-2 border rounded-lg">
-                <button id="btnAgregarNumero" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">➕
-                    Agregar</button>
-                <button id="btnCalcularSuma"
-                    class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">🧮 Sumar
-                    (do...while)</button>
-            </div>
-            <div id="listaNumeros" class="bg-white p-3 rounded-lg border mb-2 text-sm">📋 Lista: [ ]</div>
-            <div id="resultadoSuma" class="bg-white p-3 rounded-lg border text-sm">Suma: 0</div>
-            <div class="mt-2 text-xs text-center bg-rose-50 p-2 rounded"><span class="font-bold">🔄
-                    Funcionamiento:</span> El bucle ejecuta el bloque al menos una vez (si hay elementos) y luego
-                evalúa.</div>
-        </div>
-    </div>
-
-    <!-- MODAL PARA CÓDIGO FUENTE -->
-    <div id="codeModal"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 transition-all">
-        <div
-            class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
-            <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
-                <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
-                    💻 <span>Código Fuente del Funcionamiento</span>
-                </h3>
-                <button onclick="closeModal()"
-                    class="text-gray-400 hover:text-gray-600 font-bold text-2xl p-1 leading-none">&times;</button>
-            </div>
-            <div class="p-4 overflow-y-auto flex-1 bg-[#1e1e2e]">
-                <pre id="modalCodeContainer"
-                    class="text-[#f8f8f2] font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words"></pre>
-            </div>
-            <div class="p-3 border-t bg-gray-50 flex justify-end">
-                <button onclick="closeModal()"
-                    class="bg-gray-800 hover:bg-gray-700 text-white font-semibold px-5 py-1.5 rounded-lg text-sm transition-colors">Cerrar
-                    Ventana</button>
+                <div class="diagram-preview-box"
+                    style="margin-top: 1rem; background-color: #f1f5f9; min-height: 115px; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="tag-diagram" style="color: #0891b2;">📐 Flujo Dinámico While</div>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Evaluación condicional antes de
+                        iterar en tiempo real mediante escucha de entrada activa.</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- LÓGICA SCRIPT JAVASCRIPT -->
+    <div id="modalCodigo" class="modal-mask">
+        <div class="modal-window">
+            <div class="modal-titlebar">
+                <h3 id="modalTitle">Código JavaScript de la sección</h3>
+                <button onclick="closeModal()" class="modal-close-trigger">✕</button>
+            </div>
+            <div class="modal-content-scroll">
+                <div class="code-block">
+                    <pre id="modalPre"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const scriptsSource = {
-            codeArrays: `// Definición y Recorrido estructurado de un Vector (Array)
-const tecnologias = ["HTML", "CSS", "JS", "n8n"];
-let plantillaHTML = "";
+        // --- BASE DE DATOS MUTABLE ---
+        let listaTecnologias = ["HTML", "CSS", "JS", "n8n"];
+        const coloresMemoria = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#14B8A6'];
 
-for (let i = 0; i < tecnologias.length; i++) {
-    plantillaHTML += \`
-    <div class="flex items-center gap-3 bg-indigo-50 border-l-4 border-indigo-500 p-2 rounded">
-        <span class="bg-indigo-600 text-white text-xs font-mono font-bold px-2 py-0.5 rounded">Índice \${i}</span>
-        <span class="text-gray-800 font-semibold">📍 \${tecnologias[i]}</span>
-    </div>\`;
-}
-document.getElementById('resultadoArray').innerHTML = plantillaHTML;`,
+        // --- ACTUALIZADOR GRÁFICO DEL VECTOR EN RAM ---
+        function renderizarMemoriaVector() {
+            const container = document.getElementById('vectorMemoryContainer');
+            const lengthDisplay = document.getElementById('arrayLengthDisplay');
+            container.innerHTML = '';
 
-            codeFor: `// Control mediante Bucle FOR tradicional
-const inputLimite = document.getElementById('limiteNumero');
-const limite = parseInt(inputLimite.value) || 0;
-let salida = "";
+            if (listaTecnologias.length === 0) {
+                container.innerHTML = `<div style="color: #94a3b8; font-family: monospace; font-size: 0.875rem; padding: 1rem 0;">⚠️ El arreglo está vacío [ ]</div>`;
+                lengthDisplay.innerText = "tecnologias.length = 0";
+                return;
+            }
 
-for(let i = 1; i <= limite; i++) {
-    salida += \`<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded m-1">#\${i}</span>\`;
-}
-document.getElementById('resultadoFor').innerHTML = salida || "Por favor, introduzca un valor válido.";`,
+            listaTecnologias.forEach((elemento, index) => {
+                const color = coloresMemoria[index % coloresMemoria.length];
+                const celda = document.createElement('div');
+                celda.className = "ram-cell";
+                celda.innerHTML = `
+                    <span class="index">índice [${index}]</span>
+                    <div class="box-val" style="background-color: ${color}">
+                        "${elemento}"
+                    </div>
+                `;
+                container.appendChild(celda);
+            });
 
-            codeWhile: `// Control mediante Bucle WHILE reactivo
-const inputTabla = document.getElementById('numeroTabla');
-const tablaNum = parseInt(inputTabla.value) || 0;
-let htmlResult = "";
-let i = 1;
+            lengthDisplay.innerText = `tecnologias.length = ${listaTecnologias.length}`;
+        }
 
-while (i <= 10) {
-    htmlResult += \`<div>\${tablaNum} x \${i} = <span class="font-bold text-cyan-600">\${tablaNum * i}</span></div>\`;
-    i++;
-}
-document.getElementById('resultadoWhile').innerHTML = htmlResult;`,
+        // --- MÉTODOS MUTADORES MUTABLES ---
+        function ejecutarPush() {
+            listaTecnologias.push('Git');
+            renderizarMemoriaVector();
+            document.getElementById('resultadoArray').innerText = `// Operación mutadora ejecutada:\ntecnologias.push('Git');\n\nResultado: El elemento "Git" fue insertado en el índice final del vector.`;
+        }
 
-            codeDoWhile: `// Acumulador controlado con Bucle DO...WHILE
-let numeros = [];
+        function ejecutarPop() {
+            if (listaTecnologias.length > 0) {
+                const eliminado = listaTecnologias.pop();
+                renderizarMemoriaVector();
+                document.getElementById('resultadoArray').innerText = `// Operación mutadora ejecutada:\nconst elementoEliminado = tecnologias.pop();\n\nResultado: Se extrajo "${eliminado}" del extremo final.`;
+            } else {
+                document.getElementById('resultadoArray').innerText = `// Imposible ejecutar .pop()\nEl arreglo ya no tiene elementos que eliminar.`;
+            }
+        }
 
-document.getElementById('btnAgregarNumero').onclick = () => {
-    const val = parseInt(document.getElementById('numeroParaAgregar').value);
-    if(!isNaN(val)) {
-        numeros.push(val);
-        document.getElementById('listaNumeros').innerText = "📋 Lista: [" + numeros.join(", ") + "]";
-    }
-};
+        function ejecutarUnshift() {
+            listaTecnologias.unshift('WSL');
+            renderizarMemoriaVector();
+            document.getElementById('resultadoArray').innerText = `// Operación mutadora ejecutada:\ntecnologias.unshift('WSL');\n\nResultado: Los índices existentes se desplazaron +1 y "WSL" tomó el índice [0].`;
+        }
 
-document.getElementById('btnCalcularSuma').onclick = () => {
-    let suma = 0, i = 0;
-    if(numeros.length === 0) return;
-    do {
-        suma += numeros[i];
-        i++;
-    } while (i < numeros.length);
-    document.getElementById('resultadoSuma').innerText = "Suma Total Acumulada: " + suma;
-};`
+        function ejecutarShift() {
+            if (listaTecnologias.length > 0) {
+                const eliminado = listaTecnologias.shift();
+                renderizarMemoriaVector();
+                document.getElementById('resultadoArray').innerText = `// Operación mutadora ejecutada:\nconst elementoEliminado = tecnologias.shift();\n\nResultado: Se removió "${eliminado}" del índice [0]. El resto se reindexó.`;
+            } else {
+                document.getElementById('resultadoArray').innerText = `// Imposible ejecutar .shift()\nEl vector estructural está vacío.`;
+            }
+        }
+
+        function ejecutarSplice() {
+            const idx = parseInt(document.getElementById('spliceIndex').value) || 0;
+            const cant = parseInt(document.getElementById('spliceCount').value) || 0;
+
+            if (idx >= listaTecnologias.length && cant > 0) {
+                document.getElementById('resultadoArray').innerText = `// Advertencia de límites:\nEl índice ${idx} está fuera del rango actual. No se eliminaron elementos.`;
+                return;
+            }
+
+            const eliminados = listaTecnologias.splice(idx, cant);
+            renderizarMemoriaVector();
+            document.getElementById('resultadoArray').innerText = `// Operación de corte:\ntecnologias.splice(${idx}, ${cant});\n\nElementos removidos en memoria: [${eliminados.map(e => `"${e}"`).join(', ')}]`;
+        }
+
+        // --- MÉTODOS DE PROCESAMIENTO ---
+        document.getElementById('btnRecorrerArray').onclick = function () {
+            let log = "// Traza de recorrido secuencial clásico (For loop):\n";
+            log += `for(let i = 0; i < tecnologias.length; i++) {\n`;
+
+            if (listaTecnologias.length === 0) {
+                log += "   // El ciclo no realizó iteraciones porque length es 0.\n";
+            }
+
+            for (let i = 0; i < listaTecnologias.length; i++) {
+                log += `   -> Iteración [${i}]: Evaluando elemento: "${listaTecnologias[i]}"\n`;
+            }
+            log += `}`;
+            document.getElementById('resultadoArray').innerText = log;
         };
 
+        function ejecutarMap() {
+            const transformado = listaTecnologias.map(elemento => elemento.toUpperCase());
+            document.getElementById('resultadoArray').innerText = `// El método .map() genera un nuevo array transformado:\nconst nuevoArray = tecnologias.map(e => e.toUpperCase());\n\nResultado retornado: [${transformado.map(e => `"${e}"`).join(', ')}]\n\n*Nota: El vector original en RAM permanece intacto.`;
+        }
+
+        function ejecutarFilter() {
+            const filtrado = listaTecnologias.filter(elemento => elemento.length > 3);
+            document.getElementById('resultadoArray').innerText = `// El método .filter() evalúa un predicado booleano:\nconst filtrado = tecnologias.filter(e => e.length > 3);\n\nElementos que cumplen (longitud > 3 caracteres):\n[${filtrado.map(e => `"${e}"`).join(', ')}]`;
+        }
+
+        // --- EVENTO ONCLICK: LOGICA FOR ---
+        document.getElementById('btnMostrarNumeros').onclick = function () {
+            const limiteInput = document.getElementById('limiteNumero').value;
+            const cajaResultado = document.getElementById('resultadoFor');
+            const N = parseInt(limiteInput);
+
+            if (isNaN(N) || N < 1) {
+                cajaResultado.innerHTML = "<span style='color:#ef4444;'>❌ Por favor ingrese un número entero positivo válido mayor a 0.</span>";
+                return;
+            }
+
+            let salidaStr = "Resultado secuencial: ";
+            for (let i = 1; i <= N; i++) {
+                salidaStr += `${i} ${i === N ? '' : '➔ '}`;
+            }
+            cajaResultado.innerHTML = `<strong>${salidaStr}</strong><br><small style='color:#64748b;'>Ciclo ejecutado de forma controlada hasta cumplir i <= ${N}</small>`;
+        };
+
+        // --- EVENTO ONINPUT: LOGICA WHILE ---
+        const inputTabla = document.getElementById('numeroTabla');
+        function calcularTablaWhile() {
+            const base = parseInt(inputTabla.value);
+            const cajaResultado = document.getElementById('resultadoWhile');
+
+            if (isNaN(base)) {
+                cajaResultado.innerText = "Esperando un número válido...";
+                return;
+            }
+
+            let bufferHtml = `<div style='margin-bottom:4px;'><strong>Tabla del ${base} (Construida con While):</strong></div>`;
+            let i = 1;
+            while (i <= 10) {
+                bufferHtml += `${base} x ${i} = <strong>${base * i}</strong><br>`;
+                i++;
+            }
+            cajaResultado.innerHTML = bufferHtml;
+        }
+        inputTabla.oninput = calcularTablaWhile;
+
+        // --- TEXTOS FUENTE ASOCIADOS A LOS MODALES INTERNOS ---
+        const codigosFuente = {
+            codeArrays: `// Definición inicial del Vector mutable\nlet listaTecnologias = ["HTML", "CSS", "JS", "n8n"];\n\n// Operaciones interactivas implementadas:\n\nfunction ejecutarPush() {\n  listaTecnologias.push('Git'); // Añade elemento al final\n}\n\nfunction ejecutarPop() {\n  let eliminado = listaTecnologias.pop(); // Remueve el último elemento\n}\n\nfunction ejecutarUnshift() {\n  listaTecnologias.unshift('WSL'); // Inserta al principio\n}\n\nfunction ejecutarShift() {\n  let eliminado = listaTecnologias.shift(); // Remueve el primero\n}\n\nfunction ejecutarSplice(indice, cantidad) {\n  listaTecnologias.splice(indice, cantidad); // Remoción/Inserción selectiva quirúrgica\n}`,
+            codeFor: `// Escucha de Evento clic nativo mediante propiedad ID\ndocument.getElementById('btnMostrarNumeros').onclick = function() {\n  const limiteInput = document.getElementById('limiteNumero').value;\n  const N = parseInt(limiteInput);\n\n  let salidaStr = "Resultado secuencial: ";\n  \n  // Estructura de control iterativa FOR cíclica\n  for(let i = 1; i <= N; i++) {\n      salidaStr += i + " ➔ ";\n  }\n  \n  document.getElementById('resultadoFor').innerHTML = salidaStr;\n};`,
+            codeWhile: `// Escucha de Evento activo continuo del campo numérico\nconst inputTabla = document.getElementById('numeroTabla');\n\nfunction calcularTablaWhile() {\n  const base = parseInt(inputTabla.value);\n  let bufferHtml = "";\n  \n  let i = 1; // 1. Inicialización de Variable de Control\n  \n  // 2. Evaluación de parada antes de acceder al cuerpo\n  while(i <= 10) {\n      bufferHtml += base + " x " + i + " = " + (base * i) + "<br>";\n      i++; // 3. Modificación obligatoria para evitar ciclo infinito\n  }\n  \n  document.getElementById('resultadoWhile').innerHTML = bufferHtml;\n}\n\ninputTabla.oninput = calcularTablaWhile;`
+        };
+
+        // --- CONTROLADORES DE VENTANA MODAL DIALOG ---
         function openModal(key) {
-            const container = document.getElementById('modalCodeContainer');
-            if (scriptsSource[key]) {
-                container.textContent = scriptsSource[key].trim();
-                const modal = document.getElementById('codeModal');
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.children[0].classList.remove('scale-95');
-                    modal.children[0].classList.add('scale-100');
-                }, 50);
+            const modal = document.getElementById('modalCodigo');
+            const preContainer = document.getElementById('modalPre');
+            const title = document.getElementById('modalTitle');
+
+            if (codigosFuente[key]) {
+                preContainer.innerText = codigosFuente[key];
+                title.innerText = key === 'codeArrays' ? 'Código: Operaciones y Métodos de Arreglos' :
+                    key === 'codeFor' ? 'Código: Evento Click + Bucle FOR' : 'Código: Evento Input + Bucle WHILE';
+                modal.classList.add('is-active');
             }
         }
 
         function closeModal() {
-            const modal = document.getElementById('codeModal');
-            modal.children[0].classList.remove('scale-100');
-            modal.children[0].classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 200);
+            document.getElementById('modalCodigo').classList.remove('is-active');
         }
 
-        // Ejecución Arrays
-        document.getElementById('btnRecorrerArray').onclick = function () {
-            const tecnologias = ["HTML", "CSS", "JS", "n8n"];
-            let contenedorOutput = document.getElementById('resultadoArray');
-            let htmlFilas = '<div class="space-y-1.5 w-full">';
-            for (let i = 0; i < tecnologias.length; i++) {
-                htmlFilas += `
-                <div class="flex items-center gap-3 bg-indigo-50 border-l-4 border-indigo-500 p-2 rounded text-xs md:text-sm">
-                    <span class="bg-indigo-600 text-white font-mono text-xs font-bold px-2 py-0.5 rounded">índice [${i}]</span>
-                    <span class="text-gray-700 font-semibold">Valor extraído: <strong class="text-indigo-900">"${tecnologias[i]}"</strong></span>
-                </div>`;
-            }
-            htmlFilas += '</div>';
-            contenedorOutput.innerHTML = htmlFilas;
+        // Cierre de modal alternativo al hacer clic fuera del recuadro blanco principal
+        document.getElementById('modalCodigo').onclick = function (e) {
+            if (e.target === this) closeModal();
         };
 
-        // Ejecución For
-        document.getElementById('btnMostrarNumeros').onclick = function () {
-            const num = parseInt(document.getElementById('limiteNumero').value) || 0;
-            let container = document.getElementById('resultadoFor');
-            let txt = "";
-            for (let i = 1; i <= num; i++) {
-                txt += `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded m-1 font-bold">#${i}</span>`;
-            }
-            container.innerHTML = txt || "⚠️ Digite un número límite válido.";
-        };
-
-        // Ejecución While
-        document.getElementById('numeroTabla').oninput = function () {
-            const val = parseInt(this.value);
-            let container = document.getElementById('resultadoWhile');
-            if (isNaN(val)) {
-                container.innerText = "Introduzca un número...";
-                return;
-            }
-            let res = "", i = 1;
-            while (i <= 10) {
-                res += `<div class="text-xs md:text-sm text-gray-700">${val} × ${i} = <strong>${val * i}</strong></div>`;
-                i++;
-            }
-            container.innerHTML = res;
-        };
-        document.getElementById('numeroTabla').oninput();
-
-        // Ejecución Do-While
-        let arrayAcumulador = [];
-        document.getElementById('btnAgregarNumero').onclick = function () {
-            const input = document.getElementById('numeroParaAgregar');
-            const val = parseInt(input.value);
-            if (!isNaN(val)) {
-                arrayAcumulador.push(val);
-                document.getElementById('listaNumeros').innerHTML = `📋 Lista actual del vector: <span class="bg-gray-100 font-bold px-2 py-0.5 rounded text-purple-700">[ ${arrayAcumulador.join(", ")} ]</span>`;
-                input.value = "";
-                input.focus();
-            }
-        };
-
-        document.getElementById('btnCalcularSuma').onclick = function () {
-            let containerSuma = document.getElementById('resultadoSuma');
-            if (arrayAcumulador.length === 0) {
-                containerSuma.innerHTML = "❌ El vector está vacío. Añade números primero.";
-                return;
-            }
-            let suma = 0, i = 0;
-            do {
-                suma += arrayAcumulador[i];
-                i++;
-            } while (i < arrayAcumulador.length);
-            containerSuma.innerHTML = `🏁 Suma total calculada con <strong>do...while</strong>: <span class="text-emerald-600 font-bold text-base">${suma}</span>`;
+        // INICIALIZADORES AL CARGAR LA PÁGINA
+        window.onload = function () {
+            renderizarMemoriaVector();
+            calcularTablaWhile();
         };
     </script>
 </body>
