@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Clases | Profe Robyir</title>
+    <style>
+        /* --- VARIABLES Y CONFIGURACIÓN GENERAL --- */
+        :root {
+            --bg-principal: #0f172a;
+            --bg-tarjeta: #1e293b;
+            --texto-claro: #f8fafc;
+            --texto-mutado: #94a3b8;
+            --azul-acento: #38bdf8;
+            --verde-acento: #34d399;
+            --morado-acento: #a78bfa;
+            --naranja-acento: #fb923c;
+            --fuente: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-claro);
+            font-family: var(--fuente);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        /* --- LAYOUT CON FLEXBOX (Header y Nav) --- */
+        header {
+            background-color: var(--bg-tarjeta);
+            padding: 20px;
+            border-bottom: 2px solid #2e3d52;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex; /* Flexbox para alinear título y menú */
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--azul-acento);
+        }
+
+        nav ul {
+            display: flex; /* Flexbox para los enlaces del menú */
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--texto-claro);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--azul-acento);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .intro h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .intro p {
+            color: var(--texto-mutado);
+            font-size: 1.1rem;
+        }
+
+        /* --- LAYOUT PRINCIPAL CON CSS GRID (Tarjetas de Asignaturas) --- */
+        .grid-asignaturas {
+            display: grid;
+            /* Crea columnas responsivas automáticamente */
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* --- ESTILOS DE LAS TARJETAS --- */
+        .card {
+            background-color: var(--bg-tarjeta);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-top: 5px solid var(--azul-acento);
+        }
+
+        .card.redes { border-top-color: var(--azul-acento); }
+        .card.web2 { border-top-color: var(--verde-acento); }
+        .card.web3 { border-top-color: var(--morado-acento); }
+        .card.avances { border-top-color: var(--naranja-acento); }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            font-weight: normal;
+        }
+
+        .card > p {
+            color: var(--texto-mutado);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .bloque-titulo {
+            font-size: 1.1rem;
+            color: var(--azul-acento);
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid #2e3d52;
+            padding-bottom: 5px;
+        }
+        
+        .card.web2 .bloque-titulo { color: var(--verde-acento); }
+        .card.web3 .bloque-titulo { color: var(--morado-acento); }
+        .card.avances .bloque-titulo { color: var(--naranja-acento); }
+
+        /* --- LISTA DE SEMANAS CON FLEXBOX --- */
+        .semana-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .semana-item {
+            display: flex; /* Flexbox para alinear el número de semana y el contenido */
+            gap: 15px;
+            background-color: rgba(15, 23, 42, 0.4);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .semana-numero {
+            font-weight: bold;
+            color: var(--azul-acento);
+            white-space: nowrap;
+        }
+        
+        .card.web2 .semana-numero { color: var(--verde-acento); }
+        .card.web3 .semana-numero { color: var(--morado-acento); }
+        .card.avances .semana-numero { color: var(--naranja-acento); }
+
+        .semana-contenido {
+            color: var(--texto-claro);
+        }
+
+        /* --- RESPONSIVIDAD ADICIONAL (Media Queries) --- */
+        @media (max-width: 600px) {
+            .nav-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .grid-asignaturas {
+                grid-template-columns: 1fr; /* Una sola columna en pantallas muy pequeñas */
+            }
+
+            .intro h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">👨‍🏫 Profe Robyir</div>
+            <nav>
+                <ul>
+                    <li><a href="#redes">Redes y Web</a></li>
+                    <li><a href="#web2">Web 2</a></li>
+                    <li><a href="#web3">Web 3</a></li>
+                    <li><a href="#avances">Avances</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="intro">
+            <h1>Planificación Académica Semestral</h1>
+            <p>Guía de contenido estructurado por semanas para las asignaturas de Tecnología y Desarrollo Web.</p>
+        </div>
+
+        <div class="grid-asignaturas">
+
+            <div class="card redes" id="redes">
+                <h2>Redes y Web <span class="badge">20 Semanas</span></h2>
+                <p>Introducción a la infraestructura de internet y bases del desarrollo web estático.</p>
+                
+                <div class="bloque-titulo">Módulo 1: Redes (Semanas 1-10)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 1</div><div class="semana-contenido">Arquitectura Cliente-Servidor y tipos de redes (LAN, WAN).</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 2-3</div><div class="semana-contenido">Direccionamiento físico y lógico: Dirección MAC e IP (v4/v6).</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 4-5</div><div class="semana-contenido">Máscaras de subred, Gateways y funcionamiento de DNS.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 6-7</div><div class="semana-contenido">El Modelo OSI completo (Análisis detallado capa por capa).</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 8-9</div><div class="semana-contenido">Protocolos esenciales: TCP vs UDP, HTTP, HTTPS, FTP y SSH.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 10</div><div class="semana-contenido">Evaluación práctica de Redes y conectividad.</div></div>
+                </div>
+
+                <div class="bloque-titulo">Módulo 2: Web 1 (Semanas 11-20)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 11-13</div><div class="semana-contenido">Anatomía de URLs, ciclo HTTP, VS Code + Live Server y HTML5 Semántico.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 14-15</div><div class="semana-contenido">CSS3 básico: Selectores, Cascada, Especificidad y Box Model.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 16-17</div><div class="semana-contenido">Maquetación moderna con Flexbox y diseño responsivo básico.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 18-19</div><div class="semana-contenido">Control de versiones con Git/GitHub y despliegue en GitHub Pages.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 20</div><div class="semana-contenido">Defensa del Proyecto Final (Sitio estático responsivo en producción).</div></div>
+                </div>
+            </div>
+
+            <div class="card web2" id="web2">
+                <h2>Desarrollo Web 2 <span class="badge">20 Semanas</span></h2>
+                <p>Enfoque completo en la lógica, interactividad y asincronismo con JavaScript Nativo.</p>
+                
+                <div class="bloque-titulo">Bloque 1: Fundamentos (Sem 1-7)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 1-3</div><div class="semana-contenido">Variables (let, const), tipos de datos, condicionales y bucles.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 4-5</div><div class="semana-contenido">Funciones flecha, Arrays, Objetos literales y Destructuring.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 6-7</div><div class="semana-contenido">Métodos avanzados de Arrays (.map, .filter, .reduce).</div></div>
+                </div>
+
+                <div class="bloque-titulo">Bloque 2: DOM y Navegador (Sem 8-13)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 8-10</div><div class="semana-contenido">Manipulación del DOM, eventos de usuario (click, keyboard) y clases CSS.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 11-12</div><div class="semana-contenido">Validación de formularios y almacenamiento con localStorage.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 13</div><div class="semana-contenido">Primer Proyecto Integrador: To-Do List interactiva.</div></div>
+                </div>
+
+                <div class="bloque-titulo">Bloque 3: Asincronismo (Sem 14-20)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 14-15</div><div class="semana-contenido">Manejo de asincronía: Callbacks y Promesas.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 16-17</div><div class="semana-contenido">Consumo de APIs con Fetch, formato JSON y Async/Await con Try/Catch.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 18-19</div><div class="semana-contenido">Renderizado dinámico de datos de APIs y técnicas de depuración.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 20</div><div class="semana-contenido">Entrega de Proyecto Final (Aplicación interactiva basada en API pública).</div></div>
+                </div>
+            </div>
+
+            <div class="card web3" id="web3">
+                <h2>Desarrollo Web 3 <span class="badge">20 Semanas</span></h2>
+                <p>Entorno profesional, Arquitectura de Componentes (React) e Introducción al Full Stack.</p>
+                
+                <div class="bloque-titulo">Bloque 1: Entorno Profesional (Sem 1-4)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 1-2</div><div class="semana-contenido">Node.js, terminal de comandos y gestión de dependencias con npm.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 3-4</div><div class="semana-contenido">POO en JS, Módulos ES6 (import/export) y estructuras limpias de carpetas.</div></div>
+                </div>
+
+                <div class="bloque-titulo">Bloque 2: Frontend con React (Sem 5-12)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 5-6</div><div class="semana-contenido">Arquitectura SPA, Vite, sintaxis JSX y diseño de Componentes con Props.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 7-9</div><div class="semana-contenido">Manejo del estado con useState, renderizado condicional y hook useEffect.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 10-12</div><div class="semana-contenido">Consumo de APIs en React, formularios controlados e introducción a Zustand.</div></div>
+                </div>
+
+                <div class="bloque-titulo">Bloque 3: Backend y Base de Datos (Sem 13-20)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 13-14</div><div class="semana-contenido">Creación de servidores HTTP con Express y diseño de APIs REST (Postman).</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 15-16</div><div class="semana-contenido">Bases de datos relacionales SQL, Normalización y consultas CRUD básicas.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 17-18</div><div class="semana-contenido">Conexión de React con el Backend. Seguridad básica (CORS, variables .env).</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 19-20</div><div class="semana-contenido">Despliegue del ecosistema Full Stack (Vercel + Railway/Render) y defensa.</div></div>
+                </div>
+            </div>
+
+            <div class="card avances" id="avances">
+                <h2>Avances Tecnológicos <span class="badge">10 Semanas</span></h2>
+                <p>Laboratorio práctico de innovación: Automatización Low-Code, Videojuegos e IA.</p>
+                
+                <div class="bloque-titulo">Bloque 1: Automatización No-Code (Sem 1-3)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 1</div><div class="semana-contenido">Introducción al ecosistema Low-Code/No-Code y su valor empresarial.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 2-3</div><div class="semana-contenido">Automatización con n8n: Triggers, nodos y flujos reales (Email, Sheets, Telegram).</div></div>
+                </div>
+
+                <div class="bloque-titulo">Bloque 2: Videojuegos con Unity (Sem 4-6)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 4</div><div class="semana-contenido">Interfaz del motor Unity, jerarquía de objetos, escenas y componentes básicos.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 5</div><div class="semana-contenido">Scripting básico en C#: Movimiento físico de objetos y detección de colisiones.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 6</div><div class="semana-contenido">Desarrollo guiado de un mini-juego 2D/3D (Ej: Recolector de monedas).</div></div>
+                </div>
+
+                <div class="bloque-titulo">Bloque 3: IA y Redes Neuronales (Sem 7-10)</div>
+                <div class="semana-list">
+                    <div class="semana-item"><div class="semana-numero">Sem 7</div><div class="semana-contenido">Conceptos clave: Machine Learning, Deep Learning y la neurona artificial.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 8</div><div class="semana-contenido">Estructura de Redes Neuronales: Capas (entrada, ocultas, salida), pesos y sesgos.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 9</div><div class="semana-contenido">Práctica interactiva usando Google Teachable Machine o Keras en Google Colab.</div></div>
+                    <div class="semana-item"><div class="semana-numero">Sem 10</div><div class="semana-contenido">Presentación y demostración de los proyectos de innovación de los alumnos.</div></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
