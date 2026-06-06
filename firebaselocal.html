@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Guía Definitiva: Emular Firebase en Local | Paso a Paso</title>
+    <!-- Google Fonts & Font Awesome para un diseño moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+            color: #1a2c3e;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header hero */
+        .hero {
+            background: linear-gradient(135deg, #0F2027, #203A43, #2C5364);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero h1 i {
+            color: #FFCA28;
+            margin-right: 12px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .badge-local {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* contenido principal */
+        .content {
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        /* bloques de pasos */
+        .step-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step-card {
+            background: #ffffff;
+            border-radius: 1.75rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e9edf2;
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .step-card:hover {
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f8fafd;
+            padding: 1.2rem 2rem;
+            border-bottom: 2px solid #eef2f8;
+        }
+
+        .step-number {
+            background: #2C5364;
+            color: white;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            box-shadow: 0 6px 12px -6px rgba(0,0,0,0.2);
+        }
+
+        .step-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1a2c3e;
+        }
+
+        .step-body {
+            padding: 1.8rem 2rem 2rem;
+        }
+
+        code {
+            background: #1e2933;
+            color: #e2e8f0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+
+        pre {
+            background: #0f1722;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin: 1.2rem 0;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: #bbd7f9;
+            border-left: 4px solid #FFCA28;
+        }
+
+        .note {
+            background: #FFFAEC;
+            border-left: 6px solid #F59E0B;
+            padding: 1rem 1.2rem;
+            border-radius: 1rem;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+        }
+
+        .tip {
+            background: #E9F7EF;
+            border-left: 6px solid #10b981;
+            padding: 1rem 1.2rem;
+            border-radius: 1rem;
+            margin: 1.2rem 0;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            font-size: 0.75rem;
+            color: #6c86a3;
+        }
+
+        .btn-copy {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+        }
+
+        .btn-copy:hover {
+            color: #FFCA28;
+        }
+
+        .emulator-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .emulator-badge {
+            background: #eef2ff;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1f3a5f;
+        }
+
+        .emulator-badge i {
+            margin-right: 8px;
+            color: #2C5364;
+        }
+
+        hr {
+            margin: 1.5rem 0;
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #e2e8f0, transparent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8fafc;
+            font-size: 0.85rem;
+            color: #5b6e8c;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 680px) {
+            .content {
+                padding: 1.5rem;
+            }
+            .step-title {
+                font-size: 1.3rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1><i class="fas fa-fire"></i> Firebase Emulator Suite</h1>
+        <p>Desarrolla, prueba y depura sin salir de tu computadora · Sin costos · Sin internet · Sin riesgos</p>
+        <div class="badge-local">
+            <i class="fas fa-laptop-code"></i> 100% entorno local · Firestore · Auth · Functions · Storage · Hosting
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="step-grid">
+            <!-- PASO 1: REQUISITOS PREVIOS -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Prepara tu estación de trabajo</div>
+                </div>
+                <div class="step-body">
+                    <p><i class="fas fa-check-circle" style="color:#10b981;"></i> Necesitarás <strong>Node.js</strong> (v18 o superior) y <strong>npm</strong> instalados globalmente. Firebase CLI se ejecuta sobre Node.</p>
+                    <div class="tip">
+                        <i class="fas fa-terminal"></i> <strong>Verifica tu entorno:</strong> Abre tu terminal y ejecuta:
+                        <pre><code>node --version && npm --version</code></pre>
+                        Si no los tienes, descárgalos desde <a href="https://nodejs.org" target="_blank">nodejs.org</a>.
+                    </div>
+                    <p>También necesitarás un proyecto de Firebase (puede ser nuevo). Ve a <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a> y crea un proyecto (modo "sandbox" o gratuito). No es obligatorio tener recursos en la nube para usar emuladores, solo sirve para las configuraciones.</p>
+                </div>
+            </div>
+
+            <!-- PASO 2: INSTALAR FIREBASE CLI -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Instalar Firebase CLI globalmente</div>
+                </div>
+                <div class="step-body">
+                    <p>Ejecuta este comando en tu terminal favorita (PowerShell, bash, zsh):</p>
+                    <pre><code>npm install -g firebase-tools</code></pre>
+                    <p>Para confirmar que se instaló correctamente:</p>
+                    <pre><code>firebase --version</code></pre>
+                    <div class="note">
+                        <i class="fas fa-info-circle"></i> Si tienes problemas de permisos en Linux/Mac, usa <code>sudo npm install -g firebase-tools</code> o configura npm global sin sudo.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 3: INICIAR PROYECTO LOCAL -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Inicializar Firebase en tu carpeta local</div>
+                </div>
+                <div class="step-body">
+                    <p>Crea una carpeta para tu proyecto y entra en ella:</p>
+                    <pre><code>mkdir mi-app-firebase-local
+cd mi-app-firebase-local</code></pre>
+                    <p>Ejecuta el comando de inicialización:</p>
+                    <pre><code>firebase init</code></pre>
+                    <p>Sigue los pasos interactivos:</p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        <li>Selecciona <strong>Firestore, Authentication, Functions, Hosting, Storage</strong> (puedes elegir solo los que necesites).</li>
+                        <li>Elige el proyecto que creaste en Firebase Console (o crea uno nuevo desde CLI).</li>
+                        <li>Acepta las rutas por defecto (firestore.rules, firestore.indexes.json, etc).</li>
+                        <li>Para Functions: elige TypeScript o JavaScript (como prefieras).</li>
+                        <li>Para Hosting: escribe "public" como directorio y sí a SPA.</li>
+                    </ul>
+                    <div class="tip">
+                        <i class="fas fa-magic"></i> <strong>Tip:</strong> No necesitas tener las APIs habilitadas en la nube, el emulador las simula completamente.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 4: CONFIGURAR EMULADORES -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Configurar & habilitar emuladores</div>
+                </div>
+                <div class="step-body">
+                    <p>Ahora ejecuta el siguiente comando para iniciar la configuración de emuladores:</p>
+                    <pre><code>firebase init emulators</code></pre>
+                    <p>Marca los servicios que quieres emular localmente:</p>
+                    <div class="emulator-grid">
+                        <span class="emulator-badge"><i class="fas fa-database"></i> Firestore</span>
+                        <span class="emulator-badge"><i class="fas fa-user-lock"></i> Authentication</span>
+                        <span class="emulator-badge"><i class="fas fa-cloud-upload-alt"></i> Storage</span>
+                        <span class="emulator-badge"><i class="fas fa-code"></i> Functions</span>
+                        <span class="emulator-badge"><i class="fas fa-globe"></i> Hosting</span>
+                        <span class="emulator-badge"><i class="fas fa-envelope"></i> Pub/Sub</span>
+                    </div>
+                    <p>Asigna puertos (los default son perfectos: Firestore 8080, Auth 9099, Storage 9199, Functions 5001, Hosting 5000). Elige "descargar emuladores" si es primera vez.</p>
+                    <div class="note">
+                        <i class="fas fa-plug"></i> Esto generará el archivo <code>firebase.json</code> con la sección "emulators". Ahí puedes ajustar puertos manualmente si lo deseas.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 5: LEVANTAR EMULADORES -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div class="step-title">🔥 Iniciar los emuladores locales</div>
+                </div>
+                <div class="step-body">
+                    <p>¡Llegó el momento! Ejecuta el comando mágico:</p>
+                    <pre><code>firebase emulators:start</code></pre>
+                    <p>Verás en la terminal una salida similar a:</p>
+                    <pre><code>┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://localhost:4000                │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+                    <p>Abre tu navegador y visita <strong>http://localhost:4000</strong> — ahí tendrás una interfaz gráfica para ver datos, logs y estado de cada emulador.</p>
+                    <div class="tip">
+                        <i class="fas fa-heart"></i> La UI te permite modificar documentos de Firestore, crear usuarios de prueba, revisar funciones, ¡todo en tiempo real!
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 6: CONECTAR APP CLIENTE -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Apuntar tu aplicación a los emuladores</div>
+                </div>
+                <div class="step-body">
+                    <p>En el código de tu app (web, React, Node, etc.) debes redirigir los SDKs al localhost. Ejemplo para una app web con Firebase v9+:</p>
+                    <div class="code-header">
+                        <span><i class="fab fa-js"></i> JavaScript - Conexión a emuladores</span>
+                        <button class="btn-copy" onclick="copyToClipboard('firebase-emulator-code')"><i class="far fa-copy"></i> Copiar</button>
+                    </div>
+                    <pre id="firebase-emulator-code"><code>import { initializeApp } from "firebase/app";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
+import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+
+// Tu configuración de Firebase (puedes usar variables locales, no importan los valores reales)
+const firebaseConfig = {
+  apiKey: "demo-key-local",
+  authDomain: "localhost",
+  projectId: "tu-id-proyecto",
+  storageBucket: "tu-bucket",
+  messagingSenderId: "000000",
+  appId: "1:000000:web:demo",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+const functions = getFunctions(app);
+
+// 🔌 Conectar a emuladores locales (solo desarrollo)
+connectFirestoreEmulator(db, 'localhost', 8080);
+connectAuthEmulator(auth, 'http://localhost:9099');
+connectStorageEmulator(storage, 'localhost', 9199);
+connectFunctionsEmulator(functions, 'localhost', 5001);
+
+console.log("✅ App apuntando a Firebase Emulator Suite");</code></pre>
+                    <div class="note">
+                        <i class="fas fa-exclamation-triangle"></i> Asegúrate de que los puertos coincidan con los definidos en el paso 4. Para hosting emulado, tu app servida desde <code>http://localhost:5000</code> también tendrá emulación completa.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 7: DATOS DE PRUEBA Y DEBUG -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">7</div>
+                    <div class="step-title">Poblar datos y depurar localmente</div>
+                </div>
+                <div class="step-body">
+                    <p>Ahora puedes usar la UI (localhost:4000) para crear colecciones y documentos, o mediante código. La magia es que cualquier cambio es local y efímero.</p>
+                    <p><strong>Comandos útiles para exportar/importar datos:</strong> puedes persistir el estado entre sesiones.</p>
+                    <pre><code># Exportar datos emulados a una carpeta
+firebase emulators:export ./emulator-data
+
+# Iniciar emuladores con datos guardados previamente
+firebase emulators:start --import=./emulator-data</code></pre>
+                    <div class="tip">
+                        <i class="fas fa-bug"></i> <strong>Debugging profesional:</strong> Los logs de funciones en tiempo real aparecen en la terminal y en la UI. Además puedes usar breakpoints si trabajas con Functions locales.
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXTRA: SCRIPTS Y BUENAS PRÁCTICAS -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">📘</div>
+                    <div class="step-title">Buenas prácticas + workflow profesional</div>
+                </div>
+                <div class="step-body">
+                    <p><i class="fas fa-terminal"></i> Agrega scripts en tu <code>package.json</code> para facilitar tu flujo:</p>
+                    <pre><code>{
+  "scripts": {
+    "emulators": "firebase emulators:start --import=./seed-data --export-on-exit",
+    "emulators:clean": "firebase emulators:start",
+    "seed": "node scripts/seedFirestore.js"
+  }
+}</code></pre>
+                    <p>✅ <strong>Ventajas clave que obtienes:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Sin límite de lectura/escritura ni costos sorpresa.</li>
+                        <li>Pruebas automatizadas con jest + emuladores (entorno aislado).</li>
+                        <li>Colaboración: Cada miembro del equipo corre su propia instancia.</li>
+                        <li>Las reglas de seguridad (Firestore Rules) se prueban inmediatamente.</li>
+                    </ul>
+                    <div class="note">
+                        <i class="fas fa-cloud-upload-alt"></i> Recuerda: cuando despliegues a producción (<code>firebase deploy</code>), los emuladores no intervienen. Todo tu código apuntará a la nube si no usas condicionales. Maneja <code>process.env.NODE_ENV</code> para cambiar entre emuladores y producción automáticamente.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ RÁPIDO -->
+        <hr>
+        <div style="margin: 1rem 0 1.5rem;">
+            <h3><i class="fas fa-question-circle"></i> Preguntas frecuentes sobre emuladores</h3>
+            <details style="margin-top: 0.8rem;">
+                <summary style="font-weight: 600; cursor: pointer;">¿Necesito conexión a internet para usarlos?</summary>
+                <p style="margin-top: 0.5rem;">No. Una vez instalados, los emuladores funcionan offline al 100%. Solo ocupas internet la primera vez para descargar los binarios de los emuladores.</p>
+            </details>
+            <details style="margin-top: 0.8rem;">
+                <summary style="font-weight: 600; cursor: pointer;">¿Puedo usar Firebase Admin SDK con emuladores?</summary>
+                <p style="margin-top: 0.5rem;">Sí, apunta el Admin SDK a localhost y los puertos respectivos. Perfecto para cloud functions locales o scripts de backend.</p>
+            </details>
+            <details style="margin-top: 0.8rem;">
+                <summary style="font-weight: 600; cursor: pointer;">¿Los datos se borran al cerrar los emuladores?</summary>
+                <p style="margin-top: 0.5rem;">Por defecto sí, pero usando <code>--import/--export-on-exit</code> puedes guardar snapshots y reutilizarlos.</p>
+            </details>
+        </div>
+
+        <div class="tip" style="background: #eef2ff; text-align: center;">
+            <i class="fas fa-rocket" style="color:#2C5364"></i> <strong>¡Ya estás listo para desarrollar con el poder de Firebase sin salir de local!</strong>  
+            <br> Prueba autenticación, Firestore, Storage, Functions y Hosting con velocidad máxima.
+        </div>
+    </div>
+    <footer>
+        <i class="fas fa-heart" style="color:#e43f5a;"></i> Guía creada con pasión para developers · Emula sin miedo, despliega con confianza
+        <br><span style="font-size:0.7rem;">Firebase Emulator Suite v13+ | Documentación oficial: firebase.google.com/docs/emulator-suite</span>
+    </footer>
+</div>
+
+<script>
+    function copyToClipboard(elementId) {
+        const codeBlock = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(codeBlock).then(() => {
+            const btn = event.target.closest('.btn-copy');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Error al copiar: ', err);
+            alert('No se pudo copiar manualmente, selecciona el código y copia');
+        });
+    }
+    // Soporte adicional para copiar el código principal
+    document.querySelectorAll('.btn-copy').forEach(btn => {
+        if(!btn.hasAttribute('data-listener')) {
+            btn.setAttribute('data-listener', 'true');
+            // ya tiene onclick inline, no duplicar evento, está manejado en el onclick propio.
+        }
+    });
+</script>
+</body>
+</html>
