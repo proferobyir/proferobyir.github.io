@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Clase Web: Historia, Fundamentos y JavaScript - Código DOM</title>
+    <style>
+        /* ========== RESET Y ESTILOS GLOBALES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Fira Code', 'Courier New', monospace, system-ui;
+            background: #f1f4f9;
+            color: #1e2a3e;
+            line-height: 1.5;
+            padding: 1.5rem;
+        }
+
+        /* Contenedor principal GRID: estructura global responsiva */
+        .clase-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.8rem;
+        }
+
+        /* Encabezado principal con flexbox */
+        .hero {
+            background: #0a2b33;
+            color: white;
+            padding: 2rem 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(1.6rem, 5vw, 2.5rem);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .hero-text p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .hero-badge {
+            background: #2c5f6e;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        /* SECCIONES GENÉRICAS (cada tema) */
+        .card-tema {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-tema:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .titulo-seccion {
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #2c7da0;
+            padding-left: 1rem;
+        }
+
+        .titulo-seccion h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #0f4c5f;
+        }
+
+        /* CONTENEDORES CON FLEX Y GRID INTERNOS */
+        .flex-concepts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .concept-card {
+            flex: 1 1 240px;
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.2rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            border-top: 3px solid #2c7da0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .concept-card h3 {
+            color: #1e5a73;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Grid para mostrar estructura web */
+        .grid-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .mock-structure {
+            background: #f1f5f9;
+            border-radius: 1rem;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            border: 1px solid #cbd5e1;
+        }
+
+        .tag {
+            background: #1e5a73;
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin: 0.15rem;
+            font-family: monospace;
+        }
+
+        /* Cliente-Servidor visual */
+        .comunicacion-box {
+            background: #1e2f3d;
+            color: white;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .cliente,
+        .servidor {
+            background: #2c4c6b;
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            font-family: monospace;
+        }
+
+        .flecha {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: none;
+            color: #ffd966;
+        }
+
+        /* Estilos para bloques de código y demostración */
+        .code-block {
+            background: #0d1b2a;
+            color: #e0e1dd;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .demo-panel {
+            background: #f1f5f9;
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-top: 1rem;
+            border-left: 4px solid #2c7da0;
+        }
+
+        button,
+        .btn {
+            background: #2c7da0;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-family: inherit;
+            margin: 0.25rem;
+        }
+
+        button:hover {
+            background: #1f5e7a;
+            transform: translateY(-1px);
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 0.5rem;
+            border-radius: 0.8rem;
+            border: 1px solid #cbd5e1;
+            width: 100%;
+            max-width: 280px;
+            font-family: monospace;
+            margin: 0.3rem 0;
+        }
+
+        .dom-demo-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        hr {
+            margin: 1rem 0;
+            border-color: #cbd5e1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #4a627a;
+            font-family: monospace;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .titulo-seccion h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="clase-grid">
+        <!-- HEADER -->
+        <div class="hero">
+            <div class="hero-text">
+                <h1>Historia y Evolución del Desarrollo Web</h1>
+                <p>HTML + CSS + JavaScript | Comunicación Cliente-Servidor | Manipulación del DOM con código</p>
+            </div>
+            <div class="hero-badge">
+                Flexbox + Grid · Responsive
+            </div>
+        </div>
+
+        <!-- 1. HISTORIA Y EVOLUCIÓN -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Historia y evolución del desarrollo web</h2>
+            </div>
+            <div class="flex-concepts">
+                <div class="concept-card">
+                    <h3>1989 - Web 1.0</h3>
+                    <p>Tim Berners-Lee: HTML, HTTP y URLs. Páginas estáticas, solo lectura. Primeros navegadores.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>2004 - Web 2.0</h3>
+                    <p>JavaScript maduro, AJAX, contenido dinámico. Nacen las aplicaciones web interactivas.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>2010+ - Web moderna</h3>
+                    <p>HTML5, CSS3 (Flexbox/Grid), frameworks, SPAs, WebAssembly, PWAs.</p>
+                </div>
+            </div>
+            <div class="code-block">
+                // Evolución: de etiquetas básicas a APIs complejas
+                // 1995: JavaScript aparece para validación de formularios.
+                // Hoy: control total sobre el DOM, canvas, WebRTC, etc.
+            </div>
+        </div>
+
+        <!-- 2. CONCEPTOS HTML, CSS Y ESTRUCTURA WEB -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Conceptos básicos de HTML y CSS + Estructura de una página web</h2>
+            </div>
+            <div class="grid-demo">
+                <div class="mock-structure">
+                    <strong>Estructura HTML típica</strong><br>
+                    &lt;!DOCTYPE html&gt;<br>
+                    &lt;html&gt;<br>
+                    &nbsp;&nbsp;&lt;head&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;meta charset="UTF-8"&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Mi sitio&lt;/title&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;link rel="stylesheet" href="style.css"&gt;<br>
+                    &nbsp;&nbsp;&lt;/head&gt;<br>
+                    &nbsp;&nbsp;&lt;body&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;header&gt;...&lt;/header&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;main&gt;...&lt;/main&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;footer&gt;...&lt;/footer&gt;<br>
+                    &nbsp;&nbsp;&lt;/body&gt;<br>
+                    &lt;/html&gt;
+                </div>
+                <div class="mock-structure">
+                    <strong>CSS: Flexbox y Grid en acción</strong><br>
+                    .container { display: grid; gap: 1rem; }<br>
+                    .navbar { display: flex; justify-content: space-between; }<br>
+                    <span class="tag">Responsive</span> <span class="tag">Media queries</span><br>
+                    Esta página utiliza Grid para el layout general y Flexbox para componentes internos.
+                </div>
+            </div>
+            <p><strong>Estructura lógica:</strong> DOCTYPE → html → head (metadatos, estilos) → body (contenido). CSS
+                controla diseño, colores y adaptabilidad.</p>
+        </div>
+
+        <!-- 3. COMUNICACIÓN CLIENTE - SERVIDOR -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Comunicación entre cliente y servidor</h2>
+            </div>
+            <div class="comunicacion-box">
+                <div class="cliente">
+                    <strong>Cliente (Frontend)</strong><br>
+                    Navegador web → HTML/CSS/JS<br>
+                    Peticiones HTTP (GET, POST, PUT, DELETE)
+                </div>
+                <div class="flecha"> ⇄ </div>
+                <div class="servidor">
+                    <strong>Servidor (Backend)</strong><br>
+                    Procesa peticiones, base de datos<br>
+                    Responde con recursos (HTML, JSON, etc.)
+                </div>
+            </div>
+            <div class="code-block">
+                // Ejemplo de petición fetch desde JavaScript (cliente → servidor)
+                fetch('https://jsonplaceholder.typicode.com/posts/1')
+                .then(response => response.json())
+                .then(data => console.log(data));
+            </div>
+        </div>
+
+        <!-- 4. HISTORIA Y FUNDAMENTOS DE JAVASCRIPT -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Historia y fundamentos de JavaScript</h2>
+            </div>
+            <div class="flex-concepts">
+                <div class="concept-card">
+                    <h3>1995 - Nacimiento</h3>
+                    <p>Brendan Eich crea Mocha → LiveScript → JavaScript. Dinamismo en Netscape.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>ECMAScript (ES6+ )</h3>
+                    <p>let/const, arrow functions, clases, promesas, módulos. Estándar clave.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>Características</h3>
+                    <p>Interpretado, tipado dinámico, basado en prototipos, asíncrono por naturaleza.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. TIPOS DE DATOS, ESTRUCTURAS DE CONTROL, FUNCIONES + DEMO -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Tipos de datos, estructuras de control y funciones</h2>
+            </div>
+            <div class="grid-demo">
+                <div>
+                    <p><strong>Tipos primitivos:</strong> string, number, boolean, null, undefined, symbol, bigint.</p>
+                    <p><strong>Estructuras:</strong> if/else, switch, for, while, for...of, for...in.</p>
+                    <p><strong>Funciones:</strong> declarativas, expresivas, arrow functions, closures.</p>
+                </div>
+                <div class="demo-panel">
+                    <p><strong>Demostración interactiva</strong></p>
+                    <button id="btnDemostrarTipos">Mostrar tipos y bucle</button>
+                    <button id="btnEjecutarFuncion">Ejecutar función (factorial)</button>
+                    <div id="salidaFundamentos" class="code-block"
+                        style="background:#eef2f5; color:#1e2a3e; margin-top:10px;">
+                        Resultados aparecerán aquí.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. PROGRAMACIÓN ORIENTADA A OBJETOS EN ENTORNOS WEB -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Programación orientada a objetos (POO) en la web</h2>
+            </div>
+            <div class="flex-concepts">
+                <div class="concept-card">
+                    <h3>Clases y objetos</h3>
+                    <p>class MiClase { constructor() {} }<br>const obj = new MiClase();</p>
+                </div>
+                <div class="concept-card">
+                    <h3>Herencia / Polimorfismo</h3>
+                    <p>extends, super, métodos sobreescritos.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>Encapsulación</h3>
+                    <p>Campos privados (#), getters/setters.</p>
+                </div>
+            </div>
+            <div class="demo-panel">
+                <p><strong>Ejemplo POO en acción:</strong> Clase `Usuario` y `Admin`.</p>
+                <button id="btnCrearUsuarioPOO">Crear objeto Usuario</button>
+                <button id="btnHerenciaAdmin">Herencia: crear Admin</button>
+                <div id="salidaPOO" class="code-block" style="background:#eef2f5; color:#1e2a3e;"></div>
+            </div>
+            <div class="code-block">
+                // Fragmento de código POO
+                class Usuario {
+                constructor(nombre, email) {
+                this.nombre = nombre;
+                this.email = email;
+                }
+                saludar() {
+                return `Hola, soy ${this.nombre}`;
+                }
+                }
+                class Admin extends Usuario {
+                constructor(nombre, email, nivel) {
+                super(nombre, email);
+                this.nivel = nivel;
+                }
+                saludarAdmin() {
+                return `${this.saludar()} y tengo rol ${this.nivel}`;
+                }
+                }
+            </div>
+        </div>
+
+        <!-- 7. INTERACCIÓN CON ELEMENTOS HTML DESDE JAVASCRIPT (MANEJO DEL DOM) -->
+        <div class="card-tema">
+            <div class="titulo-seccion">
+                <h2>Interacción con elementos HTML desde JavaScript (DOM)</h2>
+            </div>
+            <p><strong>Métodos fundamentales:</strong> getElementById, querySelector, addEventListener, createElement,
+                appendChild, innerHTML, textContent, setAttribute, classList.</p>
+
+            <!-- DEMOS CON CODIGO EXPLICITO -->
+            <div class="grid-demo">
+                <!-- Bloque 1: Modificar contenido y estilos -->
+                <div class="dom-demo-card">
+                    <h3>1. Modificar texto y estilo</h3>
+                    <div class="code-block" style="background:#0d1b2a; color:#ccd6f0; font-size:0.75rem;">
+                        // Código: Seleccionar elemento y cambiar contenido
+                        const tituloDemo = document.getElementById('tituloDinamico');
+                        tituloDemo.textContent = 'Nuevo texto desde JS';
+                    </div>
+                    <p id="tituloDinamico" style="font-weight: bold; margin:10px 0;">Texto original: Hola mundo</p>
+                    <input type="text" id="campoTextoCambio" placeholder="Escribe nuevo mensaje">
+                    <button id="btnCambiarTexto">Actualizar texto</button>
+                    <button id="btnAlternarEstilo">Alternar clase destacado</button>
+                </div>
+
+                <!-- Bloque 2: Crear elementos dinámicos -->
+                <div class="dom-demo-card">
+                    <h3>2. Crear elementos (createElement)</h3>
+                    <div class="code-block" style="background:#0d1b2a; color:#ccd6f0;">
+                        const nuevaDiv = document.createElement('div');
+                        nuevaDiv.textContent = 'Item dinámico';
+                        contenedor.appendChild(nuevaDiv);
+                    </div>
+                    <button id="btnAgregarTarjeta">Agregar nueva tarjeta + eliminar</button>
+                    <div id="contenedorDinamico"
+                        style="margin-top: 10px; min-height: 70px; border: 1px dashed #94a3b8; padding: 8px; border-radius: 12px;">
+                        <p style="font-size:0.8rem;">Elementos creados aparecerán aquí ↓</p>
+                    </div>
+                </div>
+
+                <!-- Bloque 3: Manejo de eventos y listas -->
+                <div class="dom-demo-card">
+                    <h3>3. Eventos y listado interactivo</h3>
+                    <div class="code-block" style="background:#0d1b2a;">
+                        elemento.addEventListener('click', () => { /* acción */ });
+                    </div>
+                    <input type="text" id="nuevoItemInput" placeholder="Nombre del ítem">
+                    <button id="btnAgregarLista">Agregar a lista</button>
+                    <ul id="listaInteractiva" style="margin-top: 12px; list-style: square; padding-left: 1.2rem;">
+                        <li>Ejemplo inicial (click para eliminar)</li>
+                    </ul>
+                    <p><small>Haz clic en cualquier elemento de la lista para eliminarlo.</small></p>
+                </div>
+            </div>
+
+            <!-- Bloque extra: mostrar código de ejemplo completo -->
+            <div class="demo-panel" style="background:#0d1b2a; color:#e2e8f0;">
+                <strong>Fragmento de código real usado en esta página:</strong>
+                <div class="code-block" style="background:#000000aa; margin-top: 10px;">
+                    // Selección del botón y el párrafo
+                    const btnCambiar = document.getElementById('btnCambiarTexto');
+                    const parrafoDemo = document.getElementById('tituloDinamico');
+
+                    btnCambiar.addEventListener('click', () => {
+                    const nuevoValor = document.getElementById('campoTextoCambio').value;
+                    if(nuevoValor) parrafoDemo.textContent = nuevoValor;
+                    });
+
+                    // Alternar estilo mediante classList
+                    btnAlternarEstilo.addEventListener('click', () => {
+                    parrafoDemo.classList.toggle('estilo-destacado');
+                    });
+                </div>
+                <style>
+                    .estilo-destacado {
+                        background-color: #ffe4b5;
+                        padding: 6px;
+                        border-radius: 12px;
+                        font-weight: bold;
+                        color: #a15500;
+                    }
+                </style>
+            </div>
+        </div>
+        <footer>
+            [ Clase completa: Historia HTML/CSS + JS, POO y manipulación del DOM ]
+            Código con ejemplos prácticos y fragmentos listos para entender la interacción.
+        </footer>
+    </div>
+
+    <script>
+        // ================== 1. DEMO TIPOS, ESTRUCTURAS Y FUNCIONES ==================
+        const salidaFundamentos = document.getElementById('salidaFundamentos');
+        const btnDemostrarTipos = document.getElementById('btnDemostrarTipos');
+        const btnEjecutarFuncion = document.getElementById('btnEjecutarFuncion');
+
+        btnDemostrarTipos.addEventListener('click', () => {
+            let nombre = "JavaScript";               // string
+            let version = 2024;                     // number
+            let activo = true;                       // boolean
+            let lenguajes = ["HTML", "CSS", "JS"];   // array
+            let datos = { tipo: "dinámico" };        // object
+
+            let mensaje = "=== TIPOS DE DATOS ===\n";
+            mensaje += `string: ${nombre} → tipo: ${typeof nombre}\n`;
+            mensaje += `number: ${version} → tipo: ${typeof version}\n`;
+            mensaje += `boolean: ${activo} → tipo: ${typeof activo}\n`;
+            mensaje += `array: ${lenguajes} → tipo: ${typeof lenguajes} (objeto)\n`;
+            mensaje += `objeto: ${JSON.stringify(datos)} → tipo: ${typeof datos}\n\n`;
+
+            // estructura de control
+            mensaje += "=== ESTRUCTURA FOR ===";
+            for (let i = 1; i <= 3; i++) {
+                mensaje += `\nIteración ${i} · valor: ${i * 10}`;
+            }
+            salidaFundamentos.innerText = mensaje;
+        });
+
+        btnEjecutarFuncion.addEventListener('click', () => {
+            // Función recursiva ejemplo: factorial
+            const factorial = (n) => {
+                if (n <= 1) return 1;
+                return n * factorial(n - 1);
+            };
+            let numero = 5;
+            let resultado = factorial(numero);
+            salidaFundamentos.innerText = `Función factorial (${numero}!): ${resultado}\nEjemplo de arrow function y recursividad.`;
+        });
+
+        // ================== 2. POO: CLASES Y HERENCIA ==================
+        const salidaPOO = document.getElementById('salidaPOO');
+        const btnCrearUsuarioPOO = document.getElementById('btnCrearUsuarioPOO');
+        const btnHerenciaAdmin = document.getElementById('btnHerenciaAdmin');
+
+        // Definición de clases
+        class Usuario {
+            constructor(nombre, email) {
+                this.nombre = nombre;
+                this.email = email;
+            }
+            obtenerInfo() {
+                return `Usuario: ${this.nombre} (${this.email})`;
+            }
+        }
+
+        class Admin extends Usuario {
+            constructor(nombre, email, privilegios) {
+                super(nombre, email);
+                this.privilegios = privilegios;
+            }
+            obtenerInfoCompleta() {
+                return `${this.obtenerInfo()} | Rol: Admin, Privilegios: ${this.privilegios}`;
+            }
+        }
+
+        btnCrearUsuarioPOO.addEventListener('click', () => {
+            const user1 = new Usuario("Ana López", "ana@web.com");
+            salidaPOO.innerHTML = `<strong>🔹 Instancia de Usuario:</strong><br>${user1.obtenerInfo()}<br><code>${JSON.stringify(user1)}</code>`;
+        });
+
+        btnHerenciaAdmin.addEventListener('click', () => {
+            const admin1 = new Admin("Carlos Ruiz", "carlos@admin.com", "total");
+            salidaPOO.innerHTML = `<strong>🔹 Herencia (Admin extiende Usuario):</strong><br>${admin1.obtenerInfoCompleta()}<br><code>instanceof Usuario: ${admin1 instanceof Usuario}</code>`;
+        });
+
+        // ================== 3. MANIPULACIÓN DEL DOM (INTERACTIVIDAD) ==================
+        // Bloque 1: cambiar texto y alternar estilo
+        const tituloDinamico = document.getElementById('tituloDinamico');
+        const campoTextoCambio = document.getElementById('campoTextoCambio');
+        const btnCambiarTexto = document.getElementById('btnCambiarTexto');
+        const btnAlternarEstilo = document.getElementById('btnAlternarEstilo');
+
+        btnCambiarTexto.addEventListener('click', () => {
+            let nuevoTexto = campoTextoCambio.value.trim();
+            if (nuevoTexto !== "") {
+                tituloDinamico.textContent = nuevoTexto;
+            } else {
+                tituloDinamico.textContent = "Texto actualizado (vacío no permitido)";
+            }
+        });
+
+        btnAlternarEstilo.addEventListener('click', () => {
+            tituloDinamico.classList.toggle('estilo-destacado');
+        });
+
+        // Bloque 2: crear elementos dinámicamente (divs con botón eliminar)
+        const contenedorDinamico = document.getElementById('contenedorDinamico');
+        const btnAgregarTarjeta = document.getElementById('btnAgregarTarjeta');
+
+        btnAgregarTarjeta.addEventListener('click', () => {
+            const nuevaTarjeta = document.createElement('div');
+            nuevaTarjeta.className = 'dom-demo-card';
+            nuevaTarjeta.style.marginTop = '8px';
+            nuevaTarjeta.style.padding = '8px';
+            nuevaTarjeta.style.backgroundColor = '#eef2ff';
+            nuevaTarjeta.style.borderRadius = '12px';
+            nuevaTarjeta.style.display = 'flex';
+            nuevaTarjeta.style.justifyContent = 'space-between';
+            nuevaTarjeta.style.alignItems = 'center';
+
+            const texto = document.createTextNode(`Elemento agregado por DOM - ${new Date().toLocaleTimeString()}`);
+            const btnEliminar = document.createElement('button');
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.style.backgroundColor = '#b91c1c';
+            btnEliminar.style.padding = '0.2rem 0.7rem';
+            btnEliminar.style.fontSize = '0.7rem';
+
+            btnEliminar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                nuevaTarjeta.remove();
+            });
+
+            nuevaTarjeta.appendChild(texto);
+            nuevaTarjeta.appendChild(btnEliminar);
+            contenedorDinamico.appendChild(nuevaTarjeta);
+        });
+
+        // Bloque 3: lista interactiva con eliminación (event delegation)
+        const listaInteractiva = document.getElementById('listaInteractiva');
+        const btnAgregarLista = document.getElementById('btnAgregarLista');
+        const nuevoItemInput = document.getElementById('nuevoItemInput');
+
+        function agregarItemLista(textoItem) {
+            if (textoItem === "") textoItem = "Ítem por defecto";
+            const li = document.createElement('li');
+            li.textContent = textoItem;
+            li.style.cursor = 'pointer';
+            li.style.margin = '6px 0';
+            li.style.padding = '4px 8px';
+            li.style.background = '#f9f9ff';
+            li.style.borderRadius = '20px';
+            li.style.width = 'fit-content';
+            li.addEventListener('click', (e) => {
+                e.stopPropagation();
+                li.remove();  // eliminar al hacer clic
+            });
+            listaInteractiva.appendChild(li);
+        }
+
+        btnAgregarLista.addEventListener('click', () => {
+            let valor = nuevoItemInput.value.trim();
+            agregarItemLista(valor === "" ? "Nuevo ítem interactivo" : valor);
+            nuevoItemInput.value = "";
+        });
+
+        // Opcional: aplicar a los items existentes el comportamiento de click para eliminar
+        document.querySelectorAll('#listaInteractiva li').forEach(li => {
+            li.addEventListener('click', (e) => {
+                li.remove();
+            });
+        });
+
+        // También aplicar para futuros items (event delegation ya lo cubrimos pero aseguramos estilo)
+        // Agregar comportamiento por si se añaden dinámicamente
+        function initListaEliminar() {
+            const items = document.querySelectorAll('#listaInteractiva li');
+            items.forEach(li => {
+                li.removeEventListener('click', li.clickHandler);
+                const handler = () => li.remove();
+                li.addEventListener('click', handler);
+                li.clickHandler = handler;
+            });
+        }
+        initListaEliminar();
+        const observer = new MutationObserver(() => initListaEliminar());
+        observer.observe(listaInteractiva, { childList: true });
+    </script>
+</body>
+
+</html>
