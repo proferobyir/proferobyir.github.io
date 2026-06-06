@@ -3,10 +3,33 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Clase Web: Historia, Fundamentos y JavaScript - Código DOM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="favicon" href="/pictures/favicon.ico" type="image/png" sizes="32x32">
+    content="Clase interactiva sobre la evolución del ecosistema web, el ciclo de vida de las peticiones HTTP,
+    programación orientada a objetos en JavaScript y manipulación eficiente del DOM.">
+    <title>Clase Web Intermedia: Semántica, CSS Moderno y Arquitectura DOM</title>
     <style>
-        /* ========== RESET Y ESTILOS GLOBALES ========== */
+        /* ==========================================================================
+           PUNTO DE CLASE 1: ARQUITECTURA Y MANTENIBILIDAD (CUSTOM PROPERTIES)
+           Explique a los estudiantes cómo las variables CSS centralizan el diseño,
+           permitiendo cambios globales (como un Dark Mode) modificando una sola línea.
+           ==========================================================================
+        */
+        :root {
+            --bg-main: #f1f4f9;
+            --bg-card: #ffffff;
+            --bg-dark: #0a2b33;
+            --bg-code: #0d1b2a;
+            --text-dark: #1e2a3e;
+            --text-light: #e0e1dd;
+            --primary: #2c7da0;
+            --primary-hover: #1f5e7a;
+            --accent: #ffd966;
+            --danger: #b91c1c;
+            --border-color: #cbd5e1;
+        }
+
+        /* RESET INTERMEDIO */
         * {
             margin: 0;
             padding: 0;
@@ -14,14 +37,29 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Fira Code', 'Courier New', monospace, system-ui;
-            background: #f1f4f9;
-            color: #1e2a3e;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-dark);
             line-height: 1.5;
             padding: 1.5rem;
         }
 
-        /* Contenedor principal GRID: estructura global responsiva */
+        /* PUNTO DE CLASE 2: ACCESIBILIDAD (A11y)
+           Esta clase oculta visualmente elementos (como labels de formularios) 
+           pero los mantiene legibles para lectores de pantalla. ¡Práctica profesional!
+        */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* LAYOUT PRINCIPAL SEMÁNTICO (CSS GRID) */
         .clase-grid {
             max-width: 1400px;
             margin: 0 auto;
@@ -30,11 +68,11 @@
             gap: 1.8rem;
         }
 
-        /* Encabezado principal con flexbox */
+        /* COMPONENTE HERO (FLEXBOX) */
         .hero {
-            background: #0a2b33;
+            background: var(--bg-dark);
             color: white;
-            padding: 2rem 2rem;
+            padding: 2rem;
             border-radius: 1.5rem;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -50,11 +88,6 @@
             font-weight: 600;
         }
 
-        .hero-text p {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
         .hero-badge {
             background: #2c5f6e;
             padding: 0.5rem 1rem;
@@ -63,9 +96,9 @@
             font-size: 0.85rem;
         }
 
-        /* SECCIONES GENÉRICAS (cada tema) */
+        /* SECCIONES (CARDS) */
         .card-tema {
-            background: #ffffff;
+            background: var(--bg-card);
             border-radius: 1.5rem;
             padding: 1.8rem;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
@@ -79,17 +112,16 @@
 
         .titulo-seccion {
             margin-bottom: 1.5rem;
-            border-left: 5px solid #2c7da0;
+            border-left: 5px solid var(--primary);
             padding-left: 1rem;
         }
 
         .titulo-seccion h2 {
             font-size: 1.6rem;
-            font-weight: 600;
             color: #0f4c5f;
         }
 
-        /* CONTENEDORES CON FLEX Y GRID INTERNOS */
+        /* FLEXBOX INTERNO (Artículos / Conceptos) */
         .flex-concepts {
             display: flex;
             flex-wrap: wrap;
@@ -103,18 +135,10 @@
             background: #f8fafc;
             border-radius: 1rem;
             padding: 1.2rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-            border-top: 3px solid #2c7da0;
-            font-family: 'Segoe UI', sans-serif;
+            border-top: 3px solid var(--primary);
         }
 
-        .concept-card h3 {
-            color: #1e5a73;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-
-        /* Grid para mostrar estructura web */
+        /* GRID INTERNO RESPONSIVO CON AUTO-FIT (Sin Media Queries) */
         .grid-demo {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -128,21 +152,10 @@
             padding: 1rem;
             font-family: 'Fira Code', monospace;
             font-size: 0.85rem;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
         }
 
-        .tag {
-            background: #1e5a73;
-            color: white;
-            padding: 0.15rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            display: inline-block;
-            margin: 0.15rem;
-            font-family: monospace;
-        }
-
-        /* Cliente-Servidor visual */
+        /* MODELO CLIENTE-SERVIDOR */
         .comunicacion-box {
             background: #1e2f3d;
             color: white;
@@ -169,14 +182,13 @@
         .flecha {
             font-size: 1.8rem;
             font-weight: bold;
-            background: none;
-            color: #ffd966;
+            color: var(--accent);
         }
 
-        /* Estilos para bloques de código y demostración */
+        /* BLOQUES DE CÓDIGO SINTÁCTICO */
         .code-block {
-            background: #0d1b2a;
-            color: #e0e1dd;
+            background: var(--bg-code);
+            color: var(--text-light);
             padding: 0.8rem;
             border-radius: 0.8rem;
             font-family: 'Fira Code', 'Courier New', monospace;
@@ -192,12 +204,12 @@
             border-radius: 1rem;
             padding: 1.2rem;
             margin-top: 1rem;
-            border-left: 4px solid #2c7da0;
+            border-left: 4px solid var(--primary);
         }
 
-        button,
-        .btn {
-            background: #2c7da0;
+        /* ELEMENTOS DE FORMULARIO E INTERACTIVOS */
+        button {
+            background: var(--primary);
             border: none;
             color: white;
             padding: 0.5rem 1.2rem;
@@ -206,47 +218,43 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 0.85rem;
-            font-family: inherit;
-            margin: 0.25rem;
+            margin: 0.25rem 0.25rem 0.25rem 0;
         }
 
         button:hover {
-            background: #1f5e7a;
+            background: var(--primary-hover);
             transform: translateY(-1px);
         }
 
-        input,
-        select,
-        textarea {
+        input {
             padding: 0.5rem;
             border-radius: 0.8rem;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
             width: 100%;
             max-width: 280px;
-            font-family: monospace;
+            font-family: inherit;
             margin: 0.3rem 0;
         }
 
-        .dom-demo-card {
-            background: #ffffff;
-            border-radius: 1rem;
-            padding: 1rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        hr {
-            margin: 1rem 0;
-            border-color: #cbd5e1;
+        /* ESTILO INTERACTIVO DINÁMICO */
+        .estilo-destacado {
+            background-color: #ffe4b5;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #a15500;
+            transition: all 0.3s ease;
         }
 
         footer {
             text-align: center;
-            margin-top: 1rem;
-            font-size: 0.75rem;
+            margin-top: 2rem;
+            font-size: 0.8rem;
             color: #4a627a;
             font-family: monospace;
         }
 
+        /* MEDIA QUERIES SÓLO PARA DETALLES MACRO */
         @media (max-width: 680px) {
             body {
                 padding: 1rem;
@@ -256,471 +264,273 @@
                 flex-direction: column;
                 text-align: center;
             }
-
-            .titulo-seccion h2 {
-                font-size: 1.4rem;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="clase-grid">
-        <!-- HEADER -->
-        <div class="hero">
+    <main class="clase-grid">
+
+        <header class="hero">
             <div class="hero-text">
-                <h1>Historia y Evolución del Desarrollo Web</h1>
-                <p>HTML + CSS + JavaScript | Comunicación Cliente-Servidor | Manipulación del DOM con código</p>
+                <h1>Clase Interactiva: Arquitectura Front-End</h1>
+                <p>Buenas prácticas: Semántica, Variables CSS y Control eficiente del DOM</p>
             </div>
-            <div class="hero-badge">
-                Flexbox + Grid · Responsive
-            </div>
-        </div>
+            <div class="hero-badge">HTML5 + CSS3 + JS (ES6+)</div>
+        </header>
 
-        <!-- 1. HISTORIA Y EVOLUCIÓN -->
-        <div class="card-tema">
+        <section class="card-tema">
             <div class="titulo-seccion">
-                <h2>Historia y evolución del desarrollo web</h2>
+                <h2>1. Evolución del Ecosistema Web</h2>
             </div>
+            <p>De documentos planos e hipertextos estáticos a sistemas reactivos y distribuidos:</p>
             <div class="flex-concepts">
-                <div class="concept-card">
-                    <h3>1989 - Web 1.0</h3>
-                    <p>Tim Berners-Lee: HTML, HTTP y URLs. Páginas estáticas, solo lectura. Primeros navegadores.</p>
-                </div>
-                <div class="concept-card">
-                    <h3>2004 - Web 2.0</h3>
-                    <p>JavaScript robusto, AJAX, contenido dinámico. Nacen las aplicaciones web interactivas.</p>
-                </div>
-                <div class="concept-card">
-                    <h3>2010+ - Web moderna</h3>
-                    <p>HTML5, CSS3 (Flexbox/Grid), frameworks, SPAs, WebAssembly, PWAs.</p>
-                </div>
+                <article class="concept-card">
+                    <h3>Web 1.0 (1989)</h3>
+                    <p>Tim Berners-Lee: Consumo estático, protocolos HTTP puros y documentos de sólo lectura.</p>
+                </article>
+                <article class="concept-card">
+                    <h3>Web 2.0 (2004)</h3>
+                    <p>Asincronía (AJAX), interactividad guiada por JS y el auge de las bases de datos dinámicas.</p>
+                </article>
+                <article class="concept-card">
+                    <h3>Web Moderna</h3>
+                    <p>HTML5 semántico, layouts dinámicos (Grid/Flexbox), SPAs, APIs nativas avanzadas y PWAs.</p>
+                </article>
             </div>
-            <div class="code-block">
-                // Evolución: de etiquetas básicas a APIs complejas
-                // 1995: JavaScript aparece para validación de formularios.
-                // Hoy: control total sobre el DOM, canvas, WebRTC, etc.
-            </div>
-        </div>
+        </section>
 
-        <!-- 2. CONCEPTOS HTML, CSS Y ESTRUCTURA WEB -->
-        <div class="card-tema">
+        <section class="card-tema">
             <div class="titulo-seccion">
-                <h2>Conceptos básicos de HTML y CSS + Estructura de una página web</h2>
-            </div>
-            <div class="grid-demo">
-                <div class="mock-structure">
-                    <strong>Estructura HTML típica</strong><br>
-                    &lt;!DOCTYPE html&gt;<br>
-                    &lt;html&gt;<br>
-                    &nbsp;&nbsp;&lt;head&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;meta charset="UTF-8"&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Mi sitio&lt;/title&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;link rel="stylesheet" href="style.css"&gt;<br>
-                    &nbsp;&nbsp;&lt;/head&gt;<br>
-                    &nbsp;&nbsp;&lt;body&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;header&gt;...&lt;/header&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;main&gt;...&lt;/main&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;footer&gt;...&lt;/footer&gt;<br>
-                    &nbsp;&nbsp;&lt;/body&gt;<br>
-                    &lt;/html&gt;
-                </div>
-                <div class="mock-structure">
-                    <strong>CSS: Flexbox y Grid en acción</strong><br>
-                    .container { display: grid; gap: 1rem; }<br>
-                    .navbar { display: flex; justify-content: space-between; }<br>
-                    <span class="tag">Responsive</span> <span class="tag">Media queries</span><br>
-                    Esta página utiliza Grid para el layout general y Flexbox para componentes internos.
-                </div>
-            </div>
-            <p><strong>Estructura lógica:</strong> DOCTYPE → html → head (metadatos, estilos) → body (contenido). CSS
-                controla diseño, colores y adaptabilidad.</p>
-        </div>
-
-        <!-- 3. COMUNICACIÓN CLIENTE - SERVIDOR -->
-        <div class="card-tema">
-            <div class="titulo-seccion">
-                <h2>Comunicación entre cliente y servidor</h2>
+                <h2>2. El Ciclo de Vida de una Petición HTTP</h2>
             </div>
             <div class="comunicacion-box">
                 <div class="cliente">
                     <strong>Cliente (Frontend)</strong><br>
-                    Navegador web → HTML/CSS/JS<br>
-                    Peticiones HTTP (GET, POST, PUT, DELETE)
+                    Navegador web (Renderiza HTML/CSS/JS)
                 </div>
                 <div class="flecha"> ⇄ </div>
                 <div class="servidor">
                     <strong>Servidor (Backend)</strong><br>
-                    Procesa peticiones, base de datos<br>
-                    Responde con recursos (HTML, JSON, etc.)
+                    Procesamiento de Reglas de Negocio / Base de Datos
                 </div>
             </div>
-            <div class="code-block">
-                // Ejemplo de petición fetch desde JavaScript (cliente → servidor)
-                fetch('https://jsonplaceholder.typicode.com/posts/1')
-                .then(response => response.json())
-                .then(data => console.log(data));
-            </div>
-        </div>
+            <p style="margin-top: 1rem;">Muestre a los estudiantes cómo la asincronía moderna (ES6) optimiza este ciclo
+                sin recargar el navegador:</p>
+            <div class="code-block">// Estructura estándar moderna usando Async/Await y manejo de excepciones
+                (Try/Catch)
+                async function consultarServidor() {
+                try {
+                const respuesta = await fetch('https://api.ejemplo.com/recursos');
+                if (!respuesta.ok) throw new Error("Error en la petición");
+                const datos = await respuesta.json();
+                console.log(datos);
+                } catch (error) {
+                console.error("Fallo de comunicación:", error.message);
+                }
+                }</div>
+        </section>
 
-        <!-- 4. HISTORIA Y FUNDAMENTOS DE JAVASCRIPT -->
-        <div class="card-tema">
+        <section class="card-tema">
             <div class="titulo-seccion">
-                <h2>Historia y fundamentos de JavaScript</h2>
+                <h2>3. Programación Orientada a Objetos en la Web</h2>
             </div>
-            <div class="flex-concepts">
-                <div class="concept-card">
-                    <h3>1995 - Nacimiento</h3>
-                    <p>Brendan Eich crea Mocha → LiveScript → JavaScript. Dinamismo en Netscape.</p>
-                </div>
-                <div class="concept-card">
-                    <h3>ECMAScript (ES6+ )</h3>
-                    <p>let/const, arrow functions, clases, promesas, módulos. Estándar clave.</p>
-                </div>
-                <div class="concept-card">
-                    <h3>Características</h3>
-                    <p>Interpretado, tipado dinámico, basado en prototipos, asíncrono por naturaleza.</p>
-                </div>
-            </div>
-        </div>
+            <p>JavaScript utiliza prototipos, pero la sintaxis <code>class</code> (ES6) nos permite estructurar
+                componentes de datos legibles y escalables:</p>
 
-        <!-- 5. TIPOS DE DATOS, ESTRUCTURAS DE CONTROL, FUNCIONES + DEMO -->
-        <div class="card-tema">
-            <div class="titulo-seccion">
-                <h2>Tipos de datos, estructuras de control y funciones</h2>
-            </div>
-            <div class="grid-demo">
-                <div>
-                    <p><strong>Tipos primitivos:</strong> string, number, boolean, null, undefined, symbol, bigint.</p>
-                    <p><strong>Estructuras:</strong> if/else, switch, for, while, for...of, for...in.</p>
-                    <p><strong>Funciones:</strong> declarativas, expresivas, arrow functions, closures.</p>
-                </div>
-                <div class="demo-panel">
-                    <p><strong>Demostración interactiva</strong></p>
-                    <button id="btnDemostrarTipos">Mostrar tipos y bucle</button>
-                    <button id="btnEjecutarFuncion">Ejecutar función (factorial)</button>
-                    <div id="salidaFundamentos" class="code-block"
-                        style="background:#eef2f5; color:#1e2a3e; margin-top:10px;">
-                        Resultados aparecerán aquí.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 6. PROGRAMACIÓN ORIENTADA A OBJETOS EN ENTORNOS WEB -->
-        <div class="card-tema">
-            <div class="titulo-seccion">
-                <h2>Programación orientada a objetos (POO) en la web</h2>
-            </div>
-            <div class="flex-concepts">
-                <div class="concept-card">
-                    <h3>Clases y objetos</h3>
-                    <p>class MiClase { constructor() {} }<br>const obj = new MiClase();</p>
-                </div>
-                <div class="concept-card">
-                    <h3>Herencia / Polimorfismo</h3>
-                    <p>extends, super, métodos sobreescritos.</p>
-                </div>
-                <div class="concept-card">
-                    <h3>Encapsulación</h3>
-                    <p>Campos privados (#), getters/setters.</p>
-                </div>
-            </div>
             <div class="demo-panel">
-                <p><strong>Ejemplo POO en acción:</strong> Clase `Usuario` y `Admin`.</p>
-                <button id="btnCrearUsuarioPOO">Crear objeto Usuario</button>
-                <button id="btnHerenciaAdmin">Herencia: crear Admin</button>
-                <div id="salidaPOO" class="code-block" style="background:#eef2f5; color:#1e2a3e;"></div>
+                <p><strong>Laboratorio en vivo (Instanciación de Clases):</strong></p>
+                <button id="btnCrearUsuario">Instanciar Clase 'Usuario'</button>
+                <button id="btnCrearAdmin">Aplicar Herencia ('Admin')</button>
+                <div id="salidaPOO" class="code-block" style="background: #eef2f5; color: var(--text-dark);">
+                    Presione un botón para evaluar las instancias en tiempo de ejecución.
+                </div>
             </div>
-            <div class="code-block">
-                // Fragmento de código POO
-                class Usuario {
-                constructor(nombre, email) {
-                this.nombre = nombre;
-                this.email = email;
-                }
-                saludar() {
-                return `Hola, soy ${this.nombre}`;
-                }
-                }
-                class Admin extends Usuario {
-                constructor(nombre, email, nivel) {
-                super(nombre, email);
-                this.nivel = nivel;
-                }
-                saludarAdmin() {
-                return `${this.saludar()} y tengo rol ${this.nivel}`;
-                }
-                }
-            </div>
-        </div>
+        </section>
 
-        <!-- 7. INTERACCIÓN CON ELEMENTOS HTML DESDE JAVASCRIPT (MANEJO DEL DOM) -->
-        <div class="card-tema">
+        <section class="card-tema">
             <div class="titulo-seccion">
-                <h2>Interacción con elementos HTML desde JavaScript (DOM)</h2>
+                <h2>4. Manipulación del DOM y Gestión Eficiente de Eventos</h2>
             </div>
-            <p><strong>Métodos fundamentales:</strong> getElementById, querySelector, addEventListener, createElement,
-                appendChild, innerHTML, textContent, setAttribute, classList.</p>
+            <p>Aquí analizaremos cómo interactuar de forma segura con el árbol de nodos del navegador, priorizando el
+                rendimiento y evitando vulnerabilidades.</p>
 
-            <!-- DEMOS CON CODIGO EXPLICITO -->
             <div class="grid-demo">
-                <!-- Bloque 1: Modificar contenido y estilos -->
                 <div class="dom-demo-card">
-                    <h3>1. Modificar texto y estilo</h3>
-                    <div class="code-block" style="background:#0d1b2a; color:#ccd6f0; font-size:0.75rem;">
-                        // Código: Seleccionar elemento y cambiar contenido
-                        const tituloDemo = document.getElementById('tituloDinamico');
-                        tituloDemo.textContent = 'Nuevo texto desde JS';
-                    </div>
-                    <p id="tituloDinamico" style="font-weight: bold; margin:10px 0;">Texto original: Hola mundo</p>
-                    <input type="text" id="campoTextoCambio" placeholder="Escribe nuevo mensaje">
-                    <button id="btnCambiarTexto">Actualizar texto</button>
-                    <button id="btnAlternarEstilo">Alternar clase destacado</button>
+                    <h3>4.1 Mutación de Contenido y Clases</h3>
+                    <p id="parrafoDinamico" style="margin: 0.8rem 0;">Estado actual: <span>Nodo original intacto</span>
+                    </p>
+
+                    <label for="inputMensaje" class="sr-only">Escribe un nuevo texto para el nodo</label>
+                    <input type="text" id="inputMensaje" placeholder="Modificar contenido de la etiqueta">
+
+                    <button id="btnActualizarTexto">Actualizar textContent</button>
+                    <button id="btnToggleClase">Alternar Estado Estilo</button>
                 </div>
 
-                <!-- Bloque 2: Crear elementos dinámicos -->
                 <div class="dom-demo-card">
-                    <h3>2. Crear elementos (createElement)</h3>
-                    <div class="code-block" style="background:#0d1b2a; color:#ccd6f0;">
-                        const nuevaDiv = document.createElement('div');
-                        nuevaDiv.textContent = 'Item dinámico';
-                        contenedor.appendChild(nuevaDiv);
-                    </div>
-                    <button id="btnAgregarTarjeta">Agregar nueva tarjeta + eliminar</button>
-                    <div id="contenedorDinamico"
-                        style="margin-top: 10px; min-height: 70px; border: 1px dashed #94a3b8; padding: 8px; border-radius: 12px;">
-                        <p style="font-size:0.8rem;">Elementos creados aparecerán aquí ↓</p>
+                    <h3>4.2 Inyección de Nodos Segura</h3>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+                        Evitamos <code>innerHTML</code> para protegernos de ataques XSS (Inyección de Script). Creamos
+                        elementos puros en memoria.
+                    </p>
+                    <button id="btnCrearElemento">Inyectar Nodo de Forma Segura</button>
+                    <div id="contenedorNodosFisicos"
+                        style="margin-top: 10px; min-height: 80px; border: 2px dashed var(--border-color); padding: 8px; border-radius: 12px;">
                     </div>
                 </div>
 
-                <!-- Bloque 3: Manejo de eventos y listas -->
                 <div class="dom-demo-card">
-                    <h3>3. Eventos y listado interactivo</h3>
-                    <div class="code-block" style="background:#0d1b2a;">
-                        elemento.addEventListener('click', () => { /* acción */ });
-                    </div>
-                    <input type="text" id="nuevoItemInput" placeholder="Nombre del ítem">
-                    <button id="btnAgregarLista">Agregar a lista</button>
-                    <ul id="listaInteractiva" style="margin-top: 12px; list-style: square; padding-left: 1.2rem;">
-                        <li>Ejemplo inicial (click para eliminar)</li>
+                    <h3>4.3 Patrón: Delegación de Eventos</h3>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+                        <strong>Concepto Clave Intermedio:</strong> En lugar de agregar listeners a cada elemento hijo
+                        (gasto masivo de memoria), agregamos un único listener al padre <code>&lt;ul&gt;</code>.
+                    </p>
+                    <label for="inputItemLista" class="sr-only">Escribe un nuevo ítem</label>
+                    <input type="text" id="inputItemLista" placeholder="Nuevo elemento para la lista">
+                    <button id="btnAgregarItem">Agregar Elemento al Árbol</button>
+
+                    <ul id="padreListaInteractiva" style="margin-top: 10px;">
+                        <li
+                            style="background: #f8fafc; padding: 6px; margin: 4px 0; border-radius: 8px; cursor: pointer; border-left: 3px solid var(--danger);">
+                            Elemento base (Haz clic sobre mí para eliminarme)
+                        </li>
                     </ul>
-                    <p><small>Haz clic en cualquier elemento de la lista para eliminarlo.</small></p>
                 </div>
             </div>
+        </section>
 
-            <!-- Bloque extra: mostrar código de ejemplo completo -->
-            <div class="demo-panel" style="background:#0d1b2a; color:#e2e8f0;">
-                <strong>Fragmento de código real usado en esta página:</strong>
-                <div class="code-block" style="background:#000000aa; margin-top: 10px;">
-                    // Selección del botón y el párrafo
-                    const btnCambiar = document.getElementById('btnCambiarTexto');
-                    const parrafoDemo = document.getElementById('tituloDinamico');
-
-                    btnCambiar.addEventListener('click', () => {
-                    const nuevoValor = document.getElementById('campoTextoCambio').value;
-                    if(nuevoValor) parrafoDemo.textContent = nuevoValor;
-                    });
-
-                    // Alternar estilo mediante classList
-                    btnAlternarEstilo.addEventListener('click', () => {
-                    parrafoDemo.classList.toggle('estilo-destacado');
-                    });
-                </div>
-                <style>
-                    .estilo-destacado {
-                        background-color: #ffe4b5;
-                        padding: 6px;
-                        border-radius: 12px;
-                        font-weight: bold;
-                        color: #a15500;
-                    }
-                </style>
-            </div>
-        </div>
         <footer>
-            [ Clase completa: Historia HTML/CSS + JS, POO y manipulación del DOM ]
-            Código con ejemplos prácticos y fragmentos listos para entender la interacción.
+            Prof. Departamento de Informática / Computación · Universidad de Venezuela · Periodo Actual
         </footer>
-    </div>
+    </main>
 
     <script>
-        // ================== 1. DEMO TIPOS, ESTRUCTURAS Y FUNCIONES ==================
-        const salidaFundamentos = document.getElementById('salidaFundamentos');
-        const btnDemostrarTipos = document.getElementById('btnDemostrarTipos');
-        const btnEjecutarFuncion = document.getElementById('btnEjecutarFuncion');
-
-        btnDemostrarTipos.addEventListener('click', () => {
-            let nombre = "JavaScript";               // string
-            let version = 2024;                     // number
-            let activo = true;                       // boolean
-            let lenguajes = ["HTML", "CSS", "JS"];   // array
-            let datos = { tipo: "dinámico" };        // object
-
-            let mensaje = "=== TIPOS DE DATOS ===\n";
-            mensaje += `string: ${nombre} → tipo: ${typeof nombre}\n`;
-            mensaje += `number: ${version} → tipo: ${typeof version}\n`;
-            mensaje += `boolean: ${activo} → tipo: ${typeof activo}\n`;
-            mensaje += `array: ${lenguajes} → tipo: ${typeof lenguajes} (objeto)\n`;
-            mensaje += `objeto: ${JSON.stringify(datos)} → tipo: ${typeof datos}\n\n`;
-
-            // estructura de control
-            mensaje += "=== ESTRUCTURA FOR ===";
-            for (let i = 1; i <= 3; i++) {
-                mensaje += `\nIteración ${i} · valor: ${i * 10}`;
-            }
-            salidaFundamentos.innerText = mensaje;
-        });
-
-        btnEjecutarFuncion.addEventListener('click', () => {
-            // Función recursiva ejemplo: factorial
-            const factorial = (n) => {
-                if (n <= 1) return 1;
-                return n * factorial(n - 1);
-            };
-            let numero = 5;
-            let resultado = factorial(numero);
-            salidaFundamentos.innerText = `Función factorial (${numero}!): ${resultado}\nEjemplo de arrow function y recursividad.`;
-        });
-
-        // ================== 2. POO: CLASES Y HERENCIA ==================
-        const salidaPOO = document.getElementById('salidaPOO');
-        const btnCrearUsuarioPOO = document.getElementById('btnCrearUsuarioPOO');
-        const btnHerenciaAdmin = document.getElementById('btnHerenciaAdmin');
-
-        // Definición de clases
+        // ==========================================
+        // MÓDULO 1: ENCAPSULACIÓN Y CLASES (POO)
+        // ==========================================
         class Usuario {
             constructor(nombre, email) {
                 this.nombre = nombre;
                 this.email = email;
             }
-            obtenerInfo() {
-                return `Usuario: ${this.nombre} (${this.email})`;
+            describir() {
+                return `[Usuario Instanciado] Nombre: ${this.nombre} | Email: ${this.email}`;
             }
         }
 
+        // Subclase que aplica Herencia
         class Admin extends Usuario {
-            constructor(nombre, email, privilegios) {
-                super(nombre, email);
-                this.privilegios = privilegios;
+            constructor(nombre, email, rol) {
+                super(nombre, email); // Invocación obligatoria del constructor padre
+                this.rol = rol;
             }
-            obtenerInfoCompleta() {
-                return `${this.obtenerInfo()} | Rol: Admin, Privilegios: ${this.privilegios}`;
+            describirCompleto() {
+                return `${this.describir()} → ROL ADMINISTRATIVO: [${this.rol}]`;
             }
         }
 
-        btnCrearUsuarioPOO.addEventListener('click', () => {
-            const user1 = new Usuario("Ana López", "ana@web.com");
-            salidaPOO.innerHTML = `<strong>🔹 Instancia de Usuario:</strong><br>${user1.obtenerInfo()}<br><code>${JSON.stringify(user1)}</code>`;
+        // Controladores de la Sección POO
+        const salidaPOO = document.getElementById('salidaPOO');
+
+        document.getElementById('btnCrearUsuario').addEventListener('click', () => {
+            const estudiante = new Usuario("Pedro Pérez", "pedro.perez@universidad.edu.ve");
+            // Usamos textContent para evitar brechas de seguridad al imprimir texto plano
+            salidaPOO.textContent = estudiante.describir();
         });
 
-        btnHerenciaAdmin.addEventListener('click', () => {
-            const admin1 = new Admin("Carlos Ruiz", "carlos@admin.com", "total");
-            salidaPOO.innerHTML = `<strong>🔹 Herencia (Admin extiende Usuario):</strong><br>${admin1.obtenerInfoCompleta()}<br><code>instanceof Usuario: ${admin1 instanceof Usuario}</code>`;
+        document.getElementById('btnCrearAdmin').addEventListener('click', () => {
+            const administrador = new Admin("Dra. María Elena", "maria.elena@admin.ve", "Decano / Acceso Total");
+            salidaPOO.textContent = administrador.describirCompleto();
         });
 
-        // ================== 3. MANIPULACIÓN DEL DOM (INTERACTIVIDAD) ==================
-        // Bloque 1: cambiar texto y alternar estilo
-        const tituloDinamico = document.getElementById('tituloDinamico');
-        const campoTextoCambio = document.getElementById('campoTextoCambio');
-        const btnCambiarTexto = document.getElementById('btnCambiarTexto');
-        const btnAlternarEstilo = document.getElementById('btnAlternarEstilo');
 
-        btnCambiarTexto.addEventListener('click', () => {
-            let nuevoTexto = campoTextoCambio.value.trim();
-            if (nuevoTexto !== "") {
-                tituloDinamico.textContent = nuevoTexto;
+        // ==========================================
+        // MÓDULO 2: CONTROL DE CONTENIDOS Y CLASES (DOM)
+        // ==========================================
+        const parrafoDinamico = document.getElementById('parrafoDinamico');
+        const inputMensaje = document.getElementById('inputMensaje');
+
+        document.getElementById('btnActualizarTexto').addEventListener('click', () => {
+            const textoLimpio = inputMensaje.value.trim();
+            if (textoLimpio !== "") {
+                parrafoDinamico.querySelector('span').textContent = textoLimpio;
+                inputMensaje.value = ""; // Limpieza de control
             } else {
-                tituloDinamico.textContent = "Texto actualizado (vacío no permitido)";
+                alert("Por favor Profe, introduce una cadena válida en el input.");
             }
         });
 
-        btnAlternarEstilo.addEventListener('click', () => {
-            tituloDinamico.classList.toggle('estilo-destacado');
+        document.getElementById('btnToggleClase').addEventListener('click', () => {
+            // toggle añade o remueve la clase de manera nativa y limpia
+            parrafoDinamico.querySelector('span').classList.toggle('estilo-destacado');
         });
 
-        // Bloque 2: crear elementos dinámicamente (divs con botón eliminar)
-        const contenedorDinamico = document.getElementById('contenedorDinamico');
-        const btnAgregarTarjeta = document.getElementById('btnAgregarTarjeta');
 
-        btnAgregarTarjeta.addEventListener('click', () => {
-            const nuevaTarjeta = document.createElement('div');
-            nuevaTarjeta.className = 'dom-demo-card';
-            nuevaTarjeta.style.marginTop = '8px';
-            nuevaTarjeta.style.padding = '8px';
-            nuevaTarjeta.style.backgroundColor = '#eef2ff';
-            nuevaTarjeta.style.borderRadius = '12px';
-            nuevaTarjeta.style.display = 'flex';
-            nuevaTarjeta.style.justifyContent = 'space-between';
-            nuevaTarjeta.style.alignItems = 'center';
+        // ==========================================
+        // MÓDULO 3: INYECTAR NODOS FÍSICOS DE FORMA SEGURA
+        // ==========================================
+        const contenedorNodos = document.getElementById('contenedorNodosFisicos');
 
-            const texto = document.createTextNode(`Elemento agregado por DOM - ${new Date().toLocaleTimeString()}`);
-            const btnEliminar = document.createElement('button');
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.style.backgroundColor = '#b91c1c';
-            btnEliminar.style.padding = '0.2rem 0.7rem';
-            btnEliminar.style.fontSize = '0.7rem';
+        document.getElementById('btnCrearElemento').addEventListener('click', () => {
+            // Creamos la estructura en la memoria del navegador antes de renderizarla
+            const tarjetaHijo = document.createElement('div');
+            // Aplicamos estilos directamente encapsulados en buenas prácticas
+            tarjetaHijo.style.cssText = "background: #eef2ff; padding: 10px; margin-top: 6px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary);";
 
-            btnEliminar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                nuevaTarjeta.remove();
+            const textoInfo = document.createElement('span');
+            textoInfo.textContent = `Instancia física: ${new Date().toLocaleTimeString()}`;
+
+            const botonCierre = document.createElement('button');
+            botonCierre.textContent = "Eliminar Nodo";
+            botonCierre.style.backgroundColor = "var(--danger)";
+            botonCierre.style.padding = "0.2rem 0.6rem";
+            botonCierre.style.fontSize = "0.75rem";
+
+            // Cada hijo conoce su propio evento de destrucción (Clausura local limpia)
+            botonCierre.addEventListener('click', () => {
+                tarjetaHijo.remove();
             });
 
-            nuevaTarjeta.appendChild(texto);
-            nuevaTarjeta.appendChild(btnEliminar);
-            contenedorDinamico.appendChild(nuevaTarjeta);
+            // Ensamblaje estructural libre de inyecciones html maliciosas
+            tarjetaHijo.appendChild(textoInfo);
+            tarjetaHijo.appendChild(botonCierre);
+            contenedorNodos.appendChild(tarjetaHijo);
         });
 
-        // Bloque 3: lista interactiva con eliminación (event delegation)
-        const listaInteractiva = document.getElementById('listaInteractiva');
-        const btnAgregarLista = document.getElementById('btnAgregarLista');
-        const nuevoItemInput = document.getElementById('nuevoItemInput');
 
-        function agregarItemLista(textoItem) {
-            if (textoItem === "") textoItem = "Ítem por defecto";
-            const li = document.createElement('li');
-            li.textContent = textoItem;
-            li.style.cursor = 'pointer';
-            li.style.margin = '6px 0';
-            li.style.padding = '4px 8px';
-            li.style.background = '#f9f9ff';
-            li.style.borderRadius = '20px';
-            li.style.width = 'fit-content';
-            li.addEventListener('click', (e) => {
-                e.stopPropagation();
-                li.remove();  // eliminar al hacer clic
-            });
-            listaInteractiva.appendChild(li);
-        }
+        // ==========================================
+        // MÓDULO 4: PATRÓN INDUSTRIAL - DELEGACIÓN DE EVENTOS
+        // ==========================================
+        const padreLista = document.getElementById('padreListaInteractiva');
+        const inputItemLista = document.getElementById('inputItemLista');
 
-        btnAgregarLista.addEventListener('click', () => {
-            let valor = nuevoItemInput.value.trim();
-            agregarItemLista(valor === "" ? "Nuevo ítem interactivo" : valor);
-            nuevoItemInput.value = "";
+        // Lógica de adición tradicional
+        document.getElementById('btnAgregarItem').addEventListener('click', () => {
+            const valorInput = inputItemLista.value.trim();
+            if (valorInput === "") return;
+
+            const nuevoLi = document.createElement('li');
+            nuevoLi.textContent = valorInput;
+            nuevoLi.style.cssText = "background: #f8fafc; padding: 6px; margin: 4px 0; border-radius: 8px; cursor: pointer; border-left: 3px solid var(--danger);";
+
+            padreLista.appendChild(nuevoLi);
+            inputItemLista.value = "";
         });
 
-        // Opcional: aplicar a los items existentes el comportamiento de click para eliminar
-        document.querySelectorAll('#listaInteractiva li').forEach(li => {
-            li.addEventListener('click', (e) => {
-                li.remove();
-            });
+        /* ¡AQUÍ ESTÁ LA MAGIA! (Delegación de Eventos)
+           No escuchamos a los 'li' individuales ni usamos MutationObservers complejos.
+           Escuchamos las acciones del contenedor padre. Si la señal ("click") proviene de un LI,
+           lo procesamos. Eficiencia de memoria pura (O(1) en asignación de listeners).
+        */
+        padreLista.addEventListener('click', (evento) => {
+            // Verificamos si el objetivo real del click es la etiqueta que buscamos
+            if (evento.target && evento.target.nodeName === "LI") {
+                // Remueve de forma reactiva el nodo exacto seleccionado
+                evento.target.remove();
+            }
         });
-
-        // También aplicar para futuros items (event delegation ya lo cubrimos pero aseguramos estilo)
-        // Agregar comportamiento por si se añaden dinámicamente
-        function initListaEliminar() {
-            const items = document.querySelectorAll('#listaInteractiva li');
-            items.forEach(li => {
-                li.removeEventListener('click', li.clickHandler);
-                const handler = () => li.remove();
-                li.addEventListener('click', handler);
-                li.clickHandler = handler;
-            });
-        }
-        initListaEliminar();
-        const observer = new MutationObserver(() => initListaEliminar());
-        observer.observe(listaInteractiva, { childList: true });
     </script>
 </body>
 
