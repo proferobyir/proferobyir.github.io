@@ -146,6 +146,9 @@
                   Esto significa que el eje principal corre de izquierda a derecha. */
             flex-direction: row;
 
+            /* [MEJORA RESPONSIVE]: Permite que los elementos pasen a la siguiente línea si no caben en pantallas pequeñas */
+            flex-wrap: wrap;
+
             /* 3. Alineación en Eje Principal: 'space-around' distribuye el espacio sobrante
                   de forma que cada elemento tiene el mismo espacio a su alrededor (izquierda y derecha). */
             justify-content: space-around;
@@ -159,6 +162,8 @@
             border-radius: 6px;
             min-height: 100px;
             margin-bottom: 1.5rem;
+            /* Separación interna extra si las cajas hacen wrap */
+            gap: 10px;
         }
 
         /* ==========================================================================
@@ -168,10 +173,9 @@
             /* 1. Declaración de inicio: Convierte al bloque en un contenedor Grid */
             display: grid;
 
-            /* 2. Definición explícita de Columnas: Creamos 3 columnas.
-                  La función 'repeat(3, 1fr)' es un atajo para escribir '1fr 1fr 1fr'.
-                  Reparte el espacio total horizontal en 3 partes exactamente iguales. */
-            grid-template-columns: repeat(3, 1fr);
+            /* [MEJORA RESPONSIVE]: En lugar de repeat(3, 1fr) fijo, usamos auto-fit y minmax.
+               Crea tantas columnas como quepan, asegurando que cada una mida mínimo 80px y máximo 1fr. */
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
 
             /* 3. Filas implícitas: No definimos 'grid-template-rows'. Al hacer esto, CSS Grid 
                   creará automáticamente tantas filas como sean necesarias para albergar los elementos,
@@ -195,7 +199,9 @@
             text-align: center;
             font-weight: bold;
             border-radius: 4px;
-            min-width: 60px;
+            /* Cambiado a flex-grow para que se expandan armónicamente en móvil */
+            flex: 1 1 60px;
+            max-width: 120px;
         }
 
         .flex-container-demo .box {
@@ -204,6 +210,8 @@
 
         .grid-container-demo .box {
             background-color: var(--accent-grid);
+            /* Reseteamos el max-width en la demo de grid para que use el espacio del fr correctamente */
+            max-width: none;
         }
 
         /* Estilos de formato de código educativo */
@@ -297,6 +305,7 @@
                     <pre><code>.contenedor {
   display: flex;                /* Activa el entorno Flex */
   flex-direction: row;          /* Direcciona elementos en fila horizontal */
+  flex-wrap: wrap;              /* Permite saltos de línea en pantallas chicas */
   justify-content: space-around;/* Distribuye espacios equitativos en horizontal */
   align-items: center;          /* Alinea y centra los elementos verticalmente */
 }</code></pre>
@@ -315,7 +324,7 @@
                         <li>Tableros de control de datos (Dashboards).</li>
                     </ul>
 
-                    <p class="demo-title">Visualización en Vivo (Cuadrícula de 3 columnas):</p>
+                    <p class="demo-title">Visualización en Vivo (Cuadrícula auto-adaptable):</p>
                     <div class="grid-container-demo">
                         <div class="box">1</div>
                         <div class="box">2</div>
@@ -328,7 +337,8 @@
                     <h3>Sintaxis Esencial Comentada:</h3>
                     <pre><code>.contenedor {
   display: grid;                        /* Activa el entorno Grid */
-  grid-template-columns: repeat(3, 1fr);/* Define 3 columnas simétricas de 1 fracción */
+  /* Columnas inteligentes: se calculan solas según el ancho de pantalla */
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 10px;                            /* Margen interno de separación entre celdas */
 }</code></pre>
                 </section>
