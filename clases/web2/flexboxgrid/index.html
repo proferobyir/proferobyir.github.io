@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>🎨 Playground Interactivo: Aprende Flexbox y CSS Grid</title>
+    <style>
+        /* ========== ROOT & RESET MEJORADO (RESPONSIVE + LEGIBILIDAD) ========== */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --accent-flex: #10b981;
+            --accent-grid: #8b5cf6;
+            --border-light: #e2e8f0;
+            --text-muted: #334155;
+            --text-dark: #0f172a;
+            --shadow-sm: 0 8px 20px -6px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 20px 25px -12px rgba(0, 0, 0, 0.12);
+            --radius-card: 1.25rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f1f5f9 0%, #eef2ff 100%);
+            color: var(--secondary);
+            font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            padding: clamp(0.8rem, 4vw, 2rem);
+            min-height: 100vh;
+        }
+
+        /* ========== HEADER RESPONSIVE + ALTO CONTRASTE ========== */
+        header {
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto 2rem auto;
+        }
+
+        header h1 {
+            font-size: clamp(1.7rem, 7vw, 3rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #4f46e5, #0f172a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            color: #1e293b;
+            background: rgba(255,255,240,0.6);
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            font-weight: 500;
+        }
+
+        /* ========== MAIN CONTAINER - FLEX COLUMN RESPONSIVO ========== */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Cada sección (Flex y Grid) */
+        section {
+            background: var(--card-bg);
+            backdrop-filter: blur(2px);
+            border-radius: var(--radius-card);
+            padding: clamp(1rem, 5vw, 2rem);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 6vw, 2.2rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid;
+            display: inline-block;
+        }
+
+        .flex-section .section-title { border-color: var(--accent-flex); }
+        .grid-section .section-title { border-color: var(--accent-grid); }
+
+        .description {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-size: clamp(0.85rem, 3.5vw, 1rem);
+            border-left: 4px solid var(--primary);
+            padding: 0.6rem 1rem;
+            background: #f8fafcee;
+            border-radius: 0 16px 16px 0;
+            font-weight: 500;
+        }
+
+        /* ========== PLAYGROUND RESPONSIVE (FLEX + WRAP TOTAL) ========== */
+        .playground {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .editor-side {
+            flex: 1.2;
+            min-width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .preview-side {
+            flex: 1;
+            min-width: 240px;
+            background: #fefce8;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 260px;
+        }
+
+        /* Instrucciones más legibles en móvil */
+        .instructions {
+            background: #eef2ff;
+            padding: 0.9rem 1rem;
+            border-radius: 1rem;
+            font-size: clamp(0.75rem, 3.5vw, 0.9rem);
+            border-left: 5px solid var(--primary);
+            line-height: 1.45;
+        }
+
+        .instructions strong {
+            color: var(--primary-dark);
+        }
+
+        .instructions code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 2px 0;
+        }
+
+        /* Editor de código oscuro, tipografía clara */
+        .code-container {
+            background: #0f172a;
+            border-radius: 1.2rem;
+            padding: 0.9rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .code-container pre {
+            color: #94a3b8;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.7rem;
+            margin: 0 0 0.25rem 0;
+            letter-spacing: -0.2px;
+        }
+
+        textarea {
+            width: 100%;
+            background: #020617;
+            color: #bef264;
+            border: 1px solid #334155;
+            border-radius: 0.85rem;
+            padding: 0.8rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: clamp(0.75rem, 3vw, 0.85rem);
+            resize: vertical;
+            transition: all 0.15s;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+            background: #0a0f1c;
+        }
+
+        /* ----- Estilos preview robustos ----- */
+        .flex-preview {
+            display: flex;
+            width: 100%;
+            min-height: 200px;
+            background: rgba(16, 185, 129, 0.08);
+            border-radius: 14px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+        .grid-preview {
+            display: grid;
+            width: 100%;
+            min-height: 200px;
+            background: rgba(139, 92, 246, 0.08);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        /* Cajas (items) con tamaño adaptable y texto legible */
+        .box {
+            color: white;
+            font-weight: 700;
+            background: #10b981;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1rem, 5vw, 1.3rem);
+            transition: all 0.12s ease;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            min-width: 50px;
+            min-height: 60px;
+            padding: 0.6rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .flex-preview .box {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+
+        .grid-preview .box {
+            background: linear-gradient(135deg, #8b5cf6, #5b21b6);
+        }
+
+        /* Botón reset adaptado a dedos */
+        .reset-btn {
+            background: #334155;
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            font-size: clamp(0.7rem, 3vw, 0.8rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            margin-top: 10px;
+            align-self: flex-start;
+            letter-spacing: 0.3px;
+        }
+
+        .reset-btn:hover {
+            background: #1e293b;
+            transform: scale(0.97);
+        }
+
+        .reset-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ========== MODAL DE EXPLICACIÓN (TOTALMENTE LEGIBLE) ========== */
+        .explicacion-detallada {
+            background: #ffffffea;
+            border-radius: 1.5rem;
+            padding: clamp(1rem, 5vw, 2rem);
+            margin-top: 2rem;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+            backdrop-filter: blur(2px);
+        }
+
+        .explicacion-detallada h3 {
+            font-size: clamp(1.3rem, 6vw, 1.9rem);
+            margin-bottom: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .grid-explicacion {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .card-explicacion {
+            background: #fefefe;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            transition: 0.2s;
+            border-bottom: 3px solid;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .card-explicacion.flex-card { border-bottom-color: var(--accent-flex); }
+        .card-explicacion.grid-card { border-bottom-color: var(--accent-grid); }
+
+        .card-explicacion h4 {
+            font-size: clamp(1.2rem, 5vw, 1.5rem);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .card-explicacion ul, .card-explicacion p {
+            color: var(--text-muted);
+            font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+            margin-left: 1rem;
+            line-height: 1.5;
+        }
+
+        .code-mini {
+            background: #0f172a;
+            color: #bef264;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        /* MEDIA QUERIES AVANZADAS PARA SMARTPHONE (touch friendly) */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.8rem;
+            }
+            section {
+                padding: 1rem;
+            }
+            .playground {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            .preview-side {
+                min-height: 210px;
+                padding: 0.8rem;
+            }
+            .box {
+                min-width: 42px;
+                min-height: 52px;
+                font-size: 0.9rem;
+            }
+            .instructions {
+                font-size: 0.75rem;
+                padding: 0.7rem;
+            }
+            .reset-btn {
+                padding: 0.4rem 0.9rem;
+            }
+            textarea {
+                padding: 0.7rem;
+            }
+            .code-container pre {
+                font-size: 0.65rem;
+            }
+            .grid-explicacion {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 1.35rem;
+            }
+            .box {
+                min-width: 40px;
+                min-height: 48px;
+                padding: 0.3rem;
+                font-size: 0.85rem;
+            }
+            .instructions code {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.35rem;
+            }
+            footer {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* soporte extra para pantallas muy pequeñas */
+        @media (max-width: 360px) {
+            .box {
+                min-width: 35px;
+                min-height: 45px;
+                font-size: 0.75rem;
+            }
+            .preview-side {
+                min-height: 180px;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #475569;
+            font-weight: 500;
+            background: rgba(255,255,245,0.6);
+            border-radius: 40px;
+            padding: 0.5rem;
+        }
+
+        /* Mejora de accesibilidad táctil */
+        button, textarea, .box {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📐 Playground: Flexbox + CSS Grid</h1>
+    <p>✏️ Edita en vivo | Totalmente responsive | Letras legibles</p>
+</header>
+
+<main class="main-container">
+    <!-- SECCIÓN FLEXBOX (Responsive y claro) -->
+    <section class="flex-section">
+        <h2 class="section-title">✨ Flexbox — 1D Layout</h2>
+        <div class="description">
+            🧩 <strong>Flexbox</strong> ideal para menús, barras, componentes. Controla dirección, alineación y espacio en 1D.
+        </div>
+
+        <div class="playground">
+            <div class="editor-side">
+                <div class="instructions">
+                    🔥 <strong>Prueba en móvil:</strong><br>
+                    • <code>justify-content: center;</code> — centra horizontal<br>
+                    • <code>flex-direction: column;</code> — columna vertical<br>
+                    • <code>align-items: stretch;</code> — estira cajas<br>
+                    • <code>gap: 20px;</code> — separación amplia<br>
+                    🧠 <em>¡Escribe y mira cambios!</em>
+                </div>
+                <div class="code-container">
+                    <pre>.contenedor-flex {</pre>
+                    <pre>  display: flex;</pre>
+                    <textarea id="flex-style" placeholder="Ej: justify-content: space-between; align-items: center; gap: 1rem;">justify-content: space-around;
+align-items: center;
+gap: 12px;
+flex-wrap: wrap;</textarea>
+                    <pre>}</pre>
+                    <button class="reset-btn" id="resetFlexBtn">⟳ Resetear Flex</button>
+                </div>
+            </div>
+            <div class="preview-side">
+                <div id="flex-container" class="flex-preview">
+                    <div class="box">🐧 1</div>
+                    <div class="box">🎨 2</div>
+                    <div class="box">🚀 3</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN CSS GRID -->
+    <section class="grid-section">
+        <h2 class="section-title">🧩 CSS Grid — 2D Layout</h2>
+        <div class="description">
+            🏗️ <strong>Grid</strong> organiza en filas Y columnas. Perfecto para estructuras completas y galerías.
+        </div>
+        <div class="playground">
+            <div class="editor-side">
+                <div class="instructions">
+                    🎯 <strong>Prueba estructuras Grid (responsive):</strong><br>
+                    • <code>grid-template-columns: repeat(2, 1fr);</code> → 2 columnas<br>
+                    • <code>grid-template-rows: 80px 100px;</code> → alturas fijas<br>
+                    • <code>gap: 1rem;</code> → espacio entre celdas<br>
+                    • <code>justify-items: center;</code> → centrado interno
+                </div>
+                <div class="code-container">
+                    <pre>.contenedor-grid {</pre>
+                    <pre>  display: grid;</pre>
+                    <textarea id="grid-style" placeholder="Ej: grid-template-columns: 1fr 1fr; gap: 16px; align-items: center;">grid-template-columns: repeat(2, 1fr);
+gap: 15px;
+align-items: center;</textarea>
+                    <pre>}</pre>
+                    <button class="reset-btn" id="resetGridBtn">⟳ Resetear Grid</button>
+                </div>
+            </div>
+            <div class="preview-side">
+                <div id="grid-container" class="grid-preview">
+                    <div class="box">📘 A</div>
+                    <div class="box">📗 B</div>
+                    <div class="box">📙 C</div>
+                    <div class="box">📕 D</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPLICACIÓN DIDÁCTICA CON TEXTOS CLAROS -->
+    <div class="explicacion-detallada">
+        <h3>📖 Aprende a fondo: Flexbox vs CSS Grid</h3>
+        <div class="grid-explicacion">
+            <!-- Explicación Flexbox -->
+            <div class="card-explicacion flex-card">
+                <h4>🔹 Flexbox (1D)</h4>
+                <p><strong>¿Qué es?</strong> Sistema unidimensional para distribuir espacio entre elementos. Opera sobre <strong>eje principal</strong> y <strong>eje cruzado</strong>.</p>
+                <ul>
+                    <li><span class="code-mini">flex-direction</span>: Cambia dirección (row | column).</li>
+                    <li><span class="code-mini">justify-content</span>: Alinea en eje principal (space-between, center).</li>
+                    <li><span class="code-mini">align-items</span>: Alinea en eje cruzado (stretch, center).</li>
+                    <li><span class="code-mini">flex-wrap</span>: Permite múltiples líneas.</li>
+                    <li>Ideal para menús, barras laterales, componentes pequeños.</li>
+                </ul>
+                <p style="margin-top: 8px;">✨ <strong>Mentalidad:</strong> una "cinta elástica" que organiza elementos en una dirección.</p>
+            </div>
+            <!-- Explicación Grid -->
+            <div class="card-explicacion grid-card">
+                <h4>🧱 CSS Grid (2D)</h4>
+                <p><strong>¿Qué es?</strong> Sistema bidimensional para manejar filas y columnas a la vez. Crea layouts complejos con pistas (<strong>tracks</strong>).</p>
+                <ul>
+                    <li><span class="code-mini">grid-template-columns</span>: Define columnas (fr, %, repeat).</li>
+                    <li><span class="code-mini">grid-template-rows</span>: Define filas.</li>
+                    <li><span class="code-mini">gap</span>: Espaciado entre celdas.</li>
+                    <li><span class="code-mini">justify-items / align-items</span>: Alineación en celdas.</li>
+                    <li>Perfecto para páginas, dashboards, galerías.</li>
+                </ul>
+                <p>🎯 <strong>Diferencia clave:</strong> Grid = 2 dimensiones (filas+columnas), Flex = 1 dimensión (fila o columna).</p>
+            </div>
+            <div class="card-explicacion" style="border-bottom-color: var(--primary);">
+                <h4>⚡ ¿Cuándo usar cada uno?</h4>
+                <p><strong>Usa Flexbox</strong> para alinear elementos en línea (navegación, tarjetas, botones).</p>
+                <p><strong>Usa CSS Grid</strong> para control total sobre filas y columnas (plantillas, calendarios, diseños complejos).</p>
+                <p>✅ Se complementan: un contenedor Grid puede tener elementos Flex internos.</p>
+                <p style="margin-top: 8px;">💡 <strong>Consejo responsive:</strong> combiná Grid con <code>minmax()</code> y media queries para adaptar columnas automáticamente.</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        🧪 Experimenta sin miedo — El código se aplica en vivo. ¡Aprende CSS moderno!  📱 Totalmente optimizado para móviles.
+    </footer>
+</main>
+
+<script>
+    (function() {
+        // Elementos Flex
+        const flexStyleInput = document.getElementById('flex-style');
+        const flexContainer = document.getElementById('flex-container');
+        const resetFlexBtn = document.getElementById('resetFlexBtn');
+        
+        // Elementos Grid
+        const gridStyleInput = document.getElementById('grid-style');
+        const gridContainer = document.getElementById('grid-container');
+        const resetGridBtn = document.getElementById('resetGridBtn');
+
+        // Valores por defecto mejorados y claros (reseteo)
+        const DEFAULT_FLEX_STYLES = "justify-content: space-around;\nalign-items: center;\ngap: 12px;\nflex-wrap: wrap;";
+        const DEFAULT_GRID_STYLES = "grid-template-columns: repeat(2, 1fr);\ngap: 15px;\nalign-items: center;";
+
+        // Función robusta para actualizar Flexbox preservando display: flex
+        function updateFlexStyles() {
+            let rawValue = flexStyleInput.value.trim();
+            let baseDisplay = "display: flex;";
+            let finalCss = baseDisplay;
+            
+            if (rawValue !== "") {
+                // Evitar conflictos con display (evitar que el usuario rompa el display flex)
+                if (rawValue.includes("display:")) {
+                    // Dividir por ';' y filtrar líneas que tengan display
+                    let parts = rawValue.split(';');
+                    let filteredParts = parts.filter(part => {
+                        let trimmed = part.trim().toLowerCase();
+                        return !trimmed.startsWith('display');
+                    });
+                    let cleaned = filteredParts.join(';');
+                    if (cleaned.trim() !== "") {
+                        finalCss = baseDisplay + ";" + cleaned;
+                    } else {
+                        finalCss = baseDisplay;
+                    }
+                } else {
+                    finalCss = baseDisplay + ";" + rawValue;
+                }
+            } else {
+                finalCss = baseDisplay;
+            }
+            
+            // Aplicar estilos y asegurar que display flex quede
+            flexContainer.style.cssText = finalCss;
+            if (flexContainer.style.display !== 'flex') flexContainer.style.display = 'flex';
+        }
+
+        // Función robusta para Grid (display: grid siempre)
+        function updateGridStyles() {
+            let gridRaw = gridStyleInput.value.trim();
+            let baseGrid = "display: grid;";
+            let finalGridCss = baseGrid;
+            
+            if (gridRaw !== "") {
+                if (gridRaw.includes("display:")) {
+                    let parts = gridRaw.split(';');
+                    let filteredParts = parts.filter(part => {
+                        let trimmed = part.trim().toLowerCase();
+                        return !trimmed.startsWith('display');
+                    });
+                    let cleanedGrid = filteredParts.join(';');
+                    if (cleanedGrid.trim() !== "") {
+                        finalGridCss = baseGrid + ";" + cleanedGrid;
+                    } else {
+                        finalGridCss = baseGrid;
+                    }
+                } else {
+                    finalGridCss = baseGrid + ";" + gridRaw;
+                }
+            } else {
+                finalGridCss = baseGrid;
+            }
+            
+            gridContainer.style.cssText = finalGridCss;
+            if (gridContainer.style.display !== 'grid') gridContainer.style.display = 'grid';
+        }
+
+        // Eventos input en tiempo real (muy fluido)
+        flexStyleInput.addEventListener('input', updateFlexStyles);
+        gridStyleInput.addEventListener('input', updateGridStyles);
+
+        // Funciones Reset: restaurar textarea y aplicar estilos por defecto
+        function resetFlex() {
+            flexStyleInput.value = DEFAULT_FLEX_STYLES;
+            updateFlexStyles();
+        }
+        function resetGrid() {
+            gridStyleInput.value = DEFAULT_GRID_STYLES;
+            updateGridStyles();
+        }
+
+        if (resetFlexBtn) resetFlexBtn.addEventListener('click', resetFlex);
+        if (resetGridBtn) resetGridBtn.addEventListener('click', resetGrid);
+
+        // Inicialización segura
+        if (flexStyleInput.value.trim() === "") {
+            flexStyleInput.value = DEFAULT_FLEX_STYLES;
+        }
+        if (gridStyleInput.value.trim() === "") {
+            gridStyleInput.value = DEFAULT_GRID_STYLES;
+        }
+        
+        // Aplicar estilos iniciales
+        updateFlexStyles();
+        updateGridStyles();
+
+        // evento extra load por si hay redimensiones dinámicas (sin efecto visual extra, pero mantiene robustez)
+        window.addEventListener('load', () => {
+            updateFlexStyles();
+            updateGridStyles();
+        });
+        
+        // Pequeña corrección para evitar que flex-wrap se rompa en móviles con preview
+        // y además añadir observación de cambios opcional
+        const observer = new ResizeObserver(() => {
+            // Solo refrescamos visuales si es necesario, no afecta la lógica
+            if (flexContainer && flexContainer.style.display !== 'flex') flexContainer.style.display = 'flex';
+            if (gridContainer && gridContainer.style.display !== 'grid') gridContainer.style.display = 'grid';
+        });
+        if (flexContainer) observer.observe(flexContainer);
+        if (gridContainer) observer.observe(gridContainer);
+    })();
+</script>
+</body>
+</html>
