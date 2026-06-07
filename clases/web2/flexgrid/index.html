@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Académico: Flexbox vs CSS Grid (Comentado)</title>
+    <style>
+        /* ==========================================================================
+           1. VARIABLES Y CONFIGURACIÓN BASE
+           ========================================================================== */
+        :root {
+            /* Definimos variables CSS para mantener la consistencia visual y facilitar cambios futuros */
+            --primary: #2c3e50;
+            --accent-flex: #2980b9;
+            /* Color identificador para Flexbox (Azul) */
+            --accent-grid: #27ae60;
+            /* Color identificador para Grid (Verde) */
+            --bg-light: #f8f9fa;
+            --text-dark: #333333;
+            --white: #ffffff;
+        }
+
+        * {
+            /* El reseteo box-sizing asegura que el padding y el border se incluyan 
+               dentro del ancho y alto total asignado a los elementos */
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        /* ==========================================================================
+           2. ARQUITECTURA GENERAL DE LA PÁGINA (ESTRUCTURA MACRO)
+           ========================================================================== */
+        .wrapper {
+            /* Activamos CSS Grid en el contenedor raíz para controlar la maquetación vertical */
+            display: grid;
+            /* Definimos 3 filas explícitas: 
+               - fila 1 (header): se adapta a su contenido (auto)
+               - fila 2 (main contenido): toma todo el espacio restante disponible (1fr)
+               - fila 3 (footer): se adapta a su contenido (auto) */
+            grid-template-rows: auto 1fr auto;
+            /* Forzamos a que el documento ocupe como mínimo el 100% de la altura de la pantalla */
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #1a252f);
+            color: var(--white);
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .intro-box {
+            background-color: var(--white);
+            border-left: 5px solid var(--primary);
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ==========================================================================
+           3. EXPLICACIÓN DETALLADA: RESPONSIVE GRID (EL CONTENEDOR DE LAS SECCIONES)
+           ========================================================================== */
+        .academic-sections {
+            /* Activamos CSS Grid para distribuir las tarjetas de Flexbox y Grid */
+            display: grid;
+            /* Por defecto en pantallas móviles, definimos una sola columna que ocupa todo el ancho */
+            grid-template-columns: 1fr;
+            /* Creamos una separación uniforme de 2.5rem entre filas y columnas sin usar margins */
+            gap: 2.5rem;
+        }
+
+        /* Media Query: Se activa cuando la pantalla mide 850px de ancho o más */
+        @media (min-width: 850px) {
+            .academic-sections {
+                /* Modificamos la estructura a un sistema BIDIMENSIONAL de 2 columnas iguales.
+                   Cada una ocupa 1 Fracción (1fr) del espacio disponible en el eje horizontal. */
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        section {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .flex-section {
+            border-top: 6px solid var(--accent-flex);
+        }
+
+        .grid-section {
+            border-top: 6px solid var(--accent-grid);
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .flex-section h2 {
+            color: var(--accent-flex);
+        }
+
+        .grid-section h2 {
+            color: var(--accent-grid);
+        }
+
+        p,
+        ul {
+            margin-bottom: 1.2rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* ==========================================================================
+           4. EXPLICACIÓN DETALLADA: USO PRÁCTICO DE FLEXBOX (MICRO-DISEÑO 1D)
+           ========================================================================== */
+        .flex-container-demo {
+            /* 1. Declaración de inicio: Convierte al bloque en un contenedor Flex */
+            display: flex;
+
+            /* 2. Dirección del flujo (Eje Principal): Organiza los elementos en fila horizontal.
+                  Esto significa que el eje principal corre de izquierda a derecha. */
+            flex-direction: row;
+
+            /* 3. Alineación en Eje Principal: 'space-around' distribuye el espacio sobrante
+                  de forma que cada elemento tiene el mismo espacio a su alrededor (izquierda y derecha). */
+            justify-content: space-around;
+
+            /* 4. Alineación en Eje Secundario (Vertical): Centra los elementos verticalmente 
+                  dentro del contenedor, sin importar si tienen alturas diferentes. */
+            align-items: center;
+
+            background-color: #eef5f9;
+            padding: 1rem;
+            border-radius: 6px;
+            min-height: 100px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ==========================================================================
+           5. EXPLICACIÓN DETALLADA: USO PRÁCTICO DE CSS GRID (MICRO-DISEÑO 2D)
+           ========================================================================== */
+        .grid-container-demo {
+            /* 1. Declaración de inicio: Convierte al bloque en un contenedor Grid */
+            display: grid;
+
+            /* 2. Definición explícita de Columnas: Creamos 3 columnas.
+                  La función 'repeat(3, 1fr)' es un atajo para escribir '1fr 1fr 1fr'.
+                  Reparte el espacio total horizontal en 3 partes exactamente iguales. */
+            grid-template-columns: repeat(3, 1fr);
+
+            /* 3. Filas implícitas: No definimos 'grid-template-rows'. Al hacer esto, CSS Grid 
+                  creará automáticamente tantas filas como sean necesarias para albergar los elementos,
+                  adaptando el alto de la fila al contenido más alto de esa línea. */
+
+            /* 4. Canales/Espaciado: 'gap' define una separación de 10px estrictamente entre
+                  las celdas de la cuadrícula, impidiendo que los elementos colapsen entre sí. */
+            gap: 10px;
+
+            background-color: #eef9f1;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Elementos genéricos dentro de las cajas de demostración */
+        .box {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 4px;
+            min-width: 60px;
+        }
+
+        .flex-container-demo .box {
+            background-color: var(--accent-flex);
+        }
+
+        .grid-container-demo .box {
+            background-color: var(--accent-grid);
+        }
+
+        /* Estilos de formato de código educativo */
+        code {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Regla de oro */
+        .gold-rule {
+            /* CSS Grid Power: Esta propiedad le dice a esta caja que comience en la línea de columna 1
+               y se expanda hasta la última línea disponible (-1), ocupando todo el ancho de la rejilla. */
+            grid-column: 1 / -1;
+            background-color: #fff9db;
+            border: 1px solid #ffe066;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .gold-rule h3 {
+            color: #f59f00;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background-color: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 1.5rem 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <header>
+            <h1>Sistemas de Diseño Web Moderno</h1>
+            <p>Guía Académica de Flexbox y CSS Grid Layout</p>
+        </header>
+
+        <main class="container">
+
+            <div class="intro-box">
+                <h3>Introducción</h3>
+                <p>En el desarrollo web actual, la maquetación responsive se apoya en dos herramientas fundamentales
+                    nativas de CSS. Aunque a menudo se ven como competidores, la realidad es que **fueron diseñados para
+                    complementarse**.</p>
+            </div>
+
+            <div class="academic-sections">
+
+                <section class="flex-section">
+                    <h2>1. CSS Flexbox</h2>
+                    <p><strong>Enfoque: Unidimensional (1D).</strong> Diseñado para organizar elementos en una sola
+                        dirección a la vez: ya sea una fila (horizontal) o una columna (vertical).</p>
+
+                    <h3>Casos de uso ideales:</h3>
+                    <ul>
+                        <li>Barras de navegación (Navbars).</li>
+                        <li>Alineación vertical de iconos con texto.</li>
+                        <li>Distribución uniforme de botones en una tarjeta.</li>
+                    </ul>
+
+                    <p class="demo-title">Visualización en Vivo (Fila con espacio distribuido):</p>
+                    <div class="flex-container-demo">
+                        <div class="box">A</div>
+                        <div class="box">B</div>
+                        <div class="box">C</div>
+                    </div>
+
+                    <h3>Sintaxis Esencial Comentada:</h3>
+                    <pre><code>.contenedor {
+  display: flex;                /* Activa el entorno Flex */
+  flex-direction: row;          /* Direcciona elementos en fila horizontal */
+  justify-content: space-around;/* Distribuye espacios equitativos en horizontal */
+  align-items: center;          /* Alinea y centra los elementos verticalmente */
+}</code></pre>
+                </section>
+
+                <section class="grid-section">
+                    <h2>2. CSS Grid</h2>
+                    <p><strong>Enfoque: Bidimensional (2D).</strong> Diseñado para controlar filas y columnas
+                        simultáneamente. Permite crear estructuras complejas y controlar el espacio de manera precisa.
+                    </p>
+
+                    <h3>Casos de uso ideales:</h3>
+                    <ul>
+                        <li>Estructura general de una página web (Layouts complejos).</li>
+                        <li>Galerías de imágenes de tamaño variable.</li>
+                        <li>Tableros de control de datos (Dashboards).</li>
+                    </ul>
+
+                    <p class="demo-title">Visualización en Vivo (Cuadrícula de 3 columnas):</p>
+                    <div class="grid-container-demo">
+                        <div class="box">1</div>
+                        <div class="box">2</div>
+                        <div class="box">3</div>
+                        <div class="box">4</div>
+                        <div class="box">5</div>
+                        <div class="box">6</div>
+                    </div>
+
+                    <h3>Sintaxis Esencial Comentada:</h3>
+                    <pre><code>.contenedor {
+  display: grid;                        /* Activa el entorno Grid */
+  grid-template-columns: repeat(3, 1fr);/* Define 3 columnas simétricas de 1 fracción */
+  gap: 10px;                            /* Margen interno de separación entre celdas */
+}</code></pre>
+                </section>
+
+                <div class="gold-rule">
+                    <h3>💡 La Regla de Oro Académica</h3>
+                    <p>Usa <strong>CSS Grid</strong> para definir la estructura general y el esqueleto exterior de tu
+                        aplicación o sitio web (diseño macro). Usa <strong>Flexbox</strong> para alinear y distribuir
+                        los elementos internos de los componentes pequeños dentro de ese esqueleto (diseño micro).</p>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Material Didáctico de Computación Web. Diseñado de forma responsive y muy comentado.</p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
