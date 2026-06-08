@@ -345,7 +345,7 @@
             color: white;
         }
 
-        /* ========== CÓDIGOS (ocultos inicialmente) ========== */
+        /* ========== CÓDIGOS ========== */
         .codes-section {
             display: none;
             animation: slideDown 0.5s ease;
@@ -426,15 +426,6 @@
         .line-text {
             color: #d4d4d4;
             white-space: pre;
-        }
-
-        .line-highlight {
-            background: #667eea;
-        }
-
-        .line-highlight .line-text {
-            color: #000;
-            font-weight: bold;
         }
 
         /* Consola */
@@ -549,7 +540,7 @@
                     <div class="arrow-request" id="requestArrow">
                         <span>📤 REQUEST (XML SOAP)</span>
                         <div class="arrow-line">
-                            <svg class="arrow-svg animated-arrow" viewBox="0 0 80 30">
+                            <svg class="arrow-svg animated-arrow" viewBox="0 0 80 30" width="80" height="30">
                                 <defs>
                                     <marker id="arrowHead" markerWidth="10" markerHeight="7" refX="10" refY="3.5"
                                         orient="auto">
@@ -565,19 +556,15 @@
                     <div class="arrow-response" id="responseArrow">
                         <span>📥 RESPONSE (XML SOAP)</span>
                         <div class="arrow-line">
-                            <svg class="animated-arrow" width="80" height="30" viewBox="0 0 80 30">
+                            <svg class="arrow-svg animated-arrow" viewBox="0 0 80 30" width="80" height="30">
                                 <defs>
-                                    <linearGradient id="swatch1" inkscape:swatch="solid">
-                                        <stop style="stop-color:#ffffff;stop-opacity:1;" offset="0" id="stop1" />
-                                    </linearGradient>
                                     <marker id="arrowHeadReverse" markerWidth="10" markerHeight="7" refX="0" refY="3.5"
                                         orient="auto">
-                                        <polygon points="10 0, 0 3.5, 10 7" fill="#ff9800" id="polygon1" />
+                                        <polygon points="10 0, 0 3.5, 10 7" fill="#ff9800" />
                                     </marker>
                                 </defs>
-                                <path id="rect1"
-                                    style="fill:#ff9800;fill-opacity:1;stroke:none;stroke-width:7.76138;stroke-dasharray:none"
-                                    d="M 31.654297 4.0351562 L 1.8613281 14.517578 L 31.449219 24.931641 L 31.537109 16.025391 L 77.128906 16.025391 L 77.128906 12.939453 L 31.566406 12.939453 L 31.654297 4.0351562 z " />
+                                <line x1="70" y1="15" x2="0" y2="15" stroke="#ff9800" stroke-width="3"
+                                    marker-end="url(#arrowHeadReverse)" />
                             </svg>
                             <div class="data-packet packet-response" id="packetResponse">resultado</div>
                         </div>
@@ -638,7 +625,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE CÓDIGOS (oculta inicialmente) -->
+        <!-- SECCIÓN DE CÓDIGOS -->
         <div class="codes-section" id="codesSection">
             <div class="code-grid">
                 <!-- Código Frontend -->
@@ -702,7 +689,12 @@
     </div>
 
     <script>
-        // Códigos para mostrar
+        // ========== FUNCIÓN DELAY (CORREGIDA) ==========
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // ========== CÓDIGOS PARA MOSTRAR ==========
         const frontendCode = [
             "// ========== FRONTEND: Cliente SOAP ==========",
             "",
@@ -783,6 +775,7 @@
             "app.listen(3000);"
         ];
 
+        // ========== DATOS DEL PROGRAMA ==========
         let datos = {
             num1: null,
             num2: null,
@@ -791,6 +784,7 @@
             soapResponse: null
         };
 
+        // ========== FUNCIONES PRINCIPALES ==========
         function renderizarCodigos() {
             const frontendContainer = document.getElementById('frontendCode');
             const backendContainer = document.getElementById('backendCode');
@@ -825,19 +819,21 @@
 
         function agregarConsole(msg, tipo = "info") {
             const consoleDiv = document.getElementById('console');
-            const color = tipo === "error" ? "🔴" : (tipo === "success" ? "✅" : "📌");
+            const icono = tipo === "error" ? "🔴" : (tipo === "success" ? "✅" : "📌");
             const line = document.createElement('div');
-            line.textContent = `${color} ${msg}`;
+            line.textContent = `${icono} ${msg}`;
             consoleDiv.appendChild(line);
             consoleDiv.scrollTop = consoleDiv.scrollHeight;
         }
 
         function activarLed(ledId, activo) {
             const led = document.getElementById(ledId);
-            if (activo) {
-                led.classList.add('active');
-            } else {
-                led.classList.remove('active');
+            if (led) {
+                if (activo) {
+                    led.classList.add('active');
+                } else {
+                    led.classList.remove('active');
+                }
             }
         }
 
@@ -847,13 +843,13 @@
             const packetReq = document.getElementById('packetRequest');
             const packetRes = document.getElementById('packetResponse');
 
-            if (tipo === 'request') {
+            if (tipo === 'request' && requestArrow && packetReq) {
                 requestArrow.style.transform = 'scale(1.05)';
                 packetReq.style.animation = 'float 0.5s ease-in-out infinite';
                 setTimeout(() => {
                     requestArrow.style.transform = 'scale(1)';
                 }, 500);
-            } else if (tipo === 'response') {
+            } else if (tipo === 'response' && responseArrow && packetRes) {
                 responseArrow.style.transform = 'scale(1.05)';
                 packetRes.style.animation = 'float 0.5s ease-in-out infinite';
                 setTimeout(() => {
@@ -863,22 +859,28 @@
         }
 
         function actualizarVariables() {
+            // Actualizar panel de variables
             document.getElementById('varNum1').textContent = datos.num1 !== null ? datos.num1 : '?';
             document.getElementById('varNum2').textContent = datos.num2 !== null ? datos.num2 : '?';
             document.getElementById('varSuma').textContent = datos.suma !== null ? datos.suma : '?';
             document.getElementById('varRequest').textContent = datos.soapRequest ? '✓ Construido' : 'vacío';
             document.getElementById('varResponse').textContent = datos.soapResponse ? '✓ Recibido' : 'vacío';
 
-            if (datos.soapRequest) {
-                document.getElementById('soapRequestDisplay').innerHTML = escapeHtml(datos.soapRequest);
+            // Actualizar displays de SOAP
+            const soapRequestDisplay = document.getElementById('soapRequestDisplay');
+            const soapResponseDisplay = document.getElementById('soapResponseDisplay');
+
+            if (soapRequestDisplay && datos.soapRequest) {
+                soapRequestDisplay.innerHTML = escapeHtml(datos.soapRequest);
             }
-            if (datos.soapResponse) {
-                document.getElementById('soapResponseDisplay').innerHTML = escapeHtml(datos.soapResponse);
+            if (soapResponseDisplay && datos.soapResponse) {
+                soapResponseDisplay.innerHTML = escapeHtml(datos.soapResponse);
             }
         }
 
+        // ========== EJECUCIÓN PRINCIPAL ==========
         async function ejecutarComunicacion() {
-            // Reset
+            // Reiniciar datos
             datos = { num1: null, num2: null, suma: null, soapRequest: null, soapResponse: null };
 
             const num1Val = parseInt(document.getElementById('num1').value);
@@ -915,7 +917,8 @@
             agregarConsole("📤 [FRONTEND → BACKEND] Enviando petición HTTP POST...");
             activarLed('ledRequest', true);
             animarFlechas('request');
-            document.getElementById('packetRequest').textContent = `${datos.num1} + ${datos.num2}`;
+            const packetRequest = document.getElementById('packetRequest');
+            if (packetRequest) packetRequest.textContent = `${datos.num1} + ${datos.num2}`;
 
             await delay(1000);
 
@@ -954,7 +957,8 @@
             activarLed('ledProcess', false);
             activarLed('ledResponse', true);
             animarFlechas('response');
-            document.getElementById('packetResponse').textContent = `${datos.suma}`;
+            const packetResponse = document.getElementById('packetResponse');
+            if (packetResponse) packetResponse.textContent = `${datos.suma}`;
 
             await delay(800);
 
@@ -964,14 +968,16 @@
 
             // Mostrar mensaje de éxito
             const statusDiv = document.getElementById('statusMessage');
-            statusDiv.style.display = 'block';
-            statusDiv.style.background = '#d4edda';
-            statusDiv.style.color = '#155724';
-            statusDiv.innerHTML = `✅ ¡Comunicación SOAP exitosa! Resultado: ${datos.suma}`;
+            if (statusDiv) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#d4edda';
+                statusDiv.style.color = '#155724';
+                statusDiv.innerHTML = `✅ ¡Comunicación SOAP exitosa! Resultado: ${datos.suma}`;
 
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 3000);
+            }
 
             agregarConsole("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             agregarConsole("✨ Comunicación SOAP completada con éxito", "success");
@@ -979,48 +985,62 @@
 
         function mostrarCodigos() {
             const codesSection = document.getElementById('codesSection');
-            codesSection.classList.toggle('visible');
-
-            if (codesSection.classList.contains('visible')) {
-                agregarConsole("📖 Códigos fuente visibles - Revise la implementación", "info");
+            if (codesSection) {
+                codesSection.classList.toggle('visible');
+                if (codesSection.classList.contains('visible')) {
+                    agregarConsole("📖 Códigos fuente visibles - Revise la implementación", "info");
+                }
             }
         }
 
         function reiniciarTodo() {
             datos = { num1: null, num2: null, suma: null, soapRequest: null, soapResponse: null };
-            document.getElementById('num1').value = '15';
-            document.getElementById('num2').value = '25';
+
+            const num1Input = document.getElementById('num1');
+            const num2Input = document.getElementById('num2');
+            if (num1Input) num1Input.value = '15';
+            if (num2Input) num2Input.value = '25';
+
             actualizarVariables();
 
-            document.getElementById('soapRequestDisplay').innerHTML = '-- Esperando ejecución --';
-            document.getElementById('soapResponseDisplay').innerHTML = '-- Esperando ejecución --';
-            document.getElementById('packetRequest').textContent = 'num1 + num2';
-            document.getElementById('packetResponse').textContent = 'resultado';
+            const soapRequestDisplay = document.getElementById('soapRequestDisplay');
+            const soapResponseDisplay = document.getElementById('soapResponseDisplay');
+            if (soapRequestDisplay) soapRequestDisplay.innerHTML = '-- Esperando ejecución --';
+            if (soapResponseDisplay) soapResponseDisplay.innerHTML = '-- Esperando ejecución --';
+
+            const packetRequest = document.getElementById('packetRequest');
+            const packetResponse = document.getElementById('packetResponse');
+            if (packetRequest) packetRequest.textContent = 'num1 + num2';
+            if (packetResponse) packetResponse.textContent = 'resultado';
 
             const consoleDiv = document.getElementById('console');
-            consoleDiv.innerHTML = `
-                <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-                <div>🔄 Playground reiniciado</div>
-                <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-                <div>▶ Complete los números y presione "Ejecutar Comunicación"</div>
-            `;
+            if (consoleDiv) {
+                consoleDiv.innerHTML = `
+                    <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                    <div>🔄 Playground reiniciado</div>
+                    <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                    <div>▶ Complete los números y presione "Ejecutar Comunicación"</div>
+                `;
+            }
 
             activarLed('ledRequest', false);
             activarLed('ledProcess', false);
             activarLed('ledResponse', false);
 
             const statusDiv = document.getElementById('statusMessage');
-            statusDiv.style.display = 'none';
+            if (statusDiv) statusDiv.style.display = 'none';
         }
 
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        // ========== INICIALIZACIÓN ==========
+        function init() {
+            renderizarCodigos();
+            agregarConsole("💡 SOAP = Simple Object Access Protocol (XML sobre HTTP)");
+            agregarConsole("🎯 Presione 'Ejecutar Comunicación' para ver el flujo completo");
+            agregarConsole("📡 Los LEDs y flechas se animarán durante la comunicación");
         }
 
-        // Inicializar
-        renderizarCodigos();
-        agregarConsole("💡 SOAP = Simple Object Access Protocol (XML sobre HTTP)");
-        agregarConsole("🎯 Presione 'Ejecutar Comunicación' para ver el flujo completo");
+        // Iniciar cuando la página cargue
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 
