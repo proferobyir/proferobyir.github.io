@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground SOAP - Simulador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .playground {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .xml-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .resultado {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .info {
+            background: #e0e7ff;
+            border-left: 4px solid #667eea;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: #e0e7ff;
+            color: #667eea;
+            padding: 8px 16px;
+            margin-top: 0;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .playground {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #4caf50;
+            color: white;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎮 Playground SOAP Interactivo</h1>
+
+        <div class="playground">
+            <!-- Panel de Control -->
+            <div class="panel">
+                <h2>🎛️ Panel de Control</h2>
+                <div class="input-group">
+                    <label>Número 1:</label>
+                    <input type="number" id="num1" value="10" placeholder="Ej: 10">
+                </div>
+                <div class="input-group">
+                    <label>Número 2:</label>
+                    <input type="number" id="num2" value="20" placeholder="Ej: 20">
+                </div>
+                <button onclick="enviarSOAPSimulado()">📤 Enviar Petición SOAP</button>
+                <button onclick="limpiar()">🗑️ Limpiar</button>
+
+                <div class="resultado" id="resultadoPanel">
+                    Resultado: -
+                </div>
+
+                <div class="info" style="margin-top: 20px; padding: 15px;">
+                    <strong>💡 ¿Qué es SOAP?</strong><br>
+                    SOAP (Simple Object Access Protocol) es un protocolo que usa XML para comunicar aplicaciones.
+                    Cada mensaje tiene un Envelope (sobre), Header (opcional) y Body (cuerpo).
+                </div>
+            </div>
+
+            <!-- Panel de Mensajes SOAP -->
+            <div class="panel">
+                <h2>📨 Mensajes SOAP</h2>
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="mostrarTab('request')">📤 Request (Petición)</button>
+                    <button class="tab-btn" onclick="mostrarTab('response')">📥 Response (Respuesta)</button>
+                </div>
+                <div id="requestPanel" class="xml-box">
+                    <!-- Aquí se mostrará el XML de petición -->
+                </div>
+                <div id="responsePanel" class="xml-box" style="display: none;">
+                    <!-- Aquí se mostrará el XML de respuesta -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Explicación interactiva -->
+        <div class="panel" style="margin-top: 20px;">
+            <h2>📖 Anatomía de un Mensaje SOAP</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                    <strong style="color: #667eea;">📦 Envelope</strong>
+                    <p style="margin-top: 5px; font-size: 14px;">El sobre que contiene todo el mensaje. Es el elemento
+                        raíz obligatorio.</p>
+                </div>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                    <strong style="color: #667eea;">📋 Header</strong>
+                    <p style="margin-top: 5px; font-size: 14px;">Opcional. Contiene metadatos como autenticación.</p>
+                </div>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                    <strong style="color: #667eea;">🎯 Body</strong>
+                    <p style="margin-top: 5px; font-size: 14px;">Obligatorio. Contiene los datos de la llamada o
+                        respuesta.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function enviarSOAPSimulado() {
+            const num1 = document.getElementById('num1').value;
+            const num2 = document.getElementById('num2').value;
+            const suma = parseInt(num1) + parseInt(num2);
+
+            // Construir mensaje SOAP de petición
+            const soapRequest = `<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <!-- Opcional: Aquí irían credenciales o configuraciones -->
+    <Credenciales xmlns="http://ejemplo.com/">
+      <Usuario>demo</Usuario>
+    </Credenciales>
+  </soap:Header>
+  <soap:Body>
+    <Sumar xmlns="http://ejemplo.com/servicio">
+      <num1>${num1}</num1>
+      <num2>${num2}</num2>
+    </Sumar>
+  </soap:Body>
+</soap:Envelope>`;
+
+            // Construir mensaje SOAP de respuesta
+            const soapResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <SumarResponse xmlns="http://ejemplo.com/servicio">
+      <resultado>${suma}</resultado>
+      <mensaje>Suma realizada con éxito</mensaje>
+    </SumarResponse>
+  </soap:Body>
+</soap:Envelope>`;
+
+            // Mostrar en el playground
+            document.getElementById('requestPanel').textContent = soapRequest;
+            document.getElementById('responsePanel').textContent = soapResponse;
+            document.getElementById('resultadoPanel').innerHTML = `Resultado: ${suma} <span class="badge">Simulado</span>`;
+
+            // Resaltar sintaxis básica
+            resaltarXML('requestPanel');
+            resaltarXML('responsePanel');
+        }
+
+        function resaltarXML(panelId) {
+            const panel = document.getElementById(panelId);
+            let texto = panel.textContent;
+            // Resaltado simple de etiquetas
+            texto = texto.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            texto = texto.replace(/(&lt;\/?[a-zA-Z:]+[^&gt;]*&gt;)/g, '<span style="color: #569cd6;">$1</span>');
+            texto = texto.replace(/(".*?")/g, '<span style="color: #ce9178;">$1</span>');
+            texto = texto.replace(/(&lt;!--.*?--&gt;)/g, '<span style="color: #6a9955;">$1</span>');
+            panel.innerHTML = texto;
+        }
+
+        function mostrarTab(tab) {
+            const requestPanel = document.getElementById('requestPanel');
+            const responsePanel = document.getElementById('responsePanel');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'request') {
+                requestPanel.style.display = 'block';
+                responsePanel.style.display = 'none';
+                buttons[0].classList.add('active');
+            } else {
+                requestPanel.style.display = 'none';
+                responsePanel.style.display = 'block';
+                buttons[1].classList.add('active');
+            }
+        }
+
+        function limpiar() {
+            document.getElementById('num1').value = '';
+            document.getElementById('num2').value = '';
+            document.getElementById('requestPanel').innerHTML = '<!-- Esperando petición... -->';
+            document.getElementById('responsePanel').innerHTML = '<!-- Esperando respuesta... -->';
+            document.getElementById('resultadoPanel').innerHTML = 'Resultado: -';
+        }
+
+        // Cargar ejemplo inicial
+        window.onload = () => {
+            enviarSOAPSimulado();
+        };
+    </script>
+</body>
+
+</html>
