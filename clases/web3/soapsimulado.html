@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOAP Protocol - Código Comentado y Visual</title>
+    <title>SOAP Protocol - Comunicación Visual Interactiva</title>
     <style>
         * {
             margin: 0;
@@ -20,11 +20,11 @@
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Header */
+        /* ========== HEADER ========== */
         .header {
             text-align: center;
             color: white;
@@ -34,9 +34,15 @@
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
         }
 
-        /* Diagrama de comunicación */
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        /* ========== DIAGRAMA DE COMUNICACIÓN ANIMADO ========== */
         .diagram-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -61,6 +67,7 @@
             flex-wrap: wrap;
         }
 
+        /* Tarjetas de Frontend/Backend */
         .node-card {
             flex: 1;
             min-width: 250px;
@@ -69,7 +76,7 @@
             padding: 25px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
         }
 
         .node-card:hover {
@@ -84,6 +91,7 @@
         .node-card h3 {
             color: white;
             font-size: 1.5em;
+            margin-bottom: 5px;
         }
 
         .node-card .subtitle {
@@ -100,6 +108,7 @@
             color: white;
         }
 
+        /* Flechas animadas */
         .arrow-container {
             display: flex;
             flex-direction: column;
@@ -120,6 +129,18 @@
         .arrow-response span {
             color: white;
             font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .arrow-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .arrow-svg {
+            width: 80px;
+            height: 40px;
         }
 
         .animated-arrow {
@@ -140,12 +161,34 @@
             }
         }
 
+        .arrow-response .animated-arrow {
+            animation-direction: reverse;
+            animation-name: pulseReverse;
+        }
+
+        @keyframes pulseReverse {
+
+            0%,
+            100% {
+                transform: translateX(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateX(-5px);
+                opacity: 1;
+            }
+        }
+
+        /* Data packets animados */
         .data-packet {
             background: #ffd700;
+            color: #333;
             padding: 5px 10px;
             border-radius: 20px;
             font-size: 0.7em;
             font-weight: bold;
+            white-space: nowrap;
             animation: float 2s ease-in-out infinite;
         }
 
@@ -171,6 +214,7 @@
             color: white;
         }
 
+        /* Indicador de tráfico */
         .traffic-indicator {
             display: flex;
             gap: 15px;
@@ -185,7 +229,6 @@
             background: rgba(0, 0, 0, 0.3);
             padding: 5px 12px;
             border-radius: 20px;
-            color: white;
         }
 
         .led {
@@ -198,7 +241,7 @@
         .led.active {
             background: #4caf50;
             box-shadow: 0 0 10px #4caf50;
-            animation: blink 0.5s infinite;
+            animation: blink 0.5s ease-in-out infinite;
         }
 
         @keyframes blink {
@@ -213,13 +256,21 @@
             }
         }
 
-        /* Formulario */
+        /* ========== FORMULARIO ========== */
         .form-card {
             background: white;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-title {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .input-row {
@@ -237,6 +288,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
+            color: #333;
         }
 
         .input-group input {
@@ -245,11 +297,19 @@
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 16px;
+            transition: all 0.3s;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -258,7 +318,7 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin: 5px;
+            transition: all 0.3s;
         }
 
         .btn-primary {
@@ -266,9 +326,18 @@
             color: white;
         }
 
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
         .btn-secondary {
             background: #f0f0f0;
             color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
         }
 
         .btn-step {
@@ -276,7 +345,7 @@
             color: white;
         }
 
-        /* Sección de códigos */
+        /* ========== CÓDIGOS (ocultos inicialmente) ========== */
         .codes-section {
             display: none;
             animation: slideDown 0.5s ease;
@@ -314,6 +383,9 @@
         .code-header {
             background: #2d2d3d;
             padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid #667eea;
         }
 
@@ -327,6 +399,7 @@
             padding: 4px 8px;
             border-radius: 5px;
             font-size: 0.7em;
+            font-family: monospace;
         }
 
         .code-content {
@@ -334,7 +407,7 @@
             font-family: 'Courier New', monospace;
             font-size: 12px;
             overflow-x: auto;
-            max-height: 600px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -346,7 +419,7 @@
 
         .line-num {
             color: #888;
-            min-width: 45px;
+            min-width: 40px;
             text-align: right;
         }
 
@@ -355,20 +428,26 @@
             white-space: pre;
         }
 
-        .comment {
-            color: #6a9955;
+        .line-highlight {
+            background: #667eea;
         }
 
-        .keyword {
-            color: #569cd6;
+        .line-highlight .line-text {
+            color: #000;
+            font-weight: bold;
         }
 
-        .string {
-            color: #ce9178;
-        }
-
-        .function {
-            color: #dcdcaa;
+        /* Consola */
+        .console {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
         }
 
         .variables-panel {
@@ -430,16 +509,12 @@
             overflow-y: auto;
         }
 
-        .console {
-            background: #000;
-            color: #00ff00;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            height: 200px;
-            overflow-y: auto;
-            margin-top: 20px;
+        .status-text {
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -447,125 +522,145 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📡 SOAP Protocol - Código Completamente Comentado</h1>
-            <p>Aprende QUÉ hace cada objeto, biblioteca y función</p>
+            <h1>📡 SOAP Protocol Visual Playground</h1>
+            <p>Comunicación Frontend ↔ Backend | Simulación Interactiva</p>
         </div>
 
-        <!-- DIAGRAMA DE COMUNICACIÓN -->
+        <!-- DIAGRAMA DE COMUNICACIÓN ANIMADO -->
         <div class="diagram-container">
-            <div class="diagram-title">🔄 Flujo de Comunicación SOAP (HTTP/XML)</div>
+            <div class="diagram-title">
+                🔄 Flujo de Comunicación SOAP (HTTP/XML)
+            </div>
             <div class="communication-diagram">
-                <div class="node-card">
+                <!-- FRONTEND -->
+                <div class="node-card" id="frontendNode">
                     <div class="node-icon">🌐</div>
                     <h3>FRONTEND</h3>
-                    <div class="subtitle">Cliente SOAP (JavaScript)</div>
+                    <div class="subtitle">Cliente SOAP</div>
                     <div class="node-details">
-                        📦 fetch() - API nativa de JS para HTTP<br>
-                        📝 DOMParser() - Analiza XML<br>
-                        🔍 querySelector() - Extrae datos
+                        📦 Construye XML SOAP<br>
+                        📤 Envía petición HTTP POST<br>
+                        📥 Recibe respuesta XML
                     </div>
                 </div>
+
+                <!-- FLECHAS ANIMADAS -->
                 <div class="arrow-container">
-                    <div class="arrow-request">
+                    <div class="arrow-request" id="requestArrow">
                         <span>📤 REQUEST (XML SOAP)</span>
-                        <svg class="animated-arrow" width="80" height="30" viewBox="0 0 80 30">
-                            <line x1="0" y1="15" x2="70" y2="15" stroke="#4caf50" stroke-width="3"
-                                marker-end="url(#arrowHead)" />
-                            <defs>
-                                <marker id="arrowHead" markerWidth="10" markerHeight="7" refX="10" refY="3.5"
-                                    orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#4caf50" />
-                                </marker>
-                            </defs>
-                        </svg>
-                        <div class="data-packet packet-request">num1 + num2</div>
+                        <div class="arrow-line">
+                            <svg class="arrow-svg animated-arrow" viewBox="0 0 80 30">
+                                <defs>
+                                    <marker id="arrowHead" markerWidth="10" markerHeight="7" refX="10" refY="3.5"
+                                        orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#4caf50" />
+                                    </marker>
+                                </defs>
+                                <line x1="0" y1="15" x2="70" y2="15" stroke="#4caf50" stroke-width="3"
+                                    marker-end="url(#arrowHead)" />
+                            </svg>
+                            <div class="data-packet packet-request" id="packetRequest">num1 + num2</div>
+                        </div>
                     </div>
-                    <div class="arrow-response">
+                    <div class="arrow-response" id="responseArrow">
                         <span>📥 RESPONSE (XML SOAP)</span>
-                        <svg class="animated-arrow" width="80" height="30" viewBox="0 0 80 30">
-                            <defs>
-                                <linearGradient id="swatch1" inkscape:swatch="solid">
-                                    <stop style="stop-color:#ffffff;stop-opacity:1;" offset="0" id="stop1" />
-                                </linearGradient>
-                                <marker id="arrowHeadReverse" markerWidth="10" markerHeight="7" refX="0" refY="3.5"
-                                    orient="auto">
-                                    <polygon points="10 0, 0 3.5, 10 7" fill="#ff9800" id="polygon1" />
-                                </marker>
-                            </defs>
-                            <path id="rect1"
-                                style="fill:#ff9800;fill-opacity:1;stroke:none;stroke-width:7.76138;stroke-dasharray:none"
-                                d="M 31.654297 4.0351562 L 1.8613281 14.517578 L 31.449219 24.931641 L 31.537109 16.025391 L 77.128906 16.025391 L 77.128906 12.939453 L 31.566406 12.939453 L 31.654297 4.0351562 z " />
-                        </svg>
-                        <div class="data-packet packet-response">resultado</div>
+                        <div class="arrow-line">
+                            <svg class="animated-arrow" width="80" height="30" viewBox="0 0 80 30">
+                                <defs>
+                                    <linearGradient id="swatch1" inkscape:swatch="solid">
+                                        <stop style="stop-color:#ffffff;stop-opacity:1;" offset="0" id="stop1" />
+                                    </linearGradient>
+                                    <marker id="arrowHeadReverse" markerWidth="10" markerHeight="7" refX="0" refY="3.5"
+                                        orient="auto">
+                                        <polygon points="10 0, 0 3.5, 10 7" fill="#ff9800" id="polygon1" />
+                                    </marker>
+                                </defs>
+                                <path id="rect1"
+                                    style="fill:#ff9800;fill-opacity:1;stroke:none;stroke-width:7.76138;stroke-dasharray:none"
+                                    d="M 31.654297 4.0351562 L 1.8613281 14.517578 L 31.449219 24.931641 L 31.537109 16.025391 L 77.128906 16.025391 L 77.128906 12.939453 L 31.566406 12.939453 L 31.654297 4.0351562 z " />
+                            </svg>
+                            <div class="data-packet packet-response" id="packetResponse">resultado</div>
+                        </div>
                     </div>
                 </div>
-                <div class="node-card">
+
+                <!-- BACKEND -->
+                <div class="node-card" id="backendNode">
                     <div class="node-icon">⚙️</div>
                     <h3>BACKEND</h3>
-                    <div class="subtitle">Servidor SOAP (Node.js)</div>
+                    <div class="subtitle">Servidor SOAP</div>
                     <div class="node-details">
-                        📦 express() - Framework web<br>
-                        🔍 xml2js - Convierte XML→JSON<br>
-                        📝 body-parser - Lee peticiones
+                        📥 Recibe XML SOAP<br>
+                        🔍 Parse y extrae datos<br>
+                        🧮 Calcula resultado<br>
+                        📤 Responde con XML
                     </div>
                 </div>
             </div>
-            <div class="traffic-indicator">
+
+            <!-- Indicadores de tráfico -->
+            <div class="traffic-indicator" id="trafficIndicator">
                 <div class="traffic-light">
-                    <div class="led" id="ledRequest"></div><span>Request</span>
+                    <div class="led" id="ledRequest"></div>
+                    <span style="color:white">Envío Request</span>
                 </div>
                 <div class="traffic-light">
-                    <div class="led" id="ledProcess"></div><span>Procesando</span>
+                    <div class="led" id="ledProcess"></div>
+                    <span style="color:white">Procesando</span>
                 </div>
                 <div class="traffic-light">
-                    <div class="led" id="ledResponse"></div><span>Response</span>
+                    <div class="led" id="ledResponse"></div>
+                    <span style="color:white">Recepción Response</span>
                 </div>
             </div>
         </div>
 
         <!-- FORMULARIO -->
         <div class="form-card">
-            <h2>🎮 Panel de Control</h2>
+            <div class="form-title">
+                <span>🎮</span>
+                <h2>Panel de Control</h2>
+            </div>
             <div class="input-row">
                 <div class="input-group">
                     <label>🔢 Número 1:</label>
-                    <input type="number" id="num1" value="15">
+                    <input type="number" id="num1" value="15" placeholder="Ej: 15">
                 </div>
                 <div class="input-group">
                     <label>🔢 Número 2:</label>
-                    <input type="number" id="num2" value="25">
+                    <input type="number" id="num2" value="25" placeholder="Ej: 25">
                 </div>
             </div>
-            <div>
+            <div class="btn-group">
                 <button class="btn btn-primary" onclick="ejecutarComunicacion()">🚀 Ejecutar Comunicación</button>
-                <button class="btn btn-step" onclick="mostrarCodigos()">📖 Ver Códigos Comentados</button>
+                <button class="btn btn-step" onclick="mostrarCodigos()">📖 Ver Códigos</button>
                 <button class="btn btn-secondary" onclick="reiniciarTodo()">🔄 Reiniciar</button>
             </div>
         </div>
 
-        <!-- SECCIÓN DE CÓDIGOS COMENTADOS -->
+        <!-- SECCIÓN DE CÓDIGOS (oculta inicialmente) -->
         <div class="codes-section" id="codesSection">
             <div class="code-grid">
-                <!-- FRONTEND COMENTADO -->
+                <!-- Código Frontend -->
                 <div class="code-card">
                     <div class="code-header">
-                        <h3>🌐 FRONTEND - Cliente SOAP (JavaScript)</h3>
-                        <span class="code-badge">Código completamente comentado</span>
+                        <h3>🌐 FRONTEND - Cliente SOAP</h3>
+                        <span class="code-badge">JavaScript</span>
                     </div>
                     <div class="code-content" id="frontendCode"></div>
                 </div>
 
-                <!-- BACKEND COMENTADO -->
+                <!-- Código Backend -->
                 <div class="code-card">
                     <div class="code-header">
-                        <h3>⚙️ BACKEND - Servidor SOAP (Node.js)</h3>
-                        <span class="code-badge">Código completamente comentado</span>
+                        <h3>⚙️ BACKEND - Servidor SOAP</h3>
+                        <span class="code-badge">Node.js / Express</span>
                     </div>
                     <div class="code-content" id="backendCode"></div>
                 </div>
             </div>
 
-            <!-- VARIABLES -->
+            <!-- Variables -->
             <div class="variables-panel">
                 <h4 style="color:white">🔍 Variables del Programa</h4>
                 <div class="var-grid">
@@ -582,196 +677,112 @@
                 </div>
             </div>
 
-            <!-- SOAP MESSAGES -->
+            <!-- SOAP Messages -->
             <div class="soap-transit">
                 <div class="soap-box">
-                    <h4>📤 SOAP REQUEST (Lo que envía el Frontend)</h4>
+                    <h4>📤 SOAP REQUEST</h4>
                     <div class="soap-content" id="soapRequestDisplay">-- Esperando ejecución --</div>
                 </div>
                 <div class="soap-box">
-                    <h4>📥 SOAP RESPONSE (Lo que responde el Backend)</h4>
+                    <h4>📥 SOAP RESPONSE</h4>
                     <div class="soap-content" id="soapResponseDisplay">-- Esperando ejecución --</div>
                 </div>
             </div>
 
-            <!-- CONSOLA -->
+            <!-- Consola -->
             <div class="console" id="console">
                 <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-                <div>💡 Playground SOAP - Modo aprendizaje</div>
-                <div>📖 Presione "Ver Códigos Comentados" para estudiar el código</div>
+                <div>💡 Playground SOAP Inicializado</div>
                 <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                <div>▶ Complete los números y presione "Ejecutar Comunicación"</div>
             </div>
         </div>
+
+        <div class="status-text" id="statusMessage" style="display: none;"></div>
     </div>
 
     <script>
-        // ============================================
-        // CÓDIGO FRONTEND COMPLETAMENTE COMENTADO
-        // Explica CADA objeto, método y biblioteca
-        // ============================================
-        const frontendCodeComentado = [
-            { text: "// ============================================================", type: "comment" },
-            { text: "// FRONTEND - CLIENTE SOAP (JavaScript del navegador)", type: "comment" },
-            { text: "// ============================================================", type: "comment" },
-            { text: "", type: "plain" },
-            { text: "// 📌 FETCH API - Método nativo de JavaScript para peticiones HTTP", type: "comment" },
-            { text: "//    Es una PROMISE (async/await) que no bloquea el programa", type: "comment" },
-            { text: "//    Reemplaza al antiguo XMLHttpRequest (AJAX)", type: "comment" },
-            { text: "async function enviarPeticionSOAP() {", type: "function" },
-            { text: "    ", type: "plain" },
-            { text: "    // 1️⃣ OBTENER VALORES DEL DOM (Document Object Model)", type: "comment" },
-            { text: "    //    document.getElementById() - Busca un elemento HTML por su ID", type: "comment" },
-            { text: "    //    .value - Propiedad que contiene el texto del input", type: "comment" },
-            { text: "    const num1 = parseInt(document.getElementById('num1').value);", type: "code" },
-            { text: "    const num2 = parseInt(document.getElementById('num2').value);", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 2️⃣ CONSTRUIR MENSAJE SOAP EN XML", type: "comment" },
-            { text: "    //    Template literals (``) - Cadenas multilínea con variables ${}", type: "comment" },
-            { text: "    //    SOAP requiere estructura: Envelope → Body → Método → Parámetros", type: "comment" },
-            { text: "    const soapXML = `<?xml version=\"1.0\"?>", type: "code" },
-            { text: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">", type: "code" },
-            { text: "  <soap:Body>", type: "code" },
-            { text: "    <Sumar>", type: "code" },
-            { text: "      <num1>${num1}</num1>", type: "code" },
-            { text: "      <num2>${num2}</num2>", type: code },
-            { text: "    </Sumar>", type: "code" },
-            { text: "  </soap:Body>", type: "code" },
-            { text: "</soap:Envelope>`;", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 3️⃣ FETCH API - Envía la petición HTTP al servidor", type: "comment" },
-            { text: "    //    Parámetros:", type: "comment" },
-            { text: "    //      - URL: 'http://localhost:3000/api/sumar' (endpoint del backend)", type: "comment" },
-            { text: "    //      - method: 'POST' (envío de datos, no GET)", type: "comment" },
-            { text: "    //      - headers: { 'Content-Type': 'text/xml' } (indica que enviamos XML)", type: "comment" },
-            { text: "    //      - body: soapXML (el contenido de la petición)", type: "comment" },
-            { text: "    const response = await fetch('http://localhost:3000/api/sumar', {", type: "code" },
-            { text: "        method: 'POST',", type: "code" },
-            { text: "        headers: { 'Content-Type': 'text/xml' },", type: "code" },
-            { text: "        body: soapXML", type: "code" },
-            { text: "    });", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 4️⃣ RESPONSE.TEXT() - Extrae el cuerpo de la respuesta como texto", type: "comment" },
-            { text: "    //    El servidor devuelve XML, lo recibimos como string", type: "comment" },
-            { text: "    const xmlResponse = await response.text();", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 5️⃣ DOMParser API - Analiza (parsea) el XML para poder leerlo", type: "comment" },
-            { text: "    //    Es una API nativa del navegador para trabajar con XML/HTML", type: "comment" },
-            { text: "    //    parseFromString() - Convierte texto XML en un documento DOM", type: "comment" },
-            { text: "    const parser = new DOMParser();", type: "code" },
-            { text: "    const xmlDoc = parser.parseFromString(xmlResponse, 'text/xml');", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 6️⃣ querySelector() - Busca elementos en el DOM usando selectores CSS", type: "comment" },
-            { text: "    //    Busca la etiqueta <resultado> dentro del XML", type: "comment" },
-            { text: "    //    .textContent - Obtiene el texto dentro de la etiqueta", type: "comment" },
-            { text: "    const resultado = xmlDoc.querySelector('resultado').textContent;", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 7️⃣ Mostrar en consola y devolver resultado", type: "comment" },
-            { text: "    console.log(`Resultado: ${resultado}`);", type: "code" },
-            { text: "    return resultado;", type: "code" },
-            { text: "}", type: "function" }
+        // Códigos para mostrar
+        const frontendCode = [
+            "// ========== FRONTEND: Cliente SOAP ==========",
+            "",
+            "async function enviarPeticionSOAP() {",
+            "    // 1. Obtener valores del usuario",
+            "    const num1 = document.getElementById('num1').value;",
+            "    const num2 = document.getElementById('num2').value;",
+            "    ",
+            "    // 2. Construir mensaje SOAP en XML",
+            "    const soapXML = `<?xml version=\"1.0\"?>",
+            "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">",
+            "  <soap:Body>",
+            "    <Sumar>",
+            "      <num1>${num1}</num1>",
+            "      <num2>${num2}</num2>",
+            "    </Sumar>",
+            "  </soap:Body>",
+            "</soap:Envelope>`;",
+            "    ",
+            "    // 3. Enviar vía HTTP POST",
+            "    const response = await fetch('/api/sumar', {",
+            "        method: 'POST',",
+            "        headers: { 'Content-Type': 'text/xml' },",
+            "        body: soapXML",
+            "    });",
+            "    ",
+            "    // 4. Recibir y parsear respuesta",
+            "    const xmlResponse = await response.text();",
+            "    const parser = new DOMParser();",
+            "    const xmlDoc = parser.parseFromString(xmlResponse, 'text/xml');",
+            "    const resultado = xmlDoc.querySelector('resultado').textContent;",
+            "    ",
+            "    // 5. Mostrar resultado",
+            "    return resultado;",
+            "}"
         ];
 
-        // ============================================
-        // CÓDIGO BACKEND COMPLETAMENTE COMENTADO
-        // Explica CADA biblioteca, objeto y middleware
-        // ============================================
-        const backendCodeComentado = [
-            { text: "// ============================================================", type: "comment" },
-            { text: "// BACKEND - SERVIDOR SOAP (Node.js)", type: "comment" },
-            { text: "// ============================================================", type: "comment" },
-            { text: "", type: "plain" },
-            { text: "// 📌 EXPRESS - Framework web para Node.js", type: "comment" },
-            { text: "//    Simplifica la creación de servidores HTTP y manejo de rutas", type: "comment" },
-            { text: "//    Instalación: npm install express", type: "comment" },
-            { text: "const express = require('express');", type: "code" },
-            { text: "", type: "plain" },
-            { text: "// 📌 BODY-PARSER - Middleware para leer el cuerpo de las peticiones", type: "comment" },
-            { text: "//    Por defecto, Express no lee el body automáticamente", type: "comment" },
-            { text: "//    Instalación: npm install body-parser", type: "comment" },
-            { text: "const bodyParser = require('body-parser');", type: "code" },
-            { text: "", type: "plain" },
-            { text: "// 📌 XML2JS - Convierte XML a JavaScript Object (JSON)", type: "comment" },
-            { text: "//    SOAP envía XML, necesitamos convertirlo a objeto para trabajar", type: "comment" },
-            { text: "//    Instalación: npm install xml2js", type: "comment" },
-            { text: "const xml2js = require('xml2js');", type: "code" },
-            { text: "", type: "plain" },
-            { text: "// 📌 CORS - Permite peticiones desde dominios diferentes", type: "comment" },
-            { text: "//    Seguridad del navegador: sin CORS, el frontend no puede llamar al backend", type: "comment" },
-            { text: "//    Instalación: npm install cors", type: "comment" },
-            { text: "const cors = require('cors');", type: "code" },
-            { text: "", type: "plain" },
-            { text: "// Crear instancia de la aplicación Express", type: "comment" },
-            { text: "const app = express();", type: "code" },
-            { text: "", type: "plain" },
-            { text: "// MIDDLEWARES - Funciones que se ejecutan antes de las rutas", type: "comment" },
-            { text: "app.use(cors()); // Habilita CORS para todas las rutas", type: "comment" },
-            { text: "// raw({ type: 'text/xml' }) - Lee el body como texto plano si es XML", type: "comment" },
-            { text: "app.use(bodyParser.raw({ type: 'text/xml' }));", type: "code" },
-            { text: "app.use(express.static('public')); // Sirve archivos estáticos (HTML, CSS)", type: "code" },
-            { text: "", type: "plain" },
-            { text: "// ==================== ENDPOINT SOAP ====================", type: "comment" },
-            { text: "// app.post() - Define una ruta que responde a peticiones HTTP POST", type: "comment" },
-            { text: "// '/api/sumar' - URL del endpoint", type: "comment" },
-            { text: "// (req, res) - req: petición entrante, res: respuesta saliente", type: "comment" },
-            { text: "app.post('/api/sumar', (req, res) => {", type: "function" },
-            { text: "    ", type: "plain" },
-            { text: "    // 1️⃣ Obtener el XML enviado por el cliente", type: "comment" },
-            { text: "    //    req.body - Contiene el cuerpo de la petición (gracias a body-parser)", type: "comment" },
-            { text: "    //    .toString() - Convierte el Buffer a string legible", type: "comment" },
-            { text: "    const xmlRecibido = req.body.toString();", type: "code" },
-            { text: "    ", type: "plain" },
-            { text: "    // 2️⃣ xml2js.parseString() - Convierte XML a objeto JavaScript", type: "comment" },
-            { text: "    //    Parámetros:", type: "comment" },
-            { text: "    //      - xmlRecibido: el texto XML", type: "comment" },
-            { text: "    //      - { explicitArray: false }: evita arrays innecesarios", type: "comment" },
-            { text: "    //      - (err, result): callback con el resultado o error", type: "comment" },
-            { text: "    xml2js.parseString(xmlRecibido, { explicitArray: false }, (err, result) => {", type: "code" },
-            { text: "        if (err) {", type: "code" },
-            { text: "            // Si hay error, responder con código 400 (Bad Request)", type: "comment" },
-            { text: "            return res.status(400).send('Error al parsear XML');", type: "code" },
-            { text: "        }", type: "code" },
-            { text: "        ", type: "plain" },
-            { text: "        // 3️⃣ Extraer los números del objeto parseado", type: "comment" },
-            { text: "        //    Estructura del objeto:", type: "comment" },
-            { text: "        //    result['soap:Envelope']['soap:Body'].Sumar.num1", type: "comment" },
-            { text: "        const body = result['soap:Envelope']['soap:Body'];", type: "code" },
-            { text: "        const num1 = parseInt(body.Sumar.num1);", type: "code" },
-            { text: "        const num2 = parseInt(body.Sumar.num2);", type: "code" },
-            { text: "        ", type: "plain" },
-            { text: "        // 4️⃣ Calcular la suma", type: "comment" },
-            { text: "        const suma = num1 + num2;", type: "code" },
-            { text: "        ", type: "plain" },
-            { text: "        // 5️⃣ Construir respuesta SOAP en XML", type: "comment" },
-            { text: "        //    Template literals con el resultado calculado", type: "comment" },
-            { text: "        const responseXML = `<?xml version=\"1.0\"?>", type: "code" },
-            { text: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">", type: "code" },
-            { text: "  <soap:Body>", type: "code" },
-            { text: "    <SumarResponse>", type: "code" },
-            { text: "      <resultado>${suma}</resultado>", type: "code" },
-            { text: "    </SumarResponse>", type: "code" },
-            { text: "  </soap:Body>", type: "code" },
-            { text: "</soap:Envelope>`;", type: "code" },
-            { text: "        ", type: "plain" },
-            { text: "        // 6️⃣ Enviar respuesta al cliente", type: "comment" },
-            { text: "        //    res.set() - Establece headers de la respuesta", type: "comment" },
-            { text: "        //    'Content-Type': 'text/xml' - Indica que respondemos con XML", type: "comment" },
-            { text: "        //    res.send() - Envía el cuerpo de la respuesta", type: "comment" },
-            { text: "        res.set('Content-Type', 'text/xml');", type: "code" },
-            { text: "        res.send(responseXML);", type: "code" },
-            { text: "    });", type: "code" },
-            { text: "});", type: "function" },
-            { text: "", type: "plain" },
-            { text: "// ==================== INICIAR SERVIDOR ====================", type: "comment" },
-            { text: "// app.listen() - Pone el servidor a escuchar en un puerto", type: "comment" },
-            { text: "// 3000 - Puerto estándar para desarrollo", type: "comment" },
-            { text: "// callback - Función que se ejecuta cuando el servidor está listo", type: "comment" },
-            { text: "app.listen(3000, () => {", type: "code" },
-            { text: "    console.log('🚀 Servidor SOAP en http://localhost:3000');", type: "code" },
-            { text: "    console.log('📡 Endpoint SOAP: POST /api/sumar');", type: "code" },
-            { text: "});", type: "code" }
+        const backendCode = [
+            "// ========== BACKEND: Servidor SOAP ==========",
+            "",
+            "const express = require('express');",
+            "const xml2js = require('xml2js');",
+            "",
+            "const app = express();",
+            "app.use(bodyParser.raw({ type: 'text/xml' }));",
+            "",
+            "app.post('/api/sumar', (req, res) => {",
+            "    // 1. Recibir XML del cliente",
+            "    const xmlRecibido = req.body.toString();",
+            "    ",
+            "    // 2. Parsear XML",
+            "    xml2js.parseString(xmlRecibido, (err, result) => {",
+            "        // 3. Extraer números",
+            "        const num1 = parseInt(result['soap:Envelope']",
+            "            ['soap:Body'][0].Sumar[0].num1[0]);",
+            "        const num2 = parseInt(result['soap:Envelope']",
+            "            ['soap:Body'][0].Sumar[0].num2[0]);",
+            "        ",
+            "        // 4. Calcular suma",
+            "        const suma = num1 + num2;",
+            "        ",
+            "        // 5. Construir respuesta XML",
+            "        const responseXML = `<?xml version=\"1.0\"?>",
+            "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">",
+            "  <soap:Body>",
+            "    <SumarResponse>",
+            "      <resultado>${suma}</resultado>",
+            "    </SumarResponse>",
+            "  </soap:Body>",
+            "</soap:Envelope>`;",
+            "        ",
+            "        // 6. Enviar respuesta",
+            "        res.set('Content-Type', 'text/xml');",
+            "        res.send(responseXML);",
+            "    });",
+            "});",
+            "",
+            "app.listen(3000);"
         ];
 
-        // Estado de la aplicación
         let datos = {
             num1: null,
             num2: null,
@@ -780,7 +791,6 @@
             soapResponse: null
         };
 
-        // Renderizar códigos con colores sintácticos
         function renderizarCodigos() {
             const frontendContainer = document.getElementById('frontendCode');
             const backendContainer = document.getElementById('backendCode');
@@ -788,38 +798,22 @@
             frontendContainer.innerHTML = '';
             backendContainer.innerHTML = '';
 
-            // Renderizar Frontend
-            frontendCodeComentado.forEach((line, idx) => {
+            frontendCode.forEach((line, idx) => {
                 const div = document.createElement('div');
                 div.className = 'code-line';
-                let className = '';
-                if (line.type === 'comment') className = 'comment';
-                else if (line.type === 'keyword') className = 'keyword';
-                else if (line.type === 'string') className = 'string';
-                else if (line.type === 'function') className = 'function';
-                else className = 'plain';
-
                 div.innerHTML = `
                     <span class="line-num">${(idx + 1).toString().padStart(3, ' ')}</span>
-                    <span class="line-text ${className}">${escapeHtml(line.text)}</span>
+                    <span class="line-text">${escapeHtml(line)}</span>
                 `;
                 frontendContainer.appendChild(div);
             });
 
-            // Renderizar Backend
-            backendCodeComentado.forEach((line, idx) => {
+            backendCode.forEach((line, idx) => {
                 const div = document.createElement('div');
                 div.className = 'code-line';
-                let className = '';
-                if (line.type === 'comment') className = 'comment';
-                else if (line.type === 'keyword') className = 'keyword';
-                else if (line.type === 'string') className = 'string';
-                else if (line.type === 'function') className = 'function';
-                else className = 'plain';
-
                 div.innerHTML = `
                     <span class="line-num">${(idx + 1).toString().padStart(3, ' ')}</span>
-                    <span class="line-text ${className}">${escapeHtml(line.text)}</span>
+                    <span class="line-text">${escapeHtml(line)}</span>
                 `;
                 backendContainer.appendChild(div);
             });
@@ -831,16 +825,41 @@
 
         function agregarConsole(msg, tipo = "info") {
             const consoleDiv = document.getElementById('console');
+            const color = tipo === "error" ? "🔴" : (tipo === "success" ? "✅" : "📌");
             const line = document.createElement('div');
-            line.textContent = `📌 ${msg}`;
+            line.textContent = `${color} ${msg}`;
             consoleDiv.appendChild(line);
             consoleDiv.scrollTop = consoleDiv.scrollHeight;
         }
 
         function activarLed(ledId, activo) {
             const led = document.getElementById(ledId);
-            if (activo) led.classList.add('active');
-            else led.classList.remove('active');
+            if (activo) {
+                led.classList.add('active');
+            } else {
+                led.classList.remove('active');
+            }
+        }
+
+        function animarFlechas(tipo) {
+            const requestArrow = document.getElementById('requestArrow');
+            const responseArrow = document.getElementById('responseArrow');
+            const packetReq = document.getElementById('packetRequest');
+            const packetRes = document.getElementById('packetResponse');
+
+            if (tipo === 'request') {
+                requestArrow.style.transform = 'scale(1.05)';
+                packetReq.style.animation = 'float 0.5s ease-in-out infinite';
+                setTimeout(() => {
+                    requestArrow.style.transform = 'scale(1)';
+                }, 500);
+            } else if (tipo === 'response') {
+                responseArrow.style.transform = 'scale(1.05)';
+                packetRes.style.animation = 'float 0.5s ease-in-out infinite';
+                setTimeout(() => {
+                    responseArrow.style.transform = 'scale(1)';
+                }, 500);
+            }
         }
 
         function actualizarVariables() {
@@ -858,28 +877,28 @@
             }
         }
 
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
         async function ejecutarComunicacion() {
+            // Reset
             datos = { num1: null, num2: null, suma: null, soapRequest: null, soapResponse: null };
 
-            datos.num1 = parseInt(document.getElementById('num1').value);
-            datos.num2 = parseInt(document.getElementById('num2').value);
+            const num1Val = parseInt(document.getElementById('num1').value);
+            const num2Val = parseInt(document.getElementById('num2').value);
 
-            if (isNaN(datos.num1) || isNaN(datos.num2)) {
-                agregarConsole("❌ Ingrese números válidos");
+            if (isNaN(num1Val) || isNaN(num2Val)) {
+                agregarConsole("❌ Ingrese números válidos", "error");
                 return;
             }
 
+            datos.num1 = num1Val;
+            datos.num2 = num2Val;
             actualizarVariables();
-            agregarConsole("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            agregarConsole("🚀 INICIANDO COMUNICACIÓN SOAP");
-            agregarConsole(`📥 Input: num1 = ${datos.num1}, num2 = ${datos.num2}`);
 
-            // Simular Frontend construye XML
-            agregarConsole("📝 [FRONTEND] Construyendo mensaje SOAP con XML...");
+            agregarConsole("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            agregarConsole("🚀 INICIANDO COMUNICACIÓN SOAP", "success");
+            agregarConsole(`📥 Datos de entrada: num1 = ${datos.num1}, num2 = ${datos.num2}`);
+
+            // PASO 1: Construir SOAP Request
+            agregarConsole("📝 [FRONTEND] Construyendo mensaje SOAP en XML...");
             datos.soapRequest = `<?xml version="1.0"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -890,29 +909,34 @@
   </soap:Body>
 </soap:Envelope>`;
             actualizarVariables();
-            agregarConsole("✅ SOAP Request construido correctamente");
+            agregarConsole("✅ SOAP Request construido correctamente", "success");
 
-            // Simular envío
-            agregarConsole("📤 [FRONTEND → BACKEND] Enviando HTTP POST con fetch()");
+            // PASO 2: Enviar Request
+            agregarConsole("📤 [FRONTEND → BACKEND] Enviando petición HTTP POST...");
             activarLed('ledRequest', true);
+            animarFlechas('request');
+            document.getElementById('packetRequest').textContent = `${datos.num1} + ${datos.num2}`;
+
             await delay(1000);
 
-            // Simular Backend recibe
-            agregarConsole("⚙️ [BACKEND] Petición recibida en endpoint /api/sumar");
+            // PASO 3: Backend procesa
+            agregarConsole("⚙️ [BACKEND] Petición recibida en /api/sumar");
             activarLed('ledRequest', false);
             activarLed('ledProcess', true);
+
             await delay(800);
+            agregarConsole("🔍 [BACKEND] Parseando XML recibido...");
 
-            agregarConsole("🔍 [BACKEND] Parseando XML con xml2js.parseString()");
             await delay(500);
-            agregarConsole(`📊 [BACKEND] Extrayendo números del objeto parseado: ${datos.num1} y ${datos.num2}`);
-            await delay(500);
+            agregarConsole(`📊 [BACKEND] Extrayendo números: ${datos.num1} y ${datos.num2}`);
 
+            await delay(500);
             datos.suma = datos.num1 + datos.num2;
-            agregarConsole(`🧮 [BACKEND] Calculando suma: ${datos.num1} + ${datos.num2} = ${datos.suma}`);
+            agregarConsole(`🧮 [BACKEND] Calculando suma: ${datos.num1} + ${datos.num2} = ${datos.suma}`, "success");
             actualizarVariables();
 
-            agregarConsole("📦 [BACKEND] Construyendo SOAP Response en XML");
+            // PASO 4: Construir Response
+            agregarConsole("📦 [BACKEND] Construyendo SOAP Response...");
             datos.soapResponse = `<?xml version="1.0"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -922,26 +946,43 @@
   </soap:Body>
 </soap:Envelope>`;
             actualizarVariables();
+
             await delay(500);
 
-            agregarConsole("📥 [BACKEND → FRONTEND] Enviando respuesta XML");
+            // PASO 5: Enviar Response
+            agregarConsole("📥 [BACKEND → FRONTEND] Enviando respuesta SOAP...");
             activarLed('ledProcess', false);
             activarLed('ledResponse', true);
+            animarFlechas('response');
+            document.getElementById('packetResponse').textContent = `${datos.suma}`;
+
             await delay(800);
 
-            agregarConsole(`🎯 [FRONTEND] Parseando respuesta con DOMParser() y querySelector()`);
-            agregarConsole(`🎯 RESULTADO FINAL: ${datos.num1} + ${datos.num2} = ${datos.suma}`);
+            // PASO 6: Mostrar resultado
+            agregarConsole(`🎯 [FRONTEND] RESULTADO FINAL: ${datos.num1} + ${datos.num2} = ${datos.suma}`, "success");
             activarLed('ledResponse', false);
 
-            agregarConsole("✨ Comunicación SOAP completada con éxito");
+            // Mostrar mensaje de éxito
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#d4edda';
+            statusDiv.style.color = '#155724';
+            statusDiv.innerHTML = `✅ ¡Comunicación SOAP exitosa! Resultado: ${datos.suma}`;
+
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+
             agregarConsole("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            agregarConsole("✨ Comunicación SOAP completada con éxito", "success");
         }
 
         function mostrarCodigos() {
             const codesSection = document.getElementById('codesSection');
             codesSection.classList.toggle('visible');
+
             if (codesSection.classList.contains('visible')) {
-                agregarConsole("📖 Códigos visibles - Revise los comentarios explicativos");
+                agregarConsole("📖 Códigos fuente visibles - Revise la implementación", "info");
             }
         }
 
@@ -950,25 +991,36 @@
             document.getElementById('num1').value = '15';
             document.getElementById('num2').value = '25';
             actualizarVariables();
+
             document.getElementById('soapRequestDisplay').innerHTML = '-- Esperando ejecución --';
             document.getElementById('soapResponseDisplay').innerHTML = '-- Esperando ejecución --';
-            activarLed('ledRequest', false);
-            activarLed('ledProcess', false);
-            activarLed('ledResponse', false);
+            document.getElementById('packetRequest').textContent = 'num1 + num2';
+            document.getElementById('packetResponse').textContent = 'resultado';
+
             const consoleDiv = document.getElementById('console');
             consoleDiv.innerHTML = `
                 <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
                 <div>🔄 Playground reiniciado</div>
-                <div>📖 Presione "Ver Códigos Comentados" para estudiar el código</div>
                 <div>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                <div>▶ Complete los números y presione "Ejecutar Comunicación"</div>
             `;
+
+            activarLed('ledRequest', false);
+            activarLed('ledProcess', false);
+            activarLed('ledResponse', false);
+
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.style.display = 'none';
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
         // Inicializar
         renderizarCodigos();
-        agregarConsole("💡 Este playground muestra el código COMPLETAMENTE COMENTADO");
-        agregarConsole("📚 Cada línea explica QUÉ hace cada objeto y biblioteca");
-        agregarConsole("🎯 Presione 'Ejecutar Comunicación' para ver el flujo");
+        agregarConsole("💡 SOAP = Simple Object Access Protocol (XML sobre HTTP)");
+        agregarConsole("🎯 Presione 'Ejecutar Comunicación' para ver el flujo completo");
     </script>
 </body>
 
