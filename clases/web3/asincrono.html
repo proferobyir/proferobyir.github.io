@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>⚡ Async Playground: Cliente-Servidor + Consumo de API + Funciones Asíncronas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            font-family: 'Inter', 'Segoe UI', 'Fira Code', monospace;
+            padding: 2rem;
+            color: #eef5ff;
+        }
+
+        .master-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Sección conceptual mejorada */
+        .concept-section {
+            background: rgba(15, 25, 50, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(72, 120, 255, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .concept-title {
+            font-size: 1.8rem;
+            background: linear-gradient(120deg, #a0c4ff, #6a9eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .grid-concepts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .card-concept {
+            background: #0f172ae0;
+            flex: 1;
+            min-width: 240px;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            border-left: 4px solid #3b82f6;
+            transition: 0.2s;
+        }
+
+        .card-concept h3 {
+            color: #90b4ff;
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .card-concept p {
+            color: #cbd5f0;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: #1e2a4e;
+            padding: 0.1rem 0.3rem;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #ffd966;
+        }
+
+        .api-badge {
+            background: #3b5ba5;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Layout playground */
+        .playground-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+        }
+
+        .editor-area {
+            flex: 1.3;
+            min-width: 300px;
+            background: #070c1a;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid #2d3e6e;
+            box-shadow: 0 20px 35px -10px black;
+        }
+
+        .console-area {
+            flex: 1;
+            min-width: 280px;
+            background: #050915;
+            border-radius: 1.5rem;
+            border: 1px solid #2a3a60;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            background: #111827;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid #2a3f64;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            background: #01050e;
+            color: #e2e8ff;
+            border: none;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 1.2rem;
+            min-height: 420px;
+            resize: vertical;
+            outline: none;
+            tab-size: 4;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            padding: 1rem 1.2rem;
+            background: #0b1020;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #1e2a44;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #f0f4ff;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .btn-run {
+            background: #3b5ba5;
+            box-shadow: 0 2px 8px #2b4a9e40;
+        }
+
+        .btn-run:hover {
+            background: #4f74c2;
+            transform: translateY(-2px);
+        }
+
+        .btn-example {
+            background: #2d3b54;
+        }
+
+        .btn-example:hover {
+            background: #3f5177;
+        }
+
+        .btn-clear {
+            background: #2d2a44;
+        }
+
+        .console-header {
+            background: #0d1322;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid #2a3a60;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-area {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 470px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+        }
+
+        .log-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #1a2440;
+            font-family: monospace;
+            word-break: break-word;
+        }
+
+        .log-time {
+            color: #6c8bc0;
+            margin-right: 12px;
+            font-size: 0.7rem;
+        }
+
+        .log-error {
+            color: #ffb4a2;
+            background: #3c1e2c30;
+            border-left: 3px solid #ff6e6e;
+            padding-left: 10px;
+        }
+
+        .log-success {
+            color: #b0f7b0;
+        }
+
+        .log-info {
+            color: #7bc5ff;
+        }
+
+        .log-api {
+            color: #ffd966;
+            background: #2a2a1e30;
+            border-left: 3px solid #ffb347;
+        }
+
+        .status-badge {
+            background: #102031;
+            border-radius: 20px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            color: #b9d0ff;
+        }
+
+        .api-demo-panel {
+            margin-top: 1rem;
+            background: #0b1022;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            border: 1px dashed #3b5ba5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="master-container">
+        <!-- SECCIÓN EDUCATIVA COMPLETA: Cliente-Servidor + Async + CONSUMO DE API -->
+        <div class="concept-section">
+            <div class="concept-title">
+                🧠 🌐 Modelo Cliente-Servidor | ⚡ Async/Await | 🚀 Consumo de API
+            </div>
+            <div class="grid-concepts">
+                <div class="card-concept">
+                    <h3>🖥️ Cliente ↔ 🌍 Servidor</h3>
+                    <p><strong>Cliente</strong> (navegador) envía <span class="highlight">peticiones HTTP</span>.<br>
+                        <strong>Servidor</strong> procesa y responde (JSON/XML).<br>
+                        La comunicación es <strong>asíncrona</strong> para no bloquear la UI.
+                    </p>
+                </div>
+                <div class="card-concept">
+                    <h3>⏳ Funciones Asíncronas</h3>
+                    <p><span class="highlight">async/await</span> + <span class="highlight">Promises</span>. Una función
+                        <strong>async</strong> siempre retorna una Promise. <strong>await</strong> espera la resolución
+                        sin bloquear el hilo principal. Ideal para peticiones a APIs.</p>
+                </div>
+                <div class="card-concept">
+                    <h3>📡 Consumo de API (REST)</h3>
+                    <p>Usamos <span class="highlight">fetch()</span> o librerías. <strong>fetch(url)</strong> devuelve
+                        Promise. Luego <span class="highlight">response.json()</span> extrae datos. Patrón:
+                        <strong>try/catch</strong> para manejo de errores de red/servidor.</p>
+                    <div style="margin-top: 8px;"><span class="api-badge">GET</span> <span class="api-badge">POST</span>
+                        <span class="api-badge">JSON</span></div>
+                </div>
+            </div>
+            <div
+                style="margin-top: 12px; background: #00000040; border-radius: 20px; padding: 12px 16px; font-size: 0.85rem;">
+                💡 <strong>Consumo de API típico:</strong> <code
+                    style="background:#1e293b; padding: 2px 6px; border-radius: 12px;">const res = await fetch('https://api.ejemplo.com/datos'); const data = await res.json();</code><br>
+                📍 <strong>Ejemplo real abajo:</strong> Puedes llamar a JSONPlaceholder, APIs de Pokémon, o cualquier
+                API pública.
+            </div>
+        </div>
+
+        <!-- PLAYGROUND INTERACTIVO -->
+        <div class="playground-wrapper">
+            <!-- EDITOR DE CÓDIGO -->
+            <div class="editor-area">
+                <div class="editor-header">
+                    <span>✍️ Editor Asíncrono | Consumo de API + Async</span>
+                    <span class="status-badge">fetch | async/await | Promises</span>
+                </div>
+                <textarea id="codeEditor" spellcheck="false">
+// 🌟 PLAYGROUND: CONSUMO DE API con funciones asíncronas 🌟
+// Ejemplo completo: llamada a API pública de Pokémon + simulación servidor
+
+// 1️⃣ Función para consumir API real (Pokémon API)
+async function consumirPokemonAPI(id = 25) {
+    console.log(`📡 Consumiendo API: https://pokeapi.co/api/v2/pokemon/${id}`);
+    try {
+        const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        if (!respuesta.ok) throw new Error(`HTTP error! status: ${respuesta.status}`);
+        const pokemon = await respuesta.json();
+        console.log(`✅ Pokémon encontrado: ${pokemon.name.toUpperCase()}`);
+        console.log(`📊 Tipos: ${pokemon.types.map(t => t.type.name).join(', ')}`);
+        console.log(`⚖️ Peso: ${pokemon.weight / 10} kg | Altura: ${pokemon.height / 10} m`);
+        return pokemon;
+    } catch (error) {
+        console.error(`❌ Error al consumir API: ${error.message}`);
+        throw error;
+    }
+}
+
+// 2️⃣ Función que consume API de posts (JSONPlaceholder)
+async function obtenerPostEjemplo() {
+    console.log("🌐 Solicitando post a JSONPlaceholder...");
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+    const post = await response.json();
+    console.log(`📝 Título del post: "${post.title}"`);
+    console.log(`✍️ Usuario ID: ${post.userId}`);
+    return post;
+}
+
+// 3️⃣ SIMULACIÓN: propia API mock (cliente-servidor didáctico)
+async function simularApiPropia(endpoint) {
+    console.log(`🔄 Simulando petición a /api/${endpoint}`);
+    await delay(800); // simula latencia de red
+    if (endpoint === 'usuarios') {
+        return { data: [{ id: 1, nombre: "Ana" }, { id: 2, nombre: "Carlos" }] };
+    } else if (endpoint === 'productos') {
+        return { data: ["Laptop", "Mouse", "Teclado Mecánico"] };
+    } else {
+        throw new Error("Endpoint no encontrado");
+    }
+}
+
+// Utilidad delay
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// 4️⃣ DEMOSTRACIÓN MAESTRA: Consumo de API + async/await
+async function demoPrincipal() {
+    console.log("🚀 INICIO: Demostración de consumo de API real");
+    
+    // Consumo API Pokémon
+    console.log("🎮 --- Llamando a PokeAPI (público) ---");
+    const pikachu = await consumirPokemonAPI(25);
+    console.log(`⚡ ¡${pikachu.name} usa impacto trueno!`);
+    
+    // Consumo API Posts
+    console.log("📰 --- Consumiendo JSONPlaceholder ---");
+    await obtenerPostEjemplo();
+    
+    // Simulación API propia
+    console.log("🏢 --- API Simulada interna ---");
+    const usuarios = await simularApiPropia('usuarios');
+    console.log("Usuarios obtenidos:", usuarios.data);
+    
+    // Ejemplo de múltiples peticiones en paralelo (Promise.all)
+    console.log("⚡⚡ Peticiones en paralelo (mejor rendimiento)");
+    const [pokemonCharmander, postDos] = await Promise.all([
+        consumirPokemonAPI(4).catch(e => ({ error: e.message })),
+        fetch('https://jsonplaceholder.typicode.com/posts/2').then(r => r.json())
+    ]);
+    console.log("🔥 Charmander obtenido:", pokemonCharmander.name || "fallo");
+    console.log("Segundo post:", postDos.title);
+    
+    console.log("🎉 Demostración completada con éxito");
+}
+
+// Ejecutar la demo para que veas el consumo real de API
+demoPrincipal();
+
+// Puedes probar tu propio consumo de API, por ejemplo:
+// await consumirPokemonAPI(150);   // Mewtwo
+// O crear llamadas a cualquier API pública
+</textarea>
+                <div class="button-group">
+                    <button class="btn btn-run" onclick="ejecutarCodigoUsuario()">▶️ Ejecutar Código</button>
+                    <button class="btn btn-example" onclick="cargarEjemploPokemonAPI()">🐱‍👤 Pokémon API</button>
+                    <button class="btn btn-example" onclick="cargarEjemploJSONPlaceholder()">📡 JSONPlaceholder</button>
+                    <button class="btn btn-example" onclick="cargarEjemploPostPropio()">🛠️ API Personalizada</button>
+                    <button class="btn btn-clear" onclick="limpiarConsola()">🗑️ Limpiar Consola</button>
+                </div>
+            </div>
+
+            <!-- CONSOLA VISUAL -->
+            <div class="console-area">
+                <div class="console-header">
+                    <span>📟 Consola Asíncrona | Salida de APIs</span>
+                    <button class="btn" onclick="limpiarConsola()" style="padding: 0.2rem 0.8rem;">Limpiar</button>
+                </div>
+                <div id="logMessages" class="log-area">
+                    <!-- Mensajes dinámicos -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel extra con info de APIs públicas -->
+        <div class="api-demo-panel">
+            <div
+                style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                <div>
+                    🧪 <strong>APIs públicas para experimentar:</strong>
+                    <code
+                        style="background:#1e2a3a; padding: 2px 8px; border-radius: 12px;">https://pokeapi.co/api/v2/pokemon/ditto</code>
+                    <code
+                        style="background:#1e2a3a; padding: 2px 8px; border-radius: 12px;">https://jsonplaceholder.typicode.com/users</code>
+                    <code
+                        style="background:#1e2a3a; padding: 2px 8px; border-radius: 12px;">https://api.spacexdata.com/v4/launches/latest</code>
+                </div>
+                <div class="status-badge">💡 Recuerda: await + fetch + manejo de errores</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración global del playground
+        let originalConsoleLog, originalConsoleError, originalConsoleWarn;
+
+        function mostrarMensaje(texto, tipo = "info") {
+            const consoleDiv = document.getElementById("logMessages");
+            if (!consoleDiv) return;
+            const time = new Date().toLocaleTimeString();
+            const logDiv = document.createElement("div");
+            let claseExtra = "";
+            if (tipo === 'error') claseExtra = 'log-error';
+            else if (tipo === 'success') claseExtra = 'log-success';
+            else if (tipo === 'api') claseExtra = 'log-api';
+            else claseExtra = 'log-info';
+            logDiv.className = `log-entry ${claseExtra}`;
+            logDiv.innerHTML = `<span class="log-time">[${time}]</span> ${texto}`;
+            consoleDiv.appendChild(logDiv);
+            logDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        function limpiarConsola() {
+            const consoleDiv = document.getElementById("logMessages");
+            if (consoleDiv) consoleDiv.innerHTML = '';
+            mostrarMensaje("🧹 Consola limpiada. Listo para consumir APIs asíncronamente.", "info");
+        }
+
+        // Función para ejecutar código del usuario capturando console
+        async function ejecutarCodigoUsuario() {
+            const codigo = document.getElementById("codeEditor").value;
+            limpiarConsola();
+            mostrarMensaje("⚙️ Ejecutando tu código asíncrono con consumo de APIs...", "info");
+
+            // Guardar originales
+            originalConsoleLog = console.log;
+            originalConsoleError = console.error;
+            originalConsoleWarn = console.warn;
+
+            try {
+                // Interceptar console
+                console.log = (...args) => {
+                    const message = args.map(arg => {
+                        if (typeof arg === 'object') {
+                            try { return JSON.stringify(arg); } catch (e) { return String(arg); }
+                        }
+                        return String(arg);
+                    }).join(' ');
+                    mostrarMensaje(`📢 ${message}`, "info");
+                    originalConsoleLog.apply(console, args);
+                };
+                console.error = (...args) => {
+                    const message = args.map(arg => String(arg)).join(' ');
+                    mostrarMensaje(`⚠️ ${message}`, "error");
+                    originalConsoleError.apply(console, args);
+                };
+                console.warn = (...args) => {
+                    const message = args.map(arg => String(arg)).join(' ');
+                    mostrarMensaje(`🔸 ${message}`, "info");
+                    originalConsoleWarn.apply(console, args);
+                };
+
+                // Definir delay global para el código
+                window.delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+                // Función para simular API interna
+                window.simularApiPropia = async (endpoint) => {
+                    mostrarMensaje(`🔄 Simulando petición a /api/${endpoint}`, "api");
+                    await window.delay(800);
+                    if (endpoint === 'usuarios') return { data: [{ id: 1, nombre: "Ana" }, { id: 2, nombre: "Carlos" }] };
+                    if (endpoint === 'productos') return { data: ["Laptop", "Mouse", "Teclado Mecánico"] };
+                    throw new Error("Endpoint no encontrado");
+                };
+
+                // Exponer funciones útiles
+                window.consumirPokemonAPI = async (id) => {
+                    mostrarMensaje(`📡 Consumiendo Pokémon API (id: ${id})...`, "api");
+                    try {
+                        const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+                        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+                        const pokemon = await respuesta.json();
+                        mostrarMensaje(`✅ Pokémon: ${pokemon.name} | Tipos: ${pokemon.types.map(t => t.type.name).join(',')}`, "success");
+                        return pokemon;
+                    } catch (e) {
+                        mostrarMensaje(`Error Pokémon API: ${e.message}`, "error");
+                        throw e;
+                    }
+                };
+
+                // Evaluar código como función asíncrona
+                const asyncFun = new Function('mostrarMensaje', 'delay', 'fetch', 'console', `
+                return (async () => {
+                    ${codigo}
+                })();
+            `);
+
+                await asyncFun(mostrarMensaje, window.delay, window.fetch, console);
+                mostrarMensaje("✅ Código ejecutado sin errores.", "success");
+            } catch (err) {
+                mostrarMensaje(`❌ ERROR en código: ${err.message}`, "error");
+                originalConsoleError?.call(console, err);
+            } finally {
+                // Restaurar console
+                console.log = originalConsoleLog;
+                console.error = originalConsoleError;
+                console.warn = originalConsoleWarn;
+            }
+        }
+
+        // Ejemplos precargados enfocados en consumo de API
+        function cargarEjemploPokemonAPI() {
+            const ejemplo = `// 🐱‍👤 CONSUMO DE API POKÉMON con async/await
+async function mostrarPokemonFavorito() {
+    console.log("🎮 Buscando a Charizard...");
+    try {
+        const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon/6');
+        const charizard = await respuesta.json();
+        console.log(\`🔥 Nombre: \${charizard.name}\`);
+        console.log(\`💪 Habilidades: \${charizard.abilities.map(a => a.ability.name).join(', ')}\`);
+        console.log(\`📏 Altura: \${charizard.height} decímetros, Peso: \${charizard.weight} hg\`);
+        
+        // Mostrar movimiento estrella
+        const movimientos = charizard.moves.slice(0, 3);
+        console.log("🎯 Movimientos destacados:", movimientos.map(m => m.move.name).join(', '));
+    } catch (error) {
+        console.error("Error al conectar con PokeAPI", error);
+    }
+}
+
+mostrarPokemonFavorito();
+
+// También puedes buscar varios en paralelo
+async function variosPokemon() {
+    const ids = [1, 4, 7];
+    console.log("⚡ Buscando varios Pokémon en simultáneo (Promise.all)");
+    const pokemons = await Promise.all(ids.map(id => fetch(\`https://pokeapi.co/api/v2/pokemon/\${id}\`).then(r => r.json())));
+    pokemons.forEach(p => console.log(\`✅ \${p.name} (ID \${p.id})\`));
+}
+variosPokemon();
+`;
+            document.getElementById("codeEditor").value = ejemplo;
+        }
+
+        function cargarEjemploJSONPlaceholder() {
+            const ejemplo = `// 📡 CONSUMO DE API JSONPlaceholder (Posts y Comentarios)
+async function obtenerPublicacionesYComentarios() {
+    console.log("🌐 Iniciando consumo de JSONPlaceholder...");
+    
+    // Obtener posts recientes
+    const responsePosts = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=3');
+    const posts = await responsePosts.json();
+    console.log(\`📝 Se obtuvieron \${posts.length} posts:\`);
+    posts.forEach(post => console.log(\`   - \${post.title}\`));
+    
+    // Obtener comentarios del primer post
+    const primerPostId = posts[0].id;
+    const responseComments = await fetch(\`https://jsonplaceholder.typicode.com/posts/\${primerPostId}/comments\`);
+    const comentarios = await responseComments.json();
+    console.log(\`💬 Comentarios para el post "\${posts[0].title}":\`);
+    comentarios.slice(0, 2).forEach(c => console.log(\`   ✉️ \${c.email}: "\${c.body.substring(0, 50)}..."\`));
+    
+    // POST simulado: crear nuevo recurso
+    const nuevoPost = {
+        title: 'Mi API desde el playground',
+        body: 'Este es un ejemplo de consumo con fetch POST',
+        userId: 1
+    };
+    const respuestaPost = await fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevoPost)
+    });
+    const resultado = await respuestaPost.json();
+    console.log("✨ Recurso creado (simulado):", resultado);
+}
+
+obtenerPublicacionesYComentarios();
+`;
+            document.getElementById("codeEditor").value = ejemplo;
+        }
+
+        function cargarEjemploPostPropio() {
+            const ejemplo = `// 🛠️ CONSUMO DE API PERSONALIZADA + MANEJO DE ERRORES
+async function explorarAPIsVariadas() {
+    // 1) API de perros aleatorios (pública)
+    console.log("🐕 Consultando API de perritos random...");
+    try {
+        const perroRes = await fetch('https://dog.ceo/api/breeds/image/random');
+        const perroData = await perroRes.json();
+        console.log(\`🐶 Imagen aleatoria: \${perroData.message}\`);
+    } catch(e) { console.error("Error en API de perros", e); }
+    
+    // 2) API de datos de países (restcountries)
+    console.log("🌍 Consultando información de México...");
+    const paisRes = await fetch('https://restcountries.com/v3.1/name/mexico');
+    const paisData = await paisRes.json();
+    if(paisData[0]) {
+        const mexico = paisData[0];
+        console.log(\`📍 País: \${mexico.name.common}, Capital: \${mexico.capital?.[0] || 'N/A'}\`);
+        console.log(\`👥 Población: \${mexico.population.toLocaleString()} habitantes\`);
+        console.log(\`🗣️ Idiomas: \${Object.values(mexico.languages).join(', ')}\`);
+    }
+    
+    // 3) Consumo con autenticación simulada (API Key en headers)
+    console.log("🔑 Ejemplo con cabeceras personalizadas (API pública sin clave real)");
+    const respuestaConHeaders = await fetch('https://jsonplaceholder.typicode.com/todos/1', {
+        headers: { 'X-Custom-Header': 'PlaygroundAsync' }
+    });
+    const tarea = await respuestaConHeaders.json();
+    console.log(\`✅ Tarea: \${tarea.title} - Completada: \${tarea.completed}\`);
+}
+
+explorarAPIsVariadas();
+`;
+            document.getElementById("codeEditor").value = ejemplo;
+        }
+
+        // Exponer globales
+        window.ejecutarCodigoUsuario = ejecutarCodigoUsuario;
+        window.limpiarConsola = limpiarConsola;
+        window.cargarEjemploPokemonAPI = cargarEjemploPokemonAPI;
+        window.cargarEjemploJSONPlaceholder = cargarEjemploJSONPlaceholder;
+        window.cargarEjemploPostPropio = cargarEjemploPostPropio;
+        window.mostrarMensaje = mostrarMensaje;
+
+        // Inicializar con un ejemplo claro de consumo de API
+        window.onload = () => {
+            cargarEjemploPokemonAPI();
+            mostrarMensaje("🎉 Playground listo! Explora el consumo de API con funciones asíncronas.", "success");
+            mostrarMensaje("📡 Puedes llamar a Pokémon API, JSONPlaceholder y crear tus propios fetch.", "api");
+            mostrarMensaje("💡 Presiona 'Ejecutar Código' y observa cómo la UI no se bloquea.", "info");
+        };
+    </script>
+</body>
+
+</html>
