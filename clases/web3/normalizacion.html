@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Playground de Bases de Datos | Conceptos, Glosario y Formas Normales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f5f7fc 0%, #eef2f8 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        /* Contenedor principal tipo playground */
+        .playground-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Header con gradiente lúdico */
+        .hero {
+            background: linear-gradient(135deg, #0b2b3b, #1c4e6f);
+            border-radius: 3rem;
+            padding: 2rem 2rem;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero h1 span {
+            background: #ffd966;
+            padding: 0.2rem 0.8rem;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            color: #1e3a4d;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-top: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Layout principal: GRID + FLEX */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.8rem;
+        }
+
+        /* Tarjetas generales */
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 1.6rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.7rem;
+            border-left: 6px solid #2c7da0;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            color: #0f3b4f;
+        }
+
+        .card h3 {
+            color: #1f5e7e;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.3rem;
+        }
+
+        /* Glosario: grid interno flexible */
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 0.8rem;
+        }
+
+        .term {
+            background: #f0f4fa;
+            padding: 0.7rem 1rem;
+            border-radius: 1.5rem;
+            transition: 0.1s;
+            border-left: 4px solid #2c7da0;
+        }
+
+        .term strong {
+            color: #1f6392;
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .term p {
+            font-size: 0.85rem;
+            color: #2c4b5e;
+            margin-top: 5px;
+        }
+
+        /* Ejemplos interactivos (formas normales) */
+        .normal-form-example {
+            background: #e9f0f5;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .table-preview {
+            background: white;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 280px;
+        }
+
+        th {
+            background: #2c7da0;
+            color: white;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #cbdde6;
+        }
+
+        .badge {
+            background: #ffb347;
+            color: #2d2b1f;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        .btn-interact {
+            background: #2c7da0;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            margin-right: 10px;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-interact:hover {
+            background: #1f5e7e;
+            transform: scale(0.97);
+        }
+
+        .explanation {
+            background: #fef9e3;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            border-left: 4px solid #ffb347;
+        }
+
+        /* responsive */
+        @media (max-width: 850px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5c7e91;
+            border-top: 1px solid #cbdbe2;
+            padding-top: 1.5rem;
+        }
+
+        .flex-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .code-note {
+            font-family: monospace;
+            background: #1e2f3a;
+            color: #cdeeff;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="playground-container">
+        <div class="hero">
+            <h1>🗄️ Playground de Bases de Datos <span>🧩 SQL · Normalización</span></h1>
+            <p>📌 Conceptos clave, glosario visual y ejemplos interactivos: 1FN, 2FN y 3FN</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- COLUMNA IZQUIERDA: CONCEPTOS + GLOSARIO -->
+            <div class="card">
+                <h2>🧠 Concepto · Funcionalidad · Utilidad</h2>
+                <p style="margin-bottom: 12px;"><strong>¿Qué es una Base de Datos?</strong> Es un conjunto organizado de
+                    información estructurada que permite almacenar, consultar y gestionar datos de forma eficiente.</p>
+                <p>⚙️ <strong>Funcionalidad:</strong> Permite operaciones CRUD (Crear, Leer, Actualizar, Borrar),
+                    garantizar integridad, seguridad y escalabilidad.</p>
+                <p>🎯 <strong>Utilidad:</strong> Desde apps móviles, sistemas bancarios, comercio electrónico, hasta
+                    análisis de datos y business intelligence.</p>
+
+                <h3>📖 Glosario de Términos</h3>
+                <div class="glossary-grid">
+                    <div class="term"><strong>🗂️ Entidad</strong>
+                        <p>Objeto del mundo real (Ej: Cliente, Producto). Se convierte en tabla.</p>
+                    </div>
+                    <div class="term"><strong>🔗 Relación</strong>
+                        <p>Conexión entre entidades (1:N, N:M). Ej: Un cliente <em>tiene</em> pedidos.</p>
+                    </div>
+                    <div class="term"><strong>🏷️ Atributos</strong>
+                        <p>Características de una entidad (Ej: nombre, fecha). Se convierten en columnas.</p>
+                    </div>
+                    <div class="term"><strong>📋 Campos</strong>
+                        <p>Sinónimo de atributo, cada columna dentro de una tabla.</p>
+                    </div>
+                    <div class="term"><strong>📄 Registros</strong>
+                        <p>Filas o tuplas; cada instancia única de una entidad.</p>
+                    </div>
+                    <div class="term"><strong>🔑 Llave primaria (PK)</strong>
+                        <p>Identificador único por registro (no nulo, único).</p>
+                    </div>
+                    <div class="term"><strong>🗝️ Llave foránea (FK)</strong>
+                        <p>Referencia a PK de otra tabla, vincula relaciones.</p>
+                    </div>
+                </div>
+                <div class="explanation">
+                    💡 <strong>Dato curioso:</strong> La normalización reduce redundancia y anomalías. ¡Mira los
+                    ejemplos interactivos!
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: FORMAS NORMALES INTERACTIVAS (1FN,2FN,3FN) -->
+            <div class="card">
+                <h2>📐 Formas Normales (1FN, 2FN, 3FN)</h2>
+                <p>Normalizar = diseñar tablas limpias y sin redundancias. Interactúa con los ejemplos.</p>
+
+                <!-- 1RA FORMA NORMAL -->
+                <div class="normal-form-example" id="fn1-block">
+                    <h3>🔹 1FN: Atómico + sin grupos repetidos</h3>
+                    <div id="table1FN">
+                        <!-- tabla inicial no normalizada (con grupos repetidos) -->
+                    </div>
+                    <div class="flex-buttons">
+                        <button class="btn-interact" id="showNoNormalizedBtn">📄 Ver tabla NO normalizada</button>
+                        <button class="btn-interact" id="apply1FNbtn">✨ Aplicar 1FN (Atómica)</button>
+                    </div>
+                    <div id="explanation1FN" class="explanation">
+                        ✅ <strong>1FN:</strong> Cada celda contiene un solo valor (atómico) y no hay grupos repetidos.
+                        Los teléfonos múltiples se separan en filas.
+                    </div>
+                </div>
+
+                <!-- 2DA FORMA NORMAL -->
+                <div class="normal-form-example" id="fn2-block">
+                    <h3>🔸 2FN: Dependencia completa (1FN + sin dependencias parciales)</h3>
+                    <div id="table2FN"></div>
+                    <div class="flex-buttons">
+                        <button class="btn-interact" id="showPartialDepBtn">📄 Ver tabla con dependencia
+                            parcial</button>
+                        <button class="btn-interact" id="apply2FNbtn">⚡ Normalizar a 2FN</button>
+                    </div>
+                    <div id="explanation2FN" class="explanation">
+                        ⚙️ <strong>2FN:</strong> Eliminar dependencias parciales. Los atributos que dependen solo de
+                        parte de la PK van a otra tabla.
+                    </div>
+                </div>
+
+                <!-- 3RA FORMA NORMAL -->
+                <div class="normal-form-example" id="fn3-block">
+                    <h3>🔹 3FN: Sin dependencias transitivas</h3>
+                    <div id="table3FN"></div>
+                    <div class="flex-buttons">
+                        <button class="btn-interact" id="showTransitiveBtn">📄 Ver tabla con dependencia
+                            transitiva</button>
+                        <button class="btn-interact" id="apply3FNbtn">🎯 Aplicar 3FN</button>
+                    </div>
+                    <div id="explanation3FN" class="explanation">
+                        🧩 <strong>3FN:</strong> Eliminar dependencias transitivas (un atributo no clave depende de otro
+                        no clave).
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer>
+            🧪 Playground interactivo | Aprende normalización con ejemplos visuales | Todas las tablas respetan
+            conceptos: entidad, atributo, registro.
+        </footer>
+    </div>
+
+    <script>
+        // ---------- UTILS ----------
+        function renderTable(containerId, columns, rows, tableCaption = "") {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            let html = `<div class="table-preview"><table><thead><tr>`;
+            columns.forEach(col => { html += `<th>${col}</th>`; });
+            html += `</tr></thead><tbody>`;
+            rows.forEach(row => {
+                html += `<tr>`;
+                row.forEach(cell => { html += `<td>${cell}</td>`; });
+                html += `</tr>`;
+            });
+            html += `</tbody></table>${tableCaption ? `<div style="font-size:0.75rem; padding:6px; text-align:center;">${tableCaption}</div>` : ""}</div>`;
+            container.innerHTML = html;
+        }
+
+        // ---------- 1FN: Ejemplo de tabla de clientes con teléfonos repetidos (no atómico) ----------
+        const noNormalizedData = {
+            columns: ["ID_Cliente", "Nombre", "Teléfonos"],
+            rows: [
+                ["1", "Ana Gómez", "555-1234, 555-5678"],
+                ["2", "Luis Pérez", "555-9999"],
+                ["3", "Carla Ruiz", "555-1111, 555-2222, 555-3333"]
+            ]
+        };
+        const normalized1FNData = {
+            columns: ["ID_Cliente", "Nombre", "Teléfono"],
+            rows: [
+                ["1", "Ana Gómez", "555-1234"],
+                ["1", "Ana Gómez", "555-5678"],
+                ["2", "Luis Pérez", "555-9999"],
+                ["3", "Carla Ruiz", "555-1111"],
+                ["3", "Carla Ruiz", "555-2222"],
+                ["3", "Carla Ruiz", "555-3333"]
+            ]
+        };
+
+        function renderNoNormalized() {
+            renderTable("table1FN", noNormalizedData.columns, noNormalizedData.rows, "⚠️ Tabla NO normalizada (viola 1FN: teléfonos múltiples en una celda)");
+        }
+        function renderNormalized1FN() {
+            renderTable("table1FN", normalized1FNData.columns, normalized1FNData.rows, "✅ 1FN: Datos atómicos, cada teléfono en fila separada");
+        }
+
+        // ---------- 2FN: dependencia parcial. Tabla DetallePedido con PK (ID_Pedido, ID_Producto) y atributo "NombreProducto" que depende solo de ID_Producto ----------
+        const partialDepData = {
+            columns: ["ID_Pedido", "ID_Producto", "NombreProducto", "Cantidad"],
+            rows: [
+                ["100", "P01", "Laptop Gamer", "2"],
+                ["100", "P02", "Mouse RGB", "3"],
+                ["101", "P01", "Laptop Gamer", "1"],
+                ["102", "P03", "Teclado Mecánico", "1"]
+            ]
+        };
+        const normalized2FN_pedidosProductos = {
+            columns: ["ID_Pedido", "ID_Producto", "Cantidad"],
+            rows: [
+                ["100", "P01", "2"],
+                ["100", "P02", "3"],
+                ["101", "P01", "1"],
+                ["102", "P03", "1"]
+            ]
+        };
+        const normalized2FN_productos = {
+            columns: ["ID_Producto", "NombreProducto"],
+            rows: [
+                ["P01", "Laptop Gamer"],
+                ["P02", "Mouse RGB"],
+                ["P03", "Teclado Mecánico"]
+            ]
+        };
+        // función para mostrar la vista 2FN con dos tablas (usaremos grid flexible)
+        function render2FNNormalizedView() {
+            const container = document.getElementById("table2FN");
+            if (!container) return;
+            let html = `<div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;">`;
+            // tabla Pedido_Producto
+            html += `<div style="flex:1; min-width:180px;"><div class="table-preview"><table><thead><tr>${normalized2FN_pedidosProductos.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+            normalized2FN_pedidosProductos.rows.forEach(r => { html += `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`; });
+            html += `</tbody></table><div style="font-size:0.7rem; text-align:center;">📦 Detalle Pedido (relación)</div></div></div>`;
+            // tabla Productos
+            html += `<div style="flex:1; min-width:180px;"><div class="table-preview"><table><thead><tr>${normalized2FN_productos.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+            normalized2FN_productos.rows.forEach(r => { html += `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`; });
+            html += `</tbody></table><div style="font-size:0.7rem; text-align:center;">🏷️ Catálogo Productos</div></div></div>`;
+            html += `</div><div class="explanation" style="margin-top:8px;">✨ 2FN: Se eliminó dependencia parcial. "NombreProducto" ahora solo depende de ID_Producto en tabla aparte.</div>`;
+            container.innerHTML = html;
+        }
+        function renderPartialDep() {
+            renderTable("table2FN", partialDepData.columns, partialDepData.rows, "⚠️ Tabla con dependencia parcial: NombreProducto depende solo de ID_Producto (no de toda la PK compuesta)");
+        }
+
+        // ---------- 3FN: dependencia transitiva. Ejemplo: Empleados con Depto y UbicaciónDepto (Ubicación depende de Depto, no de la PK empleado) ----------
+        const transitiveData = {
+            columns: ["ID_Empleado", "Nombre", "ID_Depto", "NombreDepto", "UbicacionDepto"],
+            rows: [
+                ["E01", "Sofia Martínez", "D1", "Ventas", "Piso 3"],
+                ["E02", "Jorge Rivas", "D2", "TI", "Piso 5"],
+                ["E03", "Lucía Mora", "D1", "Ventas", "Piso 3"]
+            ]
+        };
+        const normalized3FN_empleados = {
+            columns: ["ID_Empleado", "Nombre", "ID_Depto"],
+            rows: [
+                ["E01", "Sofia Martínez", "D1"],
+                ["E02", "Jorge Rivas", "D2"],
+                ["E03", "Lucía Mora", "D1"]
+            ]
+        };
+        const normalized3FN_departamentos = {
+            columns: ["ID_Depto", "NombreDepto", "UbicacionDepto"],
+            rows: [
+                ["D1", "Ventas", "Piso 3"],
+                ["D2", "TI", "Piso 5"]
+            ]
+        };
+        function renderTransitiveTable() {
+            renderTable("table3FN", transitiveData.columns, transitiveData.rows, "⚠️ Dependencia transitiva: UbicacionDepto depende de NombreDepto/ID_Depto, no directamente de ID_Empleado.");
+        }
+        function render3FNNormalized() {
+            const container = document.getElementById("table3FN");
+            if (!container) return;
+            let html = `<div style="display: flex; flex-wrap: wrap; gap: 1rem;">`;
+            // tabla Empleados
+            html += `<div style="flex:1;"><div class="table-preview"><table><thead><tr>${normalized3FN_empleados.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+            normalized3FN_empleados.rows.forEach(r => { html += `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`; });
+            html += `</tbody></table><div>👩‍💼 Empleados (solo FK a depto)</div></div></div>`;
+            html += `<div style="flex:1;"><div class="table-preview"><table><thead><tr>${normalized3FN_departamentos.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+            normalized3FN_departamentos.rows.forEach(r => { html += `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`; });
+            html += `</tbody></table><div>🏢 Departamentos (elimina transitiva)</div></div></div>`;
+            html += `</div><div class="explanation" style="margin-top:8px;">✅ 3FN: Separamos la dependencia transitiva (Ubicación depende del departamento). Ahora si cambia ubicación de un depto, afecta solo una fila.</div>`;
+            container.innerHTML = html;
+        }
+
+        // ---------- EVENTOS Y ESTADO INICIAL ----------
+        document.addEventListener("DOMContentLoaded", () => {
+            // Inicializar: mostrar ejemplos no normalizados para que el estudiante entienda el problema
+            renderNoNormalized();          // 1FN: estado no normalizado
+            renderPartialDep();            // 2FN: tabla con dependencia parcial (estado inicial)
+            renderTransitiveTable();       // 3FN: tabla con transitiva
+
+            // ---- Eventos 1FN ----
+            document.getElementById("showNoNormalizedBtn").addEventListener("click", () => {
+                renderNoNormalized();
+                const explDiv = document.getElementById("explanation1FN");
+                explDiv.innerHTML = "📌 <strong>1FN:</strong> Observa que los teléfonos están en una sola celda separados por comas → No es atómico ❌. También hay grupos repetidos.";
+            });
+            document.getElementById("apply1FNbtn").addEventListener("click", () => {
+                renderNormalized1FN();
+                const explDiv = document.getElementById("explanation1FN");
+                explDiv.innerHTML = "✅ <strong>1FN Aplicada:</strong> Cada campo tiene un solo valor. Los teléfonos ahora están en filas individuales. ¡Cumple 1FN! ✨";
+            });
+
+            // ---- Eventos 2FN ----
+            document.getElementById("showPartialDepBtn").addEventListener("click", () => {
+                renderPartialDep();
+                const explDiv = document.getElementById("explanation2FN");
+                explDiv.innerHTML = "⚙️ <strong>2FN - Problema:</strong> La tabla tiene PK compuesta (ID_Pedido, ID_Producto). 'NombreProducto' depende solo de ID_Producto => dependencia parcial, redundancia.";
+            });
+            document.getElementById("apply2FNbtn").addEventListener("click", () => {
+                render2FNNormalizedView();
+                const explDiv = document.getElementById("explanation2FN");
+                explDiv.innerHTML = "🎉 <strong>2FN Lograda!</strong> Se crearon dos tablas: 'DetallePedido' y 'Productos'. Se elimina redundancia del nombre del producto y se cumple dependencia completa.";
+            });
+
+            // ---- Eventos 3FN ----
+            document.getElementById("showTransitiveBtn").addEventListener("click", () => {
+                renderTransitiveTable();
+                const explDiv = document.getElementById("explanation3FN");
+                explDiv.innerHTML = "🧩 <strong>3FN - Problema transitivo:</strong> 'UbicacionDepto' depende de 'NombreDepto', y este depende de ID_Empleado indirectamente. Actualizar ubicación afecta varios empleados => anomalía.";
+            });
+            document.getElementById("apply3FNbtn").addEventListener("click", () => {
+                render3FNNormalized();
+                const explDiv = document.getElementById("explanation3FN");
+                explDiv.innerHTML = "🎯 <strong>3FN completada!</strong> Se separó en Empleados (con ID_Depto) y Departamentos (con ubicación). Ahora la dependencia transitiva ha desaparecido.";
+            });
+
+            // Pequeñas descripciones adicionales para hacer más claro cada bloque
+            // añadimos micro explicación en cada "explicación" inicial ya está definida pero la dejamos mejor:
+            const initExpl1 = document.getElementById("explanation1FN");
+            initExpl1.innerHTML = "✅ <strong>1FN:</strong> Cada celda contiene un solo valor (atómico) y no hay grupos repetidos. Los teléfonos múltiples se separan en filas.";
+            const initExpl2 = document.getElementById("explanation2FN");
+            initExpl2.innerHTML = "⚙️ <strong>2FN:</strong> Eliminar dependencias parciales. Los atributos que dependen solo de parte de la PK van a otra tabla.";
+            const initExpl3 = document.getElementById("explanation3FN");
+            initExpl3.innerHTML = "🧩 <strong>3FN:</strong> Eliminar dependencias transitivas (un atributo no clave depende de otro no clave).";
+        });
+    </script>
+</body>
+
+</html>
