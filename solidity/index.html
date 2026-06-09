@@ -1,4 +1,4 @@
-Aquí tienes el código mejorado. He optimizado el diseño para que sea completamente responsive en smartphones y he corregido la lógica principal para que los niveles interactúen entre sí, como en un curso real secuencial.
+Aquí tienes el código actualizado. He añadido la explicación detallada del funcionamiento de require() (incluyendo el concepto de Revert y el gas no gastado) como un bloque destacado justo en el Nivel 2, que es donde se introduce esta instrucción.
 
 ```html
 <!DOCTYPE html>
@@ -6,7 +6,7 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Curso Interactivo: De Cero a Smart Contracts</title>
+    <title>Curso Interactivo: De Cero a Smart Contracts | Require en profundidad</title>
     <style>
         * {
             margin: 0;
@@ -25,6 +25,7 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #f43f5e;
+            --info-glow: #3b82f6;
         }
 
         body {
@@ -37,16 +38,14 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
         }
 
-        /* Contenedor principal fluido */
         .timeline {
             width: 100%;
-            max-width: 1100px;
+            max-width: 1150px;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
 
-        /* Tarjetas completamente responsivas */
         .level-block {
             background-color: var(--bg-card);
             border-radius: 1.25rem;
@@ -56,7 +55,6 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
-        /* Flex column por defecto (mobile first) */
         .level-content {
             display: flex;
             flex-direction: column;
@@ -64,7 +62,6 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             padding: 1.2rem;
         }
 
-        /* En tablets y escritorio: dos columnas side-by-side */
         @media (min-width: 700px) {
             .level-content {
                 display: grid;
@@ -80,7 +77,6 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             }
         }
 
-        /* bloque de explicación */
         .explanation {
             overflow-x: auto;
         }
@@ -110,7 +106,33 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             margin-bottom: 1rem;
         }
 
-        /* PRE adaptativo */
+        .deep-dive-card {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--info-glow);
+            border-radius: 14px;
+            padding: 1rem;
+            margin: 1rem 0 0.5rem 0;
+            backdrop-filter: blur(2px);
+        }
+        .deep-dive-card p {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.45;
+            color: #cbd5e6;
+        }
+        .deep-dive-card strong {
+            color: #facc15;
+        }
+        .revert-badge {
+            background-color: #7f1a1a40;
+            color: #f87171;
+            font-family: monospace;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
         pre {
             background-color: var(--bg-code);
             padding: 0.9rem;
@@ -138,7 +160,6 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         .comment { color: #64748b; font-style: italic; }
         .string { color: var(--success); }
 
-        /* Zona interactiva */
         .interactive-zone {
             background-color: rgba(15, 23, 42, 0.7);
             padding: 1rem;
@@ -165,7 +186,7 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             }
         }
 
-        input, select {
+        input {
             background-color: var(--bg-code);
             border: 1px solid #475569;
             color: white;
@@ -198,7 +219,7 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         @media (min-width: 450px) {
             button {
                 width: auto;
-                min-width: 110px;
+                min-width: 120px;
             }
         }
 
@@ -251,7 +272,6 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             border-color: #334155;
         }
 
-        /* mensajes de éxito/reto */
         .global-progress {
             background: #111827;
             border-radius: 100px;
@@ -260,7 +280,7 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             text-align: center;
             margin-bottom: 1rem;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1150px;
             color: var(--text-muted);
         }
         
@@ -270,22 +290,32 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
             text-align: center;
             color: #4b5563;
         }
+
+        .gas-tip {
+            background-color: #0f172a;
+            border-radius: 10px;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+            border: 1px dashed #475569;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
 <div class="global-progress" id="globalProgress">
-    🧠 Sigue los niveles en orden | Nivel 1: define el precio
+    📘 Nivel 1: Aprende variables básicas
 </div>
 
 <div class="timeline">
-    <!-- NIVEL 1 -->
+    <!-- NIVEL 1: Variables -->
     <div class="level-block" id="level1">
         <div class="level-content">
             <div class="explanation">
                 <span class="level-badge" style="background-color: #06b6d4;">Nivel 1 · Variables</span>
                 <h2 class="level-title">📦 Cajas de datos: tipos básicos</h2>
-                <p class="level-description">Las variables son contenedores. En Solidity debemos declarar el tipo: <strong>uint</strong> (entero) o <strong>string</strong> (texto).</p>
+                <p class="level-description">Las variables son contenedores. En Solidity debemos declarar el tipo: <strong>uint</strong> (entero) o <strong>string</strong>.</p>
                 <pre><span class="comment">// variable entera sin signo</span>
 <span class="type">uint256</span> <span class="keyword">public</span> precioCafe = <span class="type">2</span>;
 <span class="comment">// texto fijo</span>
@@ -304,30 +334,45 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         </div>
     </div>
 
-    <!-- NIVEL 2 -->
+    <!-- NIVEL 2: REQUIRE + EXPLICACIÓN DETALLADA (revert + gas) -->
     <div class="level-block" id="level2">
         <div class="level-content">
             <div class="explanation">
-                <span class="level-badge" style="background-color: #3b82f6;">Nivel 2 · Require / Control</span>
-                <h2 class="level-title">⚖️ Tomar decisiones: require()</h2>
-                <p class="level-description"><code>require(condición)</code> es como un guardián: si la condición es <strong>falsa</strong>, revierte la transacción.</p>
+                <span class="level-badge" style="background-color: #3b82f6;">Nivel 2 · El poder de require()</span>
+                <h2 class="level-title">⚖️ Guardián de la puerta</h2>
+                <p class="level-description"><code>require(condición, "mensaje")</code> valida una condición. Si es <strong>falsa</strong>, todo se detiene y revierte.</p>
                 <pre><span class="keyword">require</span>(pago >= precioCafe, <span class="string">"Saldo insuficiente"</span>);
-<span class="comment">// Solo sigue si el pago es suficiente</span></pre>
+<span class="comment">// Si falla: reversión total del estado + devolución del gas no consumido.</span></pre>
+                
+                <!-- EXPLICACIÓN PROFUNDA DE REQUIRE SEGÚN SOLICITUD -->
+                <div class="deep-dive-card">
+                    <p><span class="revert-badge">🔁 REVERT (Reversión total)</span></p>
+                    <p>✅ <strong>Si la condición es <span style="color:#f97316;">FALSA</span>:</strong> el segundo parámetro muestra el mensaje de error, pero <strong>NO permite que nada más continúe</strong>. Provoca un mecanismo llamado <strong style="color:#f87171;">Revert</strong>:</p>
+                    <p>➜ El programa se detiene en seco.<br>
+                    ➜ La transacción se <strong>cancela por completo</strong>.<br>
+                    ➜ Cualquier cambio que se haya intentado hacer en la memoria de la Blockchain se borra, devolviendo el estado exactamente <strong>a como estaba antes</strong> de pulsar el botón.<br>
+                    ➜ Además, se le <strong>regresa al usuario el gas (dinero de la red) que no se gastó</strong>.</p>
+                    <p>🎯 En conclusión: el segundo parámetro es el <strong>"mensaje de expulsión"</strong> cuando el guardián <code>require</code> te rebota.</p>
+                    <div class="gas-tip">
+                        💨 Gas no consumido → reembolsado. Solo pagas por la verificación fallida.
+                    </div>
+                </div>
             </div>
             <div class="interactive-zone">
-                <p style="font-size:0.85rem;">💰 El café cuesta <strong id="current-price-display">2</strong> tokens. Paga:</p>
+                <p style="font-size:0.85rem;">💰 El café cuesta <strong id="current-price-display">2</strong> tokens. Prueba el require:</p>
                 <div class="flex-row">
                     <input type="number" id="input-l2" placeholder="Tu pago (tokens)" step="1">
-                    <button id="btn-l2">Pagar y validar</button>
+                    <button id="btn-l2">Ejecutar require()</button>
                 </div>
                 <div id="console-l2" class="console-box">
-                    🧾 Esperando pago...
+                    🧾 Simulación de require()...
                 </div>
+                <div style="font-size: 0.7rem; text-align:center; color:#94a3b8;">🔁 Cada intento muestra si hubo REVERT o éxito</div>
             </div>
         </div>
     </div>
 
-    <!-- NIVEL 3 -->
+    <!-- NIVEL 3: OBJETOS (POO) -->
     <div class="level-block" id="level3">
         <div class="level-content">
             <div class="explanation">
@@ -357,7 +402,7 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         </div>
     </div>
 
-    <!-- NIVEL 4 FINAL -->
+    <!-- NIVEL 4: SMART CONTRACT FINAL -->
     <div class="level-block" id="level4">
         <div class="level-content">
             <div class="explanation">
@@ -371,6 +416,9 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         stock--;
     }
 }</pre>
+            <div class="deep-dive-card" style="margin-top:0.5rem;">
+                <p>🧠 <strong>Recuerda:</strong> Aquí el <code>require</code> también aplica la misma regla. Si stock=0, el mensaje <strong>"Sin existencias"</strong> aparece y la transacción <strong>revierte</strong>, devolviendo el estado anterior y reembolsando el gas no usado.</p>
+            </div>
             </div>
             <div class="interactive-zone" style="border: 1px solid var(--accent);">
                 <div id="status-l4" class="console-box" style="background-color:#111827;">
@@ -380,20 +428,19 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
                 <hr>
                 <button id="btn-buy-l4" disabled>🛒 Ejecutar comprar()</button>
                 <div id="console-l4" class="console-box">
-                    🌐 El Smart Contract vive aquí tras el deploy.
+                    🌐 Require en acción después del deploy.
                 </div>
             </div>
         </div>
     </div>
 </div>
-<footer>✨ Simulación didáctica de conceptos esenciales Solidity</footer>
+<footer>✨ Simulación didáctica: Require + Reversión total + reembolso de gas no consumido</footer>
 
 <script>
-    // ======================= LOGICA MEJORADA Y UNIFICADA =======================
-    // Variables compartidas entre niveles para coherencia secuencial educativa
-    let globalPrice = 2;          // Nivel 1 y 2 conectados
-    let stockObject = 0;          // Nivel 3 (simula atributo de clase)
-    let deployedContractStock = 3; // Nivel 4 stock interno
+    // ======================= LÓGICA MEJORADA =======================
+    let globalPrice = 2;          
+    let stockObject = 0;          
+    let deployedContractStock = 3; 
     let isDeployed = false;
     
     // Elementos DOM
@@ -418,22 +465,19 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
     
     const globalProgressDiv = document.getElementById('globalProgress');
     
-    // Helper para actualizar mensaje global
     function updateGlobalMessage(msg, isError = false) {
         globalProgressDiv.innerHTML = msg;
         globalProgressDiv.style.color = isError ? '#f87171' : '#94a3b8';
         setTimeout(() => {
             if(!isError) globalProgressDiv.style.color = '#94a3b8';
-        }, 2500);
+        }, 2800);
     }
     
-    // ---------- NIVEL 1:  precio global ----------
+    // ---------- NIVEL 1 ----------
     function updatePriceUI() {
-        consoleL1.innerText = `📦 Variable 'precioCafe' = ${globalPrice} (almacenada en memoria)`;
+        consoleL1.innerText = `📦 Variable 'precioCafe' = ${globalPrice} (en memoria)`;
         priceDisplaySpan.innerText = globalPrice;
-        // sincronizar placeholder nivel 2
         if(inputL2) inputL2.placeholder = `Ej: ${globalPrice}`;
-        // Actualizar consola nivel 2 si está inactiva? no necesario
     }
     
     btnL1.addEventListener('click', () => {
@@ -441,28 +485,41 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         if (isNaN(newPrice) || newPrice < 1) newPrice = 1;
         globalPrice = newPrice;
         updatePriceUI();
-        updateGlobalMessage(`✅ Nivel 1: precioCafe ahora es ${globalPrice}. Ahora ve al Nivel 2`);
-        // Auto limpiar mensajes de nivel 2 para que revalide
-        if(consoleL2) consoleL2.innerHTML = `🧾 Nuevo precio: ${globalPrice} tokens. Prueba a pagar.`;
-        consoleL2.style.borderLeftColor = "var(--warning)";
-    });
-    
-    // ---------- NIVEL 2: requiere el precio global ----------
-    btnL2.addEventListener('click', () => {
-        let pago = parseInt(inputL2.value);
-        if (isNaN(pago)) pago = 0;
-        if (pago >= globalPrice) {
-            consoleL2.style.borderLeftColor = "var(--success)";
-            consoleL2.innerHTML = `✅ ✔️ ¡require(${pago} >= ${globalPrice}) es VERDADERO! Pago aceptado. Transacción continúa.`;
-            updateGlobalMessage(`✅ Nivel 2 superado! Condición require aprobada. Ve al Nivel 3`);
-        } else {
-            consoleL2.style.borderLeftColor = "var(--danger)";
-            consoleL2.innerHTML = `❌ REVERTIDO! require(${pago} >= ${globalPrice}) es FALSO. El contrato detiene la ejecución.`;
-            updateGlobalMessage(`⚠️ require falló. Debes pagar al menos ${globalPrice} tokens.`, true);
+        updateGlobalMessage(`✅ Nivel1: precioCafe ahora es ${globalPrice}. Ve al Nivel 2`);
+        if(consoleL2) {
+            consoleL2.innerHTML = `🧾 Nuevo precio: ${globalPrice} tokens. Prueba require con diferentes pagos.`;
+            consoleL2.style.borderLeftColor = "var(--warning)";
         }
     });
     
-    // ---------- NIVEL 3: POO / Objeto (stock del contrato) ----------
+    // ---------- NIVEL 2: EXPLICACIÓN AVANZADA DE REQUIRE con REVERT Y GAS ----------
+    btnL2.addEventListener('click', () => {
+        let pago = parseInt(inputL2.value);
+        if (isNaN(pago)) pago = 0;
+        const precioActual = globalPrice;
+        
+        if (pago >= precioActual) {
+            // Éxito: condición true
+            consoleL2.style.borderLeftColor = "var(--success)";
+            consoleL2.innerHTML = `✅ ✔️ require(${pago} >= ${precioActual}) es VERDADERO.<br>
+            ➜ La transacción CONTINÚA. ✅ No hay reversión.<br>
+            🧾 Todo cambio se guarda en el estado. Gas consumido apropiadamente.`;
+            updateGlobalMessage(`✅ Nivel2: require aprobado! No hubo revert.`);
+        } else {
+            // FALLO: REVERT total + reembolso de gas no utilizado.
+            consoleL2.style.borderLeftColor = "var(--danger)";
+            consoleL2.innerHTML = `❌ 🔁 REVERT COMPLETO 🔁 ❌<br>
+            ⚠️ require(${pago} >= ${precioActual}) es <strong>FALSO</strong>.<br>
+            📢 Mensaje de expulsión: <strong style="color:#facc15;">"Saldo insuficiente"</strong><br>
+            🛑 El programa se detiene EN SECO. La transacción se CANCELA.<br>
+            💥 Cualquier cambio previo (si los hubiera) se BORRA de la blockchain.<br>
+            ⛽ Se DEVUELVE el gas NO CONSUMIDO al usuario. Solo pagas la verificación fallida.<br>
+            🔁 Estado revertido al momento anterior a la llamada.`;
+            updateGlobalMessage(`❌ ¡REVERT! require falló. Transacción cancelada + gas no consumido devuelto.`, true);
+        }
+    });
+    
+    // ---------- NIVEL 3 ----------
     function updateStockL3() {
         stockL3Span.innerText = stockObject;
     }
@@ -473,119 +530,86 @@ Aquí tienes el código mejorado. He optimizado el diseño para que sea completa
         if(cantidad > 0) {
             stockObject += cantidad;
             updateStockL3();
-            // animación svg
             svgL3.classList.add('anim-spin');
             setTimeout(() => svgL3.classList.remove('anim-spin'), 400);
-            updateGlobalMessage(`📦 Nivel 3: Stock actualizado a ${stockObject} unidades. El objeto retiene estado.`);
+            updateGlobalMessage(`📦 Nivel 3: Stock = ${stockObject}. El objeto encapsula estado.`);
         } else {
             updateGlobalMessage(`⚠️ Cantidad inválida, ingresa un número positivo.`, true);
         }
-        // Mostrar un pequeño mensaje en consola visual
-        const interactiveDiv = document.querySelector('#level3 .interactive-zone');
-        // opcional feedback extra: sin romper
     });
-    
-    // Inicializar nivel 3
     updateStockL3();
     
-    // ---------- NIVEL 4: Smart Contract con lógica mejorada + bloqueo secuencial realista ----------
-    // Reseteamos estado del contrato cada deploy (por simulación)
+    // ---------- NIVEL 4: require en acción real con revert simulado ----------
     function resetContractState() {
         deployedContractStock = 3;
         isDeployed = true;
-        statusL4.innerHTML = "🟢 CONTRATO DESPLEGADO en dirección 0x9fE4...";
+        statusL4.innerHTML = "🟢 CONTRATO DESPLEGADO | 0x9bC1... (inmutable)";
         statusL4.style.borderLeftColor = "var(--success)";
-        statusL4.style.color = "#bbf0d0";
         btnBuy.disabled = false;
-        consoleL4.innerHTML = `✅ Smart contract desplegado con stock = ${deployedContractStock}. Ahora puedes llamar a comprar().`;
+        consoleL4.innerHTML = `✅ Smart contract desplegado con stock = ${deployedContractStock}. Require activo.`;
         consoleL4.style.borderLeftColor = "var(--success)";
-        updateGlobalMessage("🚀 Nivel 4: Contrato desplegado en blockchain. ¡Usa comprar()!");
+        updateGlobalMessage("🚀 Nivel 4: Contrato desplegado. Prueba comprar() y observa require.");
     }
     
     btnDeploy.addEventListener('click', () => {
         if (isDeployed) {
-            // Simulación de re-despliegue (opcional, pero mejor reiniciar)
             deployedContractStock = 3;
-            statusL4.innerHTML = "🔄 REDESPLIEGUE: Nuevo contrato inmutable.";
+            statusL4.innerHTML = "🔄 REDESPLIEGUE: nuevo contrato limpio";
             statusL4.style.borderLeftColor = "#f59e0b";
-            consoleL4.innerHTML = `🔁 Contrato reinstanciado con stock = ${deployedContractStock}. El estado anterior se perdió.`;
-            btnBuy.disabled = false;
-            updateGlobalMessage("⚠️ Se redeployó el contrato con stock inicial 3.");
+            consoleL4.innerHTML = `🔁 Contrato reinstanciado con stock = 3. Estado anterior borrado.`;
+            updateGlobalMessage("⚠️ Se redeployó el contrato (stock=3).");
         } else {
-            // primer deploy
             resetContractState();
         }
         isDeployed = true;
-        // Efecto de bloque simulado
         btnDeploy.disabled = true;
-        setTimeout(() => {
-            btnDeploy.disabled = false; // para poder volver a desplegar opcional
-        }, 1800);
+        setTimeout(() => { btnDeploy.disabled = false; }, 1500);
     });
     
-    // Llamada a comprar con require(stock>0)
     btnBuy.addEventListener('click', () => {
         if (!isDeployed) {
             consoleL4.style.borderLeftColor = "var(--danger)";
             consoleL4.innerHTML = "❌ Primero despliega el contrato (botón Desplegar).";
-            updateGlobalMessage("Despliega el Smart Contract antes de invocar comprar()", true);
+            updateGlobalMessage("Despliega antes de comprar.", true);
             return;
         }
         
         if (deployedContractStock > 0) {
             deployedContractStock--;
             consoleL4.style.borderLeftColor = "var(--success)";
-            consoleL4.innerHTML = `✔️ Transacción exitosa! require(stock > 0) fue TRUE. Stock restante: ${deployedContractStock}`;
-            updateGlobalMessage(`🎉 Compra realizada! Nuevo stock = ${deployedContractStock}`);
+            consoleL4.innerHTML = `✔️ Transacción EXITOSA: require(stock > 0) es TRUE. Stock restante: ${deployedContractStock}<br>
+            ➜ No hay revert. Estado actualizado en blockchain. Gas consumido correctamente.`;
+            updateGlobalMessage(`🎉 Compra realizada! Stock = ${deployedContractStock}`);
             if (deployedContractStock === 0) {
-                consoleL4.innerHTML += ` ⚠️ Última unidad vendida. El stock es 0.`;
+                consoleL4.innerHTML += ` ⚠️ Última unidad vendida. Ahora el require empezará a fallar.`;
             }
         } else {
+            // SIMULACIÓN DE REVERT total + mensaje + gas no consumido
             consoleL4.style.borderLeftColor = "var(--danger)";
-            consoleL4.innerHTML = `❌ REVERTIDA! require(stock > 0) ha fallado (stock = 0). Mensaje de error: "Sin existencias". Transacción cancelada.`;
-            updateGlobalMessage(`⛔ Compra rechazada: No quedan existencias en el contrato.`, true);
+            consoleL4.innerHTML = `❌ 🔁 REVERT TOTAL (Nivel 4) 🔁 ❌<br>
+            📢 require(stock > 0) es FALSO (stock = ${deployedContractStock}).<br>
+            ⚠️ Mensaje de error: <strong style="color:#facc15;">"Sin existencias"</strong><br>
+            🛑 Transacción CANCELADA por completo.<br>
+            🔄 Todos los cambios se revierten. El stock sigue siendo 0 (no puede ser negativo).<br>
+            ⛽ Se DEVUELVE el gas no consumido al usuario. Solo pagas la validación.`;
+            updateGlobalMessage(`⛔ REVERT: require falló, gas no usado devuelto.`, true);
         }
     });
     
-    // ---------- CONEXIÓN DIDÁCTICA: Si completan nivel 2, habilitar guía y feedback. No bloqueamos forzadamente pero se ve coherente.
-    // Además sincronizar valores iniciales y cleanup UI responsive.
+    // Inicialización y mensajes extra
     window.addEventListener('DOMContentLoaded', () => {
         updatePriceUI();
-        // adicional mostrar precio por defecto en nivel 2.
-        if(inputL2) inputL2.placeholder = `Ej: ${globalPrice}`;
-        // Pequeño helper para que nivel 4 muestre dependencia pero sin límite estricto, solo educativo.
-        // mejorar reset opcional de stockObject y mantener coherencia
         stockObject = 0;
         updateStockL3();
-        
-        // Eventos touch friendly: asegurar que el viewport esté optimizado
-        const allButtons = document.querySelectorAll('button');
-        allButtons.forEach(btn => {
-            btn.addEventListener('touchstart', (e) => {
-                // solo para mejorar feedback háptico
-                if(!btn.disabled) btn.style.transform = 'scale(0.97)';
-            });
-            btn.addEventListener('touchend', () => {
-                btn.style.transform = '';
-            });
-        });
-        
-        // Mostrar sugerencia en nivel 4
-        if(!isDeployed) btnBuy.disabled = true;
+        deployedContractStock = 3;
+        isDeployed = false;
+        btnBuy.disabled = true;
+        if(consoleL2) consoleL2.innerHTML = "🧾 Simulación avanzada de require() con REVERT + gas refund.";
+        // Prevenir zoom en móviles (input font-size)
+        const styleMobile = document.createElement('style');
+        styleMobile.textContent = `input, button { font-size: 16px !important; }`;
+        document.head.appendChild(styleMobile);
     });
-    
-    // lógica adicional: si se cambia precio global desde nivel 1 también afecta nivel 2 en tiempo real, ya funciona.
-    // Para mejorar la experiencia, si el usuario intenta comprar en nivel 4 sin desplegar mostramos mensaje coherente.
-    // también sincronización de mensajes para teléfonos.
-    
-    // Manejo extra de errores de input táctil
-    const styleFix = document.createElement('style');
-    styleFix.textContent = `input, button { font-size: 16px !important; }`; // evita zoom automático en iOS
-    document.head.appendChild(styleFix);
-    
-    // Proporcionar pistas contextuales para nivel 3 y mantener un seguimiento claro.
-    const originalConsoleL3Msg = document.querySelector('#level3 .interactive-zone p');
-    if(originalConsoleL3Msg) originalConsoleL3Msg.innerHTML = '⚙️ Atributo stock (variable de estado) modificable con "surtir"';
 </script>
 </body>
 </html>
