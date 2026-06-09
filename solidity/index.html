@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solidity Playground: Aprendiendo Smart Contracts</title>
+    <title>Solidity Playground: De POO a Smart Contracts</title>
     <style>
         :root {
             --bg-primary: #0f172a;
@@ -13,7 +13,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --success: #10b981;
-            --eth-color: #3c3c3d;
+            --warning: #f59e0b;
         }
 
         * {
@@ -38,38 +38,26 @@
             margin-bottom: 2rem;
         }
 
-        header h1 {
-            font-size: 2.5rem;
-            color: var(--text-main);
-            margin-bottom: 0.5rem;
-        }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        header p { color: var(--text-muted); }
 
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        /* Contenedor Principal usando CSS Grid */
+        /* Grid Principal split 50/50 */
         .playground-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 2rem;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1300px;
         }
 
         @media (min-width: 992px) {
-            .playground-grid {
-                grid-template-columns: 1.2fr 1fr;
-            }
+            .playground-grid { grid-template-columns: 1.1fr 0.9fr; }
         }
 
-        /* Tarjetas de la interfaz */
         .card {
             background-color: var(--bg-card);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
             border: 1px solid #334155;
             display: flex;
             flex-direction: column;
@@ -85,132 +73,94 @@
             gap: 0.5rem;
         }
 
-        /* Lado Izquierdo: Visualizador de Código */
+        /* Código con scroll */
         pre {
             background-color: #0b0f19;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
             overflow-x: auto;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 0.85rem;
+            line-height: 1.5;
             color: #cbd5e1;
         }
 
-        .highlight { color: var(--accent); font-weight: bold; }
+        .highlight { color: #f43f5e; font-weight: bold; } /* Palabras clave */
+        .poo-concept { color: #38bdf8; font-weight: bold; } /* Conceptos POO */
         .comment { color: #64748b; font-style: italic; }
         .string { color: var(--success); }
 
-        /* Lado Derecho: Simulación interactiva con Flexbox */
+        /* Simulación */
         .simulation-container {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            justify-content: space-between;
-            height: 100%;
+            gap: 1.2rem;
         }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: bold;
+            background-color: #334155;
+            transition: all 0.4s ease;
+        }
+
+        .status-undeployed { color: var(--warning); border: 1px solid var(--warning); }
+        .status-deployed { color: var(--success); border: 1px solid var(--success); background-color: rgba(16, 185, 129, 0.1); }
 
         .vending-machine-box {
             display: flex;
-            flex-direction: column;
+            justify-content: space-around;
             align-items: center;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            padding: 2rem;
+            background: #0f172a;
+            padding: 1.5rem;
             border-radius: 12px;
-            border: 2px dashed var(--accent);
-            position: relative;
+            border: 1px solid #334155;
+            opacity: 0.4;
+            transition: opacity 0.5s ease;
         }
 
-        /* SVG Animado y Transiciones */
+        .vending-machine-box.active { opacity: 1; border-color: var(--accent); }
+
         .svg-icon {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             transition: transform 0.5s ease, filter 0.3s ease;
         }
+        .svg-icon.processing { transform: rotate(360deg); }
+        .svg-icon.success { filter: drop-shadow(0 0 12px var(--success)); }
 
-        .svg-icon.processing {
-            transform: rotate(360deg) scale(1.1);
-        }
-
-        .svg-icon.success {
-            filter: drop-shadow(0 0 15px var(--success));
-        }
-
-        /* Controles de la simulación usando Flexbox */
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 0.5rem;
-        }
-
+        /* Inputs y Botones */
+        .controls { display: flex; flex-direction: column; gap: 0.8rem; }
+        .input-group { display: flex; gap: 0.5rem; }
         input {
-            flex: 1;
-            padding: 0.75rem;
-            border-radius: 6px;
-            border: 1px solid #475569;
-            background-color: #0f172a;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
+            flex: 1; padding: 0.6rem; border-radius: 6px;
+            border: 1px solid #475569; background-color: #0f172a; color: white;
         }
-
-        input:focus {
-            border-color: var(--accent);
-        }
-
         button {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            background-color: var(--accent); color: white; border: none;
+            padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
         }
+        button:hover { background-color: var(--accent-hover); }
+        button:disabled { background-color: #475569; cursor: not-allowed; opacity: 0.5; }
+        
+        .btn-deploy { background-color: var(--warning); color: #0f172a; }
+        .btn-deploy:hover { background-color: #d97706; }
 
-        button:hover {
-            background-color: var(--accent-hover);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        /* Consola de Blockchain */
         .blockchain-log {
-            background-color: #0b0f19;
-            border-left: 4px solid var(--accent);
-            padding: 0.75rem;
-            border-radius: 4px;
-            min-height: 60px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #38bdf8;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .log-success {
-            border-left-color: var(--success);
-            color: #34d399;
+            background-color: #0b0f19; border-left: 4px solid var(--warning);
+            padding: 0.8rem; border-radius: 4px; font-family: monospace;
+            font-size: 0.8rem; min-height: 50px; color: #cbd5e1;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Solidity Aula Interactiva</h1>
-        <p>Aprende cómo funciona un Smart Contract simulando una Máquina Expendedora</p>
+        <h1>Solidity para Programadores POO</h1>
+        <p>Mapeando Clases a Contratos Inteligentes e Instanciación en Blockchain</p>
     </header>
 
     <div class="playground-grid">
@@ -218,27 +168,33 @@
         <div class="card">
             <div class="card-title">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
-                Contrato Inteligente en Solidity
+                El Contrato Equivale a una Clase
             </div>
-            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
-                Este código define las reglas matemáticas inmutables en la Blockchain de Ethereum.
-            </p>
             <pre>
 <span class="comment">// SPDX-License-Identifier: MIT</span>
 <span class="highlight">pragma solidity</span> ^0.8.0;
 
-<span class="highlight">contract</span> MaquinaCafe {
-    <span class="comment">// Estado del contrato (Memoria en la Blockchain)</span>
-    <span class="highlight">uint256</span> <span class="highlight">public</span> precioCafe = 2; 
-    <span class="highlight">uint256</span> <span class="highlight">public</span> cafesDisponibles = 10;
+<span class="highlight">contract</span> MaquinaCafe { <span class="poo-concept">// <-- EQUIVALE A: class MaquinaCafe</span>
+    
+    <span class="comment">// ATRIBUTOS DE CLASE (Variables de estado encapsuladas)</span>
+    <span class="highlight">address</span> <span class="highlight">public</span> owner;             <span class="comment">// Propietario del contrato</span>
+    <span class="highlight">uint256</span> <span class="highlight">public</span> cafesDisponibles; <span class="comment">// Atributo numérico</span>
+    <span class="highlight">uint256</span> <span class="highlight">public</span> precio;           <span class="comment">// Atributo numérico</span>
 
-    <span class="comment">// Función que ejecuta la acción automáticamente</span>
-    <span class="highlight">function</span> comprarCafe(<span class="highlight">uint256</span> _pago) <span class="highlight">public</span> {
-        <span class="highlight">require</span>(_pago >= precioCafe, <span class="string">"Saldo insuficiente"</span>);
-        <span class="highlight">require</span>(cafesDisponibles > 0, <span class="string">"No queda cafe"</span>);
+    <span class="comment">// CONSTRUCTOR: Inicializa el estado al hacer el "new" (Deploy)</span>
+    <span class="highlight">constructor</span>(<span class="highlight">uint256</span> _inicial) {
+        owner = msg.sender; <span class="comment">// Guarda quién instanció el objeto</span>
+        cafesDisponibles = _inicial;
+        precio = 2;
+    }
+
+    <span class="comment">// MÉTODO PÚBLICO (Modifica los atributos)</span>
+    <span class="highlight">function</span> comprarCafe() <span class="highlight">public</span> <span class="highlight">payable</span> {
+        <span class="comment">// Validaciones de estado pre-ejecución</span>
+        <span class="highlight">require</span>(msg.value >= precio, <span class="string">"No enviaste suficiente Ether"</span>);
+        <span class="highlight">require</span>(cafesDisponibles > 0, <span class="string">"Instancia sin existencias"</span>);
         
-        cafesDisponibles -= 1;
-        <span class="comment">// ¡Acción completada de forma autónoma!</span>
+        cafesDisponibles -= 1; <span class="comment">// Mutación del atributo</span>
     }
 }</pre>
         </div>
@@ -246,95 +202,142 @@
         <div class="card">
             <div class="card-title">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                Playground: Ejecución en Tiempo Real
+                Ciclo de Vida del Objeto en Red
             </div>
             
             <div class="simulation-container">
-                
-                <div class="vending-machine-box">
-                    <svg id="machine-svg" class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <div id="status-badge" class="status-badge status-undeployed">
+                    ESTADO: CLASE NO INSTANCIADA (Sin desplegar)
+                </div>
+
+                <div class="controls" id="deploy-section">
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        Paso 1: Pasa argumentos al constructor e instancía la clase en la red.
+                    </p>
+                    <div class="input-group">
+                        <input type="number" id="constructor-input" value="5" placeholder="Stock inicial para el constructor">
+                        <button id="btn-deploy" class="btn-deploy">Desplegar (new MaquinaCafe())</button>
+                    </div>
+                </div>
+
+                <div id="machine-box" class="vending-machine-box">
+                    <svg id="machine-svg" class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5">
                         <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
                         <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-                        <line x1="6" y1="2" x2="6" y2="4" />
-                        <line x1="10" y1="2" x2="10" y2="4" />
-                        <line x1="14" y1="2" x2="14" y2="4" />
                     </svg>
-                    
-                    <div style="margin-top: 1rem; text-align: center;">
-                        <p>Estado en Blockchain:</p>
-                        <strong style="color: var(--success);">Cafés en inventario: <span id="stock-display">10</span></strong>
+                    <div>
+                        <p style="font-size:0.85rem; color:var(--text-muted)">Variables de Estado del Objeto:</p>
+                        <p>• owner: <span id="owner-display" style="font-family:monospace; color:var(--accent);">null</span></p>
+                        <p>• cafesDisponibles: <strong id="stock-display" style="color:var(--success);">0</strong></p>
                     </div>
                 </div>
 
                 <div class="controls">
                     <p style="font-size: 0.9rem; color: var(--text-muted);">
-                        Introduce fichas (Simulación de pago al contrato. Costo: 2 tokens):
+                        Paso 2: Invocar métodos del objeto ya desplegado (Enviar dinero de pago).
                     </p>
                     <div class="input-group">
-                        <input type="number" id="payment-input" placeholder="Cantidad de fichas..." min="0">
-                        <button id="btn-execute">Ejecutar Contrato</button>
-                    </div>
-                    
-                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Registro de Eventos (EVM Log):</p>
-                    <div id="blockchain-log" class="blockchain-log">
-                        Esperando interacción... El contrato está desplegado y listo.
+                        <input type="number" id="payment-input" placeholder="Cantidad de Ether (Costo: 2)" disabled>
+                        <button id="btn-execute" disabled>Llamar a comprarCafe()</button>
                     </div>
                 </div>
 
+                <div id="blockchain-log" class="blockchain-log">
+                    La clase estática espera ser compilada e instanciada en la Blockchain...
+                </div>
             </div>
         </div>
 
     </div>
 
     <script>
-        // Lógica de simulación del Smart Contract
-        let cafesDisponibles = 10;
+        // Simulación del estado del Objeto/Contrato
+        let contratoDesplegado = false;
+        let cafesDisponibles = 0;
         const precioCafe = 2;
+        let ownerAddress = "0x71C...3a92"; // Dirección simulada del programador
 
+        // Elementos DOM
+        const btnDeploy = document.getElementById('btn-deploy');
         const btnExecute = document.getElementById('btn-execute');
+        const constructorInput = document.getElementById('constructor-input');
         const paymentInput = document.getElementById('payment-input');
         const stockDisplay = document.getElementById('stock-display');
+        const ownerDisplay = document.getElementById('owner-display');
         const blockchainLog = document.getElementById('blockchain-log');
+        const statusBadge = document.getElementById('status-badge');
+        const machineBox = document.getElementById('machine-box');
         const machineSvg = document.getElementById('machine-svg');
 
-        btnExecute.addEventListener('click', () => {
-            const pago = parseInt(paymentInput.value);
-
-            // Reseteo de clases de transición
-            machineSvg.classList.remove('processing', 'success');
-            blockchainLog.classList.remove('log-success');
-
-            // Validación previa antes de "compilar/ejecutar" en la máquina virtual
-            if (isNaN(pago) || pago <= 0) {
-                blockchainLog.innerText = "❌ [Error EVM]: Debes ingresar una cantidad válida de tokens.";
+        // SIMULACIÓN DEL CONSTRUCTOR (DEPLOY / NEW)
+        btnDeploy.addEventListener('click', () => {
+            const stockInicial = parseInt(constructorInput.value);
+            if (isNaN(stockInicial) || stockInicial <= 0) {
+                blockchainLog.innerText = "❌ Error: El constructor necesita un stock inicial válido mayor a 0.";
                 return;
             }
 
-            // Simulación del procesamiento del bloque (Efecto visual)
+            blockchainLog.style.borderColor = "var(--warning)";
+            blockchainLog.innerText = "⏳ Minando bloque de creación... Ejecutando constructor().";
+
+            setTimeout(() => {
+                // Se asignan las variables en la "construcción"
+                cafesDisponibles = stockInicial;
+                contratoDesplegado = true;
+
+                // Actualizar Interfaz
+                stockDisplay.innerText = cafesDisponibles;
+                ownerDisplay.innerText = ownerAddress;
+                
+                statusBadge.innerText = "ESTADO: INSTANCIA DE CONTRATO VIVA (Dirección: 0xAb58...)";
+                statusBadge.classList.remove('status-undeployed');
+                statusBadge.classList.add('status-deployed');
+                machineBox.classList.add('active');
+                
+                // Habilitar/Deshabilitar controles
+                btnExecute.disabled = false;
+                paymentInput.disabled = false;
+                btnDeploy.disabled = true;
+                constructorInput.disabled = true;
+
+                blockchainLog.style.borderColor = "var(--success)";
+                blockchainLog.innerText = `✔️ [Deploy OK]: Clase instanciada en la red. Se ejecutó el constructor y se definieron los atributos iniciales de memoria.`;
+            }, 1000);
+        });
+
+        // SIMULACIÓN DEL MÉTODO (METHOC CALL)
+        btnExecute.addEventListener('click', () => {
+            const pago = parseInt(paymentInput.value);
+            machineSvg.classList.remove('processing', 'success');
+
+            if (isNaN(pago) || pago <= 0) {
+                blockchainLog.innerText = "❌ [Error]: Argumento de pago inválido.";
+                return;
+            }
+
             machineSvg.classList.add('processing');
-            blockchainLog.innerText = "⏳ Procesando transacción en el bloque... Validando 'require()'.";
+            blockchainLog.innerText = "⏳ Ejecutando método remoto del contrato...";
 
             setTimeout(() => {
                 machineSvg.classList.remove('processing');
 
-                // Aplicación estricta de las reglas del Smart Contract de Solidity
+                // Lógica interna del método
                 if (pago < precioCafe) {
-                    blockchainLog.innerText = `❌ [Transaction Reverted]: require(_pago >= precioCafe) falló. Ingresaste ${pago} tokens, pero el costo es de ${precioCafe}.`;
+                    blockchainLog.style.borderColor = "#f43f5e";
+                    blockchainLog.innerText = `❌ [POO Exception / Require Failed]: El método exige un pago mínimo de ${precioCafe}. Cancelando mutación de estado.`;
                 } else if (cafesDisponibles <= 0) {
-                    blockchainLog.innerText = "❌ [Transaction Reverted]: require(cafesDisponibles > 0) falló. ¡Máquina sin existencias!";
+                    blockchainLog.style.borderColor = "#f43f5e";
+                    blockchainLog.innerText = "❌ [Exception]: cafesDisponibles == 0. No hay stock para procesar el método.";
                 } else {
-                    // Si cumple las condiciones del contrato, muta el estado
                     cafesDisponibles--;
                     stockDisplay.innerText = cafesDisponibles;
                     
-                    // Éxito
                     machineSvg.classList.add('success');
-                    blockchainLog.classList.add('log-success');
-                    blockchainLog.innerText = `✔️ [Success]: ¡Transacción exitosa! Bloque minado. Se descontaron los tokens y se entregó 1 café de forma automatizada.`;
+                    blockchainLog.style.borderColor = "var(--success)";
+                    blockchainLog.innerText = `✔️ [Method Success]: El método alteró con éxito el atributo del objeto. Nuevo stock: ${cafesDisponibles}.`;
                 }
-                
-                paymentInput.value = ''; // Limpiar input
-            }, 800); // 800ms simulando el tiempo de respuesta/bloque
+                paymentInput.value = '';
+            }, 800);
         });
     </script>
 </body>
