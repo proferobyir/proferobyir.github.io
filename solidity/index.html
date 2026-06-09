@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Curso Interactivo: De Cero a Smart Contracts | Require en profundidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #1e293b;
+            --bg-code: #0f172a;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #f43f5e;
+            --info-glow: #3b82f6;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        .timeline {
+            width: 100%;
+            max-width: 1150px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .level-block {
+            background-color: var(--bg-card);
+            border-radius: 1.25rem;
+            border: 1px solid #334155;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .level-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            padding: 1.2rem;
+        }
+
+        @media (min-width: 700px) {
+            .level-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            body {
+                padding: 1.5rem;
+            }
+            .timeline {
+                gap: 2rem;
+            }
+        }
+
+        .explanation {
+            overflow-x: auto;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.25rem 0.85rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.75rem;
+        }
+
+        .level-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .level-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .deep-dive-card {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--info-glow);
+            border-radius: 14px;
+            padding: 1rem;
+            margin: 1rem 0 0.5rem 0;
+            backdrop-filter: blur(2px);
+        }
+        .deep-dive-card p {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.45;
+            color: #cbd5e6;
+        }
+        .deep-dive-card strong {
+            color: #facc15;
+        }
+        .revert-badge {
+            background-color: #7f1a1a40;
+            color: #f87171;
+            font-family: monospace;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        pre {
+            background-color: var(--bg-code);
+            padding: 0.9rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #1e293b;
+        }
+
+        @media (min-width: 480px) {
+            pre {
+                font-size: 0.8rem;
+            }
+            .level-title {
+                font-size: 1.45rem;
+            }
+        }
+
+        .keyword { color: #f97316; font-weight: bold; }
+        .type { color: #38bdf8; }
+        .comment { color: #64748b; font-style: italic; }
+        .string { color: var(--success); }
+
+        .interactive-zone {
+            background-color: rgba(15, 23, 42, 0.7);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        @media (min-width: 450px) {
+            .flex-row {
+                flex-direction: row;
+                align-items: center;
+            }
+            button {
+                flex-shrink: 0;
+            }
+        }
+
+        input {
+            background-color: var(--bg-code);
+            border: 1px solid #475569;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            background-color: var(--accent);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        @media (min-width: 450px) {
+            button {
+                width: auto;
+                min-width: 120px;
+            }
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #475569;
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .console-box {
+            background-color: #05070f;
+            border-left: 4px solid var(--accent);
+            padding: 0.75rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            word-break: break-word;
+            color: #cbd5e1;
+        }
+
+        .visual-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            padding: 0.8rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .svg-icon {
+            width: 48px;
+            height: 48px;
+            transition: transform 0.3s ease;
+        }
+
+        .anim-spin {
+            transform: rotate(360deg);
+        }
+
+        hr {
+            margin: 0.5rem 0;
+            border-color: #334155;
+        }
+
+        .global-progress {
+            background: #111827;
+            border-radius: 100px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 1150px;
+            color: var(--text-muted);
+        }
+        
+        footer {
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #4b5563;
+        }
+
+        .gas-tip {
+            background-color: #0f172a;
+            border-radius: 10px;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+            border: 1px dashed #475569;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="global-progress" id="globalProgress">
+    📘 Nivel 1: Aprende variables básicas
+</div>
+
+<div class="timeline">
+    <!-- NIVEL 1: Variables -->
+    <div class="level-block" id="level1">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #06b6d4;">Nivel 1 · Variables</span>
+                <h2 class="level-title">📦 Cajas de datos: tipos básicos</h2>
+                <p class="level-description">Las variables son contenedores. En Solidity debemos declarar el tipo: <strong>uint</strong> (entero) o <strong>string</strong>.</p>
+                <pre><span class="comment">// variable entera sin signo</span>
+<span class="type">uint256</span> <span class="keyword">public</span> precioCafe = <span class="type">2</span>;
+<span class="comment">// texto fijo</span>
+<span class="type">string</span> <span class="keyword">public</span> mensaje = <span class="string">"¡Blockchain!"</span>;</pre>
+            </div>
+            <div class="interactive-zone">
+                <p style="font-size:0.85rem;">💡 Cambia el valor del <strong>precioCafe</strong></p>
+                <div class="flex-row">
+                    <input type="number" id="input-l1" value="2" min="1" step="1">
+                    <button id="btn-l1">Guardar variable</button>
+                </div>
+                <div id="console-l1" class="console-box">
+                    📌 precioCafe = 2
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NIVEL 2: REQUIRE + EXPLICACIÓN DETALLADA (revert + gas) -->
+    <div class="level-block" id="level2">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #3b82f6;">Nivel 2 · El poder de require()</span>
+                <h2 class="level-title">⚖️ Guardián de la puerta</h2>
+                <p class="level-description"><code>require(condición, "mensaje")</code> valida una condición. Si es <strong>falsa</strong>, todo se detiene y revierte.</p>
+                <pre><span class="keyword">require</span>(pago >= precioCafe, <span class="string">"Saldo insuficiente"</span>);
+<span class="comment">// Si falla: reversión total del estado + devolución del gas no consumido.</span></pre>
+                
+                <!-- EXPLICACIÓN PROFUNDA DE REQUIRE SEGÚN SOLICITUD -->
+                <div class="deep-dive-card">
+                    <p><span class="revert-badge">🔁 REVERT (Reversión total)</span></p>
+                    <p>✅ <strong>Si la condición es <span style="color:#f97316;">FALSA</span>:</strong> el segundo parámetro muestra el mensaje de error, pero <strong>NO permite que nada más continúe</strong>. Provoca un mecanismo llamado <strong style="color:#f87171;">Revert</strong>:</p>
+                    <p>➜ El programa se detiene en seco.<br>
+                    ➜ La transacción se <strong>cancela por completo</strong>.<br>
+                    ➜ Cualquier cambio que se haya intentado hacer en la memoria de la Blockchain se borra, devolviendo el estado exactamente <strong>a como estaba antes</strong> de pulsar el botón.<br>
+                    ➜ Además, se le <strong>regresa al usuario el gas (dinero de la red) que no se gastó</strong>.</p>
+                    <p>🎯 En conclusión: el segundo parámetro es el <strong>"mensaje de expulsión"</strong> cuando el guardián <code>require</code> te rebota.</p>
+                    <div class="gas-tip">
+                        💨 Gas no consumido → reembolsado. Solo pagas por la verificación fallida.
+                    </div>
+                </div>
+            </div>
+            <div class="interactive-zone">
+                <p style="font-size:0.85rem;">💰 El café cuesta <strong id="current-price-display">2</strong> tokens. Prueba el require:</p>
+                <div class="flex-row">
+                    <input type="number" id="input-l2" placeholder="Tu pago (tokens)" step="1">
+                    <button id="btn-l2">Ejecutar require()</button>
+                </div>
+                <div id="console-l2" class="console-box">
+                    🧾 Simulación de require()...
+                </div>
+                <div style="font-size: 0.7rem; text-align:center; color:#94a3b8;">🔁 Cada intento muestra si hubo REVERT o éxito</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NIVEL 3: OBJETOS (POO) -->
+    <div class="level-block" id="level3">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #10b981;">Nivel 3 · Objetos (POO)</span>
+                <h2 class="level-title">🏭 Contrato como fábrica</h2>
+                <p class="level-description">Un contrato es una clase con atributos (stock) y métodos (surtir). Encapsulamos lógica.</p>
+                <pre><span class="keyword">contract</span> Maquina {
+    <span class="type">uint256</span> <span class="keyword">public</span> stock;
+    <span class="keyword">function</span> surtir(<span class="type">uint256</span> _cant) <span class="keyword">public</span> {
+        stock += _cant;
+    }
+}</pre>
+            </div>
+            <div class="interactive-zone">
+                <div class="visual-container">
+                    <svg class="svg-icon" id="svg-l3" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <circle cx="12" cy="12" r="2" fill="var(--success)" fill-opacity="0.5"/>
+                    </svg>
+                    <p><strong>📦 Stock actual: <span id="stock-l3">0</span> unidades</strong></p>
+                </div>
+                <div class="flex-row">
+                    <input type="number" id="input-l3" value="5" placeholder="Cantidad a surtir">
+                    <button id="btn-l3">➕ Surtir (modificar objeto)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NIVEL 4: SMART CONTRACT FINAL -->
+    <div class="level-block" id="level4">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #8b5cf6;">Nivel 4 · Smart Contract</span>
+                <h2 class="level-title">⛓️ Despliegue en Blockchain</h2>
+                <p class="level-description">El contrato se despliega y ejecuta reglas inmutables. <code>require(stock>0)</code> protege la compra.</p>
+                <pre><span class="keyword">contract</span> Tienda {
+    <span class="type">uint256</span> <span class="keyword">public</span> stock = <span class="type">3</span>;
+    <span class="keyword">function</span> comprar() <span class="keyword">public</span> {
+        <span class="keyword">require</span>(stock > <span class="type">0</span>, <span class="string">"Sin existencias"</span>);
+        stock--;
+    }
+}</pre>
+            <div class="deep-dive-card" style="margin-top:0.5rem;">
+                <p>🧠 <strong>Recuerda:</strong> Aquí el <code>require</code> también aplica la misma regla. Si stock=0, el mensaje <strong>"Sin existencias"</strong> aparece y la transacción <strong>revierte</strong>, devolviendo el estado anterior y reembolsando el gas no usado.</p>
+            </div>
+            </div>
+            <div class="interactive-zone" style="border: 1px solid var(--accent);">
+                <div id="status-l4" class="console-box" style="background-color:#111827;">
+                    ⚙️ Contrato no desplegado
+                </div>
+                <button id="btn-deploy-l4" style="background-color: #f59e0b; color:#0b0f19;">🚀 Desplegar en red de pruebas</button>
+                <hr>
+                <button id="btn-buy-l4" disabled>🛒 Ejecutar comprar()</button>
+                <div id="console-l4" class="console-box">
+                    🌐 Require en acción después del deploy.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>✨ Simulación didáctica: Require + Reversión total + reembolso de gas no consumido</footer>
+
+<script>
+    // ======================= LÓGICA MEJORADA =======================
+    let globalPrice = 2;          
+    let stockObject = 0;          
+    let deployedContractStock = 3; 
+    let isDeployed = false;
+    
+    // Elementos DOM
+    const inputL1 = document.getElementById('input-l1');
+    const btnL1 = document.getElementById('btn-l1');
+    const consoleL1 = document.getElementById('console-l1');
+    const priceDisplaySpan = document.getElementById('current-price-display');
+    
+    const inputL2 = document.getElementById('input-l2');
+    const btnL2 = document.getElementById('btn-l2');
+    const consoleL2 = document.getElementById('console-l2');
+    
+    const inputL3 = document.getElementById('input-l3');
+    const btnL3 = document.getElementById('btn-l3');
+    const stockL3Span = document.getElementById('stock-l3');
+    const svgL3 = document.getElementById('svg-l3');
+    
+    const btnDeploy = document.getElementById('btn-deploy-l4');
+    const btnBuy = document.getElementById('btn-buy-l4');
+    const statusL4 = document.getElementById('status-l4');
+    const consoleL4 = document.getElementById('console-l4');
+    
+    const globalProgressDiv = document.getElementById('globalProgress');
+    
+    function updateGlobalMessage(msg, isError = false) {
+        globalProgressDiv.innerHTML = msg;
+        globalProgressDiv.style.color = isError ? '#f87171' : '#94a3b8';
+        setTimeout(() => {
+            if(!isError) globalProgressDiv.style.color = '#94a3b8';
+        }, 2800);
+    }
+    
+    // ---------- NIVEL 1 ----------
+    function updatePriceUI() {
+        consoleL1.innerText = `📦 Variable 'precioCafe' = ${globalPrice} (en memoria)`;
+        priceDisplaySpan.innerText = globalPrice;
+        if(inputL2) inputL2.placeholder = `Ej: ${globalPrice}`;
+    }
+    
+    btnL1.addEventListener('click', () => {
+        let newPrice = parseInt(inputL1.value);
+        if (isNaN(newPrice) || newPrice < 1) newPrice = 1;
+        globalPrice = newPrice;
+        updatePriceUI();
+        updateGlobalMessage(`✅ Nivel1: precioCafe ahora es ${globalPrice}. Ve al Nivel 2`);
+        if(consoleL2) {
+            consoleL2.innerHTML = `🧾 Nuevo precio: ${globalPrice} tokens. Prueba require con diferentes pagos.`;
+            consoleL2.style.borderLeftColor = "var(--warning)";
+        }
+    });
+    
+    // ---------- NIVEL 2: EXPLICACIÓN AVANZADA DE REQUIRE con REVERT Y GAS ----------
+    btnL2.addEventListener('click', () => {
+        let pago = parseInt(inputL2.value);
+        if (isNaN(pago)) pago = 0;
+        const precioActual = globalPrice;
+        
+        if (pago >= precioActual) {
+            // Éxito: condición true
+            consoleL2.style.borderLeftColor = "var(--success)";
+            consoleL2.innerHTML = `✅ ✔️ require(${pago} >= ${precioActual}) es VERDADERO.<br>
+            ➜ La transacción CONTINÚA. ✅ No hay reversión.<br>
+            🧾 Todo cambio se guarda en el estado. Gas consumido apropiadamente.`;
+            updateGlobalMessage(`✅ Nivel2: require aprobado! No hubo revert.`);
+        } else {
+            // FALLO: REVERT total + reembolso de gas no utilizado.
+            consoleL2.style.borderLeftColor = "var(--danger)";
+            consoleL2.innerHTML = `❌ 🔁 REVERT COMPLETO 🔁 ❌<br>
+            ⚠️ require(${pago} >= ${precioActual}) es <strong>FALSO</strong>.<br>
+            📢 Mensaje de expulsión: <strong style="color:#facc15;">"Saldo insuficiente"</strong><br>
+            🛑 El programa se detiene EN SECO. La transacción se CANCELA.<br>
+            💥 Cualquier cambio previo (si los hubiera) se BORRA de la blockchain.<br>
+            ⛽ Se DEVUELVE el gas NO CONSUMIDO al usuario. Solo pagas la verificación fallida.<br>
+            🔁 Estado revertido al momento anterior a la llamada.`;
+            updateGlobalMessage(`❌ ¡REVERT! require falló. Transacción cancelada + gas no consumido devuelto.`, true);
+        }
+    });
+    
+    // ---------- NIVEL 3 ----------
+    function updateStockL3() {
+        stockL3Span.innerText = stockObject;
+    }
+    
+    btnL3.addEventListener('click', () => {
+        let cantidad = parseInt(inputL3.value);
+        if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
+        if(cantidad > 0) {
+            stockObject += cantidad;
+            updateStockL3();
+            svgL3.classList.add('anim-spin');
+            setTimeout(() => svgL3.classList.remove('anim-spin'), 400);
+            updateGlobalMessage(`📦 Nivel 3: Stock = ${stockObject}. El objeto encapsula estado.`);
+        } else {
+            updateGlobalMessage(`⚠️ Cantidad inválida, ingresa un número positivo.`, true);
+        }
+    });
+    updateStockL3();
+    
+    // ---------- NIVEL 4: require en acción real con revert simulado ----------
+    function resetContractState() {
+        deployedContractStock = 3;
+        isDeployed = true;
+        statusL4.innerHTML = "🟢 CONTRATO DESPLEGADO | 0x9bC1... (inmutable)";
+        statusL4.style.borderLeftColor = "var(--success)";
+        btnBuy.disabled = false;
+        consoleL4.innerHTML = `✅ Smart contract desplegado con stock = ${deployedContractStock}. Require activo.`;
+        consoleL4.style.borderLeftColor = "var(--success)";
+        updateGlobalMessage("🚀 Nivel 4: Contrato desplegado. Prueba comprar() y observa require.");
+    }
+    
+    btnDeploy.addEventListener('click', () => {
+        if (isDeployed) {
+            deployedContractStock = 3;
+            statusL4.innerHTML = "🔄 REDESPLIEGUE: nuevo contrato limpio";
+            statusL4.style.borderLeftColor = "#f59e0b";
+            consoleL4.innerHTML = `🔁 Contrato reinstanciado con stock = 3. Estado anterior borrado.`;
+            updateGlobalMessage("⚠️ Se redeployó el contrato (stock=3).");
+        } else {
+            resetContractState();
+        }
+        isDeployed = true;
+        btnDeploy.disabled = true;
+        setTimeout(() => { btnDeploy.disabled = false; }, 1500);
+    });
+    
+    btnBuy.addEventListener('click', () => {
+        if (!isDeployed) {
+            consoleL4.style.borderLeftColor = "var(--danger)";
+            consoleL4.innerHTML = "❌ Primero despliega el contrato (botón Desplegar).";
+            updateGlobalMessage("Despliega antes de comprar.", true);
+            return;
+        }
+        
+        if (deployedContractStock > 0) {
+            deployedContractStock--;
+            consoleL4.style.borderLeftColor = "var(--success)";
+            consoleL4.innerHTML = `✔️ Transacción EXITOSA: require(stock > 0) es TRUE. Stock restante: ${deployedContractStock}<br>
+            ➜ No hay revert. Estado actualizado en blockchain. Gas consumido correctamente.`;
+            updateGlobalMessage(`🎉 Compra realizada! Stock = ${deployedContractStock}`);
+            if (deployedContractStock === 0) {
+                consoleL4.innerHTML += ` ⚠️ Última unidad vendida. Ahora el require empezará a fallar.`;
+            }
+        } else {
+            // SIMULACIÓN DE REVERT total + mensaje + gas no consumido
+            consoleL4.style.borderLeftColor = "var(--danger)";
+            consoleL4.innerHTML = `❌ 🔁 REVERT TOTAL (Nivel 4) 🔁 ❌<br>
+            📢 require(stock > 0) es FALSO (stock = ${deployedContractStock}).<br>
+            ⚠️ Mensaje de error: <strong style="color:#facc15;">"Sin existencias"</strong><br>
+            🛑 Transacción CANCELADA por completo.<br>
+            🔄 Todos los cambios se revierten. El stock sigue siendo 0 (no puede ser negativo).<br>
+            ⛽ Se DEVUELVE el gas no consumido al usuario. Solo pagas la validación.`;
+            updateGlobalMessage(`⛔ REVERT: require falló, gas no usado devuelto.`, true);
+        }
+    });
+    
+    // Inicialización y mensajes extra
+    window.addEventListener('DOMContentLoaded', () => {
+        updatePriceUI();
+        stockObject = 0;
+        updateStockL3();
+        deployedContractStock = 3;
+        isDeployed = false;
+        btnBuy.disabled = true;
+        if(consoleL2) consoleL2.innerHTML = "🧾 Simulación avanzada de require() con REVERT + gas refund.";
+        // Prevenir zoom en móviles (input font-size)
+        const styleMobile = document.createElement('style');
+        styleMobile.textContent = `input, button { font-size: 16px !important; }`;
+        document.head.appendChild(styleMobile);
+    });
+</script>
+</body>
+</html>
+```
