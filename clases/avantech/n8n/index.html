@@ -1,10 +1,13 @@
+Aquí tienes el archivo HTML completo que ahora incluye una sección profunda y clara sobre el objeto `$json` en n8n,
+explicando cómo manipularlo, acceder a valores anidados y usarlo dentro de los nodos.
+```html
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>n8n Playground: Nodos + Workflow Telegram | Avances Tecnológicos</title>
+    <title>n8n Playground: $json, Nodos y Workflow Telegram | Avances Tecnológicos</title>
     <style>
         * {
             margin: 0;
@@ -24,7 +27,6 @@
             margin: 0 auto;
         }
 
-        /* Cabecera */
         .hero {
             text-align: center;
             margin-bottom: 2rem;
@@ -85,7 +87,7 @@
             padding-left: 1rem;
         }
 
-        /* Grid de nodos generales */
+        /* Grid de nodos */
         .nodos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -135,135 +137,143 @@
             color: #1f4e6e;
         }
 
-        /* Sección Tutorial Telegram (paso a paso gráfico) */
+        /* Sección $JSON - Explicación profunda */
+        .json-section {
+            background: linear-gradient(135deg, #0a1f2c 0%, #0c2a3b 100%);
+            border-radius: 2rem;
+            padding: 1.8rem;
+            margin: 1.5rem 0;
+            color: #eef4ff;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .json-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid #e4672f;
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .json-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 1.2rem 0;
+        }
+
+        .json-card {
+            background: #102b38;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            border-left: 4px solid #ff914d;
+        }
+
+        .json-card h3 {
+            color: #ffb347;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .code-block {
+            background: #06212e;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin: 0.7rem 0;
+            border: 1px solid #2d5a6e;
+        }
+
+        .inline-code {
+            background: #06212e;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #ffd966;
+            font-size: 0.85rem;
+        }
+
+        .demo-json-play {
+            background: #00000033;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-json {
+            background: #e4672f;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-json:hover {
+            background: #ff7a45;
+            transform: scale(1.02);
+        }
+
+        /* Tutorial Telegram */
         .tutorial-telegram {
             background: linear-gradient(135deg, #ffffff 0%, #fef9f0 100%);
             border-radius: 2rem;
             padding: 1.8rem;
             margin: 1.5rem 0;
             border: 1px solid #ffdec2;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .tutorial-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .tutorial-header h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1f6e8c, #0e4b64);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        .steps-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
         }
 
         .step {
             display: flex;
             gap: 1rem;
-            align-items: flex-start;
+            margin-bottom: 1rem;
             background: #ffffffcc;
-            border-radius: 1.2rem;
-            padding: 1rem;
-            transition: 0.2s;
-            border-left: 5px solid #e4672f;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            border-left: 4px solid #e4672f;
         }
 
         .step-number {
             background: #e4672f;
             color: white;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 0.8rem;
             flex-shrink: 0;
         }
 
-        .step-content {
-            flex: 1;
-        }
-
-        .step-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .step-desc {
-            font-size: 0.9rem;
-            color: #2c3e50;
-            line-height: 1.4;
-        }
-
-        .code-inline {
-            background: #1e2f3a;
-            color: #ffd966;
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 0.8rem;
-        }
-
-        /* Simulación visual del nodo (como en la imagen) */
         .nodo-config-visual {
             background: #1e2f3a;
-            border-radius: 1.5rem;
-            padding: 1.2rem;
-            margin: 1.2rem 0;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-top: 1rem;
             color: #eef2f5;
-            font-family: 'Inter', monospace;
-        }
-
-        .config-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #3e5a6b;
-            padding-bottom: 0.7rem;
-            margin-bottom: 1rem;
         }
 
         .config-grid {
             display: grid;
             grid-template-columns: auto 1fr;
-            gap: 0.6rem 1rem;
-            font-size: 0.85rem;
+            gap: 0.5rem 1rem;
+            font-size: 0.8rem;
         }
 
-        .config-label {
-            font-weight: 600;
-            color: #ffb68b;
-        }
-
-        .config-value {
-            font-family: monospace;
-            color: #cbd5e6;
-        }
-
-        .highlight {
-            background: #e4672f30;
-            border-radius: 12px;
-            padding: 0.2rem 0.5rem;
-        }
-
-        /* Workflow visual */
         .workflow-visual {
             background: linear-gradient(135deg, #1e2f3a 0%, #16242e 100%);
             border-radius: 2rem;
-            padding: 1.8rem;
+            padding: 1.5rem;
             margin: 1.5rem 0;
             color: white;
         }
@@ -273,81 +283,54 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 0.8rem;
         }
 
         .wf-nodo {
             background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(8px);
-            border-radius: 1.2rem;
-            padding: 0.9rem 1.2rem;
+            border-radius: 1rem;
+            padding: 0.7rem 1rem;
             text-align: center;
-            min-width: 140px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 120px;
         }
 
         .arrow-connector {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: #ffb347;
         }
 
-        /* Ciclo de vida */
         .workflow-lifecycle {
             background: #ffffffdb;
             border-radius: 2rem;
-            padding: 1.8rem;
+            padding: 1.5rem;
             margin: 2rem 0;
-            border: 1px solid #cbdbe2;
         }
 
         .ciclo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
         }
 
         .etapa {
             background: #f8fbff;
-            padding: 0.8rem;
+            padding: 0.7rem;
             border-radius: 1rem;
             text-align: center;
             border-left: 3px solid #e4672f;
         }
 
-        .min-elements {
-            background: #eef2fa;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            justify-content: center;
-        }
-
-        .min-badge {
-            background: white;
-            border-radius: 60px;
-            padding: 0.4rem 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
         .demo-workflow {
             background: linear-gradient(135deg, #1f2e3a, #15232e);
             border-radius: 1.5rem;
-            padding: 1rem 1.5rem;
-            color: white;
+            padding: 1rem;
             margin: 1rem 0;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 0.8rem;
+            color: white;
         }
 
         .interactivo-btn {
@@ -355,9 +338,7 @@
             border: 1px solid #ffffff44;
             padding: 0.4rem 1rem;
             border-radius: 2rem;
-            font-weight: 500;
             cursor: pointer;
-            transition: 0.2s;
             color: white;
         }
 
@@ -375,16 +356,16 @@
         }
 
         @media (max-width: 680px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
             .workflow-nodos {
                 flex-direction: column;
             }
 
             .arrow-connector {
                 transform: rotate(90deg);
-            }
-
-            .config-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -393,169 +374,196 @@
 <body>
     <div class="dashboard">
         <div class="hero">
-            <div class="materia-badge">📘 AVANCES TECNOLÓGICOS | n8n + Telegram Bot</div>
+            <div class="materia-badge">📘 AVANCES TECNOLÓGICOS | n8n - $json, Nodos y Workflows</div>
             <h1>Playground de Nodos n8n</h1>
-            <p>Tipos de nodos · Workflow Telegram · Paso a paso para crear y conectar tu Bot</p>
+            <p>Domina el objeto <strong
+                    style="background:#e4672f20; padding:0.1rem 0.5rem; border-radius:20px;">$json</strong> · Manipula
+                datos · Workflow con Telegram</p>
         </div>
 
-        <!-- ========= SECCIÓN 1: Tipos de nodos (imagen original) ========= -->
+        <!-- SECCIÓN: TIPOS DE NODOS -->
         <div class="section-title"><span>🗂️</span> Tipos de Nodos (Dashboard n8n)</div>
         <div class="nodos-grid" id="nodosContainer"></div>
 
-        <!-- ========= SECCIÓN ESTRELLA: Tutorial paso a paso Bot Telegram + Configuración nodo (sin mostrar chatid real) ========= -->
+        <!-- ========= SECCIÓN PRINCIPAL: EXPLICACIÓN DEL OBJETO $JSON ========= -->
+        <div class="json-section">
+            <div class="json-title">📦 El objeto <span
+                    style="background:#e4672f; padding:0.1rem 0.6rem; border-radius:30px;">$json</span> en n8n</div>
+            <p style="margin-bottom: 1rem; line-height:1.5;">En n8n, cada nodo recibe y emite datos en formato JSON. El
+                objeto <strong class="inline-code">$json</strong> representa los datos del <strong>ítem actual</strong>
+                que fluye por el workflow. Es la forma de acceder a campos, transformarlos y pasarlos entre nodos.</p>
+
+            <div class="json-grid">
+                <div class="json-card">
+                    <h3>🔍 ¿Qué es $json?</h3>
+                    <p>Es una variable especial que contiene el objeto JavaScript con los datos del ítem que está
+                        procesando el nodo. Puedes acceder a propiedades usando <span
+                            class="inline-code">$json.propiedad</span> o <span class="inline-code">$json["propiedad
+                            anidada"]</span>.</p>
+                    <div class="code-block">
+                        {<br>
+                        &nbsp;&nbsp;"nombre": "Ana",<br>
+                        &nbsp;&nbsp;"email": "ana@ejemplo.com",<br>
+                        &nbsp;&nbsp;"datos": { "edad": 25 }<br>
+                        }
+                    </div>
+                    <p>Para acceder: <span class="inline-code">$json.nombre</span> → "Ana"<br>
+                        <span class="inline-code">$json.datos.edad</span> → 25
+                    </p>
+                </div>
+                <div class="json-card">
+                    <h3>✏️ Manipular con Edit Fields</h3>
+                    <p>El nodo <strong>Edit Fields</strong> permite crear o modificar campos usando expresiones con
+                        <span class="inline-code">$json</span>.</p>
+                    <div class="code-block">
+                        mensaje = "Hola {{$json.nombre}}, tu email es {{$json.email}}"<br>
+                        fecha_actual = "{{new Date().toISOString()}}"<br>
+                        telefono_cliente = {{$json.formulario.telefono}}
+                    </div>
+                    <p>✅ Puedes usar <strong>expresiones</strong> dentro de <span class="inline-code">{{ }}</span> para
+                        cálculos y concatenación.</p>
+                </div>
+                <div class="json-card">
+                    <h3>🧪 Ejemplo práctico: Webhook → Edit Fields → Telegram</h3>
+                    <p>Cuando un webhook recibe datos, estos quedan en <span class="inline-code">$json.body</span> (si
+                        es POST). Luego en Edit Fields construyes un mensaje:</p>
+                    <div class="code-block">
+                        mensaje_telegram = "📬 Nuevo contacto: {{$json.body.nombre}} - {{$json.body.email}}"
+                    </div>
+                    <p>Y en el nodo Telegram usas <span class="inline-code">{{$json.mensaje_telegram}}</span> como
+                        texto.</p>
+                </div>
+            </div>
+
+            <!-- Demostración interactiva de $json -->
+            <div class="demo-json-play">
+                <p><strong>🎮 Playground $json:</strong> Simula datos de entrada y prueba cómo se transforman</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start;">
+                    <div style="flex:1;">
+                        <label style="font-size:0.8rem;">Datos de ejemplo (formulario):</label>
+                        <textarea id="jsonInputDemo" rows="4"
+                            style="width:100%; background:#06212e; color:#cbd5e6; border:1px solid #e4672f; border-radius:12px; padding:0.5rem; font-family:monospace; font-size:0.75rem;">{
+  "nombre": "María González",
+  "email": "maria@escuela.com",
+  "mensaje": "Interesada en el curso de n8n",
+  "telefono": "+5491122334455"
+}</textarea>
+                        <button id="btnTransformarJson" class="btn-json" style="margin-top:0.5rem;">🔄 Transformar con
+                            Edit Fields (simulado)</button>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:0.8rem;">Resultado del campo 'mensaje_telegram' generado:</label>
+                        <div id="resultadoJsonDemo"
+                            style="background:#06212e; border-radius:12px; padding:0.8rem; font-family:monospace; font-size:0.8rem; min-height:100px; border:1px solid #3a6e84;">
+                        </div>
+                        <p style="font-size:0.7rem; margin-top:0.5rem;">💡 La expresión usada es: <span
+                                class="inline-code">"📬 NUEVO CONTACTO\n👤 Nombre: {{$json.nombre}}\n📧 Email:
+                                {{$json.email}}\n📱 Teléfono: {{$json.telefono}}\n💬 Mensaje: {{$json.mensaje}}"</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; background:#071e29; border-radius:1rem; padding:0.7rem; font-size:0.75rem;">
+                ⚡ <strong>Importante:</strong> <span class="inline-code">$json</span> siempre contiene el item actual.
+                Si tu workflow maneja múltiples items (por ejemplo, desde una base de datos), n8n itera sobre cada uno y
+                aplica las transformaciones.
+            </div>
+        </div>
+
+        <!-- TUTORIAL TELEGRAM + CONFIGURACIÓN NODO (sin mostrar chatid real) -->
         <div class="tutorial-telegram">
-            <div class="tutorial-header">
-                <span style="font-size:2rem;">🤖</span>
-                <h2>📋 Cómo crear un Bot en Telegram y conectarlo a n8n</h2>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
+                <span style="font-size:1.8rem;">🤖</span>
+                <h2 style="font-size:1.5rem;">Cómo crear Bot en Telegram y configurar el nodo</h2>
             </div>
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <div class="step-title">📱 Crear el Bot con BotFather en Telegram</div>
-                        <div class="step-desc">Abre Telegram y busca <strong>@BotFather</strong>. Envía el comando <span
-                                class="code-inline">/newbot</span>. Sigue las instrucciones: elige un nombre y un
-                            username (debe terminar en 'bot'). Al final, BotFather te dará un <strong>Token HTTP
-                                API</strong> (ej: <code>00000000000000000000000000000000000000</code>). ¡Guarda
-                            este token secreto!</div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <div class="step-title">🔌 Configurar credencial de Telegram en n8n</div>
-                        <div class="step-desc">En n8n, ve a <strong>Credenciales → Nueva → Telegram API</strong>. Ponle
-                            un nombre (ej: "Mi Bot Telegram") y pega el Token que te dio BotFather. Guarda la
-                            credencial.</div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <div class="step-title">📨 Obtener tu Chat ID (para recibir mensajes)</div>
-                        <div class="step-desc">Envía un mensaje a tu bot desde tu cuenta personal. Luego haz una
-                            petición a: <span
-                                class="code-inline">https://api.telegram.org/bot&lt;TU_TOKEN&gt;/getUpdates</span>. En
-                            la respuesta JSON, busca <strong>"chat":{"id": XXXXXXX}</strong>. Ese número es tu Chat ID.
-                        </div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <div class="step-title">⚙️ Configurar el nodo "Send a text message" en n8n (como en la imagen)
-                        </div>
-                        <div class="step-desc">Dentro del workflow, añade nodo Telegram → "Send a text message".
-                            Selecciona la credencial que creaste, elige <strong>Resource: Message</strong>,
-                            <strong>Operation: Send Message</strong>. En el campo <strong>Chat ID</strong> coloca el
-                            número obtenido. En <strong>Text</strong> puedes usar expresiones como <span
-                                class="code-inline">{{$json.mensaje_telegram}}</span>. ¡Listo!
-                        </div>
-                    </div>
-                </div>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div><strong>Crear Bot con BotFather</strong> → /newbot → Obtén el <strong>Token</strong>.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div><strong>Credencial en n8n:</strong> Nueva credencial "Telegram API" y pegar Token.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div><strong>Obtener Chat ID:</strong> Envía mensaje al bot y usa <span
+                        class="inline-code">https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</span> → copia el
+                    "chat":{"id":123456}.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div><strong>Configurar nodo "Send a text message"</strong> como en la imagen adjunta.</div>
             </div>
 
-            <!-- Representación visual de la configuración del nodo basada en la imagen adjunta (sin mostrar chatid real) -->
+            <!-- Config visual basado en la imagen -->
             <div class="nodo-config-visual">
-                <div class="config-header">
-                    <span>📨</span> <strong>Nodo: Send a text message (configuración visual - referencia de
-                        imagen)</strong>
-                    <span style="margin-left:auto; font-size:0.7rem;">▼ INPUT / PARAMETERS</span>
-                </div>
+                <div style="font-weight:bold; margin-bottom:0.5rem;">📸 Configuración del nodo (referencia visual de la
+                    imagen):</div>
                 <div class="config-grid">
-                    <div class="config-label">Credential:</div>
-                    <div class="config-value">Telegram account (seleccionada)</div>
-                    <div class="config-label">Resource:</div>
-                    <div class="config-value">Message</div>
-                    <div class="config-label">Operation:</div>
-                    <div class="config-value">Send Message</div>
-                    <div class="config-label">Chat ID:</div>
-                    <div class="config-value"><span class="highlight">[TU_CHAT_ID]</span> (ej: 1084564078)</div>
-                    <div class="config-label">Text:</div>
-                    <div class="config-value"><code class="code-inline">{{$json.mensaje_telegram}}</code> → usando datos
-                        del paso anterior</div>
-                    <div class="config-label">Reply Markup:</div>
-                    <div class="config-value">None</div>
-                    <div class="config-label">Additional Fields:</div>
-                    <div class="config-value">+ Add Field (opcional)</div>
+                    <div>Credential:</div>
+                    <div>Telegram account</div>
+                    <div>Resource:</div>
+                    <div>Message</div>
+                    <div>Operation:</div>
+                    <div>Send Message</div>
+                    <div>Chat ID:</div>
+                    <div><span class="highlight" style="background:#ff914d30;">[TU_CHAT_ID_OBTENIDO]</span> (no se
+                        muestra valor real)</div>
+                    <div>Text:</div>
+                    <div><code class="inline-code">{{$json.mensaje_telegram}}</code> ← usando el objeto $json del paso
+                        anterior</div>
+                    <div>Reply Markup:</div>
+                    <div>None</div>
                 </div>
-                <div
-                    style="margin-top: 0.8rem; font-size:0.7rem; background:#0a1a22; border-radius: 12px; padding: 0.4rem 0.8rem;">
-                    💡 La imagen compartida muestra exactamente: "Send a text message → Input → Schema/Table/JSON", los
-                    parámetros "Credential: Telegram account", "Resource: Message", "Operation: Send Message", "Chat ID:
-                    1084564078" (aquí solo mostramos placeholder), y "Text: {{$json.mensaje_telegram}}". Sigue estos
-                    pasos para tu propio bot.
-                </div>
+                <div style="margin-top:0.7rem; font-size:0.7rem;">💡 El campo "Text" utiliza
+                    <strong>$json.mensaje_telegram</strong>, que fue creado en el nodo Edit Fields transformando los
+                    datos originales.</div>
             </div>
         </div>
 
-        <!-- ========= WORKFLOW VISUAL BASADO EN JSON (Webhook + Edit Fields + Telegram) ========= -->
+        <!-- WORKFLOW VISUAL + CICLO DE VIDA -->
         <div class="workflow-visual">
-            <div class="workflow-title" style="font-size:1.3rem; margin-bottom:1rem;">📌 Workflow real: Formulario Web →
-                Edit Fields → Telegram</div>
+            <div style="font-size:1.2rem; margin-bottom:0.8rem;">🔗 Flujo del workflow: Webhook → Edit Fields ($json) →
+                Telegram</div>
             <div class="workflow-nodos" id="workflowVisualContainer"></div>
-            <div style="font-size:0.75rem; opacity:0.9; text-align:center;">Conexión: Webhook → Edit Fields (transforma
-                mensaje) → Send Message a Telegram</div>
+            <div style="text-align:center; font-size:0.7rem; margin-top:0.8rem;">Cada nodo transforma o enruta los datos
+                mediante $json</div>
         </div>
 
-        <!-- ========= CICLO DE VIDA + ELEMENTOS MÍNIMOS ========= -->
         <div class="workflow-lifecycle">
-            <div
-                style="display:flex; align-items:center; gap:0.75rem; font-size:1.5rem; font-weight:650; margin-bottom:1rem;">
-                🔄 Ciclo de vida de un Workflow</div>
+            <div style="font-size:1.5rem; font-weight:650;">🔄 Ciclo de vida + Elementos mínimos</div>
             <div class="ciclo-grid">
-                <div class="etapa">
-                    <div>⚡ 1.</div><strong>Trigger</strong>
-                    <p>Webhook / Manual / Schedule</p>
-                </div>
-                <div class="etapa">
-                    <div>🔧 2.</div><strong>Procesamiento</strong>
-                    <p>Edit Fields, IF, Code</p>
-                </div>
-                <div class="etapa">
-                    <div>📤 3.</div><strong>Acción</strong>
-                    <p>Send Message, Email, HTTP</p>
-                </div>
-                <div class="etapa">
-                    <div>✅ 4.</div><strong>Respuesta</strong>
-                    <p>Respond to Webhook (opcional)</p>
-                </div>
+                <div class="etapa"><strong>1. Trigger</strong><br>Webhook / Manual</div>
+                <div class="etapa"><strong>2. Procesamiento</strong><br>Edit Fields / Code</div>
+                <div class="etapa"><strong>3. Acción</strong><br>Send Message / Email</div>
+                <div class="etapa"><strong>4. Respuesta</strong><br>(Opcional)</div>
             </div>
-            <div style="font-weight:600;">🧩 Elementos MÍNIMOS que definen un workflow:</div>
-            <div class="min-elements">
-                <div class="min-badge">🔌 1 Nodo Trigger</div>
-                <span>→</span>
-                <div class="min-badge">⚙️ Al menos 1 Acción</div>
-                <span>→</span>
-                <div class="min-badge">🏁 Nodo final</div>
+            <div class="min-elements"
+                style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin:1rem 0;">
+                <span class="min-badge" style="background:white; border-radius:40px; padding:0.3rem 0.8rem;">🔌
+                    Trigger</span> → <span class="min-badge">⚙️ Acción</span> → <span class="min-badge">🏁 Final</span>
             </div>
             <div class="demo-workflow">
-                <span>🎬 Simular ejecución del workflow (incluye paso a paso Telegram)</span>
-                <button id="simularWorkflowBtn" class="interactivo-btn">▶️ Ejecutar workflow de prueba</button>
+                <span>🎬 Simular workflow real (manipulación de $json y envío a Telegram)</span>
+                <button id="simularWorkflowBtn" class="interactivo-btn">▶️ Ejecutar simulación</button>
             </div>
             <div id="outputDemo"
-                style="font-size:0.8rem; background:#ffffffcc; border-radius:1rem; padding:0.8rem; font-family:monospace;">
-            </div>
-            <div
-                style="margin-top:0.8rem; font-size:0.7rem; background:#fef3e2; padding:0.4rem 0.8rem; border-radius:1rem;">
-                🤖 Nota: El nodo "Send a text message" usa la credencial configurada con el token de BotFather. El Chat
-                ID se obtiene tras enviar un mensaje al bot.
+                style="background:#ffffffcc; border-radius:1rem; padding:0.8rem; font-family:monospace; font-size:0.8rem;">
             </div>
         </div>
 
-        <div class="footer-note">🌟 Basado en imagen real de n8n · Los pasos de Telegram son válidos para cualquier
-            instancia · El Chat ID mostrado es placeholder, obtén el tuyo con getUpdates</div>
+        <div class="footer-note">🌟 El objeto $json es el corazón de n8n. Comprenderlo permite crear automatizaciones
+            potentes. Los ejemplos usan la estructura real de un webhook de formulario.</div>
     </div>
 
     <script>
-        // Nodos generales (incluye los principales y el de Telegram)
+        // Nodos generales
         const nodosData = [
-            { icono: "🌐", tipo: "Webhook", descripcion: "Recibe peticiones HTTP (POST/GET). Ideal para formularios externos.", ejemplo: "Formulario web → Webhook" },
-            { icono: "✏️", tipo: "Edit Fields", descripcion: "Transforma y asigna variables. Construye mensajes personalizados.", ejemplo: "Crear campo 'mensaje_telegram'" },
-            { icono: "🤖", tipo: "Send a text message", descripcion: "Envía mensajes a Telegram usando token y chat ID.", ejemplo: "Notificación a grupo o usuario." },
-            { icono: "✉️", tipo: "Send Email", descripcion: "Envía correos automáticos.", ejemplo: "Confirmación por email." },
-            { icono: "🔁", tipo: "Respond to Webhook", descripcion: "Responde al webhook que inició el flujo.", ejemplo: "Devolver JSON de éxito." },
-            { icono: "✍️", tipo: "Manual Trigger", descripcion: "Inicia manualmente desde editor.", ejemplo: "Pruebas rápidas." }
+            { icono: "🌐", tipo: "Webhook", descripcion: "Recibe datos externos. Los datos llegan en $json.body.", ejemplo: "Formulario → $json.body.nombre" },
+            { icono: "✏️", tipo: "Edit Fields", descripcion: "Transforma $json, crea nuevos campos usando expresiones.", ejemplo: "mensaje = 'Hola {{$json.nombre}}'" },
+            { icono: "🤖", tipo: "Send a text message", descripcion: "Envía mensajes usando $json en el campo Text.", ejemplo: "Texto = {{$json.mensaje_telegram}}" },
+            { icono: "✉️", tipo: "Send Email", descripcion: "Correo con asunto y cuerpo dinámico.", ejemplo: "Cuerpo: {{$json.contenido}}" },
+            { icono: "🔁", tipo: "Respond to Webhook", descripcion: "Responde con $json personalizado.", ejemplo: "Retornar { status: 'ok' }" }
         ];
 
         const container = document.getElementById('nodosContainer');
@@ -564,15 +572,10 @@
             nodosData.forEach(nodo => {
                 const card = document.createElement('div');
                 card.className = 'nodo-card';
-                card.innerHTML = `
-                <div class="icono-nodo">${nodo.icono}</div>
-                <div class="nodo-tipo">${nodo.tipo}</div>
-                <div class="nodo-desc" style="font-size:0.85rem; margin:0.3rem 0;">${nodo.descripcion}</div>
-                <div class="ejemplo" style="font-size:0.7rem; background:#f0f2f5; padding:0.2rem 0.6rem; border-radius:20px;">${nodo.ejemplo}</div>
-            `;
+                card.innerHTML = `<div class="icono-nodo">${nodo.icono}</div><div class="nodo-tipo">${nodo.tipo}</div><div style="font-size:0.8rem; margin:0.3rem 0;">${nodo.descripcion}</div><div style="font-size:0.7rem; background:#f0f2f5; border-radius:20px; padding:0.2rem 0.6rem;">${nodo.ejemplo}</div>`;
                 card.addEventListener('click', () => {
                     const toast = document.createElement('div');
-                    toast.innerText = `🔍 ${nodo.tipo}: ${nodo.descripcion}`;
+                    toast.innerText = `📌 ${nodo.tipo}: manipula $json`;
                     toast.style.cssText = 'position:fixed; bottom:20px; left:20px; background:#1f2e3a; color:white; padding:6px 12px; border-radius:30px; font-size:0.7rem; z-index:999;';
                     document.body.appendChild(toast);
                     setTimeout(() => toast.remove(), 1500);
@@ -581,21 +584,19 @@
             });
         }
 
-        // Workflow visual (Webhook, Edit Fields, Send Message)
+        // Workflow visual
         function renderWorkflowVisual() {
             const wfContainer = document.getElementById('workflowVisualContainer');
             const nodes = [
-                { name: "Webhook", icon: "🌐", detail: "POST /formulario-telegram" },
-                { name: "Edit Fields", icon: "✏️", detail: "Asigna mensaje_telegram" },
-                { name: "Send a text message", icon: "🤖", detail: "Chat ID (placeholder) + expresión" }
+                { name: "Webhook", icon: "🌐", detail: "Recibe POST → $json.body" },
+                { name: "Edit Fields", icon: "✏️", detail: "Crea mensaje_telegram usando $json" },
+                { name: "Send Telegram", icon: "🤖", detail: "Texto = {{$json.mensaje_telegram}}" }
             ];
             wfContainer.innerHTML = '';
             nodes.forEach((node, idx) => {
                 const div = document.createElement('div');
                 div.className = 'wf-nodo';
-                div.innerHTML = `<div class="wf-nodo-icon" style="font-size:1.8rem;">${node.icon}</div>
-                             <div class="wf-nodo-name" style="font-weight:bold;">${node.name}</div>
-                             <div class="wf-nodo-detail" style="font-size:0.7rem;">${node.detail}</div>`;
+                div.innerHTML = `<div style="font-size:1.5rem;">${node.icon}</div><div><strong>${node.name}</strong></div><div style="font-size:0.65rem;">${node.detail}</div>`;
                 wfContainer.appendChild(div);
                 if (idx < nodes.length - 1) {
                     const arrow = document.createElement('div');
@@ -606,30 +607,46 @@
             });
         }
 
-        // Simulación del workflow con explicación de Telegram
-        const simularBtn = document.getElementById('simularWorkflowBtn');
-        const outputDiv = document.getElementById('outputDemo');
-        function simularWorkflowCompleto() {
-            outputDiv.innerHTML = "⏳ Simulando ejecución del workflow (con bot de Telegram)...";
-            setTimeout(() => {
-                const pasos = [
-                    "🌐 [Webhook] Recibe POST con datos: nombre, email, mensaje, fecha.",
-                    "✏️ [Edit Fields] Construye campo 'mensaje_telegram' con formato: '📬 NUEVO CONTACTO\\n👤 Nombre: ...' etc.",
-                    "🤖 [Send a text message] Toma la credencial de Telegram account.",
-                    "🤖 Usando el Token del bot (creado con BotFather) y el Chat ID (obtenido con getUpdates).",
-                    "📨 Envía el mensaje formateado al chat de Telegram configurado.",
-                    "✅ Workflow finalizado exitosamente. El usuario recibe la notificación en Telegram."
-                ];
-                outputDiv.innerHTML = pasos.map(p => `🔹 ${p}`).join('<br>');
-            }, 300);
-        }
-        if (simularBtn) simularBtn.addEventListener('click', simularWorkflowCompleto);
+        // DEMO INTERACTIVA DE $json
+        const btnTransform = document.getElementById('btnTransformarJson');
+        const textarea = document.getElementById('jsonInputDemo');
+        const resultDiv = document.getElementById('resultadoJsonDemo');
 
-        // Inicialización
+        function transformarJsonDemo() {
+            try {
+                const inputJson = JSON.parse(textarea.value);
+                // Simular la transformación que haría Edit Fields
+                const mensajeTelegram = `📬 NUEVO CONTACTO\n👤 Nombre: ${inputJson.nombre || 'N/A'}\n📧 Email: ${inputJson.email || 'N/A'}\n📱 Teléfono: ${inputJson.telefono || 'N/A'}\n💬 Mensaje: ${inputJson.mensaje || 'Sin mensaje'}`;
+                resultDiv.innerHTML = `<strong>mensaje_telegram generado:</strong><br>${mensajeTelegram.replace(/\n/g, '<br>')}`;
+            } catch (e) {
+                resultDiv.innerHTML = '❌ JSON inválido. Revisa la sintaxis.';
+            }
+        }
+        if (btnTransform) btnTransform.addEventListener('click', transformarJsonDemo);
+        transformarJsonDemo(); // inicial
+
+        // Simulación workflow
+        const simularBtn = document.getElementById('simularWorkflowBtn');
+        const outputDemo = document.getElementById('outputDemo');
+        function simularWorkflow() {
+            outputDemo.innerHTML = "⏳ Simulando flujo de datos...";
+            setTimeout(() => {
+                const steps = [
+                    "🌐 Webhook recibe POST con datos: nombre, email, mensaje, telefono (se asignan a $json.body).",
+                    "✏️ Nodo Edit Fields: accede a $json.body.nombre, $json.body.email, etc. Crea nuevo campo 'mensaje_telegram' usando expresiones.",
+                    "🤖 Nodo Send a text message: en el campo Text escribe {{$json.mensaje_telegram}}. El objeto $json ahora contiene el mensaje transformado.",
+                    "✅ El bot de Telegram envía la notificación al Chat ID configurado. Todo gracias a la manipulación de $json."
+                ];
+                outputDemo.innerHTML = steps.map(s => `🔹 ${s}`).join('<br>');
+            }, 250);
+        }
+        if (simularBtn) simularBtn.addEventListener('click', simularWorkflow);
+        if (outputDemo && !outputDemo.innerHTML) outputDemo.innerHTML = "🎓 Presiona 'Ejecutar simulación' para ver el rol de $json en el workflow.";
+
         renderNodos();
         renderWorkflowVisual();
-        if (outputDiv && !outputDiv.innerHTML) outputDiv.innerHTML = "🎓 Presiona ▶️ para simular el workflow y ver cómo el bot de Telegram envía el mensaje.";
     </script>
 </body>
 
 </html>
+```
