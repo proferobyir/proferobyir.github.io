@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>n8n Playground: Nodos + Ciclo de Vida del Workflow | Avances Tecnológicos</title>
+    <title>n8n Playground: Nodos + Workflow Telegram | Avances Tecnológicos</title>
     <style>
         * {
             margin: 0;
@@ -19,21 +19,20 @@
             color: #1a2c3e;
         }
 
-        /* contenedor principal con grid y flex combinados */
         .dashboard {
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Cabecera estilo n8n */
+        /* Cabecera */
         .hero {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(4px);
             border-radius: 2.5rem;
             padding: 1.5rem 2rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
@@ -44,7 +43,6 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: -0.02em;
             display: inline-flex;
             align-items: center;
             gap: 12px;
@@ -61,12 +59,8 @@
             font-size: 1.1rem;
             margin-top: 0.75rem;
             color: #2c4b66;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
-        /* badge de materia */
         .materia-badge {
             display: inline-block;
             background: #FF6B4A10;
@@ -80,7 +74,6 @@
             border: 1px solid #ffb08c;
         }
 
-        /* ========= SECCIÓN TIPOS DE NODOS ========= */
         .section-title {
             font-size: 1.8rem;
             font-weight: 600;
@@ -92,25 +85,20 @@
             padding-left: 1rem;
         }
 
-        .section-title i {
-            font-size: 1.6rem;
-        }
-
-        /* GRID de nodos (estilo playground) */
+        /* Grid de nodos generales */
         .nodos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.8rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
-        /* Tarjeta individual nodo */
         .nodo-card {
             background: white;
             border-radius: 1.5rem;
             padding: 1.2rem 1rem 1.5rem 1rem;
             transition: all 0.25s ease;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(0, 0, 0, 0.05);
             cursor: pointer;
             display: flex;
@@ -135,12 +123,11 @@
             justify-content: center;
             border-radius: 28px;
             margin-bottom: 1rem;
-            box-shadow: inset 0 1px 2px #fff, 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
         .nodo-tipo {
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             background: #eef2f7;
             padding: 0.2rem 1rem;
             border-radius: 60px;
@@ -148,139 +135,225 @@
             color: #1f4e6e;
         }
 
-        .nodo-desc {
-            font-size: 0.9rem;
-            color: #3a5c77;
-            margin: 0.5rem 0;
-            line-height: 1.4;
-        }
-
-        .ejemplo {
-            font-size: 0.75rem;
-            background: #f9fafc;
-            padding: 0.3rem 0.6rem;
-            border-radius: 20px;
-            margin-top: 0.5rem;
-            color: #e4672f;
-            font-weight: 500;
-        }
-
-        /* ========= CICLO DE VIDA Y ELEMENTOS MÍNIMOS ========= */
-        .workflow-lifecycle {
-            background: #ffffffdb;
-            backdrop-filter: blur(2px);
+        /* Sección Tutorial Telegram (paso a paso gráfico) */
+        .tutorial-telegram {
+            background: linear-gradient(135deg, #ffffff 0%, #fef9f0 100%);
             border-radius: 2rem;
             padding: 1.8rem;
-            margin: 2rem 0 2rem 0;
-            border: 1px solid #cbdbe2;
-            box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+            border: 1px solid #ffdec2;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .lifecycle-title {
+        .tutorial-header {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 1.7rem;
-            font-weight: 650;
+            gap: 12px;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
 
-        /* grid para el ciclo */
+        .tutorial-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1f6e8c, #0e4b64);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: #ffffffcc;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            transition: 0.2s;
+            border-left: 5px solid #e4672f;
+        }
+
+        .step-number {
+            background: #e4672f;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .code-inline {
+            background: #1e2f3a;
+            color: #ffd966;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        /* Simulación visual del nodo (como en la imagen) */
+        .nodo-config-visual {
+            background: #1e2f3a;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin: 1.2rem 0;
+            color: #eef2f5;
+            font-family: 'Inter', monospace;
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #3e5a6b;
+            padding-bottom: 0.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #ffb68b;
+        }
+
+        .config-value {
+            font-family: monospace;
+            color: #cbd5e6;
+        }
+
+        .highlight {
+            background: #e4672f30;
+            border-radius: 12px;
+            padding: 0.2rem 0.5rem;
+        }
+
+        /* Workflow visual */
+        .workflow-visual {
+            background: linear-gradient(135deg, #1e2f3a 0%, #16242e 100%);
+            border-radius: 2rem;
+            padding: 1.8rem;
+            margin: 1.5rem 0;
+            color: white;
+        }
+
+        .workflow-nodos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .wf-nodo {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            text-align: center;
+            min-width: 140px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .arrow-connector {
+            font-size: 1.8rem;
+            color: #ffb347;
+        }
+
+        /* Ciclo de vida */
+        .workflow-lifecycle {
+            background: #ffffffdb;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            margin: 2rem 0;
+            border: 1px solid #cbdbe2;
+        }
+
         .ciclo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .etapa {
             background: #f8fbff;
-            padding: 1rem;
-            border-radius: 1.2rem;
+            padding: 0.8rem;
+            border-radius: 1rem;
             text-align: center;
-            transition: all 0.2s;
-            border-left: 4px solid #e4672f;
+            border-left: 3px solid #e4672f;
         }
 
-        .etapa-icon {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .etapa h4 {
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-
-        .etapa p {
-            font-size: 0.8rem;
-            color: #4a627a;
-        }
-
-        /* elementos mínimos workflow */
         .min-elements {
             background: #eef2fa;
             border-radius: 1.5rem;
-            padding: 1.5rem;
-            margin-top: 1rem;
+            padding: 1rem;
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
             justify-content: center;
-            align-items: center;
         }
 
         .min-badge {
             background: white;
             border-radius: 60px;
-            padding: 0.6rem 1.2rem;
+            padding: 0.4rem 1rem;
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
             font-weight: 600;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            font-size: 0.85rem;
         }
 
-        .arrow-symbol {
-            font-size: 1.4rem;
-            color: #e4672f;
-        }
-
-        /* trigger + acción demo */
         .demo-workflow {
             background: linear-gradient(135deg, #1f2e3a, #15232e);
-            border-radius: 1.8rem;
-            padding: 1.3rem 1.8rem;
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
             color: white;
-            margin: 1.5rem 0 1rem;
+            margin: 1rem 0;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .demo-text {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .demo-badge {
-            background: #e4672f;
-            border-radius: 40px;
-            padding: 0.3rem 1rem;
-            font-weight: 600;
-            font-size: 0.8rem;
+            gap: 0.8rem;
         }
 
         .interactivo-btn {
             background: #ffffff22;
-            backdrop-filter: blur(8px);
             border: 1px solid #ffffff44;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem;
             border-radius: 2rem;
             font-weight: 500;
             cursor: pointer;
@@ -290,30 +363,28 @@
 
         .interactivo-btn:hover {
             background: #e4672f;
-            border-color: #e4672f;
         }
 
-        /* Footer */
         .footer-note {
             text-align: center;
-            margin-top: 3rem;
-            font-size: 0.8rem;
+            margin-top: 2rem;
+            font-size: 0.75rem;
             color: #5c6f87;
             border-top: 1px solid #cbd5e1;
-            padding-top: 2rem;
+            padding-top: 1.5rem;
         }
 
         @media (max-width: 680px) {
-            body {
-                padding: 1rem;
+            .workflow-nodos {
+                flex-direction: column;
             }
 
-            .nodo-card {
-                padding: 1rem;
+            .arrow-connector {
+                transform: rotate(90deg);
             }
 
-            .hero h1 {
-                font-size: 1.8rem;
+            .config-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -322,167 +393,172 @@
 <body>
     <div class="dashboard">
         <div class="hero">
-            <div class="materia-badge">📘 AVANCES TECNOLÓGICOS | n8n Workshop</div>
+            <div class="materia-badge">📘 AVANCES TECNOLÓGICOS | n8n + Telegram Bot</div>
             <h1>Playground de Nodos n8n</h1>
-            <p>Explora los tipos de nodos en el dashboard · Aprende el ciclo de vida de un workflow y sus componentes
-                mínimos</p>
+            <p>Tipos de nodos · Workflow Telegram · Paso a paso para crear y conectar tu Bot</p>
         </div>
 
-        <!-- SECCIÓN: TIPOS DE NODOS basados en la imagen (webhook, sendMessage, email, respond, manual) + otros esenciales -->
-        <div class="section-title">
-            <span>🗂️</span> Tipos de Nodos (Inspirados en el Dashboard)
-        </div>
-        <div class="nodos-grid" id="nodosContainer">
-            <!-- Los datos se cargan via JS para mantener estructura limpia, pero también se puede inline -->
-        </div>
+        <!-- ========= SECCIÓN 1: Tipos de nodos (imagen original) ========= -->
+        <div class="section-title"><span>🗂️</span> Tipos de Nodos (Dashboard n8n)</div>
+        <div class="nodos-grid" id="nodosContainer"></div>
 
-        <!-- CICLO DE VIDA + ELEMENTOS MÍNIMOS DE UN WORKFLOW -->
-        <div class="workflow-lifecycle">
-            <div class="lifecycle-title">
-                <span>🔄</span> Ciclo de vida de un Workflow
-                <span style="font-size: 0.8rem; background:#eef2f5; padding:0.2rem 0.8rem; border-radius:30px;">estándar
-                    n8n</span>
+        <!-- ========= SECCIÓN ESTRELLA: Tutorial paso a paso Bot Telegram + Configuración nodo (sin mostrar chatid real) ========= -->
+        <div class="tutorial-telegram">
+            <div class="tutorial-header">
+                <span style="font-size:2rem;">🤖</span>
+                <h2>📋 Cómo crear un Bot en Telegram y conectarlo a n8n</h2>
             </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">📱 Crear el Bot con BotFather en Telegram</div>
+                        <div class="step-desc">Abre Telegram y busca <strong>@BotFather</strong>. Envía el comando <span
+                                class="code-inline">/newbot</span>. Sigue las instrucciones: elige un nombre y un
+                            username (debe terminar en 'bot'). Al final, BotFather te dará un <strong>Token HTTP
+                                API</strong> (ej: <code>7234567890:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw</code>). ¡Guarda
+                            este token secreto!</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">🔌 Configurar credencial de Telegram en n8n</div>
+                        <div class="step-desc">En n8n, ve a <strong>Credenciales → Nueva → Telegram API</strong>. Ponle
+                            un nombre (ej: "Mi Bot Telegram") y pega el Token que te dio BotFather. Guarda la
+                            credencial.</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">📨 Obtener tu Chat ID (para recibir mensajes)</div>
+                        <div class="step-desc">Envía un mensaje a tu bot desde tu cuenta personal. Luego haz una
+                            petición a: <span
+                                class="code-inline">https://api.telegram.org/bot&lt;TU_TOKEN&gt;/getUpdates</span>. En
+                            la respuesta JSON, busca <strong>"chat":{"id": XXXXXXX}</strong>. Ese número es tu Chat ID.
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">⚙️ Configurar el nodo "Send a text message" en n8n (como en la imagen)
+                        </div>
+                        <div class="step-desc">Dentro del workflow, añade nodo Telegram → "Send a text message".
+                            Selecciona la credencial que creaste, elige <strong>Resource: Message</strong>,
+                            <strong>Operation: Send Message</strong>. En el campo <strong>Chat ID</strong> coloca el
+                            número obtenido. En <strong>Text</strong> puedes usar expresiones como <span
+                                class="code-inline">{{$json.mensaje_telegram}}</span>. ¡Listo!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Representación visual de la configuración del nodo basada en la imagen adjunta (sin mostrar chatid real) -->
+            <div class="nodo-config-visual">
+                <div class="config-header">
+                    <span>📨</span> <strong>Nodo: Send a text message (configuración visual - referencia de
+                        imagen)</strong>
+                    <span style="margin-left:auto; font-size:0.7rem;">▼ INPUT / PARAMETERS</span>
+                </div>
+                <div class="config-grid">
+                    <div class="config-label">Credential:</div>
+                    <div class="config-value">Telegram account (seleccionada)</div>
+                    <div class="config-label">Resource:</div>
+                    <div class="config-value">Message</div>
+                    <div class="config-label">Operation:</div>
+                    <div class="config-value">Send Message</div>
+                    <div class="config-label">Chat ID:</div>
+                    <div class="config-value"><span class="highlight">[TU_CHAT_ID]</span> (ej: 1084564078)</div>
+                    <div class="config-label">Text:</div>
+                    <div class="config-value"><code class="code-inline">{{$json.mensaje_telegram}}</code> → usando datos
+                        del paso anterior</div>
+                    <div class="config-label">Reply Markup:</div>
+                    <div class="config-value">None</div>
+                    <div class="config-label">Additional Fields:</div>
+                    <div class="config-value">+ Add Field (opcional)</div>
+                </div>
+                <div
+                    style="margin-top: 0.8rem; font-size:0.7rem; background:#0a1a22; border-radius: 12px; padding: 0.4rem 0.8rem;">
+                    💡 La imagen compartida muestra exactamente: "Send a text message → Input → Schema/Table/JSON", los
+                    parámetros "Credential: Telegram account", "Resource: Message", "Operation: Send Message", "Chat ID:
+                    1084564078" (aquí solo mostramos placeholder), y "Text: {{$json.mensaje_telegram}}". Sigue estos
+                    pasos para tu propio bot.
+                </div>
+            </div>
+        </div>
+
+        <!-- ========= WORKFLOW VISUAL BASADO EN JSON (Webhook + Edit Fields + Telegram) ========= -->
+        <div class="workflow-visual">
+            <div class="workflow-title" style="font-size:1.3rem; margin-bottom:1rem;">📌 Workflow real: Formulario Web →
+                Edit Fields → Telegram</div>
+            <div class="workflow-nodos" id="workflowVisualContainer"></div>
+            <div style="font-size:0.75rem; opacity:0.9; text-align:center;">Conexión: Webhook → Edit Fields (transforma
+                mensaje) → Send Message a Telegram</div>
+        </div>
+
+        <!-- ========= CICLO DE VIDA + ELEMENTOS MÍNIMOS ========= -->
+        <div class="workflow-lifecycle">
+            <div
+                style="display:flex; align-items:center; gap:0.75rem; font-size:1.5rem; font-weight:650; margin-bottom:1rem;">
+                🔄 Ciclo de vida de un Workflow</div>
             <div class="ciclo-grid">
                 <div class="etapa">
-                    <div class="etapa-icon">⚡ 1.</div>
-                    <h4>Trigger / Disparo</h4>
-                    <p>Webhook, schedule, manual, o evento externo que inicia el flujo.</p>
+                    <div>⚡ 1.</div><strong>Trigger</strong>
+                    <p>Webhook / Manual / Schedule</p>
                 </div>
                 <div class="etapa">
-                    <div class="etapa-icon">🔧 2.</div>
-                    <h4>Procesamiento</h4>
-                    <p>Nodos de acción: transformar datos, filtrar, enriquecer, lógica IF/Switch.</p>
+                    <div>🔧 2.</div><strong>Procesamiento</strong>
+                    <p>Edit Fields, IF, Code</p>
                 </div>
                 <div class="etapa">
-                    <div class="etapa-icon">📤 3.</div>
-                    <h4>Acciones / Salidas</h4>
-                    <p>Enviar email, HTTP request, crear registro en DB, notificaciones.</p>
+                    <div>📤 3.</div><strong>Acción</strong>
+                    <p>Send Message, Email, HTTP</p>
                 </div>
                 <div class="etapa">
-                    <div class="etapa-icon">✅ 4.</div>
-                    <h4>Respuesta / Finalización</h4>
-                    <p>Responder Webhook, mensaje final, o logs de éxito/error.</p>
+                    <div>✅ 4.</div><strong>Respuesta</strong>
+                    <p>Respond to Webhook (opcional)</p>
                 </div>
             </div>
-
-            <!-- Elementos mínimos necesarios para que se considere un workflow -->
-            <div style="font-weight: 600; margin: 0.5rem 0 0.8rem 0; display: flex; align-items: center; gap:8px;">
-                <span>🧩</span> Elementos MÍNIMOS que definen un workflow:
-            </div>
+            <div style="font-weight:600;">🧩 Elementos MÍNIMOS que definen un workflow:</div>
             <div class="min-elements">
-                <div class="min-badge">🔌 <strong>1 Nodo Trigger</strong> (origen)</div>
-                <span class="arrow-symbol">→</span>
-                <div class="min-badge">⚙️ <strong>Al menos 1 Acción</strong> (procesar o enviar)</div>
-                <span class="arrow-symbol">→</span>
-                <div class="min-badge">🏁 <strong>Nodo final</strong> (Respond, output, o fin)</div>
+                <div class="min-badge">🔌 1 Nodo Trigger</div>
+                <span>→</span>
+                <div class="min-badge">⚙️ Al menos 1 Acción</div>
+                <span>→</span>
+                <div class="min-badge">🏁 Nodo final</div>
             </div>
-            <p
-                style="font-size:0.85rem; margin-top: 0.8rem; background:#f1f4f9; border-radius: 20px; padding: 0.5rem 1rem;">
-                💡 <strong>Nota didáctica:</strong> En n8n, el workflow más simple necesita un nodo que
-                <strong>dispare</strong> la ejecución (Trigger) y al menos un nodo que realice una tarea.
-                El "nodo de respuesta" no es obligatorio en todos los casos, pero para flujos webhook es esencial. ¡Sin
-                trigger no hay workflow activo!
-            </p>
-
-            <!-- DEMO INTERACTIVA sencilla para mostrar un pequeño workflow (simulado) -->
             <div class="demo-workflow">
-                <div class="demo-text">
-                    <span class="demo-badge">📡 Demo didáctica</span>
-                    <span>🕹️ Haz clic para simular un workflow mínimo:</span>
-                </div>
+                <span>🎬 Simular ejecución del workflow (incluye paso a paso Telegram)</span>
                 <button id="simularWorkflowBtn" class="interactivo-btn">▶️ Ejecutar workflow de prueba</button>
             </div>
             <div id="outputDemo"
-                style="font-size: 0.85rem; background:#ffffffcc; border-radius: 1.2rem; padding: 0.8rem; margin-top: 0.5rem; font-family: monospace; color: #1e2f3a;">
+                style="font-size:0.8rem; background:#ffffffcc; border-radius:1rem; padding:0.8rem; font-family:monospace;">
+            </div>
+            <div
+                style="margin-top:0.8rem; font-size:0.7rem; background:#fef3e2; padding:0.4rem 0.8rem; border-radius:1rem;">
+                🤖 Nota: El nodo "Send a text message" usa la credencial configurada con el token de BotFather. El Chat
+                ID se obtiene tras enviar un mensaje al bot.
             </div>
         </div>
 
-        <!-- Bloque extra explicando conexión entre nodos y ciclo -->
-        <div
-            style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; margin: 1rem 0 1rem 0;">
-            <div style="flex:1; min-width: 200px; background: #ffffffaa; border-radius: 1.5rem; padding: 1rem;">
-                <div style="font-size:1.6rem;">🔗</div>
-                <h3 style="font-size:1.2rem;">Conexión visual</h3>
-                <p style="font-size:0.85rem;">Los nodos se conectan por líneas, y el flujo de datos viaja entre ellos.
-                    Cada nodo transforma o reenvía información.</p>
-            </div>
-            <div style="flex:1; min-width: 200px; background: #ffffffaa; border-radius: 1.5rem; padding: 1rem;">
-                <div style="font-size:1.6rem;">🧠</div>
-                <h3 style="font-size:1.2rem;">Workflow = automatización</h3>
-                <p style="font-size:0.85rem;">Un workflow completo tiene: Trigger → Procesos → Acciones → (Opcional)
-                    Respuesta. Ejemplo: webhook recibe datos → filtra → envía email.</p>
-            </div>
-            <div style="flex:1; min-width: 200px; background: #ffffffaa; border-radius: 1.5rem; padding: 1rem;">
-                <div style="font-size:1.6rem;">📌</div>
-                <h3 style="font-size:1.2rem;">Basado en la imagen</h3>
-                <p style="font-size:0.85rem;">Los iconos vistos: POST, Webhook, Send Message, Respond, Manual, Email.
-                    ¡Todos son nodos reales de n8n!</p>
-            </div>
-        </div>
-        <div class="footer-note">
-            🌟 Playground diseñado para estudiantes de Avances Tecnológicos · n8n: automatización low-code · Los nodos
-            mostrados coinciden con el dashboard real.
-        </div>
+        <div class="footer-note">🌟 Basado en imagen real de n8n · Los pasos de Telegram son válidos para cualquier
+            instancia · El Chat ID mostrado es placeholder, obtén el tuyo con getUpdates</div>
     </div>
 
     <script>
-        // Definición de nodos basada en imagen + complementos didácticos (coherente con captura)
+        // Nodos generales (incluye los principales y el de Telegram)
         const nodosData = [
-            {
-                icono: "🌐",
-                tipo: "Webhook",
-                descripcion: "Recibe peticiones HTTP (POST/GET). Inicia workflows desde apps externas.",
-                ejemplo: "Ej: Recibir datos de un formulario y procesarlos."
-            },
-            {
-                icono: "✉️",
-                tipo: "Send Email",
-                descripcion: "Envía correos automáticos vía SMTP o servicios como Gmail.",
-                ejemplo: "Ej: Notificar a un equipo cuando se crea un registro."
-            },
-            {
-                icono: "💬",
-                tipo: "Send a text message",
-                descripcion: "Envía mensajes de texto (SMS, WhatsApp, Telegram, etc).",
-                ejemplo: "Ej: Alerta por SMS si un sensor supera un umbral."
-            },
-            {
-                icono: "🔁",
-                tipo: "Respond to Webhook",
-                descripcion: "Responde al Webhook que inició el flujo con datos personalizados.",
-                ejemplo: "Ej: Devolver JSON de confirmación después de procesar."
-            },
-            {
-                icono: "✍️",
-                tipo: "Manual Trigger",
-                descripcion: "Inicia el workflow manualmente desde el editor de n8n. Ideal para pruebas.",
-                ejemplo: "Ej: Ejecutar rutina de limpieza a demanda."
-            },
-            {
-                icono: "📡",
-                tipo: "HTTP Request",
-                descripcion: "Realiza peticiones a APIs externas (REST, GraphQL).",
-                ejemplo: "Ej: Obtener clima y guardar en base de datos."
-            },
-            {
-                icono: "⚙️",
-                tipo: "Code / Function",
-                descripcion: "Ejecuta código JavaScript personalizado para transformar datos.",
-                ejemplo: "Ej: Calcular totales o formatear fechas."
-            },
-            {
-                icono: "🔀",
-                tipo: "IF / Switch",
-                descripcion: "Ramas condicionales para decidir flujo según datos.",
-                ejemplo: "Ej: Si el email contiene 'urgente' enviar a grupo A."
-            }
+            { icono: "🌐", tipo: "Webhook", descripcion: "Recibe peticiones HTTP (POST/GET). Ideal para formularios externos.", ejemplo: "Formulario web → Webhook" },
+            { icono: "✏️", tipo: "Edit Fields", descripcion: "Transforma y asigna variables. Construye mensajes personalizados.", ejemplo: "Crear campo 'mensaje_telegram'" },
+            { icono: "🤖", tipo: "Send a text message", descripcion: "Envía mensajes a Telegram usando token y chat ID.", ejemplo: "Notificación a grupo o usuario." },
+            { icono: "✉️", tipo: "Send Email", descripcion: "Envía correos automáticos.", ejemplo: "Confirmación por email." },
+            { icono: "🔁", tipo: "Respond to Webhook", descripcion: "Responde al webhook que inició el flujo.", ejemplo: "Devolver JSON de éxito." },
+            { icono: "✍️", tipo: "Manual Trigger", descripcion: "Inicia manualmente desde editor.", ejemplo: "Pruebas rápidas." }
         ];
 
-        // Renderizar grid de nodos dinámicamente
         const container = document.getElementById('nodosContainer');
         function renderNodos() {
-            if (!container) return;
             container.innerHTML = '';
             nodosData.forEach(nodo => {
                 const card = document.createElement('div');
@@ -490,107 +566,68 @@
                 card.innerHTML = `
                 <div class="icono-nodo">${nodo.icono}</div>
                 <div class="nodo-tipo">${nodo.tipo}</div>
-                <div class="nodo-desc">${nodo.descripcion}</div>
-                <div class="ejemplo">🧪 ${nodo.ejemplo}</div>
+                <div class="nodo-desc" style="font-size:0.85rem; margin:0.3rem 0;">${nodo.descripcion}</div>
+                <div class="ejemplo" style="font-size:0.7rem; background:#f0f2f5; padding:0.2rem 0.6rem; border-radius:20px;">${nodo.ejemplo}</div>
             `;
-                // efecto pequeño didáctico: al hacer clic se muestra alert descriptivo
                 card.addEventListener('click', () => {
-                    // feedback sutil pero no invasivo, simulando "inspeccionar nodo"
-                    const tempMsg = document.createElement('div');
-                    tempMsg.innerText = `🔍 Nodo "${nodo.tipo}": ${nodo.descripcion.substring(0, 60)}...`;
-                    tempMsg.style.position = 'fixed';
-                    tempMsg.style.bottom = '20px';
-                    tempMsg.style.left = '20px';
-                    tempMsg.style.backgroundColor = '#1f2e3a';
-                    tempMsg.style.color = '#f2e8cf';
-                    tempMsg.style.padding = '8px 14px';
-                    tempMsg.style.borderRadius = '40px';
-                    tempMsg.style.fontSize = '0.75rem';
-                    tempMsg.style.zIndex = '999';
-                    tempMsg.style.fontWeight = '500';
-                    tempMsg.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-                    document.body.appendChild(tempMsg);
-                    setTimeout(() => tempMsg.remove(), 1800);
+                    const toast = document.createElement('div');
+                    toast.innerText = `🔍 ${nodo.tipo}: ${nodo.descripcion}`;
+                    toast.style.cssText = 'position:fixed; bottom:20px; left:20px; background:#1f2e3a; color:white; padding:6px 12px; border-radius:30px; font-size:0.7rem; z-index:999;';
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 1500);
                 });
                 container.appendChild(card);
             });
         }
 
-        // Agregar además los nodos extra mencionados en la imagen: "POST" y "Edit Fields" aunque ya están implícitos, hacemos énfasis con sección especial.
-        // Pero para mejorar la referencia de la imagen, agregamos un pequeño badge flotante con nodos 'POST' y 'Edit fields' en la parte superior.
-        function agregarDetalleImagen() {
-            const headerExtra = document.createElement('div');
-            headerExtra.style.display = 'flex';
-            headerExtra.style.flexWrap = 'wrap';
-            headerExtra.style.gap = '10px';
-            headerExtra.style.justifyContent = 'center';
-            headerExtra.style.marginBottom = '20px';
-            headerExtra.style.marginTop = '0px';
-            headerExtra.innerHTML = `
-            <span style="background:#fff2e6; padding:6px 15px; border-radius:40px; font-size:0.8rem; font-weight:500;"><span style="font-weight:800;">📩 POST</span> (método en Webhook)</span>
-            <span style="background:#fff2e6; padding:6px 15px; border-radius:40px; font-size:0.8rem; font-weight:500;"><span style="font-weight:800;">✏️ Edit Fields</span> (Transformar datos)</span>
-            <span style="background:#fff2e6; padding:6px 15px; border-radius:40px; font-size:0.8rem; font-weight:500;"><span style="font-weight:800;">📨 Send Email</span> nodo clásico</span>
-        `;
-            const sectionTitleFirst = document.querySelector('.section-title');
-            if (sectionTitleFirst && sectionTitleFirst.parentNode) {
-                sectionTitleFirst.parentNode.insertBefore(headerExtra, sectionTitleFirst.nextSibling);
-            }
+        // Workflow visual (Webhook, Edit Fields, Send Message)
+        function renderWorkflowVisual() {
+            const wfContainer = document.getElementById('workflowVisualContainer');
+            const nodes = [
+                { name: "Webhook", icon: "🌐", detail: "POST /formulario-telegram" },
+                { name: "Edit Fields", icon: "✏️", detail: "Asigna mensaje_telegram" },
+                { name: "Send a text message", icon: "🤖", detail: "Chat ID (placeholder) + expresión" }
+            ];
+            wfContainer.innerHTML = '';
+            nodes.forEach((node, idx) => {
+                const div = document.createElement('div');
+                div.className = 'wf-nodo';
+                div.innerHTML = `<div class="wf-nodo-icon" style="font-size:1.8rem;">${node.icon}</div>
+                             <div class="wf-nodo-name" style="font-weight:bold;">${node.name}</div>
+                             <div class="wf-nodo-detail" style="font-size:0.7rem;">${node.detail}</div>`;
+                wfContainer.appendChild(div);
+                if (idx < nodes.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow-connector';
+                    arrow.innerHTML = '→';
+                    wfContainer.appendChild(arrow);
+                }
+            });
         }
 
-        // SIMULACIÓN CICLO DE VIDA + DEMO WORKFLOW MINIMO
+        // Simulación del workflow con explicación de Telegram
         const simularBtn = document.getElementById('simularWorkflowBtn');
         const outputDiv = document.getElementById('outputDemo');
-
-        function simularWorkflowMinimo() {
-            if (!outputDiv) return;
-            // simulación paso a paso
-            let logs = [];
-            logs.push("🔁 INICIO: Workflow activado por 'Manual Trigger' (simulado)");
+        function simularWorkflowCompleto() {
+            outputDiv.innerHTML = "⏳ Simulando ejecución del workflow (con bot de Telegram)...";
             setTimeout(() => {
-                logs.push("🔄 Paso 1 (Trigger): Recibida señal manual o webhook POST.");
-                logs.push("⚙️ Paso 2 (Procesamiento): Nodo 'Edit Fields' -> Limpia datos y extrae contenido.");
-                logs.push("📤 Paso 3 (Acción): Nodo 'Send Email' → enviando correo de prueba a estudiantes@clase.com");
-                logs.push("✅ Paso 4 (Respuesta/Final): Nodo 'Respond to Webhook' devuelve status 200 + mensaje 'Workflow exitoso'.");
-                logs.push("🏁 Workflow completado. Elementos mínimos: Trigger + Acción + (Respond opcional pero enriquece).");
-                outputDiv.innerHTML = logs.map(l => `🟢 ${l}`).join('<br>');
-                // Auto-scroll suave
-                outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-            // mostrar mensaje de carga
-            outputDiv.innerHTML = "🔄 Simulando ejecución del workflow... (ciclo de vida real)";
+                const pasos = [
+                    "🌐 [Webhook] Recibe POST con datos: nombre, email, mensaje, fecha.",
+                    "✏️ [Edit Fields] Construye campo 'mensaje_telegram' con formato: '📬 NUEVO CONTACTO\\n👤 Nombre: ...' etc.",
+                    "🤖 [Send a text message] Toma la credencial de Telegram account.",
+                    "🤖 Usando el Token del bot (creado con BotFather) y el Chat ID (obtenido con getUpdates).",
+                    "📨 Envía el mensaje formateado al chat de Telegram configurado.",
+                    "✅ Workflow finalizado exitosamente. El usuario recibe la notificación en Telegram."
+                ];
+                outputDiv.innerHTML = pasos.map(p => `🔹 ${p}`).join('<br>');
+            }, 300);
         }
+        if (simularBtn) simularBtn.addEventListener('click', simularWorkflowCompleto);
 
-        if (simularBtn) {
-            simularBtn.addEventListener('click', simularWorkflowMinimo);
-        }
-
-        // Explicación adicional sobre el ciclo en consola amigable (docente)
-        function agregarMiniGuiaCiclo() {
-            const cicloSection = document.querySelector('.workflow-lifecycle');
-            if (cicloSection) {
-                const tipExtra = document.createElement('div');
-                tipExtra.style.marginTop = '1rem';
-                tipExtra.style.fontSize = '0.8rem';
-                tipExtra.style.backgroundColor = '#fef7e0';
-                tipExtra.style.borderRadius = '1rem';
-                tipExtra.style.padding = '0.6rem 1rem';
-                tipExtra.style.border = '1px solid #ffdfb3';
-                tipExtra.innerHTML = '📖 <strong>Dato clave:</strong> En n8n el ciclo de vida incluye “activación”, “ejecución de nodos secuencialmente”, “manejo de errores” y “finalización”. Los workflows pueden ser programados o por eventos.';
-                cicloSection.appendChild(tipExtra);
-            }
-        }
-
-        // Inicializar todo
+        // Inicialización
         renderNodos();
-        agregarDetalleImagen();
-        agregarMiniGuiaCiclo();
-
-        // feedback de inicio mostrando que los elementos mínimos están listos
-        console.log("Playground n8n listo | Nodos + Ciclo de Vida + Elementos mínimos");
-        // Simular por defecto un pequeño mensaje de bienvenida en el output
-        if (outputDiv && !outputDiv.innerHTML.trim()) {
-            outputDiv.innerHTML = "🎓 ¡Bienvenidos! Presiona el botón ▶️ 'Ejecutar workflow de prueba' para ver el ciclo de vida en acción. Cada tarjeta de nodo es interactiva.";
-        }
+        renderWorkflowVisual();
+        if (outputDiv && !outputDiv.innerHTML) outputDiv.innerHTML = "🎓 Presiona ▶️ para simular el workflow y ver cómo el bot de Telegram envía el mensaje.";
     </script>
 </body>
 
