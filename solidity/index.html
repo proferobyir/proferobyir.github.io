@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solidity Playground: Aprendiendo Smart Contracts</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --eth-color: #3c3c3d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Contenedor Principal usando CSS Grid */
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        @media (min-width: 992px) {
+            .playground-grid {
+                grid-template-columns: 1.2fr 1fr;
+            }
+        }
+
+        /* Tarjetas de la interfaz */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Lado Izquierdo: Visualizador de Código */
+        pre {
+            background-color: #0b0f19;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #cbd5e1;
+        }
+
+        .highlight { color: var(--accent); font-weight: bold; }
+        .comment { color: #64748b; font-style: italic; }
+        .string { color: var(--success); }
+
+        /* Lado Derecho: Simulación interactiva con Flexbox */
+        .simulation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .vending-machine-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px dashed var(--accent);
+            position: relative;
+        }
+
+        /* SVG Animado y Transiciones */
+        .svg-icon {
+            width: 100px;
+            height: 100px;
+            transition: transform 0.5s ease, filter 0.3s ease;
+        }
+
+        .svg-icon.processing {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .svg-icon.success {
+            filter: drop-shadow(0 0 15px var(--success));
+        }
+
+        /* Controles de la simulación usando Flexbox */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background-color: #0f172a;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Consola de Blockchain */
+        .blockchain-log {
+            background-color: #0b0f19;
+            border-left: 4px solid var(--accent);
+            padding: 0.75rem;
+            border-radius: 4px;
+            min-height: 60px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .log-success {
+            border-left-color: var(--success);
+            color: #34d399;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Solidity Aula Interactiva</h1>
+        <p>Aprende cómo funciona un Smart Contract simulando una Máquina Expendedora</p>
+    </header>
+
+    <div class="playground-grid">
+        
+        <div class="card">
+            <div class="card-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+                Contrato Inteligente en Solidity
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                Este código define las reglas matemáticas inmutables en la Blockchain de Ethereum.
+            </p>
+            <pre>
+<span class="comment">// SPDX-License-Identifier: MIT</span>
+<span class="highlight">pragma solidity</span> ^0.8.0;
+
+<span class="highlight">contract</span> MaquinaCafe {
+    <span class="comment">// Estado del contrato (Memoria en la Blockchain)</span>
+    <span class="highlight">uint256</span> <span class="highlight">public</span> precioCafe = 2; 
+    <span class="highlight">uint256</span> <span class="highlight">public</span> cafesDisponibles = 10;
+
+    <span class="comment">// Función que ejecuta la acción automáticamente</span>
+    <span class="highlight">function</span> comprarCafe(<span class="highlight">uint256</span> _pago) <span class="highlight">public</span> {
+        <span class="highlight">require</span>(_pago >= precioCafe, <span class="string">"Saldo insuficiente"</span>);
+        <span class="highlight">require</span>(cafesDisponibles > 0, <span class="string">"No queda cafe"</span>);
+        
+        cafesDisponibles -= 1;
+        <span class="comment">// ¡Acción completada de forma autónoma!</span>
+    }
+}</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Playground: Ejecución en Tiempo Real
+            </div>
+            
+            <div class="simulation-container">
+                
+                <div class="vending-machine-box">
+                    <svg id="machine-svg" class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+                        <line x1="6" y1="2" x2="6" y2="4" />
+                        <line x1="10" y1="2" x2="10" y2="4" />
+                        <line x1="14" y1="2" x2="14" y2="4" />
+                    </svg>
+                    
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <p>Estado en Blockchain:</p>
+                        <strong style="color: var(--success);">Cafés en inventario: <span id="stock-display">10</span></strong>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        Introduce fichas (Simulación de pago al contrato. Costo: 2 tokens):
+                    </p>
+                    <div class="input-group">
+                        <input type="number" id="payment-input" placeholder="Cantidad de fichas..." min="0">
+                        <button id="btn-execute">Ejecutar Contrato</button>
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Registro de Eventos (EVM Log):</p>
+                    <div id="blockchain-log" class="blockchain-log">
+                        Esperando interacción... El contrato está desplegado y listo.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Lógica de simulación del Smart Contract
+        let cafesDisponibles = 10;
+        const precioCafe = 2;
+
+        const btnExecute = document.getElementById('btn-execute');
+        const paymentInput = document.getElementById('payment-input');
+        const stockDisplay = document.getElementById('stock-display');
+        const blockchainLog = document.getElementById('blockchain-log');
+        const machineSvg = document.getElementById('machine-svg');
+
+        btnExecute.addEventListener('click', () => {
+            const pago = parseInt(paymentInput.value);
+
+            // Reseteo de clases de transición
+            machineSvg.classList.remove('processing', 'success');
+            blockchainLog.classList.remove('log-success');
+
+            // Validación previa antes de "compilar/ejecutar" en la máquina virtual
+            if (isNaN(pago) || pago <= 0) {
+                blockchainLog.innerText = "❌ [Error EVM]: Debes ingresar una cantidad válida de tokens.";
+                return;
+            }
+
+            // Simulación del procesamiento del bloque (Efecto visual)
+            machineSvg.classList.add('processing');
+            blockchainLog.innerText = "⏳ Procesando transacción en el bloque... Validando 'require()'.";
+
+            setTimeout(() => {
+                machineSvg.classList.remove('processing');
+
+                // Aplicación estricta de las reglas del Smart Contract de Solidity
+                if (pago < precioCafe) {
+                    blockchainLog.innerText = `❌ [Transaction Reverted]: require(_pago >= precioCafe) falló. Ingresaste ${pago} tokens, pero el costo es de ${precioCafe}.`;
+                } else if (cafesDisponibles <= 0) {
+                    blockchainLog.innerText = "❌ [Transaction Reverted]: require(cafesDisponibles > 0) falló. ¡Máquina sin existencias!";
+                } else {
+                    // Si cumple las condiciones del contrato, muta el estado
+                    cafesDisponibles--;
+                    stockDisplay.innerText = cafesDisponibles;
+                    
+                    // Éxito
+                    machineSvg.classList.add('success');
+                    blockchainLog.classList.add('log-success');
+                    blockchainLog.innerText = `✔️ [Success]: ¡Transacción exitosa! Bloque minado. Se descontaron los tokens y se entregó 1 café de forma automatizada.`;
+                }
+                
+                paymentInput.value = ''; // Limpiar input
+            }, 800); // 800ms simulando el tiempo de respuesta/bloque
+        });
+    </script>
+</body>
+</html>
