@@ -1,10 +1,19 @@
+Aquí tienes el código mejorado. He optimizado el diseño para que sea completamente responsive en smartphones y he corregido la lógica principal para que los niveles interactúen entre sí, como en un curso real secuencial.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Curso Interactivo: De Cero a Smart Contracts</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --bg-main: #0b0f19;
             --bg-card: #1e293b;
@@ -18,165 +27,192 @@
             --danger: #f43f5e;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
         body {
             background-color: var(--bg-main);
             color: var(--text-main);
-            padding: 1.5rem 0.8rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
         }
 
-        header {
-            text-align: center;
-            max-width: 800px;
-            margin-bottom: 2rem;
-            padding: 0 0.5rem;
-        }
-
-        header h1 { 
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem; 
-            color: #fff; 
-            line-height: 1.2;
-        }
-        
-        header p { color: var(--text-muted); font-size: 1rem; }
-
-        @media (min-width: 768px) {
-            header h1 { font-size: 2.5rem; }
-            header p { font-size: 1.1rem; }
-            body { padding: 2rem 1rem; }
-        }
-
+        /* Contenedor principal fluido */
         .timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
             width: 100%;
             max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
+        /* Tarjetas completamente responsivas */
         .level-block {
             background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 1.25rem;
+            border-radius: 1.25rem;
             border: 1px solid #334155;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
-        @media (min-width: 992px) {
-            .level-block {
-                grid-template-columns: 1.1fr 0.9fr;
-                padding: 2rem;
+        /* Flex column por defecto (mobile first) */
+        .level-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            padding: 1.2rem;
+        }
+
+        /* En tablets y escritorio: dos columnas side-by-side */
+        @media (min-width: 700px) {
+            .level-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            body {
+                padding: 1.5rem;
+            }
+            .timeline {
                 gap: 2rem;
             }
         }
 
+        /* bloque de explicación */
+        .explanation {
+            overflow-x: auto;
+        }
+
         .level-badge {
+            display: inline-block;
             background-color: var(--accent);
             color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 0.8rem;
+            padding: 0.25rem 0.85rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.75rem;
         }
 
-        .level-title { font-size: 1.3rem; margin-bottom: 0.8rem; }
-        .level-description { color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; font-size: 0.95rem; }
+        .level-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
 
+        .level-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        /* PRE adaptativo */
         pre {
             background-color: var(--bg-code);
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 0.9rem;
+            border-radius: 12px;
             overflow-x: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.8rem;
+            font-family: 'Courier New', 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
             line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
             border: 1px solid #1e293b;
-            max-width: 100%;
-        }
-        
-        @media (min-width: 768px) {
-            pre { font-size: 0.9rem; line-height: 1.5; }
-            .level-title { font-size: 1.5rem; }
         }
 
-        .keyword { color: #f43f5e; font-weight: bold; }
+        @media (min-width: 480px) {
+            pre {
+                font-size: 0.8rem;
+            }
+            .level-title {
+                font-size: 1.45rem;
+            }
+        }
+
+        .keyword { color: #f97316; font-weight: bold; }
         .type { color: #38bdf8; }
         .comment { color: #64748b; font-style: italic; }
         .string { color: var(--success); }
 
+        /* Zona interactiva */
         .interactive-zone {
+            background-color: rgba(15, 23, 42, 0.7);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            background-color: rgba(15, 23, 42, 0.5);
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px dashed #475569;
-            justify-content: center;
-        }
-
-        @media (min-width: 768px) {
-            .interactive-zone { padding: 1.5rem; }
         }
 
         .flex-row {
             display: flex;
             flex-direction: column;
-            gap: 0.6rem;
-            width: 100%;
+            gap: 0.7rem;
         }
 
-        @media (min-width: 480px) {
-            .flex-row { flex-direction: row; }
+        @media (min-width: 450px) {
+            .flex-row {
+                flex-direction: row;
+                align-items: center;
+            }
+            button {
+                flex-shrink: 0;
+            }
         }
 
         input, select {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 6px;
-            border: 1px solid #475569;
             background-color: var(--bg-code);
+            border: 1px solid #475569;
             color: white;
-            font-size: 1rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            width: 100%;
             outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
         }
 
         button {
-            width: 100%;
             background-color: var(--accent);
-            color: white;
             border: none;
+            color: white;
+            font-weight: 600;
             padding: 0.75rem 1rem;
-            border-radius: 6px;
-            font-weight: bold;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.95rem;
-            white-space: nowrap;
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: center;
         }
-        
-        @media (min-width: 480px) {
-            input { flex: 1; }
-            button { width: auto; }
+
+        @media (min-width: 450px) {
+            button {
+                width: auto;
+                min-width: 110px;
+            }
         }
-        
-        button:hover { background-color: var(--accent-hover); }
-        button:disabled { background-color: #475569; opacity: 0.5; cursor: not-allowed; }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #475569;
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
 
         .console-box {
             background-color: #05070f;
@@ -184,12 +220,9 @@
             padding: 0.75rem;
             font-family: monospace;
             font-size: 0.8rem;
-            color: #38bdf8;
-            border-radius: 4px;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
+            border-radius: 10px;
             word-break: break-word;
+            color: #cbd5e1;
         }
 
         .visual-container {
@@ -197,229 +230,363 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
             background: #0f172a;
-            border-radius: 8px;
+            padding: 0.8rem;
+            border-radius: 16px;
             text-align: center;
         }
 
         .svg-icon {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 0.5rem;
-            transition: transform 0.5s ease;
+            width: 48px;
+            height: 48px;
+            transition: transform 0.3s ease;
+        }
+
+        .anim-spin {
+            transform: rotate(360deg);
+        }
+
+        hr {
+            margin: 0.5rem 0;
+            border-color: #334155;
+        }
+
+        /* mensajes de éxito/reto */
+        .global-progress {
+            background: #111827;
+            border-radius: 100px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            color: var(--text-muted);
         }
         
-        @media (min-width: 768px) {
-            .svg-icon { width: 60px; height: 60px; }
+        footer {
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #4b5563;
         }
-        
-        .anim-spin { transform: rotate(360deg); }
-        
-        hr { border: 0; border-top: 1px solid #334155; margin: 0.5rem 0; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>De Cero a Programador de Blockchain</h1>
-        <p>Una guía interactiva secuencial para aprender a pensar en código y dominar Solidity paso a paso.</p>
-    </header>
+<div class="global-progress" id="globalProgress">
+    🧠 Sigue los niveles en orden | Nivel 1: define el precio
+</div>
 
-    <div class="timeline">
-
-        <div class="level-block">
-            <div>
-                <span class="level-badge" style="background-color: #06b6d4;">Nivel 1: Los Datos Básicos</span>
-                <h2 class="level-title">¿Dónde se guarda la información?</h2>
-                <p class="level-description">
-                    Para programar, necesitas "cajas" para guardar datos. Las llamamos <strong>Variables</strong>. En Solidity debes decirle a la caja qué tipo de dato va a guardar estrictamente.
-                </p>
-                <pre>
-<span class="comment">// Caja para números enteros</span>
+<div class="timeline">
+    <!-- NIVEL 1 -->
+    <div class="level-block" id="level1">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #06b6d4;">Nivel 1 · Variables</span>
+                <h2 class="level-title">📦 Cajas de datos: tipos básicos</h2>
+                <p class="level-description">Las variables son contenedores. En Solidity debemos declarar el tipo: <strong>uint</strong> (entero) o <strong>string</strong> (texto).</p>
+                <pre><span class="comment">// variable entera sin signo</span>
 <span class="type">uint256</span> <span class="keyword">public</span> precioCafe = <span class="type">2</span>;
-<span class="comment">// Caja para texto</span>
-<span class="type">string</span> <span class="keyword">public</span> mensaje = <span class="string">"¡Hola!"</span>;</pre>
+<span class="comment">// texto fijo</span>
+<span class="type">string</span> <span class="keyword">public</span> mensaje = <span class="string">"¡Blockchain!"</span>;</pre>
             </div>
             <div class="interactive-zone">
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Playground: Cambia el valor de la variable "precioCafe":</p>
+                <p style="font-size:0.85rem;">💡 Cambia el valor del <strong>precioCafe</strong></p>
                 <div class="flex-row">
-                    <input type="number" id="input-l1" value="2" min="1">
-                    <button id="btn-l1">Guardar</button>
+                    <input type="number" id="input-l1" value="2" min="1" step="1">
+                    <button id="btn-l1">Guardar variable</button>
                 </div>
                 <div id="console-l1" class="console-box">
-                    Memoria actual: precioCafe = 2
+                    📌 precioCafe = 2
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="level-block">
-            <div>
-                <span class="level-badge" style="background-color: #3b82f6;">Nivel 2: Tomar Decisiones</span>
-                <h2 class="level-title">El control de flujo (If / Require)</h2>
-                <p class="level-description">
-                    Los programas toman decisiones. En Solidity usamos <code>require()</code>, que funciona como un filtro estricto: exige que la condición interna sea verdadera para continuar; de lo contrario, detiene el programa.
-                </p>
-                <pre>
-<span class="comment">// Si el pago es menor al costo, falla</span>
-<span class="keyword">require</span>(pago >= precioCafe, <span class="string">"Invalido"</span>);</pre>
+    <!-- NIVEL 2 -->
+    <div class="level-block" id="level2">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #3b82f6;">Nivel 2 · Require / Control</span>
+                <h2 class="level-title">⚖️ Tomar decisiones: require()</h2>
+                <p class="level-description"><code>require(condición)</code> es como un guardián: si la condición es <strong>falsa</strong>, revierte la transacción.</p>
+                <pre><span class="keyword">require</span>(pago >= precioCafe, <span class="string">"Saldo insuficiente"</span>);
+<span class="comment">// Solo sigue si el pago es suficiente</span></pre>
             </div>
             <div class="interactive-zone">
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Playground: Paga el café (Cuesta <span id="current-price-display">2</span> tokens):</p>
+                <p style="font-size:0.85rem;">💰 El café cuesta <strong id="current-price-display">2</strong> tokens. Paga:</p>
                 <div class="flex-row">
-                    <input type="number" id="input-l2" placeholder="¿Cuánto vas a pagar?">
-                    <button id="btn-l2">Verificar</button>
+                    <input type="number" id="input-l2" placeholder="Tu pago (tokens)" step="1">
+                    <button id="btn-l2">Pagar y validar</button>
                 </div>
-                <div id="console-l2" class="console-box" style="border-left-color: var(--warning);">
-                    Esperando intento de pago...
+                <div id="console-l2" class="console-box">
+                    🧾 Esperando pago...
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="level-block">
-            <div>
-                <span class="level-badge" style="background-color: #10b981;">Nivel 3: El Molde (POO)</span>
-                <h2 class="level-title">Estructurar un Objeto completo</h2>
-                <p class="level-description">
-                    En la <strong>Programación Orientada a Objetos</strong> juntamos las variables (atributos) y las acciones (funciones) dentro de un molde llamado <strong>Clase</strong> (o <strong>Contrato</strong>).
-                </p>
-                <pre>
-<span class="keyword">contract</span> MaquinaExpendedora {
-    <span class="type">uint256</span> <span class="keyword">public</span> stock; <span class="comment">// Atributo</span>
-
+    <!-- NIVEL 3 -->
+    <div class="level-block" id="level3">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #10b981;">Nivel 3 · Objetos (POO)</span>
+                <h2 class="level-title">🏭 Contrato como fábrica</h2>
+                <p class="level-description">Un contrato es una clase con atributos (stock) y métodos (surtir). Encapsulamos lógica.</p>
+                <pre><span class="keyword">contract</span> Maquina {
+    <span class="type">uint256</span> <span class="keyword">public</span> stock;
     <span class="keyword">function</span> surtir(<span class="type">uint256</span> _cant) <span class="keyword">public</span> {
-        stock += _cant; <span class="comment">// Acción</span>
+        stock += _cant;
     }
 }</pre>
             </div>
             <div class="interactive-zone">
                 <div class="visual-container">
-                    <svg class="svg-icon" id="svg-l3" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2">
+                    <svg class="svg-icon" id="svg-l3" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8">
                         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <circle cx="12" cy="12" r="2" fill="var(--success)" fill-opacity="0.5"/>
                     </svg>
-                    <p style="font-size: 0.9rem;">Atributo -> <strong>Stock: <span id="stock-l3">0</span> u.</strong></p>
+                    <p><strong>📦 Stock actual: <span id="stock-l3">0</span> unidades</strong></p>
                 </div>
                 <div class="flex-row">
-                    <input type="number" id="input-l3" value="5" placeholder="Cantidad">
-                    <button id="btn-l3">Ejecutar (surtir)</button>
+                    <input type="number" id="input-l3" value="5" placeholder="Cantidad a surtir">
+                    <button id="btn-l3">➕ Surtir (modificar objeto)</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="level-block" id="block-final">
-            <div>
-                <span class="level-badge" style="background-color: #8b5cf6;">Nivel 4: El Smart Contract</span>
-                <h2 class="level-title">Contrato Inteligente en Red</h2>
-                <p class="level-description">
-                    Al darle a <strong>Desplegar</strong>, el molde sube a la Blockchain. El contrato ahora corre solo de forma inmutable. El <code>require</code> exige que la condición sea verdadera; si es falsa, frena el código y lanza el error.
-                </p>
-                <pre>
-<span class="keyword">contract</span> Final {
+    <!-- NIVEL 4 FINAL -->
+    <div class="level-block" id="level4">
+        <div class="level-content">
+            <div class="explanation">
+                <span class="level-badge" style="background-color: #8b5cf6;">Nivel 4 · Smart Contract</span>
+                <h2 class="level-title">⛓️ Despliegue en Blockchain</h2>
+                <p class="level-description">El contrato se despliega y ejecuta reglas inmutables. <code>require(stock>0)</code> protege la compra.</p>
+                <pre><span class="keyword">contract</span> Tienda {
     <span class="type">uint256</span> <span class="keyword">public</span> stock = <span class="type">3</span>;
-    
-    <span class="keyword">function</span> comprar() <span class="keyword">public</span> <span class="keyword">payable</span> {
-        <span class="comment">// EXIJO que haya stock. Si es FALSO, lanzo error:</span>
-        <span class="keyword">require</span>(stock > <span class="type">0</span>, <span class="string">"Error: No quedan existencias"</span>);
-        
-        stock -= <span class="type">1</span>;
+    <span class="keyword">function</span> comprar() <span class="keyword">public</span> {
+        <span class="keyword">require</span>(stock > <span class="type">0</span>, <span class="string">"Sin existencias"</span>);
+        stock--;
     }
 }</pre>
             </div>
-            <div class="interactive-zone" style="border: 2px solid var(--accent);">
-                <div id="status-l4" class="console-box" style="background-color: #1e1e2f; color: var(--warning); border-left-color: var(--warning);">
-                    CONTRATO ESTÁTICO (Haz Deploy)
+            <div class="interactive-zone" style="border: 1px solid var(--accent);">
+                <div id="status-l4" class="console-box" style="background-color:#111827;">
+                    ⚙️ Contrato no desplegado
                 </div>
-                
-                <button id="btn-deploy-l4" style="background-color: var(--warning); color: #000;">🚀 Desplegar Contrato</button>
-                
+                <button id="btn-deploy-l4" style="background-color: #f59e0b; color:#0b0f19;">🚀 Desplegar en red de pruebas</button>
                 <hr>
-                
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Interactuar con el contrato vivo:</p>
-                <button id="btn-buy-l4" disabled>Llamar a comprar()</button>
-                
+                <button id="btn-buy-l4" disabled>🛒 Ejecutar comprar()</button>
                 <div id="console-l4" class="console-box">
-                    Esperando infraestructura...
+                    🌐 El Smart Contract vive aquí tras el deploy.
                 </div>
             </div>
         </div>
-
     </div>
+</div>
+<footer>✨ Simulación didáctica de conceptos esenciales Solidity</footer>
 
-    <script>
-        // LÓGICA NIVEL 1
-        let precioGlobal = 2;
-        const inputL1 = document.getElementById('input-l1');
-        const btnL1 = document.getElementById('btn-l1');
-        const consoleL1 = document.getElementById('console-l1');
-        const currentPriceDisplay = document.getElementById('current-price-display');
-
-        btnL1.addEventListener('click', () => {
-            precioGlobal = parseInt(inputL1.value) || 1;
-            consoleL1.innerText = `📦 Variable 'precioCafe' = ${precioGlobal}`;
-            currentPriceDisplay.innerText = precioGlobal;
-        });
-
-        // LÓGICA NIVEL 2
-        const inputL2 = document.getElementById('input-l2');
-        const btnL2 = document.getElementById('btn-l2');
-        const consoleL2 = document.getElementById('console-l2');
-
-        btnL2.addEventListener('click', () => {
-            const dinero = parseInt(inputL2.value) || 0;
-            if(dinero >= precioGlobal) {
-                consoleL2.style.borderLeftColor = "var(--success)";
-                consoleL2.innerHTML = `✔️ ¡Correcto! require(${dinero} >= ${precioGlobal}) es VERDADERO.`;
-            } else {
-                consoleL2.style.borderLeftColor = "var(--danger)";
-                consoleL2.innerHTML = `❌ REVERTIDO: require(${dinero} >= ${precioGlobal}) falló.`;
-            }
-        });
-
-        // LÓGICA NIVEL 3
-        let stockClase = 0;
-        const inputL3 = document.getElementById('input-l3');
-        const btnL3 = document.getElementById('btn-l3');
-        const stockL3 = document.getElementById('stock-l3');
-        const svgL3 = document.getElementById('svg-l3');
-
-        btnL3.addEventListener('click', () => {
-            const cantidad = parseInt(inputL3.value) || 0;
-            stockClase += cantidad;
-            stockL3.innerText = stockClase;
+<script>
+    // ======================= LOGICA MEJORADA Y UNIFICADA =======================
+    // Variables compartidas entre niveles para coherencia secuencial educativa
+    let globalPrice = 2;          // Nivel 1 y 2 conectados
+    let stockObject = 0;          // Nivel 3 (simula atributo de clase)
+    let deployedContractStock = 3; // Nivel 4 stock interno
+    let isDeployed = false;
+    
+    // Elementos DOM
+    const inputL1 = document.getElementById('input-l1');
+    const btnL1 = document.getElementById('btn-l1');
+    const consoleL1 = document.getElementById('console-l1');
+    const priceDisplaySpan = document.getElementById('current-price-display');
+    
+    const inputL2 = document.getElementById('input-l2');
+    const btnL2 = document.getElementById('btn-l2');
+    const consoleL2 = document.getElementById('console-l2');
+    
+    const inputL3 = document.getElementById('input-l3');
+    const btnL3 = document.getElementById('btn-l3');
+    const stockL3Span = document.getElementById('stock-l3');
+    const svgL3 = document.getElementById('svg-l3');
+    
+    const btnDeploy = document.getElementById('btn-deploy-l4');
+    const btnBuy = document.getElementById('btn-buy-l4');
+    const statusL4 = document.getElementById('status-l4');
+    const consoleL4 = document.getElementById('console-l4');
+    
+    const globalProgressDiv = document.getElementById('globalProgress');
+    
+    // Helper para actualizar mensaje global
+    function updateGlobalMessage(msg, isError = false) {
+        globalProgressDiv.innerHTML = msg;
+        globalProgressDiv.style.color = isError ? '#f87171' : '#94a3b8';
+        setTimeout(() => {
+            if(!isError) globalProgressDiv.style.color = '#94a3b8';
+        }, 2500);
+    }
+    
+    // ---------- NIVEL 1:  precio global ----------
+    function updatePriceUI() {
+        consoleL1.innerText = `📦 Variable 'precioCafe' = ${globalPrice} (almacenada en memoria)`;
+        priceDisplaySpan.innerText = globalPrice;
+        // sincronizar placeholder nivel 2
+        if(inputL2) inputL2.placeholder = `Ej: ${globalPrice}`;
+        // Actualizar consola nivel 2 si está inactiva? no necesario
+    }
+    
+    btnL1.addEventListener('click', () => {
+        let newPrice = parseInt(inputL1.value);
+        if (isNaN(newPrice) || newPrice < 1) newPrice = 1;
+        globalPrice = newPrice;
+        updatePriceUI();
+        updateGlobalMessage(`✅ Nivel 1: precioCafe ahora es ${globalPrice}. Ahora ve al Nivel 2`);
+        // Auto limpiar mensajes de nivel 2 para que revalide
+        if(consoleL2) consoleL2.innerHTML = `🧾 Nuevo precio: ${globalPrice} tokens. Prueba a pagar.`;
+        consoleL2.style.borderLeftColor = "var(--warning)";
+    });
+    
+    // ---------- NIVEL 2: requiere el precio global ----------
+    btnL2.addEventListener('click', () => {
+        let pago = parseInt(inputL2.value);
+        if (isNaN(pago)) pago = 0;
+        if (pago >= globalPrice) {
+            consoleL2.style.borderLeftColor = "var(--success)";
+            consoleL2.innerHTML = `✅ ✔️ ¡require(${pago} >= ${globalPrice}) es VERDADERO! Pago aceptado. Transacción continúa.`;
+            updateGlobalMessage(`✅ Nivel 2 superado! Condición require aprobada. Ve al Nivel 3`);
+        } else {
+            consoleL2.style.borderLeftColor = "var(--danger)";
+            consoleL2.innerHTML = `❌ REVERTIDO! require(${pago} >= ${globalPrice}) es FALSO. El contrato detiene la ejecución.`;
+            updateGlobalMessage(`⚠️ require falló. Debes pagar al menos ${globalPrice} tokens.`, true);
+        }
+    });
+    
+    // ---------- NIVEL 3: POO / Objeto (stock del contrato) ----------
+    function updateStockL3() {
+        stockL3Span.innerText = stockObject;
+    }
+    
+    btnL3.addEventListener('click', () => {
+        let cantidad = parseInt(inputL3.value);
+        if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
+        if(cantidad > 0) {
+            stockObject += cantidad;
+            updateStockL3();
+            // animación svg
             svgL3.classList.add('anim-spin');
-            setTimeout(() => svgL3.classList.remove('anim-spin'), 500);
-        });
-
-        // LÓGICA NIVEL 4 CORREGIDA
-        let stockFinal = 3;
-        const btnDeployL4 = document.getElementById('btn-deploy-l4');
-        const btnBuyL4 = document.getElementById('btn-buy-l4');
-        const statusL4 = document.getElementById('status-l4');
-        const consoleL4 = document.getElementById('console-l4');
-
-        btnDeployL4.addEventListener('click', () => {
-            statusL4.innerText = "⏳ Subiendo bloque a la Blockchain...";
-            btnDeployL4.disabled = true;
-            
-            setTimeout(() => {
-                statusL4.style.color = "var(--success)";
-                statusL4.style.borderLeftColor = "var(--success)";
-                statusL4.innerHTML = "🟢 INSTANCIADO: 0x9bC1... (Inmutable)";
-                consoleL4.innerText = `Objeto creado con stock = ${stockFinal}`;
-                btnBuyL4.disabled = false;
-            }, 1000);
-        });
-
-        btnBuyL4.addEventListener('click', () => {
-            if (stockFinal > 0) {
-                stockFinal--;
-                consoleL4.style.borderLeftColor = "var(--success)";
-                consoleL4.innerHTML = `✔️ ¡Transacción Exitosa! La condición (stock > 0) se cumplió. Se redujo el stock. Restante: ${stockFinal}`;
-            } else {
-                consoleL4.style.borderLeftColor = "var(--danger)";
-                consoleL4.innerHTML = `❌ ¡TRANSACCIÓN REVERTIDA! El require(stock > 0) detectó que el stock es 0 (FALSO). Se disparó el mensaje: "Error: No quedan existencias".`;
+            setTimeout(() => svgL3.classList.remove('anim-spin'), 400);
+            updateGlobalMessage(`📦 Nivel 3: Stock actualizado a ${stockObject} unidades. El objeto retiene estado.`);
+        } else {
+            updateGlobalMessage(`⚠️ Cantidad inválida, ingresa un número positivo.`, true);
+        }
+        // Mostrar un pequeño mensaje en consola visual
+        const interactiveDiv = document.querySelector('#level3 .interactive-zone');
+        // opcional feedback extra: sin romper
+    });
+    
+    // Inicializar nivel 3
+    updateStockL3();
+    
+    // ---------- NIVEL 4: Smart Contract con lógica mejorada + bloqueo secuencial realista ----------
+    // Reseteamos estado del contrato cada deploy (por simulación)
+    function resetContractState() {
+        deployedContractStock = 3;
+        isDeployed = true;
+        statusL4.innerHTML = "🟢 CONTRATO DESPLEGADO en dirección 0x9fE4...";
+        statusL4.style.borderLeftColor = "var(--success)";
+        statusL4.style.color = "#bbf0d0";
+        btnBuy.disabled = false;
+        consoleL4.innerHTML = `✅ Smart contract desplegado con stock = ${deployedContractStock}. Ahora puedes llamar a comprar().`;
+        consoleL4.style.borderLeftColor = "var(--success)";
+        updateGlobalMessage("🚀 Nivel 4: Contrato desplegado en blockchain. ¡Usa comprar()!");
+    }
+    
+    btnDeploy.addEventListener('click', () => {
+        if (isDeployed) {
+            // Simulación de re-despliegue (opcional, pero mejor reiniciar)
+            deployedContractStock = 3;
+            statusL4.innerHTML = "🔄 REDESPLIEGUE: Nuevo contrato inmutable.";
+            statusL4.style.borderLeftColor = "#f59e0b";
+            consoleL4.innerHTML = `🔁 Contrato reinstanciado con stock = ${deployedContractStock}. El estado anterior se perdió.`;
+            btnBuy.disabled = false;
+            updateGlobalMessage("⚠️ Se redeployó el contrato con stock inicial 3.");
+        } else {
+            // primer deploy
+            resetContractState();
+        }
+        isDeployed = true;
+        // Efecto de bloque simulado
+        btnDeploy.disabled = true;
+        setTimeout(() => {
+            btnDeploy.disabled = false; // para poder volver a desplegar opcional
+        }, 1800);
+    });
+    
+    // Llamada a comprar con require(stock>0)
+    btnBuy.addEventListener('click', () => {
+        if (!isDeployed) {
+            consoleL4.style.borderLeftColor = "var(--danger)";
+            consoleL4.innerHTML = "❌ Primero despliega el contrato (botón Desplegar).";
+            updateGlobalMessage("Despliega el Smart Contract antes de invocar comprar()", true);
+            return;
+        }
+        
+        if (deployedContractStock > 0) {
+            deployedContractStock--;
+            consoleL4.style.borderLeftColor = "var(--success)";
+            consoleL4.innerHTML = `✔️ Transacción exitosa! require(stock > 0) fue TRUE. Stock restante: ${deployedContractStock}`;
+            updateGlobalMessage(`🎉 Compra realizada! Nuevo stock = ${deployedContractStock}`);
+            if (deployedContractStock === 0) {
+                consoleL4.innerHTML += ` ⚠️ Última unidad vendida. El stock es 0.`;
             }
+        } else {
+            consoleL4.style.borderLeftColor = "var(--danger)";
+            consoleL4.innerHTML = `❌ REVERTIDA! require(stock > 0) ha fallado (stock = 0). Mensaje de error: "Sin existencias". Transacción cancelada.`;
+            updateGlobalMessage(`⛔ Compra rechazada: No quedan existencias en el contrato.`, true);
+        }
+    });
+    
+    // ---------- CONEXIÓN DIDÁCTICA: Si completan nivel 2, habilitar guía y feedback. No bloqueamos forzadamente pero se ve coherente.
+    // Además sincronizar valores iniciales y cleanup UI responsive.
+    window.addEventListener('DOMContentLoaded', () => {
+        updatePriceUI();
+        // adicional mostrar precio por defecto en nivel 2.
+        if(inputL2) inputL2.placeholder = `Ej: ${globalPrice}`;
+        // Pequeño helper para que nivel 4 muestre dependencia pero sin límite estricto, solo educativo.
+        // mejorar reset opcional de stockObject y mantener coherencia
+        stockObject = 0;
+        updateStockL3();
+        
+        // Eventos touch friendly: asegurar que el viewport esté optimizado
+        const allButtons = document.querySelectorAll('button');
+        allButtons.forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                // solo para mejorar feedback háptico
+                if(!btn.disabled) btn.style.transform = 'scale(0.97)';
+            });
+            btn.addEventListener('touchend', () => {
+                btn.style.transform = '';
+            });
         });
-    </script>
+        
+        // Mostrar sugerencia en nivel 4
+        if(!isDeployed) btnBuy.disabled = true;
+    });
+    
+    // lógica adicional: si se cambia precio global desde nivel 1 también afecta nivel 2 en tiempo real, ya funciona.
+    // Para mejorar la experiencia, si el usuario intenta comprar en nivel 4 sin desplegar mostramos mensaje coherente.
+    // también sincronización de mensajes para teléfonos.
+    
+    // Manejo extra de errores de input táctil
+    const styleFix = document.createElement('style');
+    styleFix.textContent = `input, button { font-size: 16px !important; }`; // evita zoom automático en iOS
+    document.head.appendChild(styleFix);
+    
+    // Proporcionar pistas contextuales para nivel 3 y mantener un seguimiento claro.
+    const originalConsoleL3Msg = document.querySelector('#level3 .interactive-zone p');
+    if(originalConsoleL3Msg) originalConsoleL3Msg.innerHTML = '⚙️ Atributo stock (variable de estado) modificable con "surtir"';
+</script>
 </body>
 </html>
+```
