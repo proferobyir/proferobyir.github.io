@@ -48,10 +48,9 @@
             padding: 0 1.5rem 3rem 1.5rem;
         }
 
-        /* Sección de explicación de conceptos (map, fetch, promesas) */
+        /* SECCIÓN DE EXPLICACIÓN: Grid con 1fr (cada explicación ocupa una fila completa) */
         .conceptos {
             background: #1e1b2f;
-            color: #e2e8f0;
             border-radius: 2rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
@@ -66,9 +65,11 @@
             font-size: 1.8rem;
         }
 
-        .grid-conceptos {
+        /* CONTENEDOR GRID CON 1fr - cada explicación en su propia fila */
+        .grid-conceptos-vertical {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr;
+            /* Una sola columna que ocupa todo el ancho */
             gap: 1.5rem;
         }
 
@@ -77,6 +78,12 @@
             border-radius: 1.2rem;
             padding: 1.2rem;
             border-left: 5px solid #f59e0b;
+            transition: transform 0.2s;
+        }
+
+        .concept-card:hover {
+            transform: translateX(5px);
+            background: #16162a;
         }
 
         .concept-card h3 {
@@ -85,6 +92,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 1.3rem;
         }
 
         .code-explain {
@@ -92,16 +100,19 @@
             padding: 0.8rem;
             border-radius: 0.8rem;
             font-family: 'Fira Code', monospace;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             overflow-x: auto;
             margin: 0.8rem 0;
             white-space: pre-wrap;
             word-break: break-word;
+            line-height: 1.5;
         }
 
         .explain-arrow {
             color: #86efac;
             font-weight: bold;
+            margin-top: 0.5rem;
+            display: inline-block;
         }
 
         .diagram {
@@ -113,9 +124,20 @@
             font-family: monospace;
             white-space: pre;
             overflow-x: auto;
+            line-height: 1.4;
         }
 
-        /* layout principal */
+        .badge-funcion {
+            background: #f59e0b;
+            color: #1e1b2f;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        /* layout principal de cards */
         .grid-docs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
@@ -282,67 +304,78 @@
 <body>
     <div class="hero">
         <h1>⚡ map() + CSS Grid + PokéAPI</h1>
-        <p>Sin floats, sin capas flotantes. Aprendiendo <strong>map, fetch y promesas</strong> con diseño limpio en
-            Grid.</p>
+        <p>Explicación visual con <strong>grid-template-columns: 1fr</strong> para cada concepto, sin floats ni capas
+            flotantes.</p>
     </div>
 
     <div class="container">
-        <!-- SECCIÓN GRÁFICA: EXPLICACIÓN DE map(), fetch() y PROMESAS -->
+        <!-- SECCIÓN DE EXPLICACIÓN: ORGANIZADA CON GRID 1fr (cada explicación en fila completa) -->
         <div class="conceptos">
-            <h2>📚 Anatomía de funciones clave: .map() , fetch() y Promesas</h2>
-            <div class="grid-conceptos">
+            <h2>📚 Anatomía de funciones: .map() , fetch() y Promesas</h2>
+            <div class="grid-conceptos-vertical">
                 <!-- Explicación .map() -->
                 <div class="concept-card">
-                    <h3>🔁 .map() → Transforma arrays</h3>
+                    <h3>🔁 .map() → Transforma arrays <span class="badge-funcion">Método de array</span></h3>
                     <div class="code-explain">
-                        <span class="code-comment">// .map() recorre cada elemento y devuelve NUEVO array</span><br>
+                        <span class="code-comment">// .map() recorre CADA elemento y devuelve NUEVO array</span><br>
                         const original = [1, 2, 3];<br>
                         const doble = original.map( <span style="color:#fbbf24;">(numero) => numero * 2</span> );<br>
                         // Resultado: [2, 4, 6]
                     </div>
                     <div class="diagram">
-                        ┌─────────────────────────────────────────┐<br>
+                        ┌─────────────────────────────────────────────────────────┐<br>
                         │ arrayOriginal ──.map( callback )──► nuevoArray │<br>
                         │ │<br>
-                        │ callback recibe: (elemento, índice, array)<br>
-                        │ → siempre retorna el elemento transformado │<br>
-                        └─────────────────────────────────────────┘
+                        │ callback recibe: (elemento, índice, array) │<br>
+                        │ → SIEMPRE retorna el elemento transformado │<br>
+                        │ → El array resultante tiene la MISMA longitud │<br>
+                        └─────────────────────────────────────────────────────────┘
                     </div>
-                    <div class="explain-arrow">✨ Se usa para convertir datos en HTML, objetos, etc.</div>
+                    <div class="explain-arrow">✨ <strong>Uso práctico:</strong> Convertir datos en HTML, modificar
+                        objetos, formatear texto.</div>
                 </div>
+
                 <!-- Explicación fetch() + Promesas -->
                 <div class="concept-card">
-                    <h3>🌐 fetch() + Promesas</h3>
+                    <h3>🌐 fetch() + Promesas <span class="badge-funcion">Asincronía</span></h3>
                     <div class="code-explain">
-                        <span class="code-comment">// fetch devuelve una PROMESA (estado pendiente)</span><br>
-                        fetch('https://api.ejemplo.com')<br>
-                        &nbsp;&nbsp;.then( <span style="color:#fbbf24;">respuesta => respuesta.json()</span> )<br>
-                        &nbsp;&nbsp;.then( <span style="color:#fbbf24;">datos => console.log(datos)</span> )<br>
-                        &nbsp;&nbsp;.catch( <span style="color:#fbbf24;">error => manejarError(error)</span> );
+                        <span class="code-comment">// fetch() devuelve una PROMESA (estado pendiente
+                            inicialmente)</span><br>
+                        fetch('https://api.ejemplo.com/datos')<br>
+                        &nbsp;&nbsp;.then( <span style="color:#fbbf24;">respuesta => respuesta.json()</span>
+                        )&nbsp;&nbsp;<span class="code-comment">// transforma a JSON</span><br>
+                        &nbsp;&nbsp;.then( <span style="color:#fbbf24;">datos => console.log(datos)</span>
+                        )&nbsp;&nbsp;<span class="code-comment">// trabajas con datos</span><br>
+                        &nbsp;&nbsp;.catch( <span style="color:#fbbf24;">error => manejarError(error)</span>
+                        );&nbsp;&nbsp;<span class="code-comment">// captura errores</span>
                     </div>
                     <div class="diagram">
-                        ┌─────────┐ ┌──────────┐ ┌─────────────┐<br>
+                        ┌──────────┐ ┌──────────────┐ ┌─────────────────┐<br>
                         │ fetch() │ ──► │ Promesa │ ──► │ Respuesta │<br>
-                        │ (petición) │ pendiente│ │ (resuelta) │<br>
-                        └─────────┘ └──────────┘ └─────────────┘<br>
+                        │ petición │ │ (pendiente) │ │ (resuelta/OK) │<br>
+                        └──────────┘ └──────────────┘ └─────────────────┘<br>
                         │ │ │<br>
                         ▼ ▼ ▼<br>
-                        [ .then() ] [ .catch() ] [ .finally() ]
+                        [ .then() ] [ .catch() ] [ .finally() ]<br>
+                        (encadenar) (errores) (siempre ejecuta)
                     </div>
-                    <div class="explain-arrow">✅ Las promesas evitan el "callback hell" y manejan asincronía.</div>
+                    <div class="explain-arrow">✅ <strong>Ventaja:</strong> Las promesas evitan el "callback hell" y
+                        permiten manejar operaciones asíncronas de forma legible.</div>
                 </div>
-                <!-- Explicación Async/Await + Promise.all + map -->
+
+                <!-- Explicación map() + Promise.all (múltiples fetch) -->
                 <div class="concept-card">
-                    <h3>⚡ map() + Promise.all (múltiples fetch)</h3>
+                    <h3>⚡ map() + Promise.all (múltiples peticiones) <span class="badge-funcion">Paralelismo</span></h3>
                     <div class="code-explain">
-                        <span class="code-comment">// 1. Arreglo de urls o nombres</span><br>
-                        const urls = ['pikachu', 'charizard'];<br>
-                        <span class="code-comment">// 2. .map() crea array de promesas</span><br>
-                        const promesas = urls.map( nombre => <br>
+                        <span class="code-comment">// 1. Arreglo de nombres o URLs</span><br>
+                        const nombres = ['pikachu', 'charizard', 'bulbasaur'];<br>
+                        <span class="code-comment">// 2. .map() crea un array de promesas</span><br>
+                        const promesas = nombres.map( nombre => <br>
                         &nbsp;&nbsp;fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json())<br>
                         );<br>
-                        <span class="code-comment">// 3. Promise.all espera TODAS</span><br>
-                        const resultados = await Promise.all(promesas);
+                        <span class="code-comment">// 3. Promise.all espera a que TODAS terminen</span><br>
+                        const resultados = await Promise.all(promesas);<br>
+                        <span class="code-comment">// 4. resultados contiene los datos de TODAS las peticiones</span>
                     </div>
                     <div class="diagram">
                         [ url1, url2, url3 ]<br>
@@ -354,18 +387,19 @@
                         Promise.all( [promesa1, promesa2, promesa3] )<br>
                         │<br>
                         ▼<br>
-                        [ data1, data2, data3 ] ← ¡todo en paralelo!
+                        [ data1, data2, data3 ] ← ¡Todas en paralelo, sin esperar secuencialmente!
                     </div>
-                    <div class="explain-arrow">🚀 Ideal para cargar múltiples recursos simultáneamente.</div>
+                    <div class="explain-arrow">🚀 <strong>Ideal para:</strong> Cargar múltiples recursos simultáneamente
+                        (Pokémon, usuarios, productos) y mejorar el rendimiento.</div>
                 </div>
             </div>
             <div class="method-highlight" style="margin-top: 1rem; background:#2d2a3e; color:#e2e8f0;">
-                💡 <strong>Resumen visual:</strong> map() transforma → fetch() lanza petición asíncrona → Promesa
-                gestiona el resultado → ¡sin floats, sin superposiciones!
+                💡 <strong>Resumen visual:</strong> .map() transforma arrays → fetch() lanza peticiones asíncronas →
+                Promesas manejan resultados → ¡Grid organiza sin floats!
             </div>
         </div>
 
-        <!-- Cards principales (sin floats, todo con Grid y Flex) -->
+        <!-- CARDS PRÁCTICAS (sin floats, todo con Grid) -->
         <div class="grid-docs">
             <!-- 1. .map() + Grid con datos locales -->
             <div class="card">
@@ -374,15 +408,15 @@
                 <div class="code-block">
                     <span class="code-comment">// Datos locales</span><br>
                     const pokemones = [ {id:25, nombre:"Pikachu"}, ... ];<br>
-                    <span class="code-comment">// .map() genera tarjetas</span><br>
+                    <span class="code-comment">// .map() genera tarjetas HTML</span><br>
                     const tarjetas = pokemones.map(p => `&lt;div class="pokemon-card"&gt;...&lt;/div&gt;`).join('');<br>
                     <span class="code-comment">// Grid 1fr 1fr aplica 2 columnas automáticas</span>
                 </div>
                 <button id="btnGridLocal">🎨 Mostrar Grid 2 columnas</button>
-                <div id="outputGridLocal" class="output">⚡ Haz clic para ver .map() + Grid.</div>
+                <div id="outputGridLocal" class="output">⚡ Haz clic para ver .map() + Grid local.</div>
             </div>
 
-            <!-- 2. PokéAPI + map + Grid -->
+            <!-- 2. PokéAPI + map + Promise.all + Grid -->
             <div class="card">
                 <h2>🌐 2. PokéAPI + map() + Grid</h2>
                 <p>.map() + Promise.all + fetch() → Grid organiza sin floats.</p>
@@ -393,13 +427,13 @@
                     const html = data.map(p=>`&lt;div&gt;${p.name}&lt;/div&gt;`).join('');
                 </div>
                 <button id="btnGridAPI">🚀 Cargar 6 Pokémon desde API</button>
-                <div id="outputGridAPI" class="output">🌟 .map() + Grid limpio.</div>
+                <div id="outputGridAPI" class="output">🌟 .map() + fetch + Grid limpio.</div>
             </div>
 
-            <!-- 3. Grid vs Flex (sin floats) -->
+            <!-- 3. Grid vs Flex (comparativa) -->
             <div class="card">
                 <h2>🔄 3. Grid 1fr 1fr vs Flexbox</h2>
-                <p>Comparativa: Grid fuerza 2 columnas exactas, Flex se adapta.</p>
+                <p>Comparativa: Grid fuerza 2 columnas exactas, Flex se adapta al ancho.</p>
                 <div class="code-block">
                     .grid-2cols { display: grid; grid-template-columns: 1fr 1fr; }<br>
                     .flex-wrap { display: flex; flex-wrap: wrap; gap:1rem; }
@@ -408,7 +442,7 @@
                 <div id="outputCompararLayout" class="output">Comparativa clara sin floats.</div>
             </div>
 
-            <!-- 4. Grid responsivo (media query) -->
+            <!-- 4. Grid responsivo con media query -->
             <div class="card">
                 <h2>📱 4. Grid responsivo</h2>
                 <p>Media query: 2 columnas en desktop, 1 en móvil.</p>
@@ -432,7 +466,8 @@
 
         <footer>
             🧪 <strong>CSS Grid + .map() + Promesas = sin floats, sin superposición</strong><br>
-            📌 layout basado en grid-template-columns: 1fr 1fr | contenido generado con map() y fetch() asíncrono.
+            📌 layout de explicación: <strong>grid-template-columns: 1fr</strong> (cada concepto en su propia fila) |
+            ejemplos con grid 1fr 1fr.
         </footer>
     </div>
 
@@ -466,17 +501,17 @@
         `;
         }
 
-        // 2. PokéAPI + map + Promise.all + fetch (totalmente asíncrono)
+        // 2. PokéAPI + map + Promise.all + fetch
         async function mostrarGridAPI() {
             const output = document.getElementById('outputGridAPI');
             output.innerHTML = '<div class="loading-pulse">🌐 Cargando Pokémon desde PokéAPI con fetch + map + Promise.all...</div>';
             try {
                 const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax", "bulbasaur"];
-                // .map() crea un arreglo de promesas (cada fetch devuelve promesa)
+                // .map() crea un arreglo de promesas
                 const promesas = nombres.map(nombre => fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json()));
                 // Promise.all resuelve TODAS las promesas en paralelo
                 const resultados = await Promise.all(promesas);
-                // .map() para transformar los datos en HTML
+                // .map() transforma los resultados en HTML
                 const tarjetasHTML = resultados.map(pokemon => {
                     const tipos = pokemon.types.map(t => t.type.name).join(', ');
                     return `
@@ -492,9 +527,9 @@
                 <strong>✅ ${resultados.length} Pokémon desde PokéAPI (fetch + Promise.all + map)</strong>
                 <div class="pokemon-grid-2cols">${tarjetasHTML}</div>
                 <div class="method-highlight">
-                    🔍 <strong>Flujo explicado gráficamente:</strong><br>
-                    1️⃣ .map() sobre nombres → devuelve array de promesas de fetch.<br>
-                    2️⃣ Promise.all( promesas ) → espera a que todas terminen.<br>
+                    🔍 <strong>Flujo explicado:</strong><br>
+                    1️⃣ .map() sobre nombres → array de promesas de fetch.<br>
+                    2️⃣ Promise.all( promesas ) → espera a que todas terminen en paralelo.<br>
                     3️⃣ .map() sobre resultados → convierte datos en HTML.<br>
                     4️⃣ CSS Grid organiza en 2 columnas → nada de floats.
                 </div>
@@ -504,7 +539,7 @@
             }
         }
 
-        // 3. Comparar Grid vs Flex (sin floats)
+        // 3. Comparar Grid vs Flex
         function compararLayouts() {
             const output = document.getElementById('outputCompararLayout');
             const tarjetasHTML = pokemonLocalData.map(pokemon => `
@@ -531,7 +566,7 @@
         `;
         }
 
-        // 4. Grid responsivo (media query ya definida en CSS, solo se crea contenido)
+        // 4. Grid responsivo
         function mostrarGridResponsivo() {
             const output = document.getElementById('outputResponsivo');
             const masPokemones = [...pokemonLocalData,
@@ -555,7 +590,7 @@
         `;
         }
 
-        // 5. Tarjetas grandes con Grid
+        // 5. Tarjetas grandes
         function mostrarGridGrande() {
             const output = document.getElementById('outputGrande');
             const styleExtra = `
@@ -595,7 +630,7 @@
         document.getElementById('btnGridResponsivo').addEventListener('click', mostrarGridResponsivo);
         document.getElementById('btnGridGrande').addEventListener('click', mostrarGridGrande);
 
-        console.log('%c✅ Playground mejorado: sin floats, sin capas flotantes, explicación de map, fetch y promesas', 'color:#f59e0b; font-size:14px');
+        console.log('%c✅ Playground mejorado: explicaciones con grid 1fr, sin floats, map/fetch/promesas detallados', 'color:#f59e0b; font-size:14px');
     </script>
 </body>
 
