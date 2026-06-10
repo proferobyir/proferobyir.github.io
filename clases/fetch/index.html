@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Playground | Funciones Asíncronas + map() + PokéAPI</title>
+    <title>Playground | map() + Grid 2 columnas + PokéAPI</title>
     <style>
         * {
             margin: 0;
@@ -50,7 +50,7 @@
 
         .grid-docs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
             gap: 2rem;
             margin-bottom: 2.5rem;
         }
@@ -125,12 +125,12 @@
             border: 2px solid #fde047;
         }
 
-        .pokemon-grid {
-            display: flex;
-            flex-wrap: wrap;
+        /* 🔥 GRID DE 2 COLUMNAS para los Pokémon */
+        .pokemon-grid-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 1rem;
-            justify-content: center;
-            margin-top: 0.8rem;
+            margin-top: 1rem;
         }
 
         .pokemon-card {
@@ -138,14 +138,20 @@
             border-radius: 1rem;
             padding: 0.8rem;
             text-align: center;
-            min-width: 110px;
             transition: all 0.2s;
             border: 1px solid #fcd34d;
+        }
+
+        .pokemon-card:hover {
+            transform: scale(1.02);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .pokemon-card img {
             width: 80px;
             height: 80px;
+            image-rendering: crisp-edges;
         }
 
         .badge {
@@ -191,7 +197,12 @@
             padding-top: 2rem;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 640px) {
+            .pokemon-grid-2cols {
+                grid-template-columns: 1fr;
+                /* En móvil se pone 1 columna */
+            }
+
             .hero h1 {
                 font-size: 1.8rem;
             }
@@ -206,51 +217,51 @@
 <body>
 
     <div class="hero">
-        <h1>⚡ Funciones Asíncronas + map() + PokéAPI</h1>
-        <p>Aprendiendo Async/Await, Promise.all y métodos de array como <strong
+        <h1>⚡ map() + CSS Grid (2 columnas) + PokéAPI</h1>
+        <p>Aprendiendo Async/Await, <strong
                 style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">.map()</strong> y <strong
-                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">.forEach()</strong> para
-            transformar arreglos JSON</p>
+                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">CSS Grid</strong> para
+            organizar Pokémon en 2 columnas</p>
     </div>
 
     <div class="container">
-        <!-- EXPLICACIÓN DE map() -->
+        <!-- EXPLICACIÓN DEL GRID -->
         <div class="card">
-            <h2>📚 ¿Qué es el método .map()?</h2>
-            <p><strong>.map()</strong> es un método de los arreglos en JavaScript que <strong>crea un NUEVO
-                    arreglo</strong> aplicando una función a cada elemento del arreglo original. Es perfecto para
-                transformar datos JSON.</p>
+            <h2>📐 ¿Cómo organizamos los Pokémon?</h2>
+            <p>Usamos <strong>CSS Grid</strong> con <code
+                    style="background:#fef3c7; padding:0.2rem 0.5rem;">grid-template-columns: 1fr 1fr</code> para que
+                las tarjetas se muestren <strong>SIEMPRE en 2 columnas</strong> (excepto en móvil). El método
+                <strong>.map()</strong> solo genera el HTML, el Grid se encarga del layout.</p>
             <div class="code-block">
-                <span class="code-comment">// ARREGLO JSON ORIGINAL (Pokémon)</span>
-                const pokemones = [
-                { nombre: "Pikachu", tipo: "eléctrico", nivel: 25 },
-                { nombre: "Charmander", tipo: "fuego", nivel: 16 }
-                ];
+                <span class="code-comment">/* CSS: Contenedor con Grid de 2 columnas */</span>
+                .pokemon-grid-2cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr; <span class="code-comment">/* 🔥 2 columnas exactas */</span>
+                gap: 1rem;
+                }
 
-                <span class="code-comment">// .map() transforma CADA elemento y devuelve un NUEVO arreglo</span>
-                const soloNombres = pokemones.map(pokemon => {
-                return pokemon.nombre; <span class="code-comment">// 👈 Extrae solo el nombre</span>
-                });
-                <span class="code-comment">// Resultado: ["Pikachu", "Charmander"]</span>
+                <span class="code-comment">/* JavaScript: .map() genera las tarjetas */</span>
+                const tarjetasHTML = pokemones.map(pokemon => {
+                return `<div class="pokemon-card">...</div>`;
+                }).join(''); <span class="code-comment">// join() solo concatena strings</span>
 
-                <span class="code-comment">// También podemos transformar la estructura:</span>
-                const tarjetasHTML = pokemones.map(p =>
-                `<div>${p.nombre} - ${p.tipo}</div>`
-                );
+                <span class="code-comment">// El contenedor tiene la clase .pokemon-grid-2cols</span>
+                contenedor.innerHTML = `<div class="pokemon-grid-2cols">${tarjetasHTML}</div>`;
             </div>
             <div class="method-highlight">
-                💡 <strong>Dato clave:</strong> map() NO modifica el arreglo original, crea uno nuevo. Ideal para
-                transformar datos de APIs.
+                💡 <strong>Ventaja:</strong> El CSS Grid controla el diseño (2 columnas, responsivo). <strong>.map() +
+                    join()</strong> solo generan el contenido. ¡Separación de responsabilidades!
             </div>
         </div>
 
         <div class="grid-docs">
-            <!-- EJEMPLO 1: map() con datos locales -->
+            <!-- EJEMPLO 1: map() + Grid 2 columnas con datos locales -->
             <div class="card">
-                <h2>📁 1. .map() con datos locales</h2>
-                <p>Transformamos un arreglo JSON de Pokémon en una galería HTML usando <strong>map()</strong>.</p>
+                <h2>📁 1. .map() + Grid (Datos locales)</h2>
+                <p>Transformamos un arreglo JSON de 5 Pokémon en una cuadrícula de <strong>2 columnas</strong> usando
+                    CSS Grid.</p>
                 <div class="code-block">
-                    <span class="code-comment">// Arreglo original (5 Pokémon)</span>
+                    <span class="code-comment">// Datos locales (5 Pokémon)</span>
                     const pokemonLocal = [
                     { id: 25, nombre: "Pikachu", tipo: "eléctrico",
                     imagen: "https://raw.githubusercontent.com/.../25.png" },
@@ -259,159 +270,159 @@
                     <span class="code-comment">// ... 3 más</span>
                     ];
 
-                    <span class="code-comment">// 🔥 USANDO .map() para crear HTML</span>
-                    async function mostrarLocal() {
-                    const pokemones = await obtenerDatos();
-
-                    <span class="code-comment">// map() recorre cada Pokémon y genera una tarjeta</span>
-                    const tarjetas = pokemones.map(pokemon => {
-                    return `
+                    <span class="code-comment">// 🔥 .map() genera las tarjetas</span>
+                    const tarjetas = pokemonLocal.map(p => `
                     &lt;div class="pokemon-card"&gt;
-                    &lt;img src="${pokemon.imagen}"&gt;
-                    &lt;strong&gt;${pokemon.nombre}&lt;/strong&gt;
-                    &lt;small&gt;${pokemon.tipo}&lt;/small&gt;
+                    &lt;img src="${p.imagen}"&gt;
+                    &lt;strong&gt;${p.nombre}&lt;/strong&gt;
+                    &lt;small&gt;${p.tipo}&lt;/small&gt;
+                    &lt;/div&gt;
+                    `).join('');
+
+                    <span class="code-comment">// 🎨 CSS Grid organiza en 2 columnas</span>
+                    contenedor.innerHTML = `
+                    &lt;div class="pokemon-grid-2cols"&gt;
+                    ${tarjetas}
                     &lt;/div&gt;
                     `;
-                    }).join(''); <span class="code-comment">// join() une todas las tarjetas</span>
-
-                    contenedor.innerHTML = tarjetas;
-                    }
                 </div>
-                <button id="btnMapLocal">🎨 Ejecutar .map() con datos locales</button>
-                <div id="outputMapLocal" class="output">
-                    ⚡ Haz clic para ver cómo <strong>.map()</strong> transforma el arreglo JSON en tarjetas HTML.
+                <button id="btnGridLocal">🎨 Mostrar con Grid de 2 columnas</button>
+                <div id="outputGridLocal" class="output">
+                    ⚡ Haz clic para ver cómo <strong>.map()</strong> + <strong>Grid 1fr 1fr</strong> organizan los
+                    Pokémon.
                 </div>
             </div>
 
-            <!-- EJEMPLO 2: map() para transformar datos de PokéAPI -->
+            <!-- EJEMPLO 2: map() + PokéAPI + Grid 2 columnas -->
             <div class="card">
-                <h2>🌐 2. .map() + PokéAPI (transformación)</h2>
-                <p>Usamos <strong>.map()</strong> sobre un arreglo de nombres para crear múltiples promesas de fetch.
-                </p>
+                <h2>🌐 2. PokéAPI + map() + Grid 2 columnas</h2>
+                <p>Consumimos la PokéAPI, transformamos con <strong>.map()</strong> y mostramos en <strong>2
+                        columnas</strong>.</p>
                 <div class="code-block">
-                    <span class="code-comment">// Arreglo con nombres de Pokémon</span>
-                    const nombresPokemon = ["pikachu", "charizard", "mewtwo", "eevee"];
+                    <span class="code-comment">// Arreglo de nombres</span>
+                    const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax", "bulbasaur"];
 
-                    <span class="code-comment">// 🔥 .map() convierte CADA nombre en una Promesa de fetch</span>
-                    async function cargarVarios() {
-                    <span class="code-comment">// map() crea un NUEVO arreglo con las promesas</span>
-                    const promesas = nombresPokemon.map(nombre => {
-                    return fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`)
-                    .then(res => res.json());
-                    });
+                    <span class="code-comment">// .map() para crear promesas</span>
+                    const promesas = nombres.map(n =>
+                    fetch(`https://pokeapi.co/api/v2/pokemon/${n}`).then(r => r.json())
+                    );
 
-                    <span class="code-comment">// Promise.all ejecuta todas las promesas en paralelo</span>
                     const resultados = await Promise.all(promesas);
 
-                    <span class="code-comment">// OTRO .map() para extraer SOLO lo que necesitamos</span>
-                    const datosLimpios = resultados.map(pokemon => ({
-                    nombre: pokemon.name,
-                    imagen: pokemon.sprites.front_default,
-                    tipo: pokemon.types[0].type.name
-                    }));
+                    <span class="code-comment">// .map() para generar HTML (sin preocuparse del layout)</span>
+                    const tarjetas = resultados.map(p => `
+                    &lt;div class="pokemon-card"&gt;
+                    &lt;img src="${p.sprites.front_default}"&gt;
+                    &lt;strong&gt;${p.name}&lt;/strong&gt;
+                    &lt;/div&gt;
+                    `).join('');
 
-                    return datosLimpios;
+                    <span class="code-comment">// El CSS Grid aplica automáticamente 2 columnas</span>
+                    contenedor.innerHTML = \`
+                    &lt;div class="pokemon-grid-2cols"&gt;\${tarjetas}&lt;/div&gt;
+                    \`;
+                </div>
+                <button id="btnGridAPI">🚀 Cargar 6 Pokémon desde PokéAPI</button>
+                <div id="outputGridAPI" class="output">
+                    🌟 <strong>.map()</strong> genera el HTML, <strong>CSS Grid</strong> organiza en 2 columnas.
+                </div>
+            </div>
+
+            <!-- EJEMPLO 3: Comparativa layout (Grid vs Flex) -->
+            <div class="card">
+                <h2>🔄 3. Grid 1fr 1fr vs Flexbox</h2>
+                <p>Con <strong>Grid</strong> forzamos EXACTAMENTE 2 columnas. Con <strong>Flexbox</strong> las tarjetas
+                    se ajustan según el ancho.</p>
+                <div class="code-block">
+                    <span class="code-comment">/* 🔥 CSS Grid: 2 columnas exactas */</span>
+                    .grid-2cols {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr; <span class="code-comment">/* Siempre 2 columnas */</span>
+                    gap: 1rem;
+                    }
+
+                    <span class="code-comment">/* 🔄 Flexbox: se ajusta automáticamente */</span>
+                    .flex-wrap {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                    }
+                    .flex-wrap .pokemon-card {
+                    flex: 1 1 200px; <span class="code-comment">/* Ancho variable */</span>
                     }
                 </div>
-                <button id="btnMapAPI">🚀 Ejecutar .map() + PokéAPI</button>
-                <div id="outputMapAPI" class="output">
-                    🌟 Usamos <strong>.map()</strong> para transformar nombres → Promesas → Datos con imágenes.
-                </div>
-            </div>
-
-            <!-- EJEMPLO 3: forEach vs map (diferencia clave) -->
-            <div class="card">
-                <h2>🔄 3. .map() vs .forEach()</h2>
-                <p><strong>.map()</strong> retorna un NUEVO arreglo. <strong>.forEach()</strong> solo itera, no retorna
-                    nada.</p>
-                <div class="code-block">
-                    <span class="code-comment">// DIFERENCIA PRÁCTICA:</span>
-
-                    <span class="code-comment">// ❌ forEach() NO retorna un nuevo arreglo</span>
-                    const numeros = [1, 2, 3, 4, 5];
-                    const resultadoForEach = numeros.forEach(n => n * 2);
-                    console.log(resultadoForEach); <span class="code-comment">// undefined ❌</span>
-
-                    <span class="code-comment">// ✅ map() SÍ retorna un nuevo arreglo</span>
-                    const resultadoMap = numeros.map(n => n * 2);
-                    console.log(resultadoMap); <span class="code-comment">// [2, 4, 6, 8, 10] ✅</span>
-
-                    <span class="code-comment">// En PokéAPI: .map() es ideal para transformar datos</span>
-                    const nombres = ["pikachu", "bulbasaur"];
-                    const mayusculas = nombres.map(n => n.toUpperCase());
-                    <span class="code-comment">// Resultado: ["PIKACHU", "BULBASAUR"]</span>
-                </div>
-                <button id="btnComparar">📊 Comparar .map() vs .forEach()</button>
-                <div id="outputComparar" class="output">
-                    💡 Haz clic para ver la diferencia en la consola del navegador (F12).
+                <button id="btnCompararLayout">📊 Comparar Grid 2 cols vs Flexbox</button>
+                <div id="outputCompararLayout" class="output">
+                    💡 Muestra la diferencia entre Grid (2 columnas fijas) y Flexbox (responsive fluido).
                 </div>
             </div>
         </div>
 
-        <!-- EJEMPLO 4: CADENA DE map() (múltiples transformaciones) -->
+        <!-- EJEMPLO 4: Grid responsivo (2 columnas en desktop, 1 en móvil) -->
         <div class="card">
-            <h2>⛓️ 4. Cadena de .map() (transformaciones múltiples)</h2>
-            <p>Podemos encadenar varios <strong>.map()</strong> para hacer transformaciones paso a paso.</p>
+            <h2>📱 4. Grid Responsivo con Media Query</h2>
+            <p>Usamos <strong>media query</strong> para que en móvil las tarjetas se muestren en <strong>1
+                    columna</strong> y en desktop en <strong>2 columnas</strong>.</p>
             <div class="code-block">
-                <span class="code-comment">// Arreglo original de nombres de Pokémon</span>
-                const pokemonesOriginal = ["pikachu", "charmander", "squirtle"];
-
-                <span class="code-comment">// Cadena de transformaciones con .map()</span>
-                const resultado = pokemonesOriginal
-                .map(nombre => nombre.toUpperCase()) <span class="code-comment">// 1️⃣ Mayúsculas</span>
-                .map(nombre => `✨ ${nombre} ✨`) <span class="code-comment">// 2️⃣ Agregar emojis</span>
-                .map(nombre => ({ <span class="code-comment">// 3️⃣ Convertir a objeto</span>
-                nombre: nombre,
-                longitud: nombre.length
-                }));
-
-                <span class="code-comment">/* Resultado:
-                    [
-                    { nombre: "✨ PIKACHU ✨", longitud: 13 },
-                    { nombre: "✨ CHARMANDER ✨", longitud: 17 },
-                    { nombre: "✨ SQUIRTLE ✨", longitud: 13 }
-                    ]
-                    */</span>
-            </div>
-            <button id="btnCadena">⛓️ Ejecutar cadena de .map()</button>
-            <div id="outputCadena" class="output">
-                🔗 Muestra cómo encadenar múltiples .map() para transformar datos progresivamente.
-            </div>
-        </div>
-
-        <!-- EJEMPLO 5: BÚSQUEDA con map + filter -->
-        <div class="card">
-            <h2>🔍 5. map() + filter() (búsqueda inteligente)</h2>
-            <p>Combinamos <strong>.filter()</strong> (filtra elementos) y <strong>.map()</strong> (transforma
-                resultados).</p>
-            <div class="code-block">
-                <span class="code-comment">// Filtrar Pokémon por tipo y luego mapear sus nombres</span>
-                async function buscarPorTipo(tipoBuscado) {
-                const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon?limit=50');
-                const data = await respuesta.json();
-
-                <span class="code-comment">// 🔥 filter() + map() encadenados</span>
-                const resultados = data.results
-                .filter(pokemon => pokemon.name.includes(tipoBuscado)) <span class="code-comment">// Filtra</span>
-                .map(pokemon => pokemon.name.toUpperCase()); <span class="code-comment">// Transforma</span>
-
-                return resultados;
+                <span class="code-comment">/* CSS responsivo */</span>
+                .pokemon-grid-2cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr; <span class="code-comment">/* Desktop: 2 columnas */</span>
+                gap: 1rem;
                 }
+
+                @media (max-width: 640px) {
+                .pokemon-grid-2cols {
+                grid-template-columns: 1fr; <span class="code-comment">/* Móvil: 1 columna */</span>
+                }
+                }
+
+                <span class="code-comment">// El mismo .map() funciona para ambos casos</span>
+                const tarjetas = pokemones.map(p => `<div class="pokemon-card">...</div>`).join('');
             </div>
-            <div>
-                <button id="btnBuscarPika">🐭 Buscar Pokémon con "pika" (filter + map)</button>
-                <button id="btnBuscarChar">🐉 Buscar Pokémon con "char" (filter + map)</button>
+            <button id="btnGridResponsivo">📱 Mostrar Grid responsivo (redimensiona la ventana)</button>
+            <div id="outputResponsivo" class="output">
+                🖥️ Redimensiona tu navegador: en escritorio verás 2 columnas, en móvil 1 columna.
             </div>
-            <div id="outputBusqueda" class="output">
-                🎯 Usamos <strong>.filter()</strong> para filtrar y <strong>.map()</strong> para transformar los nombres
-                a mayúsculas.
+        </div>
+
+        <!-- EJEMPLO 5: Grid con diferentes tamaños de tarjetas -->
+        <div class="card">
+            <h2>🎨 5. Grid avanzado: tarjetas con imágenes más grandes</h2>
+            <p>Usamos Grid de 2 columnas pero con tarjetas más vistosas (imagen de 100px).</p>
+            <div class="code-block">
+                <span class="code-comment">// Estilo mejorado para las tarjetas</span>
+                .pokemon-card-grande {
+                background: linear-gradient(135deg, #fffbeb, #fef3c7);
+                border-radius: 1.5rem;
+                padding: 1.2rem;
+                text-align: center;
+                transition: transform 0.2s;
+                }
+                .pokemon-card-grande img {
+                width: 100px;
+                height: 100px;
+                }
+
+                <span class="code-comment">// .map() genera el HTML</span>
+                const tarjetas = pokemones.map(p => `
+                &lt;div class="pokemon-card-grande"&gt;
+                &lt;img src="${p.imagen}"&gt;
+                &lt;h3&gt;${p.nombre}&lt;/h3&gt;
+                &lt;span class="badge"&gt;#${p.id}&lt;/span&gt;
+                &lt;/div&gt;
+                `).join('');
+            </div>
+            <button id="btnGridGrande">🌟 Mostrar tarjetas grandes (Grid 2 cols)</button>
+            <div id="outputGrande" class="output">
+                🎯 Grid 1fr 1fr con tarjetas más grandes y detalles adicionales.
             </div>
         </div>
 
         <footer>
-            🧪 <strong>Playground educativo: Métodos de Array + Funciones Asíncronas</strong><br>
-            📌 .map() crea NUEVOS arreglos | .forEach() solo itera | Siempre usar .map() cuando necesites transformar
-            datos JSON
+            🧪 <strong>CSS Grid + .map() = Layout perfecto</strong><br>
+            📌 <strong>grid-template-columns: 1fr 1fr</strong> → 2 columnas exactas | <strong>.map()</strong> genera el
+            contenido | <strong>join()</strong> solo concatena
         </footer>
     </div>
 
@@ -425,18 +436,12 @@
             { id: 133, nombre: "Eevee", tipo: "normal", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" }
         ];
 
-        // EJEMPLO 1: Mostrar .map() con datos locales
-        async function mostrarMapLocal() {
-            const output = document.getElementById('outputMapLocal');
-            output.innerHTML = '<div class="loading-pulse">🔄 Aplicando .map() al arreglo local...</div>';
+        // EJEMPLO 1: Grid con datos locales
+        function mostrarGridLocal() {
+            const output = document.getElementById('outputGridLocal');
 
-            // Simular latencia
-            await new Promise(r => setTimeout(r, 500));
-
-            // 🔥 USANDO .map() - Aquí está la explicación visual
+            // 🔥 .map() genera las tarjetas (sin preocuparse del layout)
             const tarjetasHTML = pokemonLocalData.map(pokemon => {
-                // Este bloque se ejecuta para CADA elemento del arreglo
-                console.log(`Transformando a ${pokemon.nombre} con .map()`);
                 return `
                 <div class="pokemon-card">
                     <img src="${pokemon.imagen}" alt="${pokemon.nombre}" loading="lazy">
@@ -445,65 +450,61 @@
                     <span class="badge">#${pokemon.id}</span>
                 </div>
             `;
-            }).join(''); // join() une todo en un solo string
+            }).join(''); // join() solo une los strings
 
+            // 🎨 El CSS Grid con 1fr 1fr organiza las tarjetas
             output.innerHTML = `
-            <strong>✅ .map() transformó ${pokemonLocalData.length} Pokémon en tarjetas HTML</strong>
-            <div class="pokemon-grid">${tarjetasHTML}</div>
+            <strong>✅ .map() generó ${pokemonLocalData.length} tarjetas</strong>
+            <div class="pokemon-grid-2cols">
+                ${tarjetasHTML}
+            </div>
             <div class="method-highlight" style="margin-top: 10px;">
-                📌 <strong>Código usado:</strong><br>
-                <code>pokemonLocalData.map(pokemon => { return \`&lt;div&gt;...&lt;/div&gt;\` }).join('')</code><br>
-                ➡️ .map() recorrió cada elemento y devolvió un NUEVO arreglo con 5 strings HTML.
+                📌 <strong>CSS aplicado:</strong><br>
+                <code>.pokemon-grid-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }</code><br>
+                🔥 Las tarjetas se organizan AUTOMÁTICAMENTE en 2 columnas gracias al Grid.
             </div>
         `;
         }
 
-        // EJEMPLO 2: .map() + PokéAPI (crear promesas)
-        async function mostrarMapAPI() {
-            const output = document.getElementById('outputMapAPI');
-            output.innerHTML = '<div class="loading-pulse">🌐 Usando .map() para crear promesas de fetch...</div>';
+        // EJEMPLO 2: PokéAPI + Grid 2 columnas
+        async function mostrarGridAPI() {
+            const output = document.getElementById('outputGridAPI');
+            output.innerHTML = '<div class="loading-pulse">🌐 Cargando 6 Pokémon desde PokéAPI...</div>';
 
             try {
-                const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax"];
+                const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax", "bulbasaur"];
 
-                // 🔥 PASO 1: .map() convierte CADA nombre en una Promesa
+                // .map() crea un arreglo de promesas
                 const promesas = nombres.map(nombre => {
-                    console.log(`.map() está creando una promesa para: ${nombre}`);
                     return fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json());
                 });
 
-                // Ejecutar todas las promesas en paralelo
                 const resultados = await Promise.all(promesas);
 
-                // 🔥 PASO 2: OTRO .map() para extraer SOLO los datos que necesitamos
-                const datosLimpios = resultados.map(pokemon => {
-                    console.log(`.map() extrayendo datos de: ${pokemon.name}`);
-                    return {
-                        nombre: pokemon.name,
-                        imagen: pokemon.sprites.front_default,
-                        tipo: pokemon.types.map(t => t.type.name).join(', ')
-                    };
-                });
-
-                // Generar HTML con otro .map()
-                const tarjetas = datosLimpios.map(p => `
-                <div class="pokemon-card">
-                    <img src="${p.imagen}" style="width:70px">
-                    <strong>${p.nombre.toUpperCase()}</strong>
-                    <small>${p.tipo}</small>
-                </div>
-            `).join('');
+                // .map() genera el HTML
+                const tarjetasHTML = resultados.map(pokemon => {
+                    const tipos = pokemon.types.map(t => t.type.name).join(', ');
+                    return `
+                    <div class="pokemon-card">
+                        <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" style="width: 80px;">
+                        <strong style="text-transform: capitalize;">${pokemon.name}</strong><br>
+                        <small>${tipos}</small>
+                        <span class="badge">#${pokemon.id}</span>
+                    </div>
+                `;
+                }).join('');
 
                 output.innerHTML = `
-                <strong>✅ Usamos .map() DOS VECES:</strong>
-                <ol style="margin: 10px 0 10px 20px;">
-                    <li><strong>Primer .map()</strong> → Transformó ${nombres.length} nombres en ${nombres.length} promesas de fetch</li>
-                    <li><strong>Segundo .map()</strong> → Transformó los resultados en objetos con { nombre, imagen, tipo }</li>
-                    <li><strong>Tercer .map()</strong> → Transformó los objetos en HTML</li>
-                </ol>
-                <div class="pokemon-grid">${tarjetas}</div>
-                <div class="method-highlight">
-                    💡 <strong>¿Por qué .map()?</strong> Porque necesitamos un NUEVO arreglo con la misma cantidad de elementos pero transformados.
+                <strong>✅ ${resultados.length} Pokémon desde PokéAPI</strong>
+                <div class="pokemon-grid-2cols">
+                    ${tarjetasHTML}
+                </div>
+                <div class="method-highlight" style="margin-top: 10px;">
+                    💡 <strong>¿Cómo funciona?</strong><br>
+                    1️⃣ <strong>.map()</strong> transforma los nombres en promesas de fetch<br>
+                    2️⃣ <strong>Promise.all()</strong> ejecuta todas en paralelo<br>
+                    3️⃣ <strong>.map()</strong> transforma los resultados en HTML<br>
+                    4️⃣ <strong>CSS Grid</strong> (1fr 1fr) organiza en 2 columnas
                 </div>
             `;
             } catch (error) {
@@ -511,137 +512,139 @@
             }
         }
 
-        // EJEMPLO 3: Comparar map vs forEach
-        function compararMapForEach() {
-            const numeros = [1, 2, 3, 4, 5];
+        // EJEMPLO 3: Comparar Grid vs Flexbox
+        function compararLayouts() {
+            const output = document.getElementById('outputCompararLayout');
 
-            // forEach - NO retorna nada
-            let resultadoForEach;
-            const forEachReturn = numeros.forEach(n => {
-                resultadoForEach = n * 2;
-            });
+            const tarjetasHTML = pokemonLocalData.map(pokemon => `
+            <div class="pokemon-card">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 70px;">
+                <strong>${pokemon.nombre}</strong>
+            </div>
+        `).join('');
 
-            // map - SÍ retorna un nuevo arreglo
-            const mapReturn = numeros.map(n => n * 2);
-
-            const output = document.getElementById('outputComparar');
             output.innerHTML = `
-            <strong>📊 Diferencia clave entre .map() y .forEach()</strong>
-            <div class="method-highlight" style="margin-top: 10px;">
-                <strong>🔹 .forEach()</strong><br>
-                <code>numeros.forEach(n => n * 2)</code><br>
-                Retorna: <strong style="color:#b91c1c;">${forEachReturn === undefined ? 'undefined ❌' : forEachReturn}</strong><br>
-                <em>.forEach() NO crea un nuevo arreglo, solo itera.</em>
+            <strong>📊 Comparativa: CSS Grid (1fr 1fr) vs Flexbox</strong>
+            
+            <div style="margin-top: 1rem;">
+                <strong>🔹 CSS Grid - 2 columnas exactas:</strong>
+                <div class="pokemon-grid-2cols" style="margin-top: 0.5rem;">
+                    ${tarjetasHTML}
+                </div>
+                <code style="background:#fef3c7; display: inline-block; margin-top: 0.3rem;">grid-template-columns: 1fr 1fr;</code>
             </div>
-            <div class="method-highlight" style="margin-top: 10px;">
-                <strong>🔸 .map()</strong><br>
-                <code>numeros.map(n => n * 2)</code><br>
-                Retorna: <strong style="color:#16a34a;">[${mapReturn.join(', ')}] ✅</strong><br>
-                <em>.map() SÍ crea un NUEVO arreglo con los valores transformados.</em>
+            
+            <div style="margin-top: 1.5rem;">
+                <strong>🔸 Flexbox - Ajuste fluido:</strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.5rem;">
+                    ${tarjetasHTML}
+                </div>
+                <code style="background:#fef3c7; display: inline-block; margin-top: 0.3rem;">display: flex; flex-wrap: wrap;</code>
             </div>
-            <p style="margin-top: 10px;">🎯 <strong>Regla de oro:</strong> Usa <strong>.map()</strong> cuando necesites TRANSFORMAR datos y obtener un nuevo arreglo. Usa <strong>.forEach()</strong> solo cuando quieras ejecutar efectos secundarios (como console.log).</p>
-        `;
-
-            // Mostrar en consola también
-            console.log('%c🔵 forEach retorna:', 'color: blue', forEachReturn);
-            console.log('%c🟢 map retorna:', 'color: green', mapReturn);
-        }
-
-        // EJEMPLO 4: Cadena de .map()
-        function mostrarCadenaMap() {
-            const pokemonesOriginal = ["pikachu", "charmander", "squirtle", "bulbasaur"];
-
-            // Cadena de transformaciones
-            const resultado = pokemonesOriginal
-                .map(nombre => {
-                    console.log(`1er map: ${nombre} → mayúsculas`);
-                    return nombre.toUpperCase();
-                })
-                .map(nombre => {
-                    console.log(`2do map: ${nombre} → con emojis`);
-                    return `⚡ ${nombre} ⚡`;
-                })
-                .map(nombre => {
-                    console.log(`3er map: ${nombre} → a objeto`);
-                    return {
-                        nombre: nombre,
-                        longitud: nombre.length,
-                        emojis: 2
-                    };
-                });
-
-            const output = document.getElementById('outputCadena');
-            output.innerHTML = `
-            <strong>⛓️ Cadena de 3 .map() aplicados secuencialmente</strong>
-            <div class="method-highlight">
-                <strong>Arreglo original:</strong><br>
-                <code>["pikachu", "charmander", "squirtle", "bulbasaur"]</code>
-            </div>
-            <div class="method-highlight">
-                <strong>Después de ENCADENAR 3 .map():</strong><br>
-                <pre style="background:#1e293b; padding:0.8rem; border-radius:0.8rem; overflow-x:auto;">${JSON.stringify(resultado, null, 2)}</pre>
-            </div>
-            <div class="method-highlight">
-                💡 <strong>¿Qué pasó?</strong><br>
-                1️⃣ Primer .map() → convirtió a MAYÚSCULAS<br>
-                2️⃣ Segundo .map() → agregó ⚡ emojis ⚡<br>
-                3️⃣ Tercer .map() → transformó cada string en un OBJETO con propiedades
+            
+            <div class="method-highlight" style="margin-top: 1rem;">
+                🎯 <strong>Diferencia clave:</strong><br>
+                • <strong>Grid</strong> → Control EXACTO sobre el número de columnas (siempre 2)<br>
+                • <strong>Flexbox</strong> → Las tarjetas se ajustan según el ancho disponible (pueden ser 1, 2 o 3 columnas)
             </div>
         `;
         }
 
-        // EJEMPLO 5: filter + map (búsqueda)
-        async function buscarConFilterMap(busqueda) {
-            const output = document.getElementById('outputBusqueda');
-            output.innerHTML = '<div class="loading-pulse">🔍 Buscando Pokémon que contengan "' + busqueda + '"...</div>';
+        // EJEMPLO 4: Grid responsivo (con media query)
+        function mostrarGridResponsivo() {
+            const output = document.getElementById('outputResponsivo');
 
-            try {
-                const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100');
-                const data = await respuesta.json();
+            // Usamos más Pokémon para ver mejor el efecto
+            const masPokemones = [
+                ...pokemonLocalData,
+                { id: 6, nombre: "Charizard", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" },
+                { id: 9, nombre: "Blastoise", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png" }
+            ];
 
-                // 🔥 filter() + map() encadenados
-                const resultados = data.results
-                    .filter(pokemon => {
-                        // filter() solo mantiene los que cumplen la condición
-                        const coincide = pokemon.name.includes(busqueda.toLowerCase());
-                        if (coincide) console.log(`filter() mantiene: ${pokemon.name}`);
-                        return coincide;
-                    })
-                    .map(pokemon => {
-                        // map() transforma cada resultado
-                        return pokemon.name.toUpperCase();
-                    });
+            const tarjetasHTML = masPokemones.map(pokemon => `
+            <div class="pokemon-card">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}">
+                <strong>${pokemon.nombre}</strong>
+                <small>${pokemon.tipo}</small>
+            </div>
+        `).join('');
 
-                output.innerHTML = `
-                <strong>🔍 Búsqueda: "${busqueda}"</strong>
-                <div class="method-highlight">
-                    <strong>Paso 1 - .filter():</strong> Filtró ${data.results.length} Pokémon y mantuvo solo ${resultados.length} que contienen "${busqueda}"<br>
-                    <strong>Paso 2 - .map():</strong> Transformó los ${resultados.length} nombres a MAYÚSCULAS
-                </div>
-                <div class="method-highlight">
-                    <strong>✅ Resultados:</strong><br>
-                    ${resultados.length > 0 ? resultados.join(', ') : 'No se encontraron Pokémon con ese término'}
-                </div>
-                <div class="method-highlight">
-                    💡 <strong>Sintaxis:</strong><br>
-                    <code>arreglo.filter(condición).map(transformación)</code><br>
-                    Primero FILTRAMOS, luego TRANSFORMAMOS.
-                </div>
-            `;
-            } catch (error) {
-                output.innerHTML = `❌ Error: ${error.message}`;
-            }
+            output.innerHTML = `
+            <strong>📱 Grid responsivo (${masPokemones.length} Pokémon)</strong>
+            <div class="pokemon-grid-2cols">
+                ${tarjetasHTML}
+            </div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                💡 <strong>Media query aplicada:</strong><br>
+                <code>
+                @media (max-width: 640px) {<br>
+                    &nbsp;&nbsp;.pokemon-grid-2cols { grid-template-columns: 1fr; }<br>
+                }
+                </code><br>
+                🖥️ <strong>Prueba:</strong> Redimensiona tu navegador → en pantallas grandes verás 2 columnas, en móvil 1 columna.
+            </div>
+        `;
+        }
+
+        // EJEMPLO 5: Tarjetas grandes con Grid
+        function mostrarGridGrande() {
+            const output = document.getElementById('outputGrande');
+
+            // Estilos adicionales para tarjetas grandes
+            const styleGrande = `
+            <style>
+                .pokemon-card-grande {
+                    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+                    border-radius: 1.5rem;
+                    padding: 1.2rem;
+                    text-align: center;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    border: 1px solid #fcd34d;
+                }
+                .pokemon-card-grande:hover {
+                    transform: scale(1.02);
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                    background: white;
+                }
+                .pokemon-card-grande img {
+                    width: 100px;
+                    height: 100px;
+                }
+            </style>
+        `;
+
+            const tarjetasHTML = pokemonLocalData.map(pokemon => `
+            <div class="pokemon-card-grande">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}">
+                <h3 style="margin: 0.5rem 0 0.2rem; text-transform: capitalize;">${pokemon.nombre}</h3>
+                <span class="badge">#${pokemon.id}</span>
+                <p style="font-size: 0.8rem; margin-top: 0.3rem;">Tipo: ${pokemon.tipo}</p>
+            </div>
+        `).join('');
+
+            output.innerHTML = `
+            ${styleGrande}
+            <strong>🌟 Tarjetas grandes con Grid de 2 columnas</strong>
+            <div class="pokemon-grid-2cols">
+                ${tarjetasHTML}
+            </div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                🎨 <strong>Mejoras visuales:</strong><br>
+                • Imágenes de 100x100px<br>
+                • Hover con escala y sombra<br>
+                • Grid mantiene 2 columnas fijas
+            </div>
+        `;
         }
 
         // ===================== EVENTOS =====================
-        document.getElementById('btnMapLocal').addEventListener('click', mostrarMapLocal);
-        document.getElementById('btnMapAPI').addEventListener('click', mostrarMapAPI);
-        document.getElementById('btnComparar').addEventListener('click', compararMapForEach);
-        document.getElementById('btnCadena').addEventListener('click', mostrarCadenaMap);
-        document.getElementById('btnBuscarPika').addEventListener('click', () => buscarConFilterMap('pika'));
-        document.getElementById('btnBuscarChar').addEventListener('click', () => buscarConFilterMap('char'));
+        document.getElementById('btnGridLocal').addEventListener('click', mostrarGridLocal);
+        document.getElementById('btnGridAPI').addEventListener('click', mostrarGridAPI);
+        document.getElementById('btnCompararLayout').addEventListener('click', compararLayouts);
+        document.getElementById('btnGridResponsivo').addEventListener('click', mostrarGridResponsivo);
+        document.getElementById('btnGridGrande').addEventListener('click', mostrarGridGrande);
 
-        console.log('%c🎯 Playground listo | Métodos de Array: map(), filter(), forEach()', 'color: #f59e0b; font-size: 14px;');
+        console.log('%c🎯 Playground con Grid 1fr 1fr | .map() genera el contenido, CSS Grid organiza', 'color: #f59e0b; font-size: 14px;');
     </script>
 </body>
 
