@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Playground Asíncrono | PokéAPI + Imágenes</title>
+    <title>Playground | Funciones Asíncronas + map() + PokéAPI</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,6 @@
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
             color: #1e293b;
             scroll-behavior: smooth;
-            min-height: 100vh;
         }
 
         .hero {
@@ -35,13 +34,11 @@
             font-size: 2.8rem;
             letter-spacing: -1px;
             margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .hero p {
             font-size: 1.2rem;
-            opacity: 0.95;
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
@@ -53,29 +50,27 @@
 
         .grid-docs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 2rem;
             margin-bottom: 2.5rem;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(2px);
             border-radius: 1.8rem;
             padding: 1.8rem;
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(-5px);
             background: white;
         }
 
         .card h2 {
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -83,11 +78,6 @@
             color: #dc2626;
             border-left: 5px solid #f59e0b;
             padding-left: 1rem;
-        }
-
-        .card h3 {
-            margin: 1rem 0 0.5rem;
-            color: #ea580c;
         }
 
         .code-block {
@@ -99,7 +89,12 @@
             font-family: 'Fira Code', 'Cascadia Code', monospace;
             font-size: 0.8rem;
             margin: 1rem 0;
-            box-shadow: inset 0 0 0 1px #334155;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #86efac;
+            font-style: italic;
         }
 
         button {
@@ -112,9 +107,6 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
             margin: 0.5rem 0.5rem 0 0;
             box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
         }
@@ -122,7 +114,6 @@
         button:hover {
             transform: scale(0.97);
             background: linear-gradient(135deg, #dc2626, #b91c1c);
-            box-shadow: 0 6px 14px rgba(220, 38, 38, 0.4);
         }
 
         .output {
@@ -130,41 +121,31 @@
             border-radius: 1.2rem;
             padding: 1.2rem;
             margin-top: 1.2rem;
-            min-height: 150px;
+            min-height: 180px;
             border: 2px solid #fde047;
-            transition: all 0.2s;
         }
 
         .pokemon-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.2rem;
+            gap: 1rem;
             justify-content: center;
             margin-top: 0.8rem;
         }
 
         .pokemon-card {
             background: linear-gradient(135deg, #fffbeb, #fef3c7);
-            border-radius: 1.2rem;
-            padding: 1rem;
+            border-radius: 1rem;
+            padding: 0.8rem;
             text-align: center;
-            min-width: 130px;
-            transition: all 0.25s;
+            min-width: 110px;
+            transition: all 0.2s;
             border: 1px solid #fcd34d;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .pokemon-card:hover {
-            transform: scale(1.03);
-            background: #fffbeb;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         .pokemon-card img {
-            width: 96px;
-            height: 96px;
-            image-rendering: crisp-edges;
-            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+            width: 80px;
+            height: 80px;
         }
 
         .badge {
@@ -177,12 +158,19 @@
             display: inline-block;
         }
 
+        .method-highlight {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 0.8rem;
+            margin: 0.8rem 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
         .loading-pulse {
-            background: #fef9c3;
             animation: pulse 1s infinite;
-            padding: 1rem;
-            border-radius: 1rem;
             text-align: center;
+            padding: 1rem;
         }
 
         @keyframes pulse {
@@ -195,33 +183,21 @@
             }
         }
 
-        .svg-json {
-            background: #1e293b;
-            border-radius: 1rem;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
         footer {
             text-align: center;
             margin-top: 3rem;
             color: #78350f;
-            font-size: 0.85rem;
             border-top: 1px solid #fcd34d;
             padding-top: 2rem;
         }
 
         @media (max-width: 700px) {
             .hero h1 {
-                font-size: 1.9rem;
+                font-size: 1.8rem;
             }
 
             .grid-docs {
-                gap: 1.2rem;
-            }
-
-            .card {
-                padding: 1.2rem;
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -230,375 +206,442 @@
 <body>
 
     <div class="hero">
-        <h1>⚡ Funciones Asíncronas + PokéAPI</h1>
-        <p>Aprendiendo Async/Await, Promesas y JSON con datos reales de Pokémon | Imágenes incluidas</p>
-        <div style="margin-top: 1rem;">
-            <span class="badge">🎓 Visual + Práctico</span>
-            <span class="badge">🐾 Sprites oficiales</span>
-            <span class="badge">🚀 Promise.all | fetch | try/catch</span>
-        </div>
+        <h1>⚡ Funciones Asíncronas + map() + PokéAPI</h1>
+        <p>Aprendiendo Async/Await, Promise.all y métodos de array como <strong
+                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">.map()</strong> y <strong
+                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">.forEach()</strong> para
+            transformar arreglos JSON</p>
     </div>
 
     <div class="container">
-        <!-- SECCIÓN: EXPLICACIÓN JSON enfocada en PokéAPI -->
+        <!-- EXPLICACIÓN DE map() -->
         <div class="card">
-            <h2>📦 1. Estructura JSON que devuelve PokéAPI</h2>
-            <p>Cuando consultamos <code>https://pokeapi.co/api/v2/pokemon/pikachu</code>, obtenemos un objeto con mucha
-                información. <strong>Uno de los campos clave es <code>sprites.front_default</code></strong>, que
-                contiene la URL de la imagen.</p>
+            <h2>📚 ¿Qué es el método .map()?</h2>
+            <p><strong>.map()</strong> es un método de los arreglos en JavaScript que <strong>crea un NUEVO
+                    arreglo</strong> aplicando una función a cada elemento del arreglo original. Es perfecto para
+                transformar datos JSON.</p>
             <div class="code-block">
-                {
-                "id": 25,
-                "name": "pikachu",
-                "sprites": {
-                "front_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-                "back_default": "https://raw.githubusercontent.com/.../back.png",
-                "other": { ... }
-                },
-                "types": [
-                { "slot": 1, "type": { "name": "electric" } }
-                ],
-                "height": 4,
-                "weight": 60
-                }
+                <span class="code-comment">// ARREGLO JSON ORIGINAL (Pokémon)</span>
+                const pokemones = [
+                { nombre: "Pikachu", tipo: "eléctrico", nivel: 25 },
+                { nombre: "Charmander", tipo: "fuego", nivel: 16 }
+                ];
+
+                <span class="code-comment">// .map() transforma CADA elemento y devuelve un NUEVO arreglo</span>
+                const soloNombres = pokemones.map(pokemon => {
+                return pokemon.nombre; <span class="code-comment">// 👈 Extrae solo el nombre</span>
+                });
+                <span class="code-comment">// Resultado: ["Pikachu", "Charmander"]</span>
+
+                <span class="code-comment">// También podemos transformar la estructura:</span>
+                const tarjetasHTML = pokemones.map(p =>
+                `<div>${p.nombre} - ${p.tipo}</div>`
+                );
             </div>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.8rem;">
-                <div><span class="badge">🎯 sprites.front_default</span> → Imagen frontal</div>
-                <div><span class="badge">📊 types</span> → Tipos del Pokémon</div>
-                <div><span class="badge">🔢 id</span> → Número nacional</div>
+            <div class="method-highlight">
+                💡 <strong>Dato clave:</strong> map() NO modifica el arreglo original, crea uno nuevo. Ideal para
+                transformar datos de APIs.
             </div>
         </div>
 
         <div class="grid-docs">
-            <!-- EJEMPLO 1: DATO LOCAL (arreglo JSON simulado con imágenes reales) -->
+            <!-- EJEMPLO 1: map() con datos locales -->
             <div class="card">
-                <h2>📂 2. Datos Locales (Async simulado)</h2>
-                <p>Arreglo JSON local con 5 Pokémon y sus sprites. Usamos <code>setTimeout</code> para simular latencia
-                    y <code>Promise</code>.</p>
+                <h2>📁 1. .map() con datos locales</h2>
+                <p>Transformamos un arreglo JSON de Pokémon en una galería HTML usando <strong>map()</strong>.</p>
                 <div class="code-block">
-                    const pokemonesLocal = [
-                    { nombre: "Pikachu", tipo: "eléctrico",
+                    <span class="code-comment">// Arreglo original (5 Pokémon)</span>
+                    const pokemonLocal = [
+                    { id: 25, nombre: "Pikachu", tipo: "eléctrico",
                     imagen: "https://raw.githubusercontent.com/.../25.png" },
-                    { nombre: "Charmander", tipo: "fuego",
-                    imagen: "https://raw.githubusercontent.com/.../4.png" },
-                    // ... 3 más
+                    { id: 4, nombre: "Charmander", tipo: "fuego",
+                    imagen: "https://raw.githubusercontent.com/.../4.png" }
+                    <span class="code-comment">// ... 3 más</span>
                     ];
 
-                    async function obtenerLocal() {
-                    return new Promise(resolve => {
-                    setTimeout(() => resolve(pokemonesLocal), 700);
+                    <span class="code-comment">// 🔥 USANDO .map() para crear HTML</span>
+                    async function mostrarLocal() {
+                    const pokemones = await obtenerDatos();
+
+                    <span class="code-comment">// map() recorre cada Pokémon y genera una tarjeta</span>
+                    const tarjetas = pokemones.map(pokemon => {
+                    return `
+                    &lt;div class="pokemon-card"&gt;
+                    &lt;img src="${pokemon.imagen}"&gt;
+                    &lt;strong&gt;${pokemon.nombre}&lt;/strong&gt;
+                    &lt;small&gt;${pokemon.tipo}&lt;/small&gt;
+                    &lt;/div&gt;
+                    `;
+                    }).join(''); <span class="code-comment">// join() une todas las tarjetas</span>
+
+                    contenedor.innerHTML = tarjetas;
+                    }
+                </div>
+                <button id="btnMapLocal">🎨 Ejecutar .map() con datos locales</button>
+                <div id="outputMapLocal" class="output">
+                    ⚡ Haz clic para ver cómo <strong>.map()</strong> transforma el arreglo JSON en tarjetas HTML.
+                </div>
+            </div>
+
+            <!-- EJEMPLO 2: map() para transformar datos de PokéAPI -->
+            <div class="card">
+                <h2>🌐 2. .map() + PokéAPI (transformación)</h2>
+                <p>Usamos <strong>.map()</strong> sobre un arreglo de nombres para crear múltiples promesas de fetch.
+                </p>
+                <div class="code-block">
+                    <span class="code-comment">// Arreglo con nombres de Pokémon</span>
+                    const nombresPokemon = ["pikachu", "charizard", "mewtwo", "eevee"];
+
+                    <span class="code-comment">// 🔥 .map() convierte CADA nombre en una Promesa de fetch</span>
+                    async function cargarVarios() {
+                    <span class="code-comment">// map() crea un NUEVO arreglo con las promesas</span>
+                    const promesas = nombresPokemon.map(nombre => {
+                    return fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`)
+                    .then(res => res.json());
                     });
+
+                    <span class="code-comment">// Promise.all ejecuta todas las promesas en paralelo</span>
+                    const resultados = await Promise.all(promesas);
+
+                    <span class="code-comment">// OTRO .map() para extraer SOLO lo que necesitamos</span>
+                    const datosLimpios = resultados.map(pokemon => ({
+                    nombre: pokemon.name,
+                    imagen: pokemon.sprites.front_default,
+                    tipo: pokemon.types[0].type.name
+                    }));
+
+                    return datosLimpios;
                     }
                 </div>
-                <button id="btnLocal">📋 Mostrar Pokémon locales (imágenes)</button>
-                <div id="outputLocal" class="output">
-                    <span>🐣 Haz clic para ver 5 Pokémon con sprites reales (simulación local)</span>
+                <button id="btnMapAPI">🚀 Ejecutar .map() + PokéAPI</button>
+                <div id="outputMapAPI" class="output">
+                    🌟 Usamos <strong>.map()</strong> para transformar nombres → Promesas → Datos con imágenes.
                 </div>
             </div>
 
-            <!-- EJEMPLO 2: CONSULTA ASÍNCRONA A POKÉAPI (UN SOLO POKÉMON) -->
+            <!-- EJEMPLO 3: forEach vs map (diferencia clave) -->
             <div class="card">
-                <h2>🎣 3. Async/Await + PokéAPI (Individual)</h2>
-                <p>Función asíncrona que consume la API y extrae nombre, imagen y tipos.</p>
+                <h2>🔄 3. .map() vs .forEach()</h2>
+                <p><strong>.map()</strong> retorna un NUEVO arreglo. <strong>.forEach()</strong> solo itera, no retorna
+                    nada.</p>
                 <div class="code-block">
-                    async function obtenerPokemon(nombre) {
-                    const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
-                    const data = await respuesta.json();
-                    return {
-                    nombre: data.name,
-                    imagen: data.sprites.front_default,
-                    tipos: data.types.map(t => t.type.name).join(', ')
-                    };
-                    }
-                </div>
-                <div>
-                    <button id="btnPika">⚡ Pikachu</button>
-                    <button id="btnBulba">🌿 Bulbasaur</button>
-                    <button id="btnChar">🔥 Charmander</button>
-                    <button id="btnSquirtle">💧 Squirtle</button>
-                </div>
-                <div id="outputUnico" class="output">
-                    🌟 Selecciona un Pokémon y verás su imagen desde la PokéAPI en tiempo real.
-                </div>
-            </div>
+                    <span class="code-comment">// DIFERENCIA PRÁCTICA:</span>
 
-            <!-- EJEMPLO 3: VARIOS POKÉMON CON PROMISE.ALL (concurrencia) -->
-            <div class="card">
-                <h2>⚡ 4. Promise.all (Múltiples Pokémon)</h2>
-                <p>Cargamos varios Pokémon en <strong>paralelo</strong> usando Promise.all. Ideal para optimizar
-                    tiempos.</p>
-                <div class="code-block">
-                    const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax"];
+                    <span class="code-comment">// ❌ forEach() NO retorna un nuevo arreglo</span>
+                    const numeros = [1, 2, 3, 4, 5];
+                    const resultadoForEach = numeros.forEach(n => n * 2);
+                    console.log(resultadoForEach); <span class="code-comment">// undefined ❌</span>
 
-                    async function cargarVariosPokemon() {
-                    const promesas = nombres.map(n =>
-                    fetch(`https://pokeapi.co/api/v2/pokemon/${n}`).then(r => r.json())
-                    );
-                    return await Promise.all(promesas);
-                    }
+                    <span class="code-comment">// ✅ map() SÍ retorna un nuevo arreglo</span>
+                    const resultadoMap = numeros.map(n => n * 2);
+                    console.log(resultadoMap); <span class="code-comment">// [2, 4, 6, 8, 10] ✅</span>
+
+                    <span class="code-comment">// En PokéAPI: .map() es ideal para transformar datos</span>
+                    const nombres = ["pikachu", "bulbasaur"];
+                    const mayusculas = nombres.map(n => n.toUpperCase());
+                    <span class="code-comment">// Resultado: ["PIKACHU", "BULBASAUR"]</span>
                 </div>
-                <button id="btnVarios">🎲 Cargar 5 Pokémon (con imágenes)</button>
-                <div id="outputVarios" class="output">
-                    🐉 Muestra una galería con sprites de 5 Pokémon distintos.
+                <button id="btnComparar">📊 Comparar .map() vs .forEach()</button>
+                <div id="outputComparar" class="output">
+                    💡 Haz clic para ver la diferencia en la consola del navegador (F12).
                 </div>
             </div>
         </div>
 
-        <!-- EJEMPLO 4: BÚSQUEDA DINÁMICA CON INPUT -->
+        <!-- EJEMPLO 4: CADENA DE map() (múltiples transformaciones) -->
         <div class="card">
-            <h2>🔍 5. Buscador de Pokémon (Asíncrono con manejo de errores)</h2>
-            <p>Escribe el nombre de un Pokémon y al hacer clic se buscará su sprite y datos. Incluye
-                <code>try/catch</code> para manejar Pokémon inexistentes.</p>
+            <h2>⛓️ 4. Cadena de .map() (transformaciones múltiples)</h2>
+            <p>Podemos encadenar varios <strong>.map()</strong> para hacer transformaciones paso a paso.</p>
             <div class="code-block">
-                async function buscarPokemon(nombre) {
-                try {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre.toLowerCase()}`);
-                if (!res.ok) throw new Error("Pokémon no encontrado 😢");
-                const data = await res.json();
-                mostrarDatos(data);
-                } catch(error) {
-                mostrarError(error.message);
-                }
+                <span class="code-comment">// Arreglo original de nombres de Pokémon</span>
+                const pokemonesOriginal = ["pikachu", "charmander", "squirtle"];
+
+                <span class="code-comment">// Cadena de transformaciones con .map()</span>
+                const resultado = pokemonesOriginal
+                .map(nombre => nombre.toUpperCase()) <span class="code-comment">// 1️⃣ Mayúsculas</span>
+                .map(nombre => `✨ ${nombre} ✨`) <span class="code-comment">// 2️⃣ Agregar emojis</span>
+                .map(nombre => ({ <span class="code-comment">// 3️⃣ Convertir a objeto</span>
+                nombre: nombre,
+                longitud: nombre.length
+                }));
+
+                <span class="code-comment">/* Resultado:
+                    [
+                    { nombre: "✨ PIKACHU ✨", longitud: 13 },
+                    { nombre: "✨ CHARMANDER ✨", longitud: 17 },
+                    { nombre: "✨ SQUIRTLE ✨", longitud: 13 }
+                    ]
+                    */</span>
+            </div>
+            <button id="btnCadena">⛓️ Ejecutar cadena de .map()</button>
+            <div id="outputCadena" class="output">
+                🔗 Muestra cómo encadenar múltiples .map() para transformar datos progresivamente.
+            </div>
+        </div>
+
+        <!-- EJEMPLO 5: BÚSQUEDA con map + filter -->
+        <div class="card">
+            <h2>🔍 5. map() + filter() (búsqueda inteligente)</h2>
+            <p>Combinamos <strong>.filter()</strong> (filtra elementos) y <strong>.map()</strong> (transforma
+                resultados).</p>
+            <div class="code-block">
+                <span class="code-comment">// Filtrar Pokémon por tipo y luego mapear sus nombres</span>
+                async function buscarPorTipo(tipoBuscado) {
+                const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon?limit=50');
+                const data = await respuesta.json();
+
+                <span class="code-comment">// 🔥 filter() + map() encadenados</span>
+                const resultados = data.results
+                .filter(pokemon => pokemon.name.includes(tipoBuscado)) <span class="code-comment">// Filtra</span>
+                .map(pokemon => pokemon.name.toUpperCase()); <span class="code-comment">// Transforma</span>
+
+                return resultados;
                 }
             </div>
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="pokemonInput" placeholder="Ej: pikachu, charizard, eevee..."
-                    style="flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 2px solid #fcd34d; font-size: 1rem;">
-                <button id="btnBuscar">🔎 Buscar Pokémon</button>
+            <div>
+                <button id="btnBuscarPika">🐭 Buscar Pokémon con "pika" (filter + map)</button>
+                <button id="btnBuscarChar">🐉 Buscar Pokémon con "char" (filter + map)</button>
             </div>
             <div id="outputBusqueda" class="output">
-                💡 Prueba escribiendo: pikachu, mew, gengar, lucario...
-            </div>
-        </div>
-
-        <!-- EJEMPLO AVANZADO: MUESTRA DE HABILIDADES Y ESTADOS CON IMAGEN GRANDE -->
-        <div class="card">
-            <h2>✨ 6. Detalle completo + Imagen HD (Shiny opcional)</h2>
-            <p>Además del sprite normal, podemos mostrar la imagen <strong>shiny</strong> (variante de color) y
-                estadísticas base.</p>
-            <div class="code-block">
-                async function obtenerDetalles(nombre) {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
-                const data = await res.json();
-                return {
-                nombre: data.name,
-                spriteNormal: data.sprites.front_default,
-                spriteShiny: data.sprites.front_shiny,
-                stats: data.stats.map(s => `${s.stat.name}: ${s.base_stat}`).join(' · ')
-                };
-                }
-            </div>
-            <button id="btnDetalle">🌟 Ver detalles de DRAGONITE</button>
-            <div id="outputDetalle" class="output">
-                🎯 Haz clic y mira la imagen normal, shiny y estadísticas del Pokémon.
+                🎯 Usamos <strong>.filter()</strong> para filtrar y <strong>.map()</strong> para transformar los nombres
+                a mayúsculas.
             </div>
         </div>
 
         <footer>
-            🧪 Playground exclusivo con PokéAPI · Cada ejemplo usa funciones asíncronas (async/await) y muestra imágenes
-            reales de los sprites.
-            <br>📌 Recuerda: <strong>sprites.front_default</strong> contiene la URL de la imagen que vemos.
+            🧪 <strong>Playground educativo: Métodos de Array + Funciones Asíncronas</strong><br>
+            📌 .map() crea NUEVOS arreglos | .forEach() solo itera | Siempre usar .map() cuando necesites transformar
+            datos JSON
         </footer>
     </div>
 
     <script>
-        // --------------------------------------------------------------
-        // 1. DATOS LOCALES (array con 5 pokémon + imágenes oficiales)
-        const pokemonesLocal = [
+        // ===================== DATOS LOCALES =====================
+        const pokemonLocalData = [
             { id: 25, nombre: "Pikachu", tipo: "eléctrico", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" },
             { id: 4, nombre: "Charmander", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" },
             { id: 7, nombre: "Squirtle", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" },
-            { id: 1, nombre: "Bulbasaur", tipo: "planta/veneno", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" },
+            { id: 1, nombre: "Bulbasaur", tipo: "planta", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" },
             { id: 133, nombre: "Eevee", tipo: "normal", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" }
         ];
 
-        // Función asíncrona que simula consulta local con promesa
-        async function obtenerPokemonesLocalAsync() {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(pokemonesLocal);
-                }, 700);
+        // EJEMPLO 1: Mostrar .map() con datos locales
+        async function mostrarMapLocal() {
+            const output = document.getElementById('outputMapLocal');
+            output.innerHTML = '<div class="loading-pulse">🔄 Aplicando .map() al arreglo local...</div>';
+
+            // Simular latencia
+            await new Promise(r => setTimeout(r, 500));
+
+            // 🔥 USANDO .map() - Aquí está la explicación visual
+            const tarjetasHTML = pokemonLocalData.map(pokemon => {
+                // Este bloque se ejecuta para CADA elemento del arreglo
+                console.log(`Transformando a ${pokemon.nombre} con .map()`);
+                return `
+                <div class="pokemon-card">
+                    <img src="${pokemon.imagen}" alt="${pokemon.nombre}" loading="lazy">
+                    <strong>${pokemon.nombre}</strong><br>
+                    <small>${pokemon.tipo}</small><br>
+                    <span class="badge">#${pokemon.id}</span>
+                </div>
+            `;
+            }).join(''); // join() une todo en un solo string
+
+            output.innerHTML = `
+            <strong>✅ .map() transformó ${pokemonLocalData.length} Pokémon en tarjetas HTML</strong>
+            <div class="pokemon-grid">${tarjetasHTML}</div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                📌 <strong>Código usado:</strong><br>
+                <code>pokemonLocalData.map(pokemon => { return \`&lt;div&gt;...&lt;/div&gt;\` }).join('')</code><br>
+                ➡️ .map() recorrió cada elemento y devolvió un NUEVO arreglo con 5 strings HTML.
+            </div>
+        `;
+        }
+
+        // EJEMPLO 2: .map() + PokéAPI (crear promesas)
+        async function mostrarMapAPI() {
+            const output = document.getElementById('outputMapAPI');
+            output.innerHTML = '<div class="loading-pulse">🌐 Usando .map() para crear promesas de fetch...</div>';
+
+            try {
+                const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax"];
+
+                // 🔥 PASO 1: .map() convierte CADA nombre en una Promesa
+                const promesas = nombres.map(nombre => {
+                    console.log(`.map() está creando una promesa para: ${nombre}`);
+                    return fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json());
+                });
+
+                // Ejecutar todas las promesas en paralelo
+                const resultados = await Promise.all(promesas);
+
+                // 🔥 PASO 2: OTRO .map() para extraer SOLO los datos que necesitamos
+                const datosLimpios = resultados.map(pokemon => {
+                    console.log(`.map() extrayendo datos de: ${pokemon.name}`);
+                    return {
+                        nombre: pokemon.name,
+                        imagen: pokemon.sprites.front_default,
+                        tipo: pokemon.types.map(t => t.type.name).join(', ')
+                    };
+                });
+
+                // Generar HTML con otro .map()
+                const tarjetas = datosLimpios.map(p => `
+                <div class="pokemon-card">
+                    <img src="${p.imagen}" style="width:70px">
+                    <strong>${p.nombre.toUpperCase()}</strong>
+                    <small>${p.tipo}</small>
+                </div>
+            `).join('');
+
+                output.innerHTML = `
+                <strong>✅ Usamos .map() DOS VECES:</strong>
+                <ol style="margin: 10px 0 10px 20px;">
+                    <li><strong>Primer .map()</strong> → Transformó ${nombres.length} nombres en ${nombres.length} promesas de fetch</li>
+                    <li><strong>Segundo .map()</strong> → Transformó los resultados en objetos con { nombre, imagen, tipo }</li>
+                    <li><strong>Tercer .map()</strong> → Transformó los objetos en HTML</li>
+                </ol>
+                <div class="pokemon-grid">${tarjetas}</div>
+                <div class="method-highlight">
+                    💡 <strong>¿Por qué .map()?</strong> Porque necesitamos un NUEVO arreglo con la misma cantidad de elementos pero transformados.
+                </div>
+            `;
+            } catch (error) {
+                output.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // EJEMPLO 3: Comparar map vs forEach
+        function compararMapForEach() {
+            const numeros = [1, 2, 3, 4, 5];
+
+            // forEach - NO retorna nada
+            let resultadoForEach;
+            const forEachReturn = numeros.forEach(n => {
+                resultadoForEach = n * 2;
             });
+
+            // map - SÍ retorna un nuevo arreglo
+            const mapReturn = numeros.map(n => n * 2);
+
+            const output = document.getElementById('outputComparar');
+            output.innerHTML = `
+            <strong>📊 Diferencia clave entre .map() y .forEach()</strong>
+            <div class="method-highlight" style="margin-top: 10px;">
+                <strong>🔹 .forEach()</strong><br>
+                <code>numeros.forEach(n => n * 2)</code><br>
+                Retorna: <strong style="color:#b91c1c;">${forEachReturn === undefined ? 'undefined ❌' : forEachReturn}</strong><br>
+                <em>.forEach() NO crea un nuevo arreglo, solo itera.</em>
+            </div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                <strong>🔸 .map()</strong><br>
+                <code>numeros.map(n => n * 2)</code><br>
+                Retorna: <strong style="color:#16a34a;">[${mapReturn.join(', ')}] ✅</strong><br>
+                <em>.map() SÍ crea un NUEVO arreglo con los valores transformados.</em>
+            </div>
+            <p style="margin-top: 10px;">🎯 <strong>Regla de oro:</strong> Usa <strong>.map()</strong> cuando necesites TRANSFORMAR datos y obtener un nuevo arreglo. Usa <strong>.forEach()</strong> solo cuando quieras ejecutar efectos secundarios (como console.log).</p>
+        `;
+
+            // Mostrar en consola también
+            console.log('%c🔵 forEach retorna:', 'color: blue', forEachReturn);
+            console.log('%c🟢 map retorna:', 'color: green', mapReturn);
         }
 
-        async function mostrarPokemonesLocal() {
-            const outputDiv = document.getElementById('outputLocal');
-            outputDiv.innerHTML = '<div class="loading-pulse">⏳ Cargando Pokémon locales (simulación)...</div>';
-            try {
-                const data = await obtenerPokemonesLocalAsync();
-                let html = '<strong>📦 5 Pokémon desde arreglo JSON local (con sprites reales)</strong><div class="pokemon-grid">';
-                data.forEach(p => {
-                    html += `
-                    <div class="pokemon-card">
-                        <img src="${p.imagen}" alt="${p.nombre}" loading="lazy">
-                        <strong>${p.nombre}</strong><br>
-                        <small>${p.tipo}</small><br>
-                        <span class="badge">#${p.id}</span>
-                    </div>
-                `;
+        // EJEMPLO 4: Cadena de .map()
+        function mostrarCadenaMap() {
+            const pokemonesOriginal = ["pikachu", "charmander", "squirtle", "bulbasaur"];
+
+            // Cadena de transformaciones
+            const resultado = pokemonesOriginal
+                .map(nombre => {
+                    console.log(`1er map: ${nombre} → mayúsculas`);
+                    return nombre.toUpperCase();
+                })
+                .map(nombre => {
+                    console.log(`2do map: ${nombre} → con emojis`);
+                    return `⚡ ${nombre} ⚡`;
+                })
+                .map(nombre => {
+                    console.log(`3er map: ${nombre} → a objeto`);
+                    return {
+                        nombre: nombre,
+                        longitud: nombre.length,
+                        emojis: 2
+                    };
                 });
-                html += '</div><span class="badge">✅ Datos locales + setTimeout (simula latencia)</span>';
-                outputDiv.innerHTML = html;
-            } catch (error) {
-                outputDiv.innerHTML = `❌ Error al cargar locales: ${error.message}`;
-            }
+
+            const output = document.getElementById('outputCadena');
+            output.innerHTML = `
+            <strong>⛓️ Cadena de 3 .map() aplicados secuencialmente</strong>
+            <div class="method-highlight">
+                <strong>Arreglo original:</strong><br>
+                <code>["pikachu", "charmander", "squirtle", "bulbasaur"]</code>
+            </div>
+            <div class="method-highlight">
+                <strong>Después de ENCADENAR 3 .map():</strong><br>
+                <pre style="background:#1e293b; padding:0.8rem; border-radius:0.8rem; overflow-x:auto;">${JSON.stringify(resultado, null, 2)}</pre>
+            </div>
+            <div class="method-highlight">
+                💡 <strong>¿Qué pasó?</strong><br>
+                1️⃣ Primer .map() → convirtió a MAYÚSCULAS<br>
+                2️⃣ Segundo .map() → agregó ⚡ emojis ⚡<br>
+                3️⃣ Tercer .map() → transformó cada string en un OBJETO con propiedades
+            </div>
+        `;
         }
 
-        // --------------------------------------------------------------
-        // 2. FUNCIÓN GENÉRICA PARA OBTENER POKÉMON DESDE API REAL (con imagen)
-        async function obtenerPokemonDesdeAPI(nombrePokemon) {
-            const url = `https://pokeapi.co/api/v2/pokemon/${nombrePokemon.toLowerCase()}`;
-            const respuesta = await fetch(url);
-            if (!respuesta.ok) throw new Error(`No se encontró "${nombrePokemon}"`);
-            const data = await respuesta.json();
-            return {
-                nombre: data.name,
-                id: data.id,
-                imagen: data.sprites.front_default,
-                tipos: data.types.map(t => t.type.name).join(', '),
-                altura: data.height / 10,
-                peso: data.weight / 10
-            };
-        }
+        // EJEMPLO 5: filter + map (búsqueda)
+        async function buscarConFilterMap(busqueda) {
+            const output = document.getElementById('outputBusqueda');
+            output.innerHTML = '<div class="loading-pulse">🔍 Buscando Pokémon que contengan "' + busqueda + '"...</div>';
 
-        // Mostrar Pokémon individual (estilo tarjeta)
-        async function mostrarPokemonIndividual(nombre) {
-            const outputDiv = document.getElementById('outputUnico');
-            outputDiv.innerHTML = '<div class="loading-pulse">⚡ Conectando con PokéAPI...</div>';
             try {
-                const pokemon = await obtenerPokemonDesdeAPI(nombre);
-                outputDiv.innerHTML = `
-                <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: center;">
-                    <div class="pokemon-card" style="background: linear-gradient(145deg, #fef9c3, #fde047); min-width: 160px;">
-                        <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 120px; height: 120px;">
-                        <h3 style="text-transform: capitalize; margin: 0.5rem 0;">✨ ${pokemon.nombre}</h3>
-                        <span class="badge">ID: ${pokemon.id}</span>
-                        <p><strong>Tipos:</strong> ${pokemon.tipos}</p>
-                        <small>📏 Altura: ${pokemon.altura}m | ⚖️ Peso: ${pokemon.peso}kg</small>
-                    </div>
-                    <div style="max-width: 300px;">
-                        <p>📸 La <strong>imagen</strong> proviene de <code>data.sprites.front_default</code><br>
-                        ✅ Llamada asíncrona con <code>fetch() + await</code><br>
-                        🎯 La PokéAPI responde con un objeto JSON completo.</p>
-                    </div>
-                </div>
-                <span class="badge" style="margin-top: 10px;">🐾 Datos en tiempo real</span>
-            `;
-            } catch (error) {
-                outputDiv.innerHTML = `<div style="color:#b91c1c;">❌ Error: ${error.message}. Verifica el nombre del Pokémon.</div>`;
-            }
-        }
-
-        // --------------------------------------------------------------
-        // 3. PROMISE.ALL -> varios Pokémon en paralelo
-        async function cargarMultiplesPokemon() {
-            const outputDiv = document.getElementById('outputVarios');
-            outputDiv.innerHTML = '<div class="loading-pulse">🔄 Cargando 5 Pokémon con Promise.all (peticiones simultáneas)...</div>';
-            try {
-                const nombres = ['pikachu', 'charizard', 'mewtwo', 'eevee', 'snorlax'];
-                const promesas = nombres.map(n => fetch(`https://pokeapi.co/api/v2/pokemon/${n}`).then(res => res.json()));
-                const pokemonesData = await Promise.all(promesas);
-
-                let html = '<strong>⚡ Galería de Pokémon (Promise.all)</strong><div class="pokemon-grid">';
-                pokemonesData.forEach(p => {
-                    const sprite = p.sprites.front_default;
-                    const tipos = p.types.map(t => t.type.name).join(', ');
-                    html += `
-                    <div class="pokemon-card">
-                        <img src="${sprite}" alt="${p.name}" loading="lazy">
-                        <strong style="text-transform: capitalize;">${p.name}</strong>
-                        <small>${tipos}</small>
-                    </div>
-                `;
-                });
-                html += `</div><span class="badge">🚀 Las 5 consultas se ejecutaron en paralelo, mostrando imágenes inmediatamente.</span>`;
-                outputDiv.innerHTML = html;
-            } catch (err) {
-                outputDiv.innerHTML = `<div style="color:#b91c1c;">❌ Fallo en carga múltiple: ${err.message}</div>`;
-            }
-        }
-
-        // --------------------------------------------------------------
-        // 4. BUSCADOR DINÁMICO CON MANEJO DE ERRORES
-        async function buscarPokemonPorNombre(nombre) {
-            const outputDiv = document.getElementById('outputBusqueda');
-            if (!nombre.trim()) {
-                outputDiv.innerHTML = '⚠️ Escribe un nombre válido (pikachu, bulbasaur, etc)';
-                return;
-            }
-            outputDiv.innerHTML = '<div class="loading-pulse">🔎 Buscando en PokéAPI...</div>';
-            try {
-                const pokemon = await obtenerPokemonDesdeAPI(nombre);
-                outputDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                    <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 90px; image-rendering: crisp-edges;">
-                    <div>
-                        <h3 style="text-transform: capitalize; color:#b91c1c;">${pokemon.nombre} <span class="badge">#${pokemon.id}</span></h3>
-                        <p>Tipos: ${pokemon.tipos} | Altura: ${pokemon.altura}m | Peso: ${pokemon.peso}kg</p>
-                        <small>✅ La imagen se extrajo de sprites.front_default</small>
-                    </div>
-                </div>
-            `;
-            } catch (error) {
-                outputDiv.innerHTML = `<div style="background:#fee2e2; padding:0.8rem; border-radius:1rem;"><strong>😿 Pokémon no encontrado:</strong> "${nombre}" no existe en la PokéAPI. Prueba con "pikachu", "charizard", "eevee".</div>`;
-            }
-        }
-
-        // --------------------------------------------------------------
-        // 5. DETALLES AVANZADOS (Dragonite + Shiny)
-        async function mostrarDetallesAvanzados() {
-            const outputDiv = document.getElementById('outputDetalle');
-            outputDiv.innerHTML = '<div class="loading-pulse">🌟 Cargando datos de Dragonite (incluye shiny)...</div>';
-            try {
-                const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon/dragonite');
+                const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100');
                 const data = await respuesta.json();
-                const nombre = data.name;
-                const spriteNormal = data.sprites.front_default;
-                const spriteShiny = data.sprites.front_shiny;
-                const estadisticas = data.stats.map(s => `${s.stat.name}: ${s.base_stat}`).join(' · ');
 
-                outputDiv.innerHTML = `
-                <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center;">
-                    <div class="pokemon-card">
-                        <img src="${spriteNormal}" style="width:110px;">
-                        <strong>${nombre.toUpperCase()}</strong>
-                        <span class="badge">Normal</span>
-                    </div>
-                    <div class="pokemon-card" style="background: linear-gradient(145deg, #f3e8ff, #e9d5ff);">
-                        <img src="${spriteShiny}" style="width:110px;">
-                        <strong>${nombre.toUpperCase()} ✨</strong>
-                        <span class="badge">Variocolor (Shiny)</span>
-                    </div>
+                // 🔥 filter() + map() encadenados
+                const resultados = data.results
+                    .filter(pokemon => {
+                        // filter() solo mantiene los que cumplen la condición
+                        const coincide = pokemon.name.includes(busqueda.toLowerCase());
+                        if (coincide) console.log(`filter() mantiene: ${pokemon.name}`);
+                        return coincide;
+                    })
+                    .map(pokemon => {
+                        // map() transforma cada resultado
+                        return pokemon.name.toUpperCase();
+                    });
+
+                output.innerHTML = `
+                <strong>🔍 Búsqueda: "${busqueda}"</strong>
+                <div class="method-highlight">
+                    <strong>Paso 1 - .filter():</strong> Filtró ${data.results.length} Pokémon y mantuvo solo ${resultados.length} que contienen "${busqueda}"<br>
+                    <strong>Paso 2 - .map():</strong> Transformó los ${resultados.length} nombres a MAYÚSCULAS
                 </div>
-                <p><strong>📊 Estadísticas base:</strong> ${estadisticas}</p>
-                <span class="badge">🎨 La PokéAPI también ofrece sprites shiny con front_shiny</span>
+                <div class="method-highlight">
+                    <strong>✅ Resultados:</strong><br>
+                    ${resultados.length > 0 ? resultados.join(', ') : 'No se encontraron Pokémon con ese término'}
+                </div>
+                <div class="method-highlight">
+                    💡 <strong>Sintaxis:</strong><br>
+                    <code>arreglo.filter(condición).map(transformación)</code><br>
+                    Primero FILTRAMOS, luego TRANSFORMAMOS.
+                </div>
             `;
-            } catch (err) {
-                outputDiv.innerHTML = `❌ Error cargando detalles: ${err.message}`;
+            } catch (error) {
+                output.innerHTML = `❌ Error: ${error.message}`;
             }
         }
 
-        // --------------------------------------------------------------
-        // EVENTOS Y CONFIGURACIÓN
-        document.getElementById('btnLocal').addEventListener('click', mostrarPokemonesLocal);
-        document.getElementById('btnPika').addEventListener('click', () => mostrarPokemonIndividual('pikachu'));
-        document.getElementById('btnBulba').addEventListener('click', () => mostrarPokemonIndividual('bulbasaur'));
-        document.getElementById('btnChar').addEventListener('click', () => mostrarPokemonIndividual('charmander'));
-        document.getElementById('btnSquirtle').addEventListener('click', () => mostrarPokemonIndividual('squirtle'));
-        document.getElementById('btnVarios').addEventListener('click', cargarMultiplesPokemon);
-        document.getElementById('btnBuscar').addEventListener('click', () => {
-            const input = document.getElementById('pokemonInput');
-            buscarPokemonPorNombre(input.value);
-        });
-        document.getElementById('btnDetalle').addEventListener('click', mostrarDetallesAvanzados);
+        // ===================== EVENTOS =====================
+        document.getElementById('btnMapLocal').addEventListener('click', mostrarMapLocal);
+        document.getElementById('btnMapAPI').addEventListener('click', mostrarMapAPI);
+        document.getElementById('btnComparar').addEventListener('click', compararMapForEach);
+        document.getElementById('btnCadena').addEventListener('click', mostrarCadenaMap);
+        document.getElementById('btnBuscarPika').addEventListener('click', () => buscarConFilterMap('pika'));
+        document.getElementById('btnBuscarChar').addEventListener('click', () => buscarConFilterMap('char'));
 
-        // Permitir búsqueda con Enter
-        document.getElementById('pokemonInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const input = document.getElementById('pokemonInput');
-                buscarPokemonPorNombre(input.value);
-            }
-        });
+        console.log('%c🎯 Playground listo | Métodos de Array: map(), filter(), forEach()', 'color: #f59e0b; font-size: 14px;');
     </script>
 </body>
 
