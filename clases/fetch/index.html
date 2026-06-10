@@ -3,19 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Playground Funciones Asíncronas JS y PHP</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Playground: Funciones Asíncronas en JavaScript | JSON + APIs</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #7c3aed;
-            --success: #16a34a;
-            --bg: #f8fafc;
-            --card: #ffffff;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -23,411 +13,552 @@
         }
 
         body {
-            font-family: Segoe UI;
-            background: var(--bg);
-            color: #222;
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #0a0f1c;
+            scroll-behavior: smooth;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        /* header con gradiente */
+        .hero {
+            background: linear-gradient(135deg, #0f2b5e 0%, #1e3a8a 50%, #3b82f6 100%);
             color: white;
-            padding: 50px 20px;
+            padding: 3rem 1.5rem;
             text-align: center;
+            border-bottom-left-radius: 2rem;
+            border-bottom-right-radius: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        header h1 {
-            font-size: 3rem;
+        .hero h1 {
+            font-size: 2.6rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
         }
 
         .container {
-            width: 95%;
             max-width: 1400px;
-            margin: auto;
-            padding: 30px 0;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem 1.5rem;
         }
 
+        /* Grid principal */
+        .grid-docs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Tarjetas con transiciones */
         .card {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
-            transition: .4s;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease-in-out;
+            border: 1px solid #e2e8f0;
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+            border-color: #b9d0f8;
         }
 
-        h2 {
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-        }
-
-        .flex {
+        .card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            align-items: center;
+            gap: 0.6rem;
+            color: #1e3a8a;
+            border-left: 5px solid #3b82f6;
+            padding-left: 0.9rem;
         }
 
-        .code {
+        .card h3 {
+            margin: 1rem 0 0.5rem 0;
+            color: #0f2b5e;
+        }
+
+        /* bloques de código */
+        .code-block {
             background: #0f172a;
-            color: #22c55e;
-            padding: 20px;
-            border-radius: 10px;
-            overflow: auto;
-            margin-top: 15px;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            box-shadow: inset 0 0 0 1px #334155;
         }
 
         button {
-            background: var(--primary);
-            color: white;
+            background: #2563eb;
             border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            padding: 0.7rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: .3s;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0.5rem 0 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         button:hover {
-            transform: scale(1.05);
-            background: #1d4ed8;
+            background: #1e40af;
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: scale(0.96);
         }
 
         .output {
-            margin-top: 15px;
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
             min-height: 120px;
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            overflow-y: auto;
         }
 
-        svg {
-            width: 100%;
+        .loading {
+            background: #e2e8f0;
+            animation: pulse 1.2s infinite;
         }
 
-        .box {
-            transition: .5s;
-        }
-
-        .box:hover {
-            fill: #7c3aed;
-        }
-
-        @media(max-width:768px) {
-
-            header h1 {
-                font-size: 2rem;
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
             }
 
-            .grid {
-                grid-template-columns: 1fr;
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .badge {
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 2rem;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .svg-container {
+            background: #fefce8;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #fde047;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #475569;
+            font-size: 0.85rem;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 2rem;
+        }
+
+        .flex-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 {
+                font-size: 1.8rem;
             }
 
+            .grid-docs {
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1.2rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <h1>Funciones Asíncronas JS y PHP</h1>
-        <p>Aprendiendo JSON, Async/Await, APIs y Programación Asíncrona</p>
-    </header>
+    <div class="hero">
+        <h1>⚡ Funciones Asíncronas en JavaScript</h1>
+        <p>Promesas, Async/Await, APIs reales y simulación local · Playground educativo</p>
+        <div style="margin-top: 1rem;"><span class="badge">🎓 Para estudiantes</span> <span class="badge">💡 Ejemplos
+                prácticos</span> <span class="badge">🚀 JSON + APIs</span></div>
+    </div>
 
     <div class="container">
-
-        <!-- JSON -->
-
-        <section class="card">
-
-            <h2>1. ¿Qué es JSON?</h2>
-
-            <p>
-                JSON (JavaScript Object Notation) es un formato ligero para intercambiar datos.
-            </p>
-
-            <div class="flex">
-
-                <div>
-
-                    <h3>Objeto JSON</h3>
-
-                    <div class="code">
+        <!-- SECCIÓN 1: Explicación gráfica de JSON (objeto + arreglo) -->
+        <div class="card">
+            <h2>📦 1. Estructura JSON (Objeto y Arreglo)</h2>
+            <p><strong>JSON</strong> = JavaScript Object Notation. Es la forma más común de intercambiar datos entre
+                servidores y aplicaciones.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0;">
+                <div style="flex:1; min-width: 200px;">
+                    <div class="badge" style="background:#d9f99d;">🔹 OBJETO JSON</div>
+                    <div class="code-block" style="margin-top: 0.5rem;">
                         {
-                        "id":1,
-                        "nombre":"Juan",
-                        "edad":25
+                        "id": 101,
+                        "nombre": "Lina",
+                        "es_activo": true,
+                        "hobbies": ["futbol", "lectura"]
                         }
                     </div>
-
+                    <p style="font-size:0.8rem;">📌 Llaves { } → representan un solo objeto.</p>
                 </div>
-
-                <div>
-
-                    <h3>Arreglo JSON</h3>
-
-                    <div class="code">
+                <div style="flex:1; min-width: 200px;">
+                    <div class="badge" style="background:#fed7aa;">🔸 ARREGLO JSON</div>
+                    <div class="code-block" style="margin-top: 0.5rem;">
                         [
-                        {
-                        "id":1,
-                        "nombre":"Juan"
-                        },
-                        {
-                        "id":2,
-                        "nombre":"Ana"
-                        }
+                        { "id": 1, "nombre": "Ana" },
+                        { "id": 2, "nombre": "Carlos" },
+                        { "id": 3, "nombre": "Elena" }
                         ]
                     </div>
-
+                    <p style="font-size:0.8rem;">📌 Corchetes [ ] → lista de objetos.</p>
                 </div>
+            </div>
+            <div class="svg-container">
+                <svg viewBox="0 0 780 180" style="width:100%; height:auto;">
+                    <rect x="20" y="30" width="220" height="120" rx="16" fill="#3b82f6" opacity="0.9" />
+                    <text x="55" y="65" fill="white" font-weight="bold" font-size="18">📘 OBJETO</text>
+                    <text x="40" y="95" fill="#e0f2fe" font-size="14">"id": 1,</text>
+                    <text x="40" y="115" fill="#e0f2fe" font-size="14">"nombre": "Luis"</text>
+                    <text x="40" y="135" fill="#e0f2fe" font-size="14">"email": "@mail.com"</text>
 
+                    <line x1="260" y1="90" x2="320" y2="90" stroke="#334155" stroke-width="3" stroke-dasharray="5 3" />
+
+                    <rect x="340" y="15" width="400" height="150" rx="16" fill="#16a34a" opacity="0.9" />
+                    <text x="370" y="48" fill="white" font-weight="bold" font-size="18">📋 ARREGLO DE OBJETOS</text>
+                    <text x="365" y="78" fill="#dcfce7" font-size="14">[ { "id":1, "nombre":"Ada" },</text>
+                    <text x="375" y="102" fill="#dcfce7" font-size="14"> { "id":2, "nombre":"Bruno" },</text>
+                    <text x="375" y="126" fill="#dcfce7" font-size="14"> { "id":3, "nombre":"Celia" } ]</text>
+                </svg>
+            </div>
+            <p>✅ <strong>Clave:</strong> Todo JSON válido usa comillas dobles <code>"clave": valor</code>.</p>
+        </div>
+
+        <!-- EJEMPLOS ASÍNCRONOS con GRID (FLEXBOX Y GRID integrado) -->
+        <div class="grid-docs">
+            <!-- EJEMPLO 1: LOCAL (simulando datos con promesa) -->
+            <div class="card">
+                <h2>📁 2. Async/Await · Datos locales</h2>
+                <p>Simulamos una fuente de datos con un arreglo de 5 Pokémon locales. <br> Se usa <code>Promise</code> +
+                    <code>setTimeout</code> para imitar latencia.</p>
+                <div class="code-block">
+                    // Datos locales (5 registros)
+                    const pokemonsLocal = [
+                    { id: 1, nombre: "Pikachu", tipo: "eléctrico" },
+                    { id: 2, nombre: "Charmander", tipo: "fuego" },
+                    { id: 3, nombre: "Squirtle", tipo: "agua" },
+                    { id: 4, nombre: "Bulbasaur", tipo: "planta" },
+                    { id: 5, nombre: "Jigglypuff", tipo: "hada" }
+                    ];
+
+                    async function obtenerPokemonsLocal() {
+                    return new Promise(resolve => {
+                    setTimeout(() => resolve(pokemonsLocal), 800);
+                    });
+                    }
+                </div>
+                <div class="flex-buttons">
+                    <button id="btnLocal">🐾 Mostrar Pokémon locales</button>
+                </div>
+                <div id="outputLocal" class="output">
+                    ⚡ Haz clic en el botón para cargar datos locales.
+                </div>
             </div>
 
-            <h3 style="margin-top:30px;">Representación Visual</h3>
+            <!-- EJEMPLO 2: CONSUMIENDO API REAL (JSONPlaceholder - usuarios) -->
+            <div class="card">
+                <h2>🌐 3. API Externa · JSONPlaceholder</h2>
+                <p>Consumimos <strong>JSONPlaceholder</strong> (API gratuita) con <code>fetch</code> y
+                    <code>async/await</code>. Mostramos 5 usuarios.</p>
+                <div class="code-block">
+                    async function obtenerUsuariosAPI() {
+                    const respuesta = await fetch('https://jsonplaceholder.typicode.com/users');
+                    const datos = await respuesta.json();
+                    return datos.slice(0,5);
+                    }
+                </div>
+                <div class="flex-buttons">
+                    <button id="btnAPIUsers">👥 Traer usuarios (API)</button>
+                </div>
+                <div id="outputAPI" class="output">
+                    🌍 Presiona para consultar API JSONPlaceholder.
+                </div>
+            </div>
 
-            <svg viewBox="0 0 900 300">
+            <!-- EJEMPLO 3: CONSUMIENDO POKÉAPI (Pokémon) + mostrar nombre e imagen sprite -->
+            <div class="card">
+                <h2>⚡ 4. Pokémon API · Datos reales</h2>
+                <p>Consumimos <strong>PokéAPI</strong> para obtener información de 3 Pokémon: <strong>bulbasaur,
+                        charmander, squirtle</strong>.</p>
+                <div class="code-block">
+                    async function obtenerPokemonAPI(nombre) {
+                    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
+                    const data = await res.json();
+                    return { nombre: data.name, id: data.id, sprite: data.sprites.front_default };
+                    }
+                </div>
+                <div class="flex-buttons">
+                    <button id="btnPokemon1">🌿 Bulbasaur</button>
+                    <button id="btnPokemon2">🔥 Charmander</button>
+                    <button id="btnPokemon3">💧 Squirtle</button>
+                    <button id="btnTodosPokemon">🎲 Ver los 3 Pokémon</button>
+                </div>
+                <div id="outputPokemon" class="output">
+                    ✨ Selecciona un Pokémon o "Ver los 3" para llamar la API asíncrona.
+                </div>
+            </div>
+        </div>
 
-                <rect class="box" x="50" y="80" width="250" height="120" rx="15" fill="#2563eb" />
+        <!-- EJEMPLO AVANZADO: Promise.all y llamado paralelo -->
+        <div class="card">
+            <h2>🚀 5. Asincronía avanzada: Promise.all / concurrencia</h2>
+            <p>Llamamos a <strong>dos APIs diferentes</strong> en simultáneo usando <code>Promise.all</code> para
+                optimizar tiempos. Ejemplo educativo: JSONPlaceholder + PokéAPI (Pokémon aleatorio).</p>
+            <div class="code-block">
+                async function cargarMultipleAPIs() {
+                const [usuarios, pokemon] = await Promise.all([
+                fetch('https://jsonplaceholder.typicode.com/users/1').then(r => r.json()),
+                fetch('https://pokeapi.co/api/v2/pokemon/pikachu').then(r => r.json())
+                ]);
+                return { usuario: usuarios.name, pokemon: pokemon.name };
+                }
+            </div>
+            <div class="flex-buttons">
+                <button id="btnParalelo">⚡ Ejecutar llamadas en paralelo</button>
+            </div>
+            <div id="outputParalelo" class="output">
+                🔄 Muestra el resultado de dos peticiones simultáneas (usuario + pikachu).
+            </div>
+        </div>
 
-                <text x="130" y="120" fill="white" font-size="24">
-                    Objeto
-                </text>
-
-                <text x="80" y="160" fill="white" font-size="18">
-                    id
-                </text>
-
-                <text x="160" y="160" fill="white" font-size="18">
-                    nombre
-                </text>
-
-                <text x="220" y="160" fill="white" font-size="18">
-                    edad
-                </text>
-
-                <line x1="300" y1="140" x2="450" y2="140" stroke="#222" stroke-width="4" />
-
-                <rect class="box" x="500" y="40" width="300" height="220" rx="15" fill="#16a34a" />
-
-                <text x="600" y="80" fill="white" font-size="24">
-                    Array JSON
-                </text>
-
-                <text x="560" y="130" fill="white">
-                    Registro 1
-                </text>
-
-                <text x="560" y="170" fill="white">
-                    Registro 2
-                </text>
-
-                <text x="560" y="210" fill="white">
-                    Registro 3
-                </text>
-
-            </svg>
-
-        </section>
-
-        <!-- JS LOCAL -->
-
-        <section class="card">
-
-            <h2>2. Async/Await JavaScript (Local)</h2>
-
-            <p>
-                Simularemos una consulta a una base de datos local usando Promesas.
+        <!-- explicación adicional de async/await y errores -->
+        <div class="card">
+            <h2>📖 ¿Qué significa "asíncrono"?</h2>
+            <p>Las funciones asíncronas permiten que el código no se bloquee mientras espera una respuesta (de una API,
+                archivo, base de datos). <code>async</code> convierte una función para que devuelva una promesa, y
+                <code>await</code> espera la respuesta sin congelar la interfaz.</p>
+            <div class="code-block">
+                // Ejemplo estructura
+                async function obtenerDatos() {
+                try {
+                const respuesta = await fetch('url');
+                const datos = await respuesta.json();
+                console.log(datos);
+                } catch(error) {
+                console.error('Error:', error);
+                }
+                }
+            </div>
+            <p>💡 <strong>Consejo:</strong> Usa <code>try/catch</code> para manejar errores de red o endpoints caídos.
             </p>
-
-            <button onclick="ejecutarLocalJS()">
-                Ejecutar Ejemplo Local JS
-            </button>
-
-            <div id="jsLocal" class="output"></div>
-
-            <div class="code">
-
-                const usuarios = [...];
-
-                async function obtenerUsuarios(){
-                return usuarios;
-                }
-
-            </div>
-
-        </section>
-
-        <!-- JS API -->
-
-        <section class="card">
-
-            <h2>3. Async/Await JavaScript consumiendo JSONPlaceholder</h2>
-
-            <button onclick="ejecutarAPIJS()">
-                Consumir API
-            </button>
-
-            <div id="jsApi" class="output"></div>
-
-        </section>
-
-        <!-- PHP -->
-
-        <section class="card">
-
-            <h2>4. PHP Asíncrono (Simulado Local)</h2>
-
-            <div class="code">
-
-                $usuarios = [
-                ["id"=>1,"nombre"=>"Juan"],
-                ["id"=>2,"nombre"=>"Ana"]
-                ];
-
-                foreach($usuarios as $u){
-                echo $u["nombre"];
-                }
-
-            </div>
-
-        </section>
-
-        <!-- PHP API -->
-
-        <section class="card">
-
-            <h2>5. PHP consumiendo PokéAPI</h2>
-
-            <div class="code">
-
-                <?php
-
-$url =
-"https://pokeapi.co/api/v2/pokemon/pikachu";
-
-$json=file_get_contents($url);
-
-$data=json_decode($json,true);
-
-echo $data["name"];
-
-?>
-
-            </div>
-
-        </section>
-
+        </div>
+        <footer>
+            🧪 Playground didáctico · Ejemplos pensados para laboratorio: datos locales + JSONPlaceholder + PokéAPI ·
+            Promesas, async/await y concurrencia.
+        </footer>
     </div>
 
     <script>
-
-        // BASE LOCAL
-
-        const usuarios = [
-            { id: 1, nombre: "Juan" },
-            { id: 2, nombre: "Ana" },
-            { id: 3, nombre: "Pedro" },
-            { id: 4, nombre: "Luis" },
-            { id: 5, nombre: "María" }
+        // --------------------------------------------------------------
+        // 1. DATOS LOCALES (5 registros como arreglo JSON interno)
+        const pokemonLocal = [
+            { id: 1, nombre: "Pikachu", tipo: "eléctrico", nivel: 25 },
+            { id: 2, nombre: "Charmander", tipo: "fuego", nivel: 16 },
+            { id: 3, nombre: "Squirtle", tipo: "agua", nivel: 18 },
+            { id: 4, nombre: "Bulbasaur", tipo: "planta/veneno", nivel: 14 },
+            { id: 5, nombre: "Jigglypuff", tipo: "hada", nivel: 20 }
         ];
 
-        // LOCAL
-
-        function obtenerUsuariosLocal() {
-
-            return new Promise(resolve => {
-
+        // Función simulada asíncrona para obtener datos locales (Promesa con setTimeout)
+        async function obtenerPokemonLocalAsync() {
+            return new Promise((resolve) => {
                 setTimeout(() => {
-
-                    resolve(usuarios);
-
-                }, 1500);
-
+                    resolve(pokemonLocal);
+                }, 700);
             });
-
         }
 
-        async function ejecutarLocalJS() {
-
-            const salida =
-                document.getElementById("jsLocal");
-
-            salida.innerHTML =
-                "Consultando...";
-
-            const data =
-                await obtenerUsuariosLocal();
-
-            let html = "<h3>Usuarios</h3>";
-
-            data.forEach(usuario => {
-
-                html += `
-<p>
-${usuario.id}
--
-${usuario.nombre}
-</p>
-`;
-
-            });
-
-            salida.innerHTML = html;
-
-        }
-
-        // API
-
-        async function ejecutarAPIJS() {
-
-            const salida =
-                document.getElementById("jsApi");
-
-            salida.innerHTML =
-                "Cargando API...";
-
+        // Renderizado local
+        async function mostrarPokemonLocal() {
+            const outputDiv = document.getElementById('outputLocal');
+            outputDiv.innerHTML = '<div class="loading" style="padding:0.5rem;">⏳ Cargando datos locales...</div>';
             try {
-
-                const response =
-                    await fetch(
-                        'https://jsonplaceholder.typicode.com/users'
-                    );
-
-                const usuarios =
-                    await response.json();
-
-                let html = "<h3>Usuarios API</h3>";
-
-                usuarios.slice(0, 5).forEach(u => {
-
-                    html += `
-<p>
-${u.name}
-</p>
-`;
-
+                const data = await obtenerPokemonLocalAsync();
+                let html = '<strong>📋 Lista local de Pokémon (5 registros JSON)</strong><ul style="margin-top:0.6rem;">';
+                data.forEach(poke => {
+                    html += `<li style="margin-bottom:0.4rem;">✨ <strong>#${poke.id}</strong> ${poke.nombre} · tipo: ${poke.tipo} · nivel ${poke.nivel}</li>`;
                 });
-
-                salida.innerHTML = html;
-
-            } catch (error) {
-
-                salida.innerHTML =
-                    error;
-
+                html += '</ul><span class="badge">✅ Simulación asíncrona con setTimeout</span>';
+                outputDiv.innerHTML = html;
+            } catch (err) {
+                outputDiv.innerHTML = `❌ Error en datos locales: ${err.message}`;
             }
-
         }
 
-    </script>
+        // --------------------------------------------------------------
+        // 2. API JSONPlaceholder (mostrar 5 usuarios)
+        async function fetchUsuariosAPI() {
+            const outputDiv = document.getElementById('outputAPI');
+            outputDiv.innerHTML = '<div class="loading">🌐 Conectando a JSONPlaceholder...</div>';
+            try {
+                const respuesta = await fetch('https://jsonplaceholder.typicode.com/users');
+                if (!respuesta.ok) throw new Error(`HTTP error ${respuesta.status}`);
+                const usuarios = await respuesta.json();
+                const primeros5 = usuarios.slice(0, 5);
+                let html = '<strong>👥 5 usuarios desde JSONPlaceholder</strong><ul>';
+                primeros5.forEach(user => {
+                    html += `<li>🧑‍💻 <strong>${user.name}</strong> — ${user.email} (${user.company?.name || 'sin compañía'})</li>`;
+                });
+                html += '</ul><span class="badge">✅ Respuesta asíncrona real con fetch + async/await</span>';
+                outputDiv.innerHTML = html;
+            } catch (error) {
+                outputDiv.innerHTML = `⚠️ Error al consumir API: ${error.message}. Revisa tu conexión.`;
+            }
+        }
 
+        // --------------------------------------------------------------
+        // 3. POKEAPI funciones individuales y para los 3
+        async function obtenerPokemonPorNombre(nombrePokemon) {
+            const url = `https://pokeapi.co/api/v2/pokemon/${nombrePokemon.toLowerCase()}`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`No se encontró ${nombrePokemon}`);
+            const data = await resp.json();
+            return {
+                nombre: data.name,
+                id: data.id,
+                sprite: data.sprites.front_default,
+                tipos: data.types.map(t => t.type.name).join(', ')
+            };
+        }
+
+        async function mostrarUnPokemon(nombre) {
+            const outputDiv = document.getElementById('outputPokemon');
+            outputDiv.innerHTML = `<div class="loading">⚡ Buscando a ${nombre} en PokéAPI...</div>`;
+            try {
+                const pokemon = await obtenerPokemonPorNombre(nombre);
+                outputDiv.innerHTML = `
+                <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+                    <div><img src="${pokemon.sprite}" alt="${pokemon.nombre}" style="image-rendering:pixelated; width:70px;"></div>
+                    <div>
+                        <strong style="font-size:1.2rem;">✨ ${pokemon.nombre.toUpperCase()} (ID: ${pokemon.id})</strong><br>
+                        🎯 Tipo(s): ${pokemon.tipos}<br>
+                        🌟 Datos obtenidos desde PokéAPI con fetch asíncrono.
+                    </div>
+                </div>
+                <span class="badge" style="margin-top:8px;">✅ async/await + API real</span>
+            `;
+            } catch (err) {
+                outputDiv.innerHTML = `❌ Error al obtener ${nombre}: ${err.message}`;
+            }
+        }
+
+        async function mostrarTresPokemones() {
+            const outputDiv = document.getElementById('outputPokemon');
+            outputDiv.innerHTML = '<div class="loading">🔄 Cargando Bulbasaur, Charmander y Squirtle al mismo tiempo...</div>';
+            try {
+                // Promise.all para mejorar velocidad y mostrar los tres en paralelo
+                const [bulbasaur, charmander, squirtle] = await Promise.all([
+                    obtenerPokemonPorNombre('bulbasaur'),
+                    obtenerPokemonPorNombre('charmander'),
+                    obtenerPokemonPorNombre('squirtle')
+                ]);
+                let html = `<strong>🎉 3 Pokémon desde PokéAPI (concurrente)</strong><div style="display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:0.8rem;">`;
+                const trio = [bulbasaur, charmander, squirtle];
+                trio.forEach(p => {
+                    html += `
+                    <div style="background:#f1f5f9; border-radius:1rem; padding:0.6rem; text-align:center; min-width:100px;">
+                        <img src="${p.sprite}" style="width:60px;"><br>
+                        <strong>${p.nombre}</strong><br>
+                        <small>${p.tipos}</small>
+                    </div>
+                `;
+                });
+                html += `</div><span class="badge">✨ Promise.all → peticiones paralelas eficientes</span>`;
+                outputDiv.innerHTML = html;
+            } catch (err) {
+                outputDiv.innerHTML = `❌ Error al cargar múltiples Pokémon: ${err.message}`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // 4. EJEMPLO PARALELO con Promise.all (dos APIs distintas)
+        async function ejecutarLlamadasParalelas() {
+            const outputDiv = document.getElementById('outputParalelo');
+            outputDiv.innerHTML = '<div class="loading">🕹️ Ejecutando peticiones simultáneas (JSONPlaceholder + Pikachu)...</div>';
+            try {
+                const [usuarioData, pokemonData] = await Promise.all([
+                    fetch('https://jsonplaceholder.typicode.com/users/1').then(res => res.json()),
+                    fetch('https://pokeapi.co/api/v2/pokemon/pikachu').then(res => res.json())
+                ]);
+                const pokemonSprite = pokemonData.sprites?.front_default || '';
+                outputDiv.innerHTML = `
+                <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between;">
+                    <div style="background:#e0f2fe; border-radius:1rem; padding:0.8rem; flex:1;">
+                        <strong>👤 Usuario (API #1):</strong><br>
+                        Nombre: ${usuarioData.name}<br>
+                        Email: ${usuarioData.email}<br>
+                        <small>JSONPlaceholder</small>
+                    </div>
+                    <div style="background:#fef9c3; border-radius:1rem; padding:0.8rem; flex:1;">
+                        <strong>⚡ Pokémon (API #2):</strong><br>
+                        ${pokemonData.name.toUpperCase()} <br>
+                        <img src="${pokemonSprite}" style="width:50px;"><br>
+                        <small>PokéAPI</small>
+                    </div>
+                </div>
+                <div class="badge" style="margin-top:12px;">🚀 Las dos llamadas se ejecutaron en paralelo, sin esperar una tras otra.</div>
+            `;
+            } catch (error) {
+                outputDiv.innerHTML = `⚠️ Error en peticiones paralelas: ${error.message}`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // ASIGNAR EVENTOS A BOTONES (conexión DOM)
+        document.getElementById('btnLocal').addEventListener('click', mostrarPokemonLocal);
+        document.getElementById('btnAPIUsers').addEventListener('click', fetchUsuariosAPI);
+        document.getElementById('btnPokemon1').addEventListener('click', () => mostrarUnPokemon('bulbasaur'));
+        document.getElementById('btnPokemon2').addEventListener('click', () => mostrarUnPokemon('charmander'));
+        document.getElementById('btnPokemon3').addEventListener('click', () => mostrarUnPokemon('squirtle'));
+        document.getElementById('btnTodosPokemon').addEventListener('click', mostrarTresPokemones);
+        document.getElementById('btnParalelo').addEventListener('click', ejecutarLlamadasParalelas);
+
+        // mensajes iniciales claros
+        console.log('Playground asíncrono listo | JSON + APIs');
+    </script>
 </body>
 
 </html>
