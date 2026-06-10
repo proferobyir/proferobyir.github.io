@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Playground de C: Estructura del Lenguaje | Aprende con Ejemplos</title>
+    <title>Playground: struct en C | Tipo de dato compuesto + Ejercicios</title>
     <style>
         * {
             margin: 0;
@@ -14,145 +14,156 @@
 
         body {
             font-family: system-ui, 'Segoe UI', 'Fira Code', monospace;
-            background: linear-gradient(145deg, #f1f5f9 0%, #e6edf4 100%);
-            color: #0a192f;
-            padding: 1.5rem;
+            background: linear-gradient(135deg, #fef9e4 0%, #e8f0f5 100%);
+            color: #1e2a3a;
+            padding: 1.8rem;
             line-height: 1.5;
         }
 
-        /* Contenedor principal con GRID responsivo */
-        .main-grid {
+        /* Grid principal */
+        .struct-grid {
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 1.8rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
             align-items: start;
         }
 
-        /* Tarjetas con estilos flex internos y transiciones */
+        /* Tarjetas con transiciones */
         .card {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(2px);
             border-radius: 2rem;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
-            padding: 1.6rem;
-            transition: all 0.3s ease-in-out;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.2);
+            padding: 1.8rem;
+            transition: all 0.35s ease;
+            border: 1px solid rgba(255, 215, 150, 0.6);
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.25);
-            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-6px);
+            box-shadow: 0 28px 38px -16px rgba(0, 0, 0, 0.28);
+            background: rgba(255, 255, 255, 0.98);
         }
 
-        /* Encabezados */
         h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #1e2b3c, #0f2b3d);
+            font-size: 2.2rem;
+            background: linear-gradient(145deg, #bf6f00, #8b5a2b);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .badge-struct {
             display: inline-block;
+            background: #e67e22;
+            color: white;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
         }
 
         .subtitulo {
-            color: #2c5a6e;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #2c7da0;
+            color: #b45f1b;
+            margin-bottom: 2rem;
+            border-left: 5px solid #e67e22;
             padding-left: 1rem;
             font-weight: 500;
         }
 
-        /* Flexbox para ejemplos internos */
-        .ejemplo-flex {
+        /* Flexbox para comparativas */
+        .flex-compare {
             display: flex;
             flex-wrap: wrap;
             gap: 1.2rem;
-            margin-top: 1rem;
+            margin: 1.2rem 0;
             justify-content: space-between;
         }
 
-        .bloque-codigo {
-            background: #0d2b3e;
-            color: #bbf0e6;
+        .code-block {
+            background: #0d2b1f;
+            color: #d4f1c6;
             font-family: 'Fira Code', monospace;
             padding: 1rem;
             border-radius: 1.2rem;
             overflow-x: auto;
             font-size: 0.85rem;
-            transition: background 0.2s;
+            transition: all 0.2s;
             flex: 1;
             min-width: 200px;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .bloque-codigo:hover {
-            background: #0f3550;
+        .code-block:hover {
+            background: #1a3a2a;
+            transform: scale(0.98);
         }
 
-        .explanation {
-            background: #e9f0f5;
+        .explanation-card {
+            background: #fdf3e0;
             padding: 0.9rem;
             border-radius: 1rem;
             margin-top: 0.8rem;
             font-size: 0.9rem;
+            border-left: 4px solid #e67e22;
         }
 
         hr {
             margin: 1.2rem 0;
             border: 0;
             height: 2px;
-            background: linear-gradient(90deg, #2c7da0, transparent);
+            background: linear-gradient(90deg, #e67e22, #ffcd94, transparent);
         }
 
-        /* Sección acordeón (ejercicios) */
-        .accordion {
-            margin-top: 2rem;
+        /* Acordeón para ejercicios */
+        .accordion-section {
+            margin-top: 2.5rem;
             grid-column: span 2;
-            /* Ocupa todo el ancho en grid padre */
         }
 
         .accordion-item {
-            background: #ffffffd9;
+            background: #ffffffdb;
             margin-bottom: 1rem;
             border-radius: 1.2rem;
             overflow: hidden;
-            transition: all 0.2s;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
 
         .accordion-header {
-            background: #f8fafc;
+            background: #fff5e8;
             padding: 1rem 1.5rem;
             cursor: pointer;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.25s ease;
-            border-left: 5px solid #2c7da0;
+            transition: background 0.2s ease;
+            border-left: 6px solid #e67e22;
         }
 
         .accordion-header:hover {
-            background: #eef2f8;
+            background: #ffefdb;
         }
 
         .accordion-header span:first-child {
             display: flex;
             gap: 0.8rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
-        .icono {
+        .icono-accordion {
             font-size: 1.3rem;
             transition: transform 0.3s ease;
             display: inline-block;
         }
 
-        .accordion-item.active .icono {
+        .accordion-item.active .icono-accordion {
             transform: rotate(180deg);
         }
 
@@ -165,48 +176,38 @@
         }
 
         .accordion-item.active .accordion-content {
-            max-height: 500px;
-            /* suficiente para soluciones */
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            max-height: 700px;
+            padding: 1rem 1.5rem 1.8rem 1.5rem;
         }
 
-        .solucion {
-            background: #1e2f3a;
-            color: #d4f1f9;
-            padding: 0.8rem;
+        .solucion-ej {
+            background: #1e2f2c;
+            color: #e2ffe6;
+            padding: 1rem;
             border-radius: 1rem;
-            font-family: monospace;
-            font-size: 0.85rem;
-            margin-top: 0.7rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            margin-top: 0.8rem;
             white-space: pre-wrap;
-            word-break: break-word;
+            overflow-x: auto;
         }
 
-        .btn-solucion {
-            background: #2c7da0;
+        .btn-show {
+            background: #e67e22;
             border: none;
             color: white;
-            padding: 0.3rem 0.8rem;
+            padding: 0.2rem 0.9rem;
             border-radius: 2rem;
-            cursor: pointer;
             font-size: 0.7rem;
             font-weight: bold;
-            transition: 0.2s;
         }
 
-        .btn-solucion:hover {
-            background: #1f5e7a;
-            transform: scale(0.97);
-        }
-
-        /* responsive: para móviles cambiamos grid a 1 columna */
-        @media (max-width: 800px) {
-            .main-grid {
+        @media (max-width: 780px) {
+            .struct-grid {
                 grid-template-columns: 1fr;
-                gap: 1.2rem;
             }
 
-            .accordion {
+            .accordion-section {
                 grid-column: span 1;
             }
 
@@ -218,273 +219,225 @@
         footer {
             text-align: center;
             margin-top: 3rem;
-            font-size: 0.8rem;
-            color: #2c5a6e;
+            font-size: 0.75rem;
+            color: #a7621a;
         }
 
-        code {
-            background: #1a2f3c;
+        code.inline {
+            background: #e9cfaa;
             padding: 0.2rem 0.4rem;
             border-radius: 8px;
-            color: #e1f0f5;
-            font-size: 0.85rem;
+            font-weight: 500;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>🧩 Estructura del Lenguaje C</h1>
-    <div class="subtitulo">📘 Playground didáctico: ejemplos + transiciones + ejercicios en acordeón</div>
+    <h1>📦 struct en C <span style="font-size:1rem;">🤍 Tipo de dato compuesto</span></h1>
+    <div class="badge-struct">✦ Agrupación de variables bajo un mismo nombre ✦</div>
+    <div class="subtitulo">🧩 Aprende cómo crear estructuras, acceder a miembros y organizar datos complejos</div>
 
-    <div class="main-grid">
-        <!-- Columna izquierda: fundamentos con flexbox -->
+    <div class="struct-grid">
+        <!-- Columna 1: ¿Qué es struct? -->
         <div class="card">
-            <h2>🔍 Anatomía de un programa en C</h2>
-            <p>Un programa en C sigue esta estructura básica:</p>
-            <div class="bloque-codigo">
-                #include <stdio.h><br>
-                    // función principal<br>
-                    int main() { <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;printf("Hola mundo");<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
-                    }
+            <h2>🧠 ¿Qué es <code
+                    style="background:#e67e22; color:white; padding:0.1rem 0.5rem; border-radius:20px;">struct</code>?
+            </h2>
+            <p>Una <strong>estructura</strong> permite agrupar variables de diferentes tipos (int, float, char, etc.) en
+                un solo bloque lógico. Ideal para representar entidades del mundo real como <strong>alumnos, libros,
+                    puntos, fechas</strong>.</p>
+            <div class="code-block">
+                // Definición de un struct Persona<br>
+                struct Persona {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;char nombre[50];<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;int edad;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;float altura;<br>
+                };
             </div>
-            <div class="explanation">
-                ✅ <strong>Directivas #include</strong>: Librerías.<br>
-                ✅ <strong>main()</strong>: Punto de entrada.<br>
-                ✅ <strong>return 0</strong>: Indica final exitoso.
+            <div class="explanation-card">
+                🔹 <strong>Sintaxis:</strong> <code>struct Nombre { miembros };</code> <br>
+                🔹 Después puedes declarar variables: <code>struct Persona p1;</code> <br>
+                🔹 Acceso a miembros: <code>p1.edad = 21;</code> usando el operador punto <strong>.</strong>
             </div>
-
             <hr>
-            <h3>📦 Ejemplos de sintaxis clave</h3>
-            <div class="ejemplo-flex">
-                <div style="flex:1">
-                    <div class="bloque-codigo">
-                        int edad = 21;<br>
-                        float altura = 1.75;<br>
-                        char inicial = 'A';
-                    </div>
-                    <div class="explanation">📌 Variables: tipos primitivos <strong>int, float, char</strong>.</div>
+            <div class="flex-compare">
+                <div class="code-block">
+                    // Declaración + inicialización<br>
+                    struct Fecha {<br>
+                    &nbsp;&nbsp;int dia, mes, anio;<br>
+                    };<br>
+                    struct Fecha hoy = {25, 12, 2025};
                 </div>
-                <div style="flex:1">
-                    <div class="bloque-codigo">
-                        if (edad >= 18) {<br>
-                        &nbsp;&nbsp;printf("Mayor");<br>
-                        } else {<br>
-                        &nbsp;&nbsp;printf("Menor");<br>
-                        }
-                    </div>
-                    <div class="explanation">⚡ Condicional if-else y estructura de bloques { }.</div>
+                <div class="code-block">
+                    // Acceso y asignación<br>
+                    printf("Día: %d", hoy.dia);<br>
+                    hoy.mes = 1;<br>
+                    // También arrays de structs
                 </div>
             </div>
-
-            <div class="ejemplo-flex">
-                <div style="flex:1">
-                    <div class="bloque-codigo">
-                        for(int i=0;i<5;i++){ <br>
-                            &nbsp;&nbsp;printf("%d ",i);<br>
-                            }
-                    </div>
-                    <div class="explanation">🔄 Bucle for típico, inicialización, condición e incremento.</div>
-                </div>
-                <div style="flex:1">
-                    <div class="bloque-codigo">
-                        int suma(int a, int b) {<br>
-                        &nbsp;&nbsp;return a + b;<br>
-                        }
-                    </div>
-                    <div class="explanation">📚 Funciones: tipo de retorno, parámetros, return.</div>
-                </div>
+            <div class="explanation-card">
+                ✅ <strong>Ventajas:</strong> Organiza información relacionada, facilita paso de parámetros a funciones,
+                modela objetos simples en C.
             </div>
         </div>
 
-        <!-- Columna derecha: más conceptos y ejemplo compuesto -->
+        <!-- Columna 2: Ejemplo completo con typedef y punteros -->
         <div class="card">
-            <h2>🧠 Buena práctica: comentarios y estructura</h2>
-            <div class="bloque-codigo">
-                /* Programa: calcula el área */<br>
+            <h2>⚙️ Ejemplo completo + <code>typedef</code></h2>
+            <div class="code-block">
                 #include <stdio.h><br>
-                    <br>
-                    int main() {<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;int base = 10, altura = 5;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;int area = base * altura;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;printf("Área: %d", area);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
-                    }
+                    #include <string.h><br>
+                        <br>
+                        typedef struct {<br>
+                        &nbsp;&nbsp;&nbsp;char nombre[30];<br>
+                        &nbsp;&nbsp;&nbsp;int codigo;<br>
+                        &nbsp;&nbsp;&nbsp;float nota;<br>
+                        } Estudiante;<br>
+                        <br>
+                        int main() {<br>
+                        &nbsp;&nbsp;&nbsp;Estudiante e1 = {"Ana", 101, 9.5};<br>
+                        &nbsp;&nbsp;&nbsp;printf("%s - nota: %.1f", e1.nombre, e1.nota);<br>
+                        &nbsp;&nbsp;&nbsp;return 0;<br>
+                        }
             </div>
-            <div class="explanation">
-                💡 Los comentarios <code>/* */</code> y <code>//</code> documentan el código.<br>
-                ✨ El retorno de <code>main</code> suele ser 0 si todo funciona.
+            <div class="explanation-card">
+                📌 <strong>typedef</strong> permite evitar escribir <em>struct</em> cada vez. <br>
+                📌 Los miembros pueden ser cualquier tipo, incluso otros structs (anidación). <br>
+                📌 Para punteros a struct se usa <code>-></code> : <code>ptr->edad = 22;</code>
             </div>
-
-            <hr>
-            <div
-                style="display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: space-between; margin-top: 0.6rem;">
-                <div style="background:#cbdde9; border-radius:1rem; padding:0.7rem; flex:1;">
-                    <strong>📌 Punteros (idea básica)</strong><br>
-                    <code>int x = 5; int *ptr = &x;</code><br>
-                    <span style="font-size:0.8rem;">ptr guarda dirección de memoria.</span>
-                </div>
-                <div style="background:#cbdde9; border-radius:1rem; padding:0.7rem; flex:1;">
-                    <strong>📌 Arreglos</strong><br>
-                    <code>int nums[3] = {1,2,3};</code><br>
-                    <span style="font-size:0.8rem;">Indexados desde 0.</span>
-                </div>
+            <div style="background:#f7e5cf; border-radius:1rem; padding:0.7rem; margin-top:1rem;">
+                <strong>🎯 Ejemplo con puntero a struct:</strong><br>
+                <code>Estudiante *ptr = &e1;<br>printf("%s", ptr->nombre);</code>
             </div>
-            <div class="explanation" style="margin-top: 1rem;">
-                🧪 C es estructurado: las funciones, bucles y condiciones organizan el flujo.
+            <div class="explanation-card">
+                💡 Las estructuras se pasan por valor a funciones, pero si son grandes es mejor usar punteros por
+                eficiencia.
             </div>
         </div>
 
-        <!-- SECCIÓN ACORDEÓN: 10 EJERCICIOS PROPUESTOS (grid span 2) -->
-        <div class="accordion">
-            <h2>📝 10 ejercicios propuestos (¡practica C!)</h2>
-            <p>🔽 Haz clic en cada enunciado para desplegar su posible solución y explicación breve.</p>
-            <div id="accordionContainer">
-                <!-- Los ejercicios se generarán dinámicamente con JS para mantener orden, pero también se puede hacer manual.
-                 Usaremos JS para construir los items y mantener consistencia -->
-            </div>
+        <!-- Sección de 10 ejercicios propuestos en ACORDEÓN -->
+        <div class="accordion-section">
+            <h2>✏️ 10 ejercicios propuestos: ¡domina <code
+                    style="background:#e67e22; color:white; padding:0 0.4rem;">struct</code>!</h2>
+            <p>🔽 Haz clic en cada ejercicio para ver enunciado completo y su <strong>posible solución en C</strong>
+                (con explicación didáctica).</p>
+            <div id="ejerciciosAcordeon"></div>
         </div>
     </div>
     <footer>
-        🧠 Playground interactivo | Flexbox + Grid + Transiciones | Aprende la estructura básica de C con ejercicios
-        prácticos
+        🧪 Playground struct C | Flexbox + Grid + Transiciones | Aprende estructuras con ejercicios prácticos y acordeón
+        interactivo
     </footer>
 
     <script>
-        // Lista de 10 ejercicios con enunciado y solución didáctica
-        const ejercicios = [
+        const ejerciciosStruct = [
             {
-                titulo: "1. Hola mundo personalizado",
-                enunciado: "Escribe un programa en C que muestre 'Bienvenido al lenguaje C' y luego tu nombre.",
-                solucion: `#include <stdio.h>\n\nint main() {\n    printf("Bienvenido al lenguaje C\\n");\n    printf("Mi nombre es: Estudiante\\n");\n    return 0;\n}`
+                titulo: "1. Datos de un libro",
+                enunciado: "Define un struct Libro con campos: título (cadena), autor (cadena), año (int) y precio (float). Crea una variable, inicialízala y muestra sus datos.",
+                solucion: `#include <stdio.h>\n#include <string.h>\n\nstruct Libro {\n    char titulo[50];\n    char autor[40];\n    int anio;\n    float precio;\n};\n\nint main() {\n    struct Libro miLibro = {"Cien años de soledad", "García Márquez", 1967, 19.99};\n    printf("Título: %s\\nAutor: %s\\nAño: %d\\nPrecio: $%.2f\\n", miLibro.titulo, miLibro.autor, miLibro.anio, miLibro.precio);\n    return 0;\n}`
             },
             {
-                titulo: "2. Suma de dos números",
-                enunciado: "Declara dos variables enteras (a=15, b=30), calcula su suma y muestra el resultado.",
-                solucion: `#include <stdio.h>\n\nint main() {\n    int a = 15, b = 30;\n    int suma = a + b;\n    printf("La suma es: %d\\n", suma);\n    return 0;\n}`
+                titulo: "2. Struct Punto en 2D",
+                enunciado: "Crea una estructura Punto con coordenadas x e y (enteros). Escribe una función que reciba un Punto y calcule la distancia al origen (0,0).",
+                solucion: `#include <stdio.h>\n#include <math.h>\n\nstruct Punto { int x; int y; };\n\ndouble distanciaOrigen(struct Punto p) {\n    return sqrt(p.x*p.x + p.y*p.y);\n}\n\nint main() {\n    struct Punto p1 = {3, 4};\n    printf("Distancia al origen: %.2f\\n", distanciaOrigen(p1));\n    return 0;\n}`
             },
             {
-                titulo: "3. Par o impar",
-                enunciado: "Pide al usuario un número entero y determina si es par o impar usando if-else.",
-                solucion: `#include <stdio.h>\n\nint main() {\n    int num;\n    printf("Ingrese un número: ");\n    scanf("%d", &num);\n    if(num % 2 == 0)\n        printf("Es par\\n");\n    else\n        printf("Es impar\\n");\n    return 0;\n}`
+                titulo: "3. struct con typedef y entrada de usuario",
+                enunciado: "Define un struct Alumno (nombre, edad, promedio). Usa typedef. Pide al usuario los datos con scanf y muéstralos.",
+                solucion: `#include <stdio.h>\n\ntypedef struct {\n    char nombre[30];\n    int edad;\n    float promedio;\n} Alumno;\n\nint main() {\n    Alumno a;\n    printf("Nombre: "); scanf("%s", a.nombre);\n    printf("Edad: "); scanf("%d", &a.edad);\n    printf("Promedio: "); scanf("%f", &a.promedio);\n    printf("\\nAlumno: %s, Edad: %d, Promedio: %.2f\\n", a.nombre, a.edad, a.promedio);\n    return 0;\n}`
             },
             {
-                titulo: "4. Tabla de multiplicar",
-                enunciado: "Usando un bucle for, muestra la tabla de multiplicar del número 5 (del 1 al 10).",
-                solucion: `#include <stdio.h>\n\nint main() {\n    int n = 5;\n    for(int i = 1; i <= 10; i++) {\n        printf("%d x %d = %d\\n", n, i, n*i);\n    }\n    return 0;\n}`
+                titulo: "4. Array de estructuras (5 estudiantes)",
+                enunciado: "Crea un arreglo de 5 estudiantes (nombre, nota) y calcula el promedio de todas las notas.",
+                solucion: `#include <stdio.h>\n\ntypedef struct {\n    char nombre[30];\n    float nota;\n} Estudiante;\n\nint main() {\n    Estudiante grupo[5] = {{"Ana",8.5},{"Luis",7.0},{"Mia",9.2},{"Leo",6.8},{"Ema",10.0}};\n    float suma = 0;\n    for(int i=0;i<5;i++) suma += grupo[i].nota;\n    printf("Promedio grupal: %.2f\\n", suma/5);\n    return 0;\n}`
             },
             {
-                titulo: "5. Función que calcula el cuadrado",
-                enunciado: "Crea una función llamada cuadrado que reciba un entero y retorne su cuadrado. Invocarla en main.",
-                solucion: `#include <stdio.h>\n\nint cuadrado(int x) {\n    return x * x;\n}\n\nint main() {\n    int num = 7;\n    printf("El cuadrado de %d es %d\\n", num, cuadrado(num));\n    return 0;\n}`
+                titulo: "5. Puntero a struct y operador ->",
+                enunciado: "Declara un struct Producto (id, precio). Crea una variable y un puntero que la apunte. Modifica el precio usando el operador -> y muéstralo.",
+                solucion: `#include <stdio.h>\n\ntypedef struct { int id; float precio; } Producto;\n\nint main() {\n    Producto prod = {101, 25.50};\n    Producto *ptr = &prod;\n    ptr->precio = 29.99;\n    printf("ID: %d, Nuevo precio: %.2f\\n", ptr->id, ptr->precio);\n    return 0;\n}`
             },
             {
-                titulo: "6. Promedio de tres números",
-                enunciado: "Lee tres números flotantes, calcula su promedio y muestra el resultado con 2 decimales.",
-                solucion: `#include <stdio.h>\n\nint main() {\n    float a, b, c;\n    printf("Ingresa tres números: ");\n    scanf("%f %f %f", &a, &b, &c);\n    float promedio = (a + b + c) / 3;\n    printf("Promedio = %.2f\\n", promedio);\n    return 0;\n}`
+                titulo: "6. Struct dentro de otro struct (anidación)",
+                enunciado: "Define un struct Dirección (calle, ciudad) y un struct Persona (nombre, edad, dirección). Muestra los datos completos.",
+                solucion: `#include <stdio.h>\n#include <string.h>\n\nstruct Direccion { char calle[40]; char ciudad[30]; };\nstruct Persona { char nombre[30]; int edad; struct Direccion domicilio; };\n\nint main() {\n    struct Persona p = {"Carlos", 28, {"Av. Siempreviva", "Springfield"}};\n    printf("%s, %d años vive en %s, %s\\n", p.nombre, p.edad, p.domicilio.calle, p.domicilio.ciudad);\n    return 0;\n}`
             },
             {
-                titulo: "7. Contar vocales en una cadena (concepto)",
-                enunciado: "Dado un arreglo de caracteres 'Hola mundo', cuenta cuántas vocales tiene (solo minúsculas).",
-                solucion: `#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char texto[] = "Hola mundo";\n    int vocales = 0;\n    for(int i = 0; i < strlen(texto); i++) {\n        char c = texto[i];\n        if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')\n            vocales++;\n    }\n    printf("Vocales: %d\\n", vocales);\n    return 0;\n}`
+                titulo: "7. Función que devuelve un struct",
+                enunciado: "Escribe una función que reciba dos enteros y devuelva un struct Fraccion (numerador, denominador) simplificada.",
+                solucion: `#include <stdio.h>\n\ntypedef struct { int num; int den; } Fraccion;\n\nint mcd(int a, int b) { while(b) { int t=b; b=a%b; a=t; } return a; }\n\nFraccion simplificar(int n, int d) {\n    Fraccion f;\n    int div = mcd(n,d);\n    f.num = n/div; f.den = d/div;\n    return f;\n}\n\nint main() {\n    Fraccion f = simplificar(8,12);\n    printf("8/12 simplificado = %d/%d\\n", f.num, f.den);\n    return 0;\n}`
             },
             {
-                titulo: "8. Arreglo e impresión inversa",
-                enunciado: "Declara un arreglo con los números {10,20,30,40,50} y muéstralos en orden inverso.",
-                solucion: `#include <stdio.h>\n\nint main() {\n    int arr[] = {10,20,30,40,50};\n    int size = 5;\n    for(int i = size-1; i >= 0; i--) {\n        printf("%d ", arr[i]);\n    }\n    printf("\\n");\n    return 0;\n}`
+                titulo: "8. Comparar dos fechas (struct Fecha)",
+                enunciado: "Define un struct Fecha (día, mes, año). Crea dos fechas y determina cuál es más reciente usando una función.",
+                solucion: `#include <stdio.h>\n\ntypedef struct { int dia, mes, anio; } Fecha;\n\nint compararFecha(Fecha a, Fecha b) {\n    if(a.anio != b.anio) return a.anio - b.anio;\n    if(a.mes != b.mes) return a.mes - b.mes;\n    return a.dia - b.dia;\n}\n\nint main() {\n    Fecha f1 = {10,5,2023}, f2 = {15,8,2024};\n    if(compararFecha(f1,f2)<0) printf("La primera es más antigua\\n");\n    else printf("La segunda es más reciente o igual\\n");\n    return 0;\n}`
             },
             {
-                titulo: "9. Uso de while (factorial)",
-                enunciado: "Calcula el factorial de un número ingresado por el usuario usando un bucle while.",
-                solucion: `#include <stdio.h>\n\nint main() {\n    int n, fact = 1;\n    printf("Ingrese un número: ");\n    scanf("%d", &n);\n    int i = 1;\n    while(i <= n) {\n        fact *= i;\n        i++;\n    }\n    printf("Factorial de %d es %d\\n", n, fact);\n    return 0;\n}`
+                titulo: "9. Inicialización designada (C99)",
+                enunciado: "Crea un struct Rectángulo (ancho, alto) e inicialízalo usando .ancho = 10, .alto = 5. Muestra el área.",
+                solucion: `#include <stdio.h>\n\nstruct Rectangulo { double ancho; double alto; };\n\nint main() {\n    struct Rectangulo r = { .ancho = 10.0, .alto = 5.0 };\n    double area = r.ancho * r.alto;\n    printf("Área: %.2f\\n", area);\n    return 0;\n}`
             },
             {
-                titulo: "10. Mayor de tres números con operador ternario",
-                enunciado: "Dados tres números enteros (a,b,c) encuentra el mayor usando el operador condicional ? :",
-                solucion: `#include <stdio.h>\n\nint main() {\n    int a=45, b=78, c=32;\n    int mayor = (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);\n    printf("El mayor es: %d\\n", mayor);\n    return 0;\n}`
+                titulo: "10. Copiar structs (asignación directa)",
+                enunciado: "Crea dos variables del struct Coordenada (x,y), asigna valores a la primera y luego copia su contenido a la segunda mediante asignación directa. Muestra ambas.",
+                solucion: `#include <stdio.h>\n\ntypedef struct { int x; int y; } Coordenada;\n\nint main() {\n    Coordenada c1 = {7,9};\n    Coordenada c2 = c1;  // copia miembro a miembro\n    printf("c2: (%d, %d)\\n", c2.x, c2.y);\n    return 0;\n}`
             }
         ];
 
-        // Renderizar acordeón con transiciones
-        const container = document.getElementById('accordionContainer');
+        const contenedor = document.getElementById('ejerciciosAcordeon');
 
-        function buildAccordion() {
-            container.innerHTML = '';
-            ejercicios.forEach((ej, idx) => {
-                const accordionItem = document.createElement('div');
-                accordionItem.className = 'accordion-item';
+        function construirAcordeon() {
+            contenedor.innerHTML = '';
+            ejerciciosStruct.forEach((ej, index) => {
+                const item = document.createElement('div');
+                item.className = 'accordion-item';
 
-                // Header parte clickeable
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
                 header.innerHTML = `
                 <span>
-                    <span style="background:#2c7da0; color:white; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:30px;">${idx + 1}</span>
-                    <strong>${ej.titulo}</strong> — ${ej.enunciado.substring(0, 70)}${ej.enunciado.length > 70 ? '…' : ''}
+                    <span style="background:#e67e22; color:white; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:40px; font-weight:bold;">${index + 1}</span>
+                    <strong>${ej.titulo}</strong> — ${ej.enunciado.substring(0, 85)}${ej.enunciado.length > 85 ? '…' : ''}
                 </span>
-                <span class="icono">▼</span>
+                <span class="icono-accordion">▼</span>
             `;
 
-                // Content con solución desplegable
                 const content = document.createElement('div');
                 content.className = 'accordion-content';
                 content.innerHTML = `
-                <div style="margin-bottom:0.5rem"><strong>📌 Enunciado completo:</strong> ${ej.enunciado}</div>
-                <div><strong>💡 Posible solución (C):</strong></div>
-                <div class="solucion">${escapeHtml(ej.solucion)}</div>
-                <div class="explanation" style="margin-top: 10px; background:#eef2fa;">
-                    🧪 <strong>Explicación rápida:</strong> Este código utiliza estructuras básicas de C: inclusión de stdio.h, función main, variables, entrada/salida y control de flujo.
+                <div style="margin-bottom: 12px; background:#f9efdf; padding:0.8rem; border-radius:1rem;">
+                    📖 <strong>Enunciado completo:</strong> ${ej.enunciado}
+                </div>
+                <div><strong>✅ Solución en C (código explicado):</strong></div>
+                <div class="solucion-ej">${escapeHtml(ej.solucion)}</div>
+                <div style="margin-top: 12px; font-size:0.85rem; background:#eef3f7; padding:0.6rem; border-radius:0.8rem;">
+                    💬 <strong>Nota didáctica:</strong> Este ejercicio refuerza cómo definir, declarar y manipular estructuras en C, accediendo a sus miembros y utilizando buenas prácticas.
                 </div>
             `;
 
-                accordionItem.appendChild(header);
-                accordionItem.appendChild(content);
+                item.appendChild(header);
+                item.appendChild(content);
 
-                // Evento de toggle con transición activando clase active
-                header.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isActive = accordionItem.classList.contains('active');
-                    // Cerrar otros opcional para mejor UX? Se permite múltiples abiertos (acordeón tipo playground)
-                    // pero igual puede ser útil. Prefiero que se puedan abrir varios para comparar.
-                    if (!isActive) {
-                        accordionItem.classList.add('active');
-                    } else {
-                        accordionItem.classList.remove('active');
-                    }
+                header.addEventListener('click', () => {
+                    const estaActivo = item.classList.contains('active');
+                    if (!estaActivo) item.classList.add('active');
+                    else item.classList.remove('active');
                 });
 
-                container.appendChild(accordionItem);
+                contenedor.appendChild(item);
             });
         }
 
-        // simple escape html
         function escapeHtml(str) {
             return str.replace(/[&<>]/g, function (m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 return m;
-            }).replace(/ /g, ' '); // preservar espacios pero no necesario todo
+            }).replace(/ /g, ' ');
         }
 
-        buildAccordion();
-
-        // añadir pequeños estilos extra para que los códigos tengan saltos de línea
-        const styleTag = document.createElement('style');
-        styleTag.textContent = `
-        .solucion {
-            white-space: pre-wrap;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.8rem;
-            overflow-x: auto;
-        }
-        .accordion-content {
-            transition: max-height 0.45s ease-out;
-        }
-    `;
-        document.head.appendChild(styleTag);
+        construirAcordeon();
     </script>
 </body>
 
