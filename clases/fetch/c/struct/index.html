@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Playground de C: Estructura del Lenguaje | Aprende con Ejemplos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', 'Fira Code', monospace;
+            background: linear-gradient(145deg, #f1f5f9 0%, #e6edf4 100%);
+            color: #0a192f;
+            padding: 1.5rem;
+            line-height: 1.5;
+        }
+
+        /* Contenedor principal con GRID responsivo */
+        .main-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.8rem;
+            align-items: start;
+        }
+
+        /* Tarjetas con estilos flex internos y transiciones */
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            padding: 1.6rem;
+            transition: all 0.3s ease-in-out;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Encabezados */
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #1e2b3c, #0f2b3d);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .subtitulo {
+            color: #2c5a6e;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #2c7da0;
+            padding-left: 1rem;
+            font-weight: 500;
+        }
+
+        /* Flexbox para ejemplos internos */
+        .ejemplo-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin-top: 1rem;
+            justify-content: space-between;
+        }
+
+        .bloque-codigo {
+            background: #0d2b3e;
+            color: #bbf0e6;
+            font-family: 'Fira Code', monospace;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .bloque-codigo:hover {
+            background: #0f3550;
+        }
+
+        .explanation {
+            background: #e9f0f5;
+            padding: 0.9rem;
+            border-radius: 1rem;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        hr {
+            margin: 1.2rem 0;
+            border: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #2c7da0, transparent);
+        }
+
+        /* Sección acordeón (ejercicios) */
+        .accordion {
+            margin-top: 2rem;
+            grid-column: span 2;
+            /* Ocupa todo el ancho en grid padre */
+        }
+
+        .accordion-item {
+            background: #ffffffd9;
+            margin-bottom: 1rem;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .accordion-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.25s ease;
+            border-left: 5px solid #2c7da0;
+        }
+
+        .accordion-header:hover {
+            background: #eef2f8;
+        }
+
+        .accordion-header span:first-child {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .icono {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .accordion-item.active .icono {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+            background: #ffffff;
+            padding: 0 1.5rem;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 500px;
+            /* suficiente para soluciones */
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+        }
+
+        .solucion {
+            background: #1e2f3a;
+            color: #d4f1f9;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-top: 0.7rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .btn-solucion {
+            background: #2c7da0;
+            border: none;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-solucion:hover {
+            background: #1f5e7a;
+            transform: scale(0.97);
+        }
+
+        /* responsive: para móviles cambiamos grid a 1 columna */
+        @media (max-width: 800px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+
+            .accordion {
+                grid-column: span 1;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: #2c5a6e;
+        }
+
+        code {
+            background: #1a2f3c;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            color: #e1f0f5;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🧩 Estructura del Lenguaje C</h1>
+    <div class="subtitulo">📘 Playground didáctico: ejemplos + transiciones + ejercicios en acordeón</div>
+
+    <div class="main-grid">
+        <!-- Columna izquierda: fundamentos con flexbox -->
+        <div class="card">
+            <h2>🔍 Anatomía de un programa en C</h2>
+            <p>Un programa en C sigue esta estructura básica:</p>
+            <div class="bloque-codigo">
+                #include <stdio.h><br>
+                    // función principal<br>
+                    int main() { <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;printf("Hola mundo");<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
+                    }
+            </div>
+            <div class="explanation">
+                ✅ <strong>Directivas #include</strong>: Librerías.<br>
+                ✅ <strong>main()</strong>: Punto de entrada.<br>
+                ✅ <strong>return 0</strong>: Indica final exitoso.
+            </div>
+
+            <hr>
+            <h3>📦 Ejemplos de sintaxis clave</h3>
+            <div class="ejemplo-flex">
+                <div style="flex:1">
+                    <div class="bloque-codigo">
+                        int edad = 21;<br>
+                        float altura = 1.75;<br>
+                        char inicial = 'A';
+                    </div>
+                    <div class="explanation">📌 Variables: tipos primitivos <strong>int, float, char</strong>.</div>
+                </div>
+                <div style="flex:1">
+                    <div class="bloque-codigo">
+                        if (edad >= 18) {<br>
+                        &nbsp;&nbsp;printf("Mayor");<br>
+                        } else {<br>
+                        &nbsp;&nbsp;printf("Menor");<br>
+                        }
+                    </div>
+                    <div class="explanation">⚡ Condicional if-else y estructura de bloques { }.</div>
+                </div>
+            </div>
+
+            <div class="ejemplo-flex">
+                <div style="flex:1">
+                    <div class="bloque-codigo">
+                        for(int i=0;i<5;i++){ <br>
+                            &nbsp;&nbsp;printf("%d ",i);<br>
+                            }
+                    </div>
+                    <div class="explanation">🔄 Bucle for típico, inicialización, condición e incremento.</div>
+                </div>
+                <div style="flex:1">
+                    <div class="bloque-codigo">
+                        int suma(int a, int b) {<br>
+                        &nbsp;&nbsp;return a + b;<br>
+                        }
+                    </div>
+                    <div class="explanation">📚 Funciones: tipo de retorno, parámetros, return.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: más conceptos y ejemplo compuesto -->
+        <div class="card">
+            <h2>🧠 Buena práctica: comentarios y estructura</h2>
+            <div class="bloque-codigo">
+                /* Programa: calcula el área */<br>
+                #include <stdio.h><br>
+                    <br>
+                    int main() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;int base = 10, altura = 5;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;int area = base * altura;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;printf("Área: %d", area);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
+                    }
+            </div>
+            <div class="explanation">
+                💡 Los comentarios <code>/* */</code> y <code>//</code> documentan el código.<br>
+                ✨ El retorno de <code>main</code> suele ser 0 si todo funciona.
+            </div>
+
+            <hr>
+            <div
+                style="display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: space-between; margin-top: 0.6rem;">
+                <div style="background:#cbdde9; border-radius:1rem; padding:0.7rem; flex:1;">
+                    <strong>📌 Punteros (idea básica)</strong><br>
+                    <code>int x = 5; int *ptr = &x;</code><br>
+                    <span style="font-size:0.8rem;">ptr guarda dirección de memoria.</span>
+                </div>
+                <div style="background:#cbdde9; border-radius:1rem; padding:0.7rem; flex:1;">
+                    <strong>📌 Arreglos</strong><br>
+                    <code>int nums[3] = {1,2,3};</code><br>
+                    <span style="font-size:0.8rem;">Indexados desde 0.</span>
+                </div>
+            </div>
+            <div class="explanation" style="margin-top: 1rem;">
+                🧪 C es estructurado: las funciones, bucles y condiciones organizan el flujo.
+            </div>
+        </div>
+
+        <!-- SECCIÓN ACORDEÓN: 10 EJERCICIOS PROPUESTOS (grid span 2) -->
+        <div class="accordion">
+            <h2>📝 10 ejercicios propuestos (¡practica C!)</h2>
+            <p>🔽 Haz clic en cada enunciado para desplegar su posible solución y explicación breve.</p>
+            <div id="accordionContainer">
+                <!-- Los ejercicios se generarán dinámicamente con JS para mantener orden, pero también se puede hacer manual.
+                 Usaremos JS para construir los items y mantener consistencia -->
+            </div>
+        </div>
+    </div>
+    <footer>
+        🧠 Playground interactivo | Flexbox + Grid + Transiciones | Aprende la estructura básica de C con ejercicios
+        prácticos
+    </footer>
+
+    <script>
+        // Lista de 10 ejercicios con enunciado y solución didáctica
+        const ejercicios = [
+            {
+                titulo: "1. Hola mundo personalizado",
+                enunciado: "Escribe un programa en C que muestre 'Bienvenido al lenguaje C' y luego tu nombre.",
+                solucion: `#include <stdio.h>\n\nint main() {\n    printf("Bienvenido al lenguaje C\\n");\n    printf("Mi nombre es: Estudiante\\n");\n    return 0;\n}`
+            },
+            {
+                titulo: "2. Suma de dos números",
+                enunciado: "Declara dos variables enteras (a=15, b=30), calcula su suma y muestra el resultado.",
+                solucion: `#include <stdio.h>\n\nint main() {\n    int a = 15, b = 30;\n    int suma = a + b;\n    printf("La suma es: %d\\n", suma);\n    return 0;\n}`
+            },
+            {
+                titulo: "3. Par o impar",
+                enunciado: "Pide al usuario un número entero y determina si es par o impar usando if-else.",
+                solucion: `#include <stdio.h>\n\nint main() {\n    int num;\n    printf("Ingrese un número: ");\n    scanf("%d", &num);\n    if(num % 2 == 0)\n        printf("Es par\\n");\n    else\n        printf("Es impar\\n");\n    return 0;\n}`
+            },
+            {
+                titulo: "4. Tabla de multiplicar",
+                enunciado: "Usando un bucle for, muestra la tabla de multiplicar del número 5 (del 1 al 10).",
+                solucion: `#include <stdio.h>\n\nint main() {\n    int n = 5;\n    for(int i = 1; i <= 10; i++) {\n        printf("%d x %d = %d\\n", n, i, n*i);\n    }\n    return 0;\n}`
+            },
+            {
+                titulo: "5. Función que calcula el cuadrado",
+                enunciado: "Crea una función llamada cuadrado que reciba un entero y retorne su cuadrado. Invocarla en main.",
+                solucion: `#include <stdio.h>\n\nint cuadrado(int x) {\n    return x * x;\n}\n\nint main() {\n    int num = 7;\n    printf("El cuadrado de %d es %d\\n", num, cuadrado(num));\n    return 0;\n}`
+            },
+            {
+                titulo: "6. Promedio de tres números",
+                enunciado: "Lee tres números flotantes, calcula su promedio y muestra el resultado con 2 decimales.",
+                solucion: `#include <stdio.h>\n\nint main() {\n    float a, b, c;\n    printf("Ingresa tres números: ");\n    scanf("%f %f %f", &a, &b, &c);\n    float promedio = (a + b + c) / 3;\n    printf("Promedio = %.2f\\n", promedio);\n    return 0;\n}`
+            },
+            {
+                titulo: "7. Contar vocales en una cadena (concepto)",
+                enunciado: "Dado un arreglo de caracteres 'Hola mundo', cuenta cuántas vocales tiene (solo minúsculas).",
+                solucion: `#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char texto[] = "Hola mundo";\n    int vocales = 0;\n    for(int i = 0; i < strlen(texto); i++) {\n        char c = texto[i];\n        if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')\n            vocales++;\n    }\n    printf("Vocales: %d\\n", vocales);\n    return 0;\n}`
+            },
+            {
+                titulo: "8. Arreglo e impresión inversa",
+                enunciado: "Declara un arreglo con los números {10,20,30,40,50} y muéstralos en orden inverso.",
+                solucion: `#include <stdio.h>\n\nint main() {\n    int arr[] = {10,20,30,40,50};\n    int size = 5;\n    for(int i = size-1; i >= 0; i--) {\n        printf("%d ", arr[i]);\n    }\n    printf("\\n");\n    return 0;\n}`
+            },
+            {
+                titulo: "9. Uso de while (factorial)",
+                enunciado: "Calcula el factorial de un número ingresado por el usuario usando un bucle while.",
+                solucion: `#include <stdio.h>\n\nint main() {\n    int n, fact = 1;\n    printf("Ingrese un número: ");\n    scanf("%d", &n);\n    int i = 1;\n    while(i <= n) {\n        fact *= i;\n        i++;\n    }\n    printf("Factorial de %d es %d\\n", n, fact);\n    return 0;\n}`
+            },
+            {
+                titulo: "10. Mayor de tres números con operador ternario",
+                enunciado: "Dados tres números enteros (a,b,c) encuentra el mayor usando el operador condicional ? :",
+                solucion: `#include <stdio.h>\n\nint main() {\n    int a=45, b=78, c=32;\n    int mayor = (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);\n    printf("El mayor es: %d\\n", mayor);\n    return 0;\n}`
+            }
+        ];
+
+        // Renderizar acordeón con transiciones
+        const container = document.getElementById('accordionContainer');
+
+        function buildAccordion() {
+            container.innerHTML = '';
+            ejercicios.forEach((ej, idx) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item';
+
+                // Header parte clickeable
+                const header = document.createElement('div');
+                header.className = 'accordion-header';
+                header.innerHTML = `
+                <span>
+                    <span style="background:#2c7da0; color:white; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:30px;">${idx + 1}</span>
+                    <strong>${ej.titulo}</strong> — ${ej.enunciado.substring(0, 70)}${ej.enunciado.length > 70 ? '…' : ''}
+                </span>
+                <span class="icono">▼</span>
+            `;
+
+                // Content con solución desplegable
+                const content = document.createElement('div');
+                content.className = 'accordion-content';
+                content.innerHTML = `
+                <div style="margin-bottom:0.5rem"><strong>📌 Enunciado completo:</strong> ${ej.enunciado}</div>
+                <div><strong>💡 Posible solución (C):</strong></div>
+                <div class="solucion">${escapeHtml(ej.solucion)}</div>
+                <div class="explanation" style="margin-top: 10px; background:#eef2fa;">
+                    🧪 <strong>Explicación rápida:</strong> Este código utiliza estructuras básicas de C: inclusión de stdio.h, función main, variables, entrada/salida y control de flujo.
+                </div>
+            `;
+
+                accordionItem.appendChild(header);
+                accordionItem.appendChild(content);
+
+                // Evento de toggle con transición activando clase active
+                header.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isActive = accordionItem.classList.contains('active');
+                    // Cerrar otros opcional para mejor UX? Se permite múltiples abiertos (acordeón tipo playground)
+                    // pero igual puede ser útil. Prefiero que se puedan abrir varios para comparar.
+                    if (!isActive) {
+                        accordionItem.classList.add('active');
+                    } else {
+                        accordionItem.classList.remove('active');
+                    }
+                });
+
+                container.appendChild(accordionItem);
+            });
+        }
+
+        // simple escape html
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).replace(/ /g, ' '); // preservar espacios pero no necesario todo
+        }
+
+        buildAccordion();
+
+        // añadir pequeños estilos extra para que los códigos tengan saltos de línea
+        const styleTag = document.createElement('style');
+        styleTag.textContent = `
+        .solucion {
+            white-space: pre-wrap;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+        .accordion-content {
+            transition: max-height 0.45s ease-out;
+        }
+    `;
+        document.head.appendChild(styleTag);
+    </script>
+</body>
+
+</html>
