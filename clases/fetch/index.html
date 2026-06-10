@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Playground: Funciones Asíncronas en JavaScript | JSON + APIs</title>
+    <title>Playground Asíncrono | PokéAPI + Imágenes</title>
     <style>
         * {
             margin: 0;
@@ -14,32 +14,33 @@
 
         body {
             font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
-            background: #f0f4f8;
-            color: #0a0f1c;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+            color: #1e293b;
             scroll-behavior: smooth;
+            min-height: 100vh;
         }
 
-        /* header con gradiente */
         .hero {
-            background: linear-gradient(135deg, #0f2b5e 0%, #1e3a8a 50%, #3b82f6 100%);
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 30%, #f59e0b 100%);
             color: white;
-            padding: 3rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             text-align: center;
-            border-bottom-left-radius: 2rem;
-            border-bottom-right-radius: 2rem;
+            border-bottom-left-radius: 2.5rem;
+            border-bottom-right-radius: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
         }
 
         .hero h1 {
-            font-size: 2.6rem;
-            letter-spacing: -0.5px;
+            font-size: 2.8rem;
+            letter-spacing: -1px;
             margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .hero p {
             font-size: 1.2rem;
-            opacity: 0.9;
+            opacity: 0.95;
             max-width: 700px;
             margin: 0 auto;
         }
@@ -50,47 +51,45 @@
             padding: 0 1.5rem 3rem 1.5rem;
         }
 
-        /* Grid principal */
         .grid-docs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 2rem;
             margin-bottom: 2.5rem;
         }
 
-        /* Tarjetas con transiciones */
         .card {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            transition: all 0.25s ease-in-out;
-            border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
-            border-color: #b9d0f8;
+            transform: translateY(-8px);
+            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.25);
+            background: white;
         }
 
         .card h2 {
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            color: #1e3a8a;
-            border-left: 5px solid #3b82f6;
-            padding-left: 0.9rem;
+            gap: 0.7rem;
+            color: #dc2626;
+            border-left: 5px solid #f59e0b;
+            padding-left: 1rem;
         }
 
         .card h3 {
-            margin: 1rem 0 0.5rem 0;
-            color: #0f2b5e;
+            margin: 1rem 0 0.5rem;
+            color: #ea580c;
         }
 
-        /* bloques de código */
         .code-block {
             background: #0f172a;
             color: #e2e8f0;
@@ -98,53 +97,92 @@
             border-radius: 1rem;
             overflow-x: auto;
             font-family: 'Fira Code', 'Cascadia Code', monospace;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             margin: 1rem 0;
             box-shadow: inset 0 0 0 1px #334155;
         }
 
         button {
-            background: #2563eb;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             border: none;
             color: white;
-            font-weight: 600;
-            padding: 0.7rem 1.5rem;
+            font-weight: bold;
+            padding: 0.75rem 1.6rem;
             border-radius: 2rem;
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             margin: 0.5rem 0.5rem 0 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
         }
 
         button:hover {
-            background: #1e40af;
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        button:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 6px 14px rgba(220, 38, 38, 0.4);
         }
 
         .output {
-            background: #f8fafc;
-            border-radius: 1rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            min-height: 120px;
-            border: 1px solid #cbd5e1;
-            font-size: 0.9rem;
+            background: #fefce8;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            margin-top: 1.2rem;
+            min-height: 150px;
+            border: 2px solid #fde047;
             transition: all 0.2s;
-            overflow-y: auto;
         }
 
-        .loading {
-            background: #e2e8f0;
-            animation: pulse 1.2s infinite;
+        .pokemon-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+
+        .pokemon-card {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 1.2rem;
+            padding: 1rem;
+            text-align: center;
+            min-width: 130px;
+            transition: all 0.25s;
+            border: 1px solid #fcd34d;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .pokemon-card:hover {
+            transform: scale(1.03);
+            background: #fffbeb;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .pokemon-card img {
+            width: 96px;
+            height: 96px;
+            image-rendering: crisp-edges;
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .badge {
+            background: #fbbf24;
+            color: #78350f;
+            border-radius: 2rem;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .loading-pulse {
+            background: #fef9c3;
+            animation: pulse 1s infinite;
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: center;
         }
 
         @keyframes pulse {
@@ -157,47 +195,29 @@
             }
         }
 
-        .badge {
-            background: #dbeafe;
-            color: #1e40af;
-            border-radius: 2rem;
-            padding: 0.2rem 0.8rem;
-            font-size: 0.7rem;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .svg-container {
-            background: #fefce8;
+        .svg-json {
+            background: #1e293b;
             border-radius: 1rem;
             padding: 1rem;
             margin: 1rem 0;
-            border: 1px solid #fde047;
         }
 
         footer {
             text-align: center;
             margin-top: 3rem;
-            color: #475569;
+            color: #78350f;
             font-size: 0.85rem;
-            border-top: 1px solid #cbd5e1;
+            border-top: 1px solid #fcd34d;
             padding-top: 2rem;
-        }
-
-        .flex-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin: 0.5rem 0;
         }
 
         @media (max-width: 700px) {
             .hero h1 {
-                font-size: 1.8rem;
+                font-size: 1.9rem;
             }
 
             .grid-docs {
-                gap: 1rem;
+                gap: 1.2rem;
             }
 
             .card {
@@ -210,354 +230,375 @@
 <body>
 
     <div class="hero">
-        <h1>⚡ Funciones Asíncronas en JavaScript</h1>
-        <p>Promesas, Async/Await, APIs reales y simulación local · Playground educativo</p>
-        <div style="margin-top: 1rem;"><span class="badge">🎓 Para estudiantes</span> <span class="badge">💡 Ejemplos
-                prácticos</span> <span class="badge">🚀 JSON + APIs</span></div>
+        <h1>⚡ Funciones Asíncronas + PokéAPI</h1>
+        <p>Aprendiendo Async/Await, Promesas y JSON con datos reales de Pokémon | Imágenes incluidas</p>
+        <div style="margin-top: 1rem;">
+            <span class="badge">🎓 Visual + Práctico</span>
+            <span class="badge">🐾 Sprites oficiales</span>
+            <span class="badge">🚀 Promise.all | fetch | try/catch</span>
+        </div>
     </div>
 
     <div class="container">
-        <!-- SECCIÓN 1: Explicación gráfica de JSON (objeto + arreglo) -->
+        <!-- SECCIÓN: EXPLICACIÓN JSON enfocada en PokéAPI -->
         <div class="card">
-            <h2>📦 1. Estructura JSON (Objeto y Arreglo)</h2>
-            <p><strong>JSON</strong> = JavaScript Object Notation. Es la forma más común de intercambiar datos entre
-                servidores y aplicaciones.</p>
-            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0;">
-                <div style="flex:1; min-width: 200px;">
-                    <div class="badge" style="background:#d9f99d;">🔹 OBJETO JSON</div>
-                    <div class="code-block" style="margin-top: 0.5rem;">
-                        {
-                        "id": 101,
-                        "nombre": "Lina",
-                        "es_activo": true,
-                        "hobbies": ["futbol", "lectura"]
-                        }
-                    </div>
-                    <p style="font-size:0.8rem;">📌 Llaves { } → representan un solo objeto.</p>
-                </div>
-                <div style="flex:1; min-width: 200px;">
-                    <div class="badge" style="background:#fed7aa;">🔸 ARREGLO JSON</div>
-                    <div class="code-block" style="margin-top: 0.5rem;">
-                        [
-                        { "id": 1, "nombre": "Ana" },
-                        { "id": 2, "nombre": "Carlos" },
-                        { "id": 3, "nombre": "Elena" }
-                        ]
-                    </div>
-                    <p style="font-size:0.8rem;">📌 Corchetes [ ] → lista de objetos.</p>
-                </div>
+            <h2>📦 1. Estructura JSON que devuelve PokéAPI</h2>
+            <p>Cuando consultamos <code>https://pokeapi.co/api/v2/pokemon/pikachu</code>, obtenemos un objeto con mucha
+                información. <strong>Uno de los campos clave es <code>sprites.front_default</code></strong>, que
+                contiene la URL de la imagen.</p>
+            <div class="code-block">
+                {
+                "id": 25,
+                "name": "pikachu",
+                "sprites": {
+                "front_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+                "back_default": "https://raw.githubusercontent.com/.../back.png",
+                "other": { ... }
+                },
+                "types": [
+                { "slot": 1, "type": { "name": "electric" } }
+                ],
+                "height": 4,
+                "weight": 60
+                }
             </div>
-            <div class="svg-container">
-                <svg viewBox="0 0 780 180" style="width:100%; height:auto;">
-                    <rect x="20" y="30" width="220" height="120" rx="16" fill="#3b82f6" opacity="0.9" />
-                    <text x="55" y="65" fill="white" font-weight="bold" font-size="18">📘 OBJETO</text>
-                    <text x="40" y="95" fill="#e0f2fe" font-size="14">"id": 1,</text>
-                    <text x="40" y="115" fill="#e0f2fe" font-size="14">"nombre": "Luis"</text>
-                    <text x="40" y="135" fill="#e0f2fe" font-size="14">"email": "@mail.com"</text>
-
-                    <line x1="260" y1="90" x2="320" y2="90" stroke="#334155" stroke-width="3" stroke-dasharray="5 3" />
-
-                    <rect x="340" y="15" width="400" height="150" rx="16" fill="#16a34a" opacity="0.9" />
-                    <text x="370" y="48" fill="white" font-weight="bold" font-size="18">📋 ARREGLO DE OBJETOS</text>
-                    <text x="365" y="78" fill="#dcfce7" font-size="14">[ { "id":1, "nombre":"Ada" },</text>
-                    <text x="375" y="102" fill="#dcfce7" font-size="14"> { "id":2, "nombre":"Bruno" },</text>
-                    <text x="375" y="126" fill="#dcfce7" font-size="14"> { "id":3, "nombre":"Celia" } ]</text>
-                </svg>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.8rem;">
+                <div><span class="badge">🎯 sprites.front_default</span> → Imagen frontal</div>
+                <div><span class="badge">📊 types</span> → Tipos del Pokémon</div>
+                <div><span class="badge">🔢 id</span> → Número nacional</div>
             </div>
-            <p>✅ <strong>Clave:</strong> Todo JSON válido usa comillas dobles <code>"clave": valor</code>.</p>
         </div>
 
-        <!-- EJEMPLOS ASÍNCRONOS con GRID (FLEXBOX Y GRID integrado) -->
         <div class="grid-docs">
-            <!-- EJEMPLO 1: LOCAL (simulando datos con promesa) -->
+            <!-- EJEMPLO 1: DATO LOCAL (arreglo JSON simulado con imágenes reales) -->
             <div class="card">
-                <h2>📁 2. Async/Await · Datos locales</h2>
-                <p>Simulamos una fuente de datos con un arreglo de 5 Pokémon locales. <br> Se usa <code>Promise</code> +
-                    <code>setTimeout</code> para imitar latencia.</p>
+                <h2>📂 2. Datos Locales (Async simulado)</h2>
+                <p>Arreglo JSON local con 5 Pokémon y sus sprites. Usamos <code>setTimeout</code> para simular latencia
+                    y <code>Promise</code>.</p>
                 <div class="code-block">
-                    // Datos locales (5 registros)
-                    const pokemonsLocal = [
-                    { id: 1, nombre: "Pikachu", tipo: "eléctrico" },
-                    { id: 2, nombre: "Charmander", tipo: "fuego" },
-                    { id: 3, nombre: "Squirtle", tipo: "agua" },
-                    { id: 4, nombre: "Bulbasaur", tipo: "planta" },
-                    { id: 5, nombre: "Jigglypuff", tipo: "hada" }
+                    const pokemonesLocal = [
+                    { nombre: "Pikachu", tipo: "eléctrico",
+                    imagen: "https://raw.githubusercontent.com/.../25.png" },
+                    { nombre: "Charmander", tipo: "fuego",
+                    imagen: "https://raw.githubusercontent.com/.../4.png" },
+                    // ... 3 más
                     ];
 
-                    async function obtenerPokemonsLocal() {
+                    async function obtenerLocal() {
                     return new Promise(resolve => {
-                    setTimeout(() => resolve(pokemonsLocal), 800);
+                    setTimeout(() => resolve(pokemonesLocal), 700);
                     });
                     }
                 </div>
-                <div class="flex-buttons">
-                    <button id="btnLocal">🐾 Mostrar Pokémon locales</button>
-                </div>
+                <button id="btnLocal">📋 Mostrar Pokémon locales (imágenes)</button>
                 <div id="outputLocal" class="output">
-                    ⚡ Haz clic en el botón para cargar datos locales.
+                    <span>🐣 Haz clic para ver 5 Pokémon con sprites reales (simulación local)</span>
                 </div>
             </div>
 
-            <!-- EJEMPLO 2: CONSUMIENDO API REAL (JSONPlaceholder - usuarios) -->
+            <!-- EJEMPLO 2: CONSULTA ASÍNCRONA A POKÉAPI (UN SOLO POKÉMON) -->
             <div class="card">
-                <h2>🌐 3. API Externa · JSONPlaceholder</h2>
-                <p>Consumimos <strong>JSONPlaceholder</strong> (API gratuita) con <code>fetch</code> y
-                    <code>async/await</code>. Mostramos 5 usuarios.</p>
+                <h2>🎣 3. Async/Await + PokéAPI (Individual)</h2>
+                <p>Función asíncrona que consume la API y extrae nombre, imagen y tipos.</p>
                 <div class="code-block">
-                    async function obtenerUsuariosAPI() {
-                    const respuesta = await fetch('https://jsonplaceholder.typicode.com/users');
-                    const datos = await respuesta.json();
-                    return datos.slice(0,5);
+                    async function obtenerPokemon(nombre) {
+                    const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
+                    const data = await respuesta.json();
+                    return {
+                    nombre: data.name,
+                    imagen: data.sprites.front_default,
+                    tipos: data.types.map(t => t.type.name).join(', ')
+                    };
                     }
                 </div>
-                <div class="flex-buttons">
-                    <button id="btnAPIUsers">👥 Traer usuarios (API)</button>
+                <div>
+                    <button id="btnPika">⚡ Pikachu</button>
+                    <button id="btnBulba">🌿 Bulbasaur</button>
+                    <button id="btnChar">🔥 Charmander</button>
+                    <button id="btnSquirtle">💧 Squirtle</button>
                 </div>
-                <div id="outputAPI" class="output">
-                    🌍 Presiona para consultar API JSONPlaceholder.
+                <div id="outputUnico" class="output">
+                    🌟 Selecciona un Pokémon y verás su imagen desde la PokéAPI en tiempo real.
                 </div>
             </div>
 
-            <!-- EJEMPLO 3: CONSUMIENDO POKÉAPI (Pokémon) + mostrar nombre e imagen sprite -->
+            <!-- EJEMPLO 3: VARIOS POKÉMON CON PROMISE.ALL (concurrencia) -->
             <div class="card">
-                <h2>⚡ 4. Pokémon API · Datos reales</h2>
-                <p>Consumimos <strong>PokéAPI</strong> para obtener información de 3 Pokémon: <strong>bulbasaur,
-                        charmander, squirtle</strong>.</p>
+                <h2>⚡ 4. Promise.all (Múltiples Pokémon)</h2>
+                <p>Cargamos varios Pokémon en <strong>paralelo</strong> usando Promise.all. Ideal para optimizar
+                    tiempos.</p>
                 <div class="code-block">
-                    async function obtenerPokemonAPI(nombre) {
-                    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
-                    const data = await res.json();
-                    return { nombre: data.name, id: data.id, sprite: data.sprites.front_default };
+                    const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax"];
+
+                    async function cargarVariosPokemon() {
+                    const promesas = nombres.map(n =>
+                    fetch(`https://pokeapi.co/api/v2/pokemon/${n}`).then(r => r.json())
+                    );
+                    return await Promise.all(promesas);
                     }
                 </div>
-                <div class="flex-buttons">
-                    <button id="btnPokemon1">🌿 Bulbasaur</button>
-                    <button id="btnPokemon2">🔥 Charmander</button>
-                    <button id="btnPokemon3">💧 Squirtle</button>
-                    <button id="btnTodosPokemon">🎲 Ver los 3 Pokémon</button>
-                </div>
-                <div id="outputPokemon" class="output">
-                    ✨ Selecciona un Pokémon o "Ver los 3" para llamar la API asíncrona.
+                <button id="btnVarios">🎲 Cargar 5 Pokémon (con imágenes)</button>
+                <div id="outputVarios" class="output">
+                    🐉 Muestra una galería con sprites de 5 Pokémon distintos.
                 </div>
             </div>
         </div>
 
-        <!-- EJEMPLO AVANZADO: Promise.all y llamado paralelo -->
+        <!-- EJEMPLO 4: BÚSQUEDA DINÁMICA CON INPUT -->
         <div class="card">
-            <h2>🚀 5. Asincronía avanzada: Promise.all / concurrencia</h2>
-            <p>Llamamos a <strong>dos APIs diferentes</strong> en simultáneo usando <code>Promise.all</code> para
-                optimizar tiempos. Ejemplo educativo: JSONPlaceholder + PokéAPI (Pokémon aleatorio).</p>
+            <h2>🔍 5. Buscador de Pokémon (Asíncrono con manejo de errores)</h2>
+            <p>Escribe el nombre de un Pokémon y al hacer clic se buscará su sprite y datos. Incluye
+                <code>try/catch</code> para manejar Pokémon inexistentes.</p>
             <div class="code-block">
-                async function cargarMultipleAPIs() {
-                const [usuarios, pokemon] = await Promise.all([
-                fetch('https://jsonplaceholder.typicode.com/users/1').then(r => r.json()),
-                fetch('https://pokeapi.co/api/v2/pokemon/pikachu').then(r => r.json())
-                ]);
-                return { usuario: usuarios.name, pokemon: pokemon.name };
-                }
-            </div>
-            <div class="flex-buttons">
-                <button id="btnParalelo">⚡ Ejecutar llamadas en paralelo</button>
-            </div>
-            <div id="outputParalelo" class="output">
-                🔄 Muestra el resultado de dos peticiones simultáneas (usuario + pikachu).
-            </div>
-        </div>
-
-        <!-- explicación adicional de async/await y errores -->
-        <div class="card">
-            <h2>📖 ¿Qué significa "asíncrono"?</h2>
-            <p>Las funciones asíncronas permiten que el código no se bloquee mientras espera una respuesta (de una API,
-                archivo, base de datos). <code>async</code> convierte una función para que devuelva una promesa, y
-                <code>await</code> espera la respuesta sin congelar la interfaz.</p>
-            <div class="code-block">
-                // Ejemplo estructura
-                async function obtenerDatos() {
+                async function buscarPokemon(nombre) {
                 try {
-                const respuesta = await fetch('url');
-                const datos = await respuesta.json();
-                console.log(datos);
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre.toLowerCase()}`);
+                if (!res.ok) throw new Error("Pokémon no encontrado 😢");
+                const data = await res.json();
+                mostrarDatos(data);
                 } catch(error) {
-                console.error('Error:', error);
+                mostrarError(error.message);
                 }
                 }
             </div>
-            <p>💡 <strong>Consejo:</strong> Usa <code>try/catch</code> para manejar errores de red o endpoints caídos.
-            </p>
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                <input type="text" id="pokemonInput" placeholder="Ej: pikachu, charizard, eevee..."
+                    style="flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 2px solid #fcd34d; font-size: 1rem;">
+                <button id="btnBuscar">🔎 Buscar Pokémon</button>
+            </div>
+            <div id="outputBusqueda" class="output">
+                💡 Prueba escribiendo: pikachu, mew, gengar, lucario...
+            </div>
         </div>
+
+        <!-- EJEMPLO AVANZADO: MUESTRA DE HABILIDADES Y ESTADOS CON IMAGEN GRANDE -->
+        <div class="card">
+            <h2>✨ 6. Detalle completo + Imagen HD (Shiny opcional)</h2>
+            <p>Además del sprite normal, podemos mostrar la imagen <strong>shiny</strong> (variante de color) y
+                estadísticas base.</p>
+            <div class="code-block">
+                async function obtenerDetalles(nombre) {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
+                const data = await res.json();
+                return {
+                nombre: data.name,
+                spriteNormal: data.sprites.front_default,
+                spriteShiny: data.sprites.front_shiny,
+                stats: data.stats.map(s => `${s.stat.name}: ${s.base_stat}`).join(' · ')
+                };
+                }
+            </div>
+            <button id="btnDetalle">🌟 Ver detalles de DRAGONITE</button>
+            <div id="outputDetalle" class="output">
+                🎯 Haz clic y mira la imagen normal, shiny y estadísticas del Pokémon.
+            </div>
+        </div>
+
         <footer>
-            🧪 Playground didáctico · Ejemplos pensados para laboratorio: datos locales + JSONPlaceholder + PokéAPI ·
-            Promesas, async/await y concurrencia.
+            🧪 Playground exclusivo con PokéAPI · Cada ejemplo usa funciones asíncronas (async/await) y muestra imágenes
+            reales de los sprites.
+            <br>📌 Recuerda: <strong>sprites.front_default</strong> contiene la URL de la imagen que vemos.
         </footer>
     </div>
 
     <script>
         // --------------------------------------------------------------
-        // 1. DATOS LOCALES (5 registros como arreglo JSON interno)
-        const pokemonLocal = [
-            { id: 1, nombre: "Pikachu", tipo: "eléctrico", nivel: 25 },
-            { id: 2, nombre: "Charmander", tipo: "fuego", nivel: 16 },
-            { id: 3, nombre: "Squirtle", tipo: "agua", nivel: 18 },
-            { id: 4, nombre: "Bulbasaur", tipo: "planta/veneno", nivel: 14 },
-            { id: 5, nombre: "Jigglypuff", tipo: "hada", nivel: 20 }
+        // 1. DATOS LOCALES (array con 5 pokémon + imágenes oficiales)
+        const pokemonesLocal = [
+            { id: 25, nombre: "Pikachu", tipo: "eléctrico", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" },
+            { id: 4, nombre: "Charmander", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" },
+            { id: 7, nombre: "Squirtle", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" },
+            { id: 1, nombre: "Bulbasaur", tipo: "planta/veneno", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" },
+            { id: 133, nombre: "Eevee", tipo: "normal", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" }
         ];
 
-        // Función simulada asíncrona para obtener datos locales (Promesa con setTimeout)
-        async function obtenerPokemonLocalAsync() {
+        // Función asíncrona que simula consulta local con promesa
+        async function obtenerPokemonesLocalAsync() {
             return new Promise((resolve) => {
                 setTimeout(() => {
-                    resolve(pokemonLocal);
+                    resolve(pokemonesLocal);
                 }, 700);
             });
         }
 
-        // Renderizado local
-        async function mostrarPokemonLocal() {
+        async function mostrarPokemonesLocal() {
             const outputDiv = document.getElementById('outputLocal');
-            outputDiv.innerHTML = '<div class="loading" style="padding:0.5rem;">⏳ Cargando datos locales...</div>';
+            outputDiv.innerHTML = '<div class="loading-pulse">⏳ Cargando Pokémon locales (simulación)...</div>';
             try {
-                const data = await obtenerPokemonLocalAsync();
-                let html = '<strong>📋 Lista local de Pokémon (5 registros JSON)</strong><ul style="margin-top:0.6rem;">';
-                data.forEach(poke => {
-                    html += `<li style="margin-bottom:0.4rem;">✨ <strong>#${poke.id}</strong> ${poke.nombre} · tipo: ${poke.tipo} · nivel ${poke.nivel}</li>`;
-                });
-                html += '</ul><span class="badge">✅ Simulación asíncrona con setTimeout</span>';
-                outputDiv.innerHTML = html;
-            } catch (err) {
-                outputDiv.innerHTML = `❌ Error en datos locales: ${err.message}`;
-            }
-        }
-
-        // --------------------------------------------------------------
-        // 2. API JSONPlaceholder (mostrar 5 usuarios)
-        async function fetchUsuariosAPI() {
-            const outputDiv = document.getElementById('outputAPI');
-            outputDiv.innerHTML = '<div class="loading">🌐 Conectando a JSONPlaceholder...</div>';
-            try {
-                const respuesta = await fetch('https://jsonplaceholder.typicode.com/users');
-                if (!respuesta.ok) throw new Error(`HTTP error ${respuesta.status}`);
-                const usuarios = await respuesta.json();
-                const primeros5 = usuarios.slice(0, 5);
-                let html = '<strong>👥 5 usuarios desde JSONPlaceholder</strong><ul>';
-                primeros5.forEach(user => {
-                    html += `<li>🧑‍💻 <strong>${user.name}</strong> — ${user.email} (${user.company?.name || 'sin compañía'})</li>`;
-                });
-                html += '</ul><span class="badge">✅ Respuesta asíncrona real con fetch + async/await</span>';
-                outputDiv.innerHTML = html;
-            } catch (error) {
-                outputDiv.innerHTML = `⚠️ Error al consumir API: ${error.message}. Revisa tu conexión.`;
-            }
-        }
-
-        // --------------------------------------------------------------
-        // 3. POKEAPI funciones individuales y para los 3
-        async function obtenerPokemonPorNombre(nombrePokemon) {
-            const url = `https://pokeapi.co/api/v2/pokemon/${nombrePokemon.toLowerCase()}`;
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error(`No se encontró ${nombrePokemon}`);
-            const data = await resp.json();
-            return {
-                nombre: data.name,
-                id: data.id,
-                sprite: data.sprites.front_default,
-                tipos: data.types.map(t => t.type.name).join(', ')
-            };
-        }
-
-        async function mostrarUnPokemon(nombre) {
-            const outputDiv = document.getElementById('outputPokemon');
-            outputDiv.innerHTML = `<div class="loading">⚡ Buscando a ${nombre} en PokéAPI...</div>`;
-            try {
-                const pokemon = await obtenerPokemonPorNombre(nombre);
-                outputDiv.innerHTML = `
-                <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
-                    <div><img src="${pokemon.sprite}" alt="${pokemon.nombre}" style="image-rendering:pixelated; width:70px;"></div>
-                    <div>
-                        <strong style="font-size:1.2rem;">✨ ${pokemon.nombre.toUpperCase()} (ID: ${pokemon.id})</strong><br>
-                        🎯 Tipo(s): ${pokemon.tipos}<br>
-                        🌟 Datos obtenidos desde PokéAPI con fetch asíncrono.
-                    </div>
-                </div>
-                <span class="badge" style="margin-top:8px;">✅ async/await + API real</span>
-            `;
-            } catch (err) {
-                outputDiv.innerHTML = `❌ Error al obtener ${nombre}: ${err.message}`;
-            }
-        }
-
-        async function mostrarTresPokemones() {
-            const outputDiv = document.getElementById('outputPokemon');
-            outputDiv.innerHTML = '<div class="loading">🔄 Cargando Bulbasaur, Charmander y Squirtle al mismo tiempo...</div>';
-            try {
-                // Promise.all para mejorar velocidad y mostrar los tres en paralelo
-                const [bulbasaur, charmander, squirtle] = await Promise.all([
-                    obtenerPokemonPorNombre('bulbasaur'),
-                    obtenerPokemonPorNombre('charmander'),
-                    obtenerPokemonPorNombre('squirtle')
-                ]);
-                let html = `<strong>🎉 3 Pokémon desde PokéAPI (concurrente)</strong><div style="display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:0.8rem;">`;
-                const trio = [bulbasaur, charmander, squirtle];
-                trio.forEach(p => {
+                const data = await obtenerPokemonesLocalAsync();
+                let html = '<strong>📦 5 Pokémon desde arreglo JSON local (con sprites reales)</strong><div class="pokemon-grid">';
+                data.forEach(p => {
                     html += `
-                    <div style="background:#f1f5f9; border-radius:1rem; padding:0.6rem; text-align:center; min-width:100px;">
-                        <img src="${p.sprite}" style="width:60px;"><br>
+                    <div class="pokemon-card">
+                        <img src="${p.imagen}" alt="${p.nombre}" loading="lazy">
                         <strong>${p.nombre}</strong><br>
-                        <small>${p.tipos}</small>
+                        <small>${p.tipo}</small><br>
+                        <span class="badge">#${p.id}</span>
                     </div>
                 `;
                 });
-                html += `</div><span class="badge">✨ Promise.all → peticiones paralelas eficientes</span>`;
+                html += '</div><span class="badge">✅ Datos locales + setTimeout (simula latencia)</span>';
                 outputDiv.innerHTML = html;
-            } catch (err) {
-                outputDiv.innerHTML = `❌ Error al cargar múltiples Pokémon: ${err.message}`;
+            } catch (error) {
+                outputDiv.innerHTML = `❌ Error al cargar locales: ${error.message}`;
             }
         }
 
         // --------------------------------------------------------------
-        // 4. EJEMPLO PARALELO con Promise.all (dos APIs distintas)
-        async function ejecutarLlamadasParalelas() {
-            const outputDiv = document.getElementById('outputParalelo');
-            outputDiv.innerHTML = '<div class="loading">🕹️ Ejecutando peticiones simultáneas (JSONPlaceholder + Pikachu)...</div>';
+        // 2. FUNCIÓN GENÉRICA PARA OBTENER POKÉMON DESDE API REAL (con imagen)
+        async function obtenerPokemonDesdeAPI(nombrePokemon) {
+            const url = `https://pokeapi.co/api/v2/pokemon/${nombrePokemon.toLowerCase()}`;
+            const respuesta = await fetch(url);
+            if (!respuesta.ok) throw new Error(`No se encontró "${nombrePokemon}"`);
+            const data = await respuesta.json();
+            return {
+                nombre: data.name,
+                id: data.id,
+                imagen: data.sprites.front_default,
+                tipos: data.types.map(t => t.type.name).join(', '),
+                altura: data.height / 10,
+                peso: data.weight / 10
+            };
+        }
+
+        // Mostrar Pokémon individual (estilo tarjeta)
+        async function mostrarPokemonIndividual(nombre) {
+            const outputDiv = document.getElementById('outputUnico');
+            outputDiv.innerHTML = '<div class="loading-pulse">⚡ Conectando con PokéAPI...</div>';
             try {
-                const [usuarioData, pokemonData] = await Promise.all([
-                    fetch('https://jsonplaceholder.typicode.com/users/1').then(res => res.json()),
-                    fetch('https://pokeapi.co/api/v2/pokemon/pikachu').then(res => res.json())
-                ]);
-                const pokemonSprite = pokemonData.sprites?.front_default || '';
+                const pokemon = await obtenerPokemonDesdeAPI(nombre);
                 outputDiv.innerHTML = `
-                <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between;">
-                    <div style="background:#e0f2fe; border-radius:1rem; padding:0.8rem; flex:1;">
-                        <strong>👤 Usuario (API #1):</strong><br>
-                        Nombre: ${usuarioData.name}<br>
-                        Email: ${usuarioData.email}<br>
-                        <small>JSONPlaceholder</small>
+                <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: center;">
+                    <div class="pokemon-card" style="background: linear-gradient(145deg, #fef9c3, #fde047); min-width: 160px;">
+                        <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 120px; height: 120px;">
+                        <h3 style="text-transform: capitalize; margin: 0.5rem 0;">✨ ${pokemon.nombre}</h3>
+                        <span class="badge">ID: ${pokemon.id}</span>
+                        <p><strong>Tipos:</strong> ${pokemon.tipos}</p>
+                        <small>📏 Altura: ${pokemon.altura}m | ⚖️ Peso: ${pokemon.peso}kg</small>
                     </div>
-                    <div style="background:#fef9c3; border-radius:1rem; padding:0.8rem; flex:1;">
-                        <strong>⚡ Pokémon (API #2):</strong><br>
-                        ${pokemonData.name.toUpperCase()} <br>
-                        <img src="${pokemonSprite}" style="width:50px;"><br>
-                        <small>PokéAPI</small>
+                    <div style="max-width: 300px;">
+                        <p>📸 La <strong>imagen</strong> proviene de <code>data.sprites.front_default</code><br>
+                        ✅ Llamada asíncrona con <code>fetch() + await</code><br>
+                        🎯 La PokéAPI responde con un objeto JSON completo.</p>
                     </div>
                 </div>
-                <div class="badge" style="margin-top:12px;">🚀 Las dos llamadas se ejecutaron en paralelo, sin esperar una tras otra.</div>
+                <span class="badge" style="margin-top: 10px;">🐾 Datos en tiempo real</span>
             `;
             } catch (error) {
-                outputDiv.innerHTML = `⚠️ Error en peticiones paralelas: ${error.message}`;
+                outputDiv.innerHTML = `<div style="color:#b91c1c;">❌ Error: ${error.message}. Verifica el nombre del Pokémon.</div>`;
             }
         }
 
         // --------------------------------------------------------------
-        // ASIGNAR EVENTOS A BOTONES (conexión DOM)
-        document.getElementById('btnLocal').addEventListener('click', mostrarPokemonLocal);
-        document.getElementById('btnAPIUsers').addEventListener('click', fetchUsuariosAPI);
-        document.getElementById('btnPokemon1').addEventListener('click', () => mostrarUnPokemon('bulbasaur'));
-        document.getElementById('btnPokemon2').addEventListener('click', () => mostrarUnPokemon('charmander'));
-        document.getElementById('btnPokemon3').addEventListener('click', () => mostrarUnPokemon('squirtle'));
-        document.getElementById('btnTodosPokemon').addEventListener('click', mostrarTresPokemones);
-        document.getElementById('btnParalelo').addEventListener('click', ejecutarLlamadasParalelas);
+        // 3. PROMISE.ALL -> varios Pokémon en paralelo
+        async function cargarMultiplesPokemon() {
+            const outputDiv = document.getElementById('outputVarios');
+            outputDiv.innerHTML = '<div class="loading-pulse">🔄 Cargando 5 Pokémon con Promise.all (peticiones simultáneas)...</div>';
+            try {
+                const nombres = ['pikachu', 'charizard', 'mewtwo', 'eevee', 'snorlax'];
+                const promesas = nombres.map(n => fetch(`https://pokeapi.co/api/v2/pokemon/${n}`).then(res => res.json()));
+                const pokemonesData = await Promise.all(promesas);
 
-        // mensajes iniciales claros
-        console.log('Playground asíncrono listo | JSON + APIs');
+                let html = '<strong>⚡ Galería de Pokémon (Promise.all)</strong><div class="pokemon-grid">';
+                pokemonesData.forEach(p => {
+                    const sprite = p.sprites.front_default;
+                    const tipos = p.types.map(t => t.type.name).join(', ');
+                    html += `
+                    <div class="pokemon-card">
+                        <img src="${sprite}" alt="${p.name}" loading="lazy">
+                        <strong style="text-transform: capitalize;">${p.name}</strong>
+                        <small>${tipos}</small>
+                    </div>
+                `;
+                });
+                html += `</div><span class="badge">🚀 Las 5 consultas se ejecutaron en paralelo, mostrando imágenes inmediatamente.</span>`;
+                outputDiv.innerHTML = html;
+            } catch (err) {
+                outputDiv.innerHTML = `<div style="color:#b91c1c;">❌ Fallo en carga múltiple: ${err.message}</div>`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // 4. BUSCADOR DINÁMICO CON MANEJO DE ERRORES
+        async function buscarPokemonPorNombre(nombre) {
+            const outputDiv = document.getElementById('outputBusqueda');
+            if (!nombre.trim()) {
+                outputDiv.innerHTML = '⚠️ Escribe un nombre válido (pikachu, bulbasaur, etc)';
+                return;
+            }
+            outputDiv.innerHTML = '<div class="loading-pulse">🔎 Buscando en PokéAPI...</div>';
+            try {
+                const pokemon = await obtenerPokemonDesdeAPI(nombre);
+                outputDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 90px; image-rendering: crisp-edges;">
+                    <div>
+                        <h3 style="text-transform: capitalize; color:#b91c1c;">${pokemon.nombre} <span class="badge">#${pokemon.id}</span></h3>
+                        <p>Tipos: ${pokemon.tipos} | Altura: ${pokemon.altura}m | Peso: ${pokemon.peso}kg</p>
+                        <small>✅ La imagen se extrajo de sprites.front_default</small>
+                    </div>
+                </div>
+            `;
+            } catch (error) {
+                outputDiv.innerHTML = `<div style="background:#fee2e2; padding:0.8rem; border-radius:1rem;"><strong>😿 Pokémon no encontrado:</strong> "${nombre}" no existe en la PokéAPI. Prueba con "pikachu", "charizard", "eevee".</div>`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // 5. DETALLES AVANZADOS (Dragonite + Shiny)
+        async function mostrarDetallesAvanzados() {
+            const outputDiv = document.getElementById('outputDetalle');
+            outputDiv.innerHTML = '<div class="loading-pulse">🌟 Cargando datos de Dragonite (incluye shiny)...</div>';
+            try {
+                const respuesta = await fetch('https://pokeapi.co/api/v2/pokemon/dragonite');
+                const data = await respuesta.json();
+                const nombre = data.name;
+                const spriteNormal = data.sprites.front_default;
+                const spriteShiny = data.sprites.front_shiny;
+                const estadisticas = data.stats.map(s => `${s.stat.name}: ${s.base_stat}`).join(' · ');
+
+                outputDiv.innerHTML = `
+                <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center;">
+                    <div class="pokemon-card">
+                        <img src="${spriteNormal}" style="width:110px;">
+                        <strong>${nombre.toUpperCase()}</strong>
+                        <span class="badge">Normal</span>
+                    </div>
+                    <div class="pokemon-card" style="background: linear-gradient(145deg, #f3e8ff, #e9d5ff);">
+                        <img src="${spriteShiny}" style="width:110px;">
+                        <strong>${nombre.toUpperCase()} ✨</strong>
+                        <span class="badge">Variocolor (Shiny)</span>
+                    </div>
+                </div>
+                <p><strong>📊 Estadísticas base:</strong> ${estadisticas}</p>
+                <span class="badge">🎨 La PokéAPI también ofrece sprites shiny con front_shiny</span>
+            `;
+            } catch (err) {
+                outputDiv.innerHTML = `❌ Error cargando detalles: ${err.message}`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // EVENTOS Y CONFIGURACIÓN
+        document.getElementById('btnLocal').addEventListener('click', mostrarPokemonesLocal);
+        document.getElementById('btnPika').addEventListener('click', () => mostrarPokemonIndividual('pikachu'));
+        document.getElementById('btnBulba').addEventListener('click', () => mostrarPokemonIndividual('bulbasaur'));
+        document.getElementById('btnChar').addEventListener('click', () => mostrarPokemonIndividual('charmander'));
+        document.getElementById('btnSquirtle').addEventListener('click', () => mostrarPokemonIndividual('squirtle'));
+        document.getElementById('btnVarios').addEventListener('click', cargarMultiplesPokemon);
+        document.getElementById('btnBuscar').addEventListener('click', () => {
+            const input = document.getElementById('pokemonInput');
+            buscarPokemonPorNombre(input.value);
+        });
+        document.getElementById('btnDetalle').addEventListener('click', mostrarDetallesAvanzados);
+
+        // Permitir búsqueda con Enter
+        document.getElementById('pokemonInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('pokemonInput');
+                buscarPokemonPorNombre(input.value);
+            }
+        });
     </script>
 </body>
 
