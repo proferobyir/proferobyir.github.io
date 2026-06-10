@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Playground | map() + Grid 2 columnas + PokéAPI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+            color: #1e293b;
+            scroll-behavior: smooth;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 30%, #f59e0b 100%);
+            color: white;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border-bottom-left-radius: 2.5rem;
+            border-bottom-right-radius: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem 1.5rem;
+        }
+
+        .grid-docs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: white;
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: #dc2626;
+            border-left: 5px solid #f59e0b;
+            padding-left: 1rem;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.8rem;
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        .code-comment {
+            color: #86efac;
+            font-style: italic;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.6rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0.5rem 0.5rem 0 0;
+            box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        button:hover {
+            transform: scale(0.97);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .output {
+            background: #fefce8;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            margin-top: 1.2rem;
+            min-height: 180px;
+            border: 2px solid #fde047;
+        }
+
+        /* 🔥 GRID DE 2 COLUMNAS para los Pokémon */
+        .pokemon-grid-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pokemon-card {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 1rem;
+            padding: 0.8rem;
+            text-align: center;
+            transition: all 0.2s;
+            border: 1px solid #fcd34d;
+        }
+
+        .pokemon-card:hover {
+            transform: scale(1.02);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .pokemon-card img {
+            width: 80px;
+            height: 80px;
+            image-rendering: crisp-edges;
+        }
+
+        .badge {
+            background: #fbbf24;
+            color: #78350f;
+            border-radius: 2rem;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .method-highlight {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 0.8rem;
+            margin: 0.8rem 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .loading-pulse {
+            animation: pulse 1s infinite;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #78350f;
+            border-top: 1px solid #fcd34d;
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .pokemon-grid-2cols {
+                grid-template-columns: 1fr;
+                /* En móvil se pone 1 columna */
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .grid-docs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hero">
+        <h1>⚡ map() + CSS Grid (2 columnas) + PokéAPI</h1>
+        <p>Aprendiendo Async/Await, <strong
+                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">.map()</strong> y <strong
+                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">CSS Grid</strong> para
+            organizar Pokémon en 2 columnas</p>
+    </div>
+
+    <div class="container">
+        <!-- EXPLICACIÓN DEL GRID -->
+        <div class="card">
+            <h2>📐 ¿Cómo organizamos los Pokémon?</h2>
+            <p>Usamos <strong>CSS Grid</strong> con <code
+                    style="background:#fef3c7; padding:0.2rem 0.5rem;">grid-template-columns: 1fr 1fr</code> para que
+                las tarjetas se muestren <strong>SIEMPRE en 2 columnas</strong> (excepto en móvil). El método
+                <strong>.map()</strong> solo genera el HTML, el Grid se encarga del layout.
+            </p>
+            <div class="code-block">
+                <span class="code-comment">/* CSS: Contenedor con Grid de 2 columnas */</span>
+                .pokemon-grid-2cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr; <span class="code-comment">/* 🔥 2 columnas exactas */</span>
+                gap: 1rem;
+                }
+
+                <span class="code-comment">/* JavaScript: .map() genera las tarjetas */</span>
+                const tarjetasHTML = pokemones.map(pokemon => {
+                return `<div class="pokemon-card">...</div>`;
+                }).join(''); <span class="code-comment">// join() solo concatena strings</span>
+
+                <span class="code-comment">// El contenedor tiene la clase .pokemon-grid-2cols</span>
+                contenedor.innerHTML = `<div class="pokemon-grid-2cols">${tarjetasHTML}</div>`;
+            </div>
+            <div class="method-highlight">
+                💡 <strong>Ventaja:</strong> El CSS Grid controla el diseño (2 columnas, responsivo). <strong>.map() +
+                    join()</strong> solo generan el contenido. ¡Separación de responsabilidades!
+            </div>
+        </div>
+
+        <div class="grid-docs">
+            <!-- EJEMPLO 1: map() + Grid 2 columnas con datos locales -->
+            <div class="card">
+                <h2>📁 1. .map() + Grid (Datos locales)</h2>
+                <p>Transformamos un arreglo JSON de 5 Pokémon en una cuadrícula de <strong>2 columnas</strong> usando
+                    CSS Grid.</p>
+                <div class="code-block">
+                    <span class="code-comment">// Datos locales (5 Pokémon)</span>
+                    const pokemonLocal = [
+                    { id: 25, nombre: "Pikachu", tipo: "eléctrico",
+                    imagen: "https://raw.githubusercontent.com/.../25.png" },
+                    { id: 4, nombre: "Charmander", tipo: "fuego",
+                    imagen: "https://raw.githubusercontent.com/.../4.png" }
+                    <span class="code-comment">// ... 3 más</span>
+                    ];
+
+                    <span class="code-comment">// 🔥 .map() genera las tarjetas</span>
+                    const tarjetas = pokemonLocal.map(p => `
+                    &lt;div class="pokemon-card"&gt;
+                    &lt;img src="${p.imagen}"&gt;
+                    &lt;strong&gt;${p.nombre}&lt;/strong&gt;
+                    &lt;small&gt;${p.tipo}&lt;/small&gt;
+                    &lt;/div&gt;
+                    `).join('');
+
+                    <span class="code-comment">// 🎨 CSS Grid organiza en 2 columnas</span>
+                    contenedor.innerHTML = `
+                    &lt;div class="pokemon-grid-2cols"&gt;
+                    ${tarjetas}
+                    &lt;/div&gt;
+                    `;
+                </div>
+                <button id="btnGridLocal">🎨 Mostrar con Grid de 2 columnas</button>
+                <div id="outputGridLocal" class="output">
+                    ⚡ Haz clic para ver cómo <strong>.map()</strong> + <strong>Grid 1fr 1fr</strong> organizan los
+                    Pokémon.
+                </div>
+            </div>
+
+            <!-- EJEMPLO 2: map() + PokéAPI + Grid 2 columnas -->
+            <div class="card">
+                <h2>🌐 2. PokéAPI + map() + Grid 2 columnas</h2>
+                <p>Consumimos la PokéAPI, transformamos con <strong>.map()</strong> y mostramos en <strong>2
+                        columnas</strong>.</p>
+                <div class="code-block">
+                    <span class="code-comment">// Arreglo de nombres</span>
+                    const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax", "bulbasaur"];
+
+                    <span class="code-comment">// .map() para crear promesas</span>
+                    const promesas = nombres.map(n =>
+                    fetch(`https://pokeapi.co/api/v2/pokemon/${n}`).then(r => r.json())
+                    );
+
+                    const resultados = await Promise.all(promesas);
+
+                    <span class="code-comment">// .map() para generar HTML (sin preocuparse del layout)</span>
+                    const tarjetas = resultados.map(p => `
+                    &lt;div class="pokemon-card"&gt;
+                    &lt;img src="${p.sprites.front_default}"&gt;
+                    &lt;strong&gt;${p.name}&lt;/strong&gt;
+                    &lt;/div&gt;
+                    `).join('');
+
+                    <span class="code-comment">// El CSS Grid aplica automáticamente 2 columnas</span>
+                    contenedor.innerHTML = `<div class="pokemon-grid-2cols">${tarjetas}</div>´;
+                </div>
+                <button id="btnGridAPI">🚀 Cargar 6 Pokémon desde PokéAPI</button>
+                <div id="outputGridAPI" class="output">
+                    🌟 <strong>.map()</strong> genera el HTML, <strong>CSS Grid</strong> organiza en 2 columnas.
+                </div>
+            </div>
+
+            <!-- EJEMPLO 3: Comparativa layout (Grid vs Flex) -->
+            <div class="card">
+                <h2>🔄 3. Grid 1fr 1fr vs Flexbox</h2>
+                <p>Con <strong>Grid</strong> forzamos EXACTAMENTE 2 columnas. Con <strong>Flexbox</strong> las tarjetas
+                    se ajustan según el ancho.</p>
+                <div class="code-block">
+                    <span class="code-comment">/* 🔥 CSS Grid: 2 columnas exactas */</span>
+                    .grid-2cols {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr; <span class="code-comment">/* Siempre 2 columnas */</span>
+                    gap: 1rem;
+                    }
+
+                    <span class="code-comment">/* 🔄 Flexbox: se ajusta automáticamente */</span>
+                    .flex-wrap {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                    }
+                    .flex-wrap .pokemon-card {
+                    flex: 1 1 200px; <span class="code-comment">/* Ancho variable */</span>
+                    }
+                </div>
+                <button id="btnCompararLayout">📊 Comparar Grid 2 cols vs Flexbox</button>
+                <div id="outputCompararLayout" class="output">
+                    💡 Muestra la diferencia entre Grid (2 columnas fijas) y Flexbox (responsive fluido).
+                </div>
+            </div>
+        </div>
+
+        <!-- EJEMPLO 4: Grid responsivo (2 columnas en desktop, 1 en móvil) -->
+        <div class="card">
+            <h2>📱 4. Grid Responsivo con Media Query</h2>
+            <p>Usamos <strong>media query</strong> para que en móvil las tarjetas se muestren en <strong>1
+                    columna</strong> y en desktop en <strong>2 columnas</strong>.</p>
+            <div class="code-block">
+                <span class="code-comment">/* CSS responsivo */</span>
+                .pokemon-grid-2cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr; <span class="code-comment">/* Desktop: 2 columnas */</span>
+                gap: 1rem;
+                }
+
+                @media (max-width: 640px) {
+                .pokemon-grid-2cols {
+                grid-template-columns: 1fr; <span class="code-comment">/* Móvil: 1 columna */</span>
+                }
+                }
+
+                <span class="code-comment">// El mismo .map() funciona para ambos casos</span>
+                const tarjetas = pokemones.map(p => `<div class="pokemon-card">...</div>`).join('');
+            </div>
+            <button id="btnGridResponsivo">📱 Mostrar Grid responsivo (redimensiona la ventana)</button>
+            <div id="outputResponsivo" class="output">
+                🖥️ Redimensiona tu navegador: en escritorio verás 2 columnas, en móvil 1 columna.
+            </div>
+        </div>
+
+        <!-- EJEMPLO 5: Grid con diferentes tamaños de tarjetas -->
+        <div class="card">
+            <h2>🎨 5. Grid avanzado: tarjetas con imágenes más grandes</h2>
+            <p>Usamos Grid de 2 columnas pero con tarjetas más vistosas (imagen de 100px).</p>
+            <div class="code-block">
+                <span class="code-comment">// Estilo mejorado para las tarjetas</span>
+                .pokemon-card-grande {
+                background: linear-gradient(135deg, #fffbeb, #fef3c7);
+                border-radius: 1.5rem;
+                padding: 1.2rem;
+                text-align: center;
+                transition: transform 0.2s;
+                }
+                .pokemon-card-grande img {
+                width: 100px;
+                height: 100px;
+                }
+
+                <span class="code-comment">// .map() genera el HTML</span>
+                const tarjetas = pokemones.map(p => `
+                &lt;div class="pokemon-card-grande"&gt;
+                &lt;img src="${p.imagen}"&gt;
+                &lt;h3&gt;${p.nombre}&lt;/h3&gt;
+                &lt;span class="badge"&gt;#${p.id}&lt;/span&gt;
+                &lt;/div&gt;
+                `).join('');
+            </div>
+            <button id="btnGridGrande">🌟 Mostrar tarjetas grandes (Grid 2 cols)</button>
+            <div id="outputGrande" class="output">
+                🎯 Grid 1fr 1fr con tarjetas más grandes y detalles adicionales.
+            </div>
+        </div>
+
+        <footer>
+            🧪 <strong>CSS Grid + .map() = Layout perfecto</strong><br>
+            📌 <strong>grid-template-columns: 1fr 1fr</strong> → 2 columnas exactas | <strong>.map()</strong> genera el
+            contenido | <strong>join()</strong> solo concatena
+        </footer>
+    </div>
+
+    <script>
+        // ===================== DATOS LOCALES =====================
+        const pokemonLocalData = [
+            { id: 25, nombre: "Pikachu", tipo: "eléctrico", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" },
+            { id: 4, nombre: "Charmander", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" },
+            { id: 7, nombre: "Squirtle", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" },
+            { id: 1, nombre: "Bulbasaur", tipo: "planta", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" },
+            { id: 133, nombre: "Eevee", tipo: "normal", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" }
+        ];
+
+        // EJEMPLO 1: Grid con datos locales
+        function mostrarGridLocal() {
+            const output = document.getElementById('outputGridLocal');
+
+            // 🔥 .map() genera las tarjetas (sin preocuparse del layout)
+            const tarjetasHTML = pokemonLocalData.map(pokemon => {
+                return `
+                <div class="pokemon-card">
+                    <img src="${pokemon.imagen}" alt="${pokemon.nombre}" loading="lazy">
+                    <strong>${pokemon.nombre}</strong><br>
+                    <small>${pokemon.tipo}</small><br>
+                    <span class="badge">#${pokemon.id}</span>
+                </div>
+            `;
+            }).join(''); // join() solo une los strings
+
+            // 🎨 El CSS Grid con 1fr 1fr organiza las tarjetas
+            output.innerHTML = `
+            <strong>✅ .map() generó ${pokemonLocalData.length} tarjetas</strong>
+            <div class="pokemon-grid-2cols">
+                ${tarjetasHTML}
+            </div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                📌 <strong>CSS aplicado:</strong><br>
+                <code>.pokemon-grid-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }</code><br>
+                🔥 Las tarjetas se organizan AUTOMÁTICAMENTE en 2 columnas gracias al Grid.
+            </div>
+        `;
+        }
+
+        // EJEMPLO 2: PokéAPI + Grid 2 columnas
+        async function mostrarGridAPI() {
+            const output = document.getElementById('outputGridAPI');
+            output.innerHTML = '<div class="loading-pulse">🌐 Cargando 6 Pokémon desde PokéAPI...</div>';
+
+            try {
+                const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax", "bulbasaur"];
+
+                // .map() crea un arreglo de promesas
+                const promesas = nombres.map(nombre => {
+                    return fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json());
+                });
+
+                const resultados = await Promise.all(promesas);
+
+                // .map() genera el HTML
+                const tarjetasHTML = resultados.map(pokemon => {
+                    const tipos = pokemon.types.map(t => t.type.name).join(', ');
+                    return `
+                    <div class="pokemon-card">
+                        <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" style="width: 80px;">
+                        <strong style="text-transform: capitalize;">${pokemon.name}</strong><br>
+                        <small>${tipos}</small>
+                        <span class="badge">#${pokemon.id}</span>
+                    </div>
+                `;
+                }).join('');
+
+                output.innerHTML = `
+                <strong>✅ ${resultados.length} Pokémon desde PokéAPI</strong>
+                <div class="pokemon-grid-2cols">
+                    ${tarjetasHTML}
+                </div>
+                <div class="method-highlight" style="margin-top: 10px;">
+                    💡 <strong>¿Cómo funciona?</strong><br>
+                    1️⃣ <strong>.map()</strong> transforma los nombres en promesas de fetch<br>
+                    2️⃣ <strong>Promise.all()</strong> ejecuta todas en paralelo<br>
+                    3️⃣ <strong>.map()</strong> transforma los resultados en HTML<br>
+                    4️⃣ <strong>CSS Grid</strong> (1fr 1fr) organiza en 2 columnas
+                </div>
+            `;
+            } catch (error) {
+                output.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // EJEMPLO 3: Comparar Grid vs Flexbox
+        function compararLayouts() {
+            const output = document.getElementById('outputCompararLayout');
+
+            const tarjetasHTML = pokemonLocalData.map(pokemon => `
+            <div class="pokemon-card">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 70px;">
+                <strong>${pokemon.nombre}</strong>
+            </div>
+        `).join('');
+
+            output.innerHTML = `
+            <strong>📊 Comparativa: CSS Grid (1fr 1fr) vs Flexbox</strong>
+            
+            <div style="margin-top: 1rem;">
+                <strong>🔹 CSS Grid - 2 columnas exactas:</strong>
+                <div class="pokemon-grid-2cols" style="margin-top: 0.5rem;">
+                    ${tarjetasHTML}
+                </div>
+                <code style="background:#fef3c7; display: inline-block; margin-top: 0.3rem;">grid-template-columns: 1fr 1fr;</code>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <strong>🔸 Flexbox - Ajuste fluido:</strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.5rem;">
+                    ${tarjetasHTML}
+                </div>
+                <code style="background:#fef3c7; display: inline-block; margin-top: 0.3rem;">display: flex; flex-wrap: wrap;</code>
+            </div>
+            
+            <div class="method-highlight" style="margin-top: 1rem;">
+                🎯 <strong>Diferencia clave:</strong><br>
+                • <strong>Grid</strong> → Control EXACTO sobre el número de columnas (siempre 2)<br>
+                • <strong>Flexbox</strong> → Las tarjetas se ajustan según el ancho disponible (pueden ser 1, 2 o 3 columnas)
+            </div>
+        `;
+        }
+
+        // EJEMPLO 4: Grid responsivo (con media query)
+        function mostrarGridResponsivo() {
+            const output = document.getElementById('outputResponsivo');
+
+            // Usamos más Pokémon para ver mejor el efecto
+            const masPokemones = [
+                ...pokemonLocalData,
+                { id: 6, nombre: "Charizard", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" },
+                { id: 9, nombre: "Blastoise", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png" }
+            ];
+
+            const tarjetasHTML = masPokemones.map(pokemon => `
+            <div class="pokemon-card">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}">
+                <strong>${pokemon.nombre}</strong>
+                <small>${pokemon.tipo}</small>
+            </div>
+        `).join('');
+
+            output.innerHTML = `
+            <strong>📱 Grid responsivo (${masPokemones.length} Pokémon)</strong>
+            <div class="pokemon-grid-2cols">
+                ${tarjetasHTML}
+            </div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                💡 <strong>Media query aplicada:</strong><br>
+                <code>
+                @media (max-width: 640px) {<br>
+                    &nbsp;&nbsp;.pokemon-grid-2cols { grid-template-columns: 1fr; }<br>
+                }
+                </code><br>
+                🖥️ <strong>Prueba:</strong> Redimensiona tu navegador → en pantallas grandes verás 2 columnas, en móvil 1 columna.
+            </div>
+        `;
+        }
+
+        // EJEMPLO 5: Tarjetas grandes con Grid
+        function mostrarGridGrande() {
+            const output = document.getElementById('outputGrande');
+
+            // Estilos adicionales para tarjetas grandes
+            const styleGrande = `
+            <style>
+                .pokemon-card-grande {
+                    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+                    border-radius: 1.5rem;
+                    padding: 1.2rem;
+                    text-align: center;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    border: 1px solid #fcd34d;
+                }
+                .pokemon-card-grande:hover {
+                    transform: scale(1.02);
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                    background: white;
+                }
+                .pokemon-card-grande img {
+                    width: 100px;
+                    height: 100px;
+                }
+            </style>
+        `;
+
+            const tarjetasHTML = pokemonLocalData.map(pokemon => `
+            <div class="pokemon-card-grande">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}">
+                <h3 style="margin: 0.5rem 0 0.2rem; text-transform: capitalize;">${pokemon.nombre}</h3>
+                <span class="badge">#${pokemon.id}</span>
+                <p style="font-size: 0.8rem; margin-top: 0.3rem;">Tipo: ${pokemon.tipo}</p>
+            </div>
+        `).join('');
+
+            output.innerHTML = `
+            ${styleGrande}
+            <strong>🌟 Tarjetas grandes con Grid de 2 columnas</strong>
+            <div class="pokemon-grid-2cols">
+                ${tarjetasHTML}
+            </div>
+            <div class="method-highlight" style="margin-top: 10px;">
+                🎨 <strong>Mejoras visuales:</strong><br>
+                • Imágenes de 100x100px<br>
+                • Hover con escala y sombra<br>
+                • Grid mantiene 2 columnas fijas
+            </div>
+        `;
+        }
+
+        // ===================== EVENTOS =====================
+        document.getElementById('btnGridLocal').addEventListener('click', mostrarGridLocal);
+        document.getElementById('btnGridAPI').addEventListener('click', mostrarGridAPI);
+        document.getElementById('btnCompararLayout').addEventListener('click', compararLayouts);
+        document.getElementById('btnGridResponsivo').addEventListener('click', mostrarGridResponsivo);
+        document.getElementById('btnGridGrande').addEventListener('click', mostrarGridGrande);
+
+        console.log('%c🎯 Playground con Grid 1fr 1fr | .map() genera el contenido, CSS Grid organiza', 'color: #f59e0b; font-size: 14px;');
+    </script>
+</body>
+
+</html>
