@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Playground | map() + Grid 2 columnas + PokéAPI</title>
     <style>
+        /* RESET y estilos base - SIN FLOATS */
         * {
             margin: 0;
             padding: 0;
@@ -22,22 +23,21 @@
         .hero {
             background: linear-gradient(135deg, #dc2626 0%, #ea580c 30%, #f59e0b 100%);
             color: white;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1rem;
             text-align: center;
-            border-bottom-left-radius: 2.5rem;
-            border-bottom-right-radius: 2.5rem;
+            border-bottom-left-radius: 2rem;
+            border-bottom-right-radius: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
         }
 
         .hero h1 {
-            font-size: 2.8rem;
-            letter-spacing: -1px;
+            font-size: 2rem;
             margin-bottom: 0.5rem;
         }
 
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1rem;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -48,17 +48,85 @@
             padding: 0 1.5rem 3rem 1.5rem;
         }
 
+        /* Sección de explicación de conceptos (map, fetch, promesas) */
+        .conceptos {
+            background: #1e1b2f;
+            color: #e2e8f0;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3);
+            border: 1px solid #fcd34d;
+        }
+
+        .conceptos h2 {
+            color: #fbbf24;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .grid-conceptos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .concept-card {
+            background: #0f0f1a;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            border-left: 5px solid #f59e0b;
+        }
+
+        .concept-card h3 {
+            color: #fcd34d;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-explain {
+            background: #2d2a3e;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .explain-arrow {
+            color: #86efac;
+            font-weight: bold;
+        }
+
+        .diagram {
+            background: #0a0a10;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            margin: 0.6rem 0;
+            font-size: 0.7rem;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* layout principal */
         .grid-docs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
             gap: 2rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 1.8rem;
-            padding: 1.8rem;
+            padding: 1.5rem;
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.5);
@@ -70,7 +138,7 @@
         }
 
         .card h2 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -86,10 +154,10 @@
             padding: 1rem;
             border-radius: 1rem;
             overflow-x: auto;
-            font-family: 'Fira Code', 'Cascadia Code', monospace;
-            font-size: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
             margin: 1rem 0;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .code-comment {
@@ -102,9 +170,9 @@
             border: none;
             color: white;
             font-weight: bold;
-            padding: 0.75rem 1.6rem;
+            padding: 0.7rem 1.5rem;
             border-radius: 2rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s ease;
             margin: 0.5rem 0.5rem 0 0;
@@ -119,21 +187,17 @@
         .output {
             background: #fefce8;
             border-radius: 1.2rem;
-            padding: 1.2rem;
+            padding: 1rem;
             margin-top: 1.2rem;
             min-height: 180px;
             border: 2px solid #fde047;
         }
 
-        /* 🔥 GRID DE 2 COLUMNAS para los Pokémon - CORREGIDO: ya no flota */
+        /* GRID 2 COLUMNAS - SIN FLOATS */
         .pokemon-grid-2cols {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
-            margin-top: 1rem;
-            /* Eliminamos cualquier flotación */
-            float: none;
-            clear: both;
         }
 
         .pokemon-card {
@@ -154,7 +218,6 @@
         .pokemon-card img {
             width: 80px;
             height: 80px;
-            image-rendering: crisp-edges;
         }
 
         .badge {
@@ -173,7 +236,7 @@
             padding: 0.8rem;
             margin: 0.8rem 0;
             font-family: monospace;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .loading-pulse {
@@ -194,19 +257,10 @@
 
         footer {
             text-align: center;
-            margin-top: 3rem;
+            margin-top: 2rem;
             color: #78350f;
             border-top: 1px solid #fcd34d;
-            padding-top: 2rem;
-        }
-
-        /* SVG esquema responsive */
-        .svg-schema {
-            background: #1e293b;
-            border-radius: 1rem;
-            padding: 1rem;
-            margin: 1rem 0;
-            overflow-x: auto;
+            padding-top: 1.5rem;
         }
 
         @media (max-width: 640px) {
@@ -215,7 +269,7 @@
             }
 
             .hero h1 {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
             }
 
             .grid-docs {
@@ -226,184 +280,164 @@
 </head>
 
 <body>
-
     <div class="hero">
-        <h1>⚡ map() + CSS Grid (2 columnas) + PokéAPI</h1>
-        <p>Aprendiendo Async/Await, <strong
-                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">.map()</strong> y <strong
-                style="background:#ffffff30; padding:0.2rem 0.6rem; border-radius:1rem;">CSS Grid</strong> para
-            organizar Pokémon en 2 columnas</p>
+        <h1>⚡ map() + CSS Grid + PokéAPI</h1>
+        <p>Sin floats, sin capas flotantes. Aprendiendo <strong>map, fetch y promesas</strong> con diseño limpio en
+            Grid.</p>
     </div>
 
     <div class="container">
-        <!-- ESQUEMA VISUAL SVG: Explica el flujo completo -->
-        <div class="card">
-            <h2>📊 ESQUEMA DE FUNCIONAMIENTO: .map() + CSS GRID</h2>
-            <div class="svg-schema">
-                <svg width="100%" height="280" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet"
-                    style="background: #0f172a; border-radius: 12px; font-family: monospace;">
-                    <!-- Flechas y explicación visual -->
-                    <rect x="20" y="20" width="160" height="50" rx="10" fill="#3b82f6" opacity="0.9" />
-                    <text x="100" y="50" fill="white" text-anchor="middle" font-size="12" font-weight="bold">DATOS
-                        (Array)</text>
-                    <text x="100" y="65" fill="#94a3b8" text-anchor="middle" font-size="10">["pikachu",
-                        "bulbasaur"]</text>
-
-                    <path d="M185 45 L220 45" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrow)" />
-                    <text x="210" y="35" fill="#fcd34d" font-size="10">.map()</text>
-
-                    <rect x="230" y="20" width="160" height="50" rx="10" fill="#10b981" opacity="0.9" />
-                    <text x="310" y="50" fill="white" text-anchor="middle" font-size="12">TRANSFORMACIÓN</text>
-                    <text x="310" y="65" fill="#d1d5db" text-anchor="middle" font-size="10">Array → HTML String</text>
-
-                    <path d="M395 45 L430 45" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrow)" />
-                    <text x="420" y="35" fill="#fcd34d" font-size="10">.join('')</text>
-
-                    <rect x="440" y="20" width="180" height="50" rx="10" fill="#f59e0b" opacity="0.9" />
-                    <text x="530" y="50" fill="white" text-anchor="middle" font-size="12">HTML + CSS GRID</text>
-                    <text x="530" y="65" fill="#fef3c7" text-anchor="middle" font-size="10">grid-template-columns: 1fr
-                        1fr</text>
-
-                    <path d="M625 45 L660 45" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrow)" />
-
-                    <rect x="670" y="10" width="200" height="70" rx="10" fill="#ef4444" opacity="0.9" />
-                    <text x="770" y="40" fill="white" text-anchor="middle" font-size="12">RENDER 2 COLUMNAS</text>
-                    <text x="770" y="58" fill="#fecaca" text-anchor="middle" font-size="10">Pokémon Card | Pokémon
-                        Card</text>
-                    <text x="770" y="72" fill="#fecaca" text-anchor="middle" font-size="10">Pokémon Card | Pokémon
-                        Card</text>
-
-                    <!-- Flecha marker -->
-                    <defs>
-                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
-                        </marker>
-                    </defs>
-
-                    <!-- Nota explicativa debajo del SVG -->
-                    <text x="450" y="120" fill="#cbd5e1" text-anchor="middle" font-size="11">1. map() itera cada
-                        elemento y genera HTML</text>
-                    <text x="450" y="138" fill="#cbd5e1" text-anchor="middle" font-size="11">2. join() convierte el
-                        array de strings en un solo string</text>
-                    <text x="450" y="156" fill="#cbd5e1" text-anchor="middle" font-size="11">3. CSS Grid (1fr 1fr)
-                        organiza el contenido en 2 columnas fijas</text>
-
-                    <rect x="30" y="170" width="840" height="35" rx="8" fill="#334155" />
-                    <text x="450" y="192" fill="#a5f3fc" text-anchor="middle" font-size="12">🎯 RESULTADO: Layout
-                        responsive, sin floats, estructura limpia y moderna</text>
-                </svg>
+        <!-- SECCIÓN GRÁFICA: EXPLICACIÓN DE map(), fetch() y PROMESAS -->
+        <div class="conceptos">
+            <h2>📚 Anatomía de funciones clave: .map() , fetch() y Promesas</h2>
+            <div class="grid-conceptos">
+                <!-- Explicación .map() -->
+                <div class="concept-card">
+                    <h3>🔁 .map() → Transforma arrays</h3>
+                    <div class="code-explain">
+                        <span class="code-comment">// .map() recorre cada elemento y devuelve NUEVO array</span><br>
+                        const original = [1, 2, 3];<br>
+                        const doble = original.map( <span style="color:#fbbf24;">(numero) => numero * 2</span> );<br>
+                        // Resultado: [2, 4, 6]
+                    </div>
+                    <div class="diagram">
+                        ┌─────────────────────────────────────────┐<br>
+                        │ arrayOriginal ──.map( callback )──► nuevoArray │<br>
+                        │ │<br>
+                        │ callback recibe: (elemento, índice, array)<br>
+                        │ → siempre retorna el elemento transformado │<br>
+                        └─────────────────────────────────────────┘
+                    </div>
+                    <div class="explain-arrow">✨ Se usa para convertir datos en HTML, objetos, etc.</div>
+                </div>
+                <!-- Explicación fetch() + Promesas -->
+                <div class="concept-card">
+                    <h3>🌐 fetch() + Promesas</h3>
+                    <div class="code-explain">
+                        <span class="code-comment">// fetch devuelve una PROMESA (estado pendiente)</span><br>
+                        fetch('https://api.ejemplo.com')<br>
+                        &nbsp;&nbsp;.then( <span style="color:#fbbf24;">respuesta => respuesta.json()</span> )<br>
+                        &nbsp;&nbsp;.then( <span style="color:#fbbf24;">datos => console.log(datos)</span> )<br>
+                        &nbsp;&nbsp;.catch( <span style="color:#fbbf24;">error => manejarError(error)</span> );
+                    </div>
+                    <div class="diagram">
+                        ┌─────────┐ ┌──────────┐ ┌─────────────┐<br>
+                        │ fetch() │ ──► │ Promesa │ ──► │ Respuesta │<br>
+                        │ (petición) │ pendiente│ │ (resuelta) │<br>
+                        └─────────┘ └──────────┘ └─────────────┘<br>
+                        │ │ │<br>
+                        ▼ ▼ ▼<br>
+                        [ .then() ] [ .catch() ] [ .finally() ]
+                    </div>
+                    <div class="explain-arrow">✅ Las promesas evitan el "callback hell" y manejan asincronía.</div>
+                </div>
+                <!-- Explicación Async/Await + Promise.all + map -->
+                <div class="concept-card">
+                    <h3>⚡ map() + Promise.all (múltiples fetch)</h3>
+                    <div class="code-explain">
+                        <span class="code-comment">// 1. Arreglo de urls o nombres</span><br>
+                        const urls = ['pikachu', 'charizard'];<br>
+                        <span class="code-comment">// 2. .map() crea array de promesas</span><br>
+                        const promesas = urls.map( nombre => <br>
+                        &nbsp;&nbsp;fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json())<br>
+                        );<br>
+                        <span class="code-comment">// 3. Promise.all espera TODAS</span><br>
+                        const resultados = await Promise.all(promesas);
+                    </div>
+                    <div class="diagram">
+                        [ url1, url2, url3 ]<br>
+                        │<br>
+                        ▼<br>
+                        .map( fetch ) → [ promesa1, promesa2, promesa3 ]<br>
+                        │<br>
+                        ▼<br>
+                        Promise.all( [promesa1, promesa2, promesa3] )<br>
+                        │<br>
+                        ▼<br>
+                        [ data1, data2, data3 ] ← ¡todo en paralelo!
+                    </div>
+                    <div class="explain-arrow">🚀 Ideal para cargar múltiples recursos simultáneamente.</div>
+                </div>
             </div>
-            <div class="method-highlight">
-                💡 <strong>¿Por qué ya no flota el div?</strong> Se eliminó cualquier propiedad <code>float</code> o
-                mala posición. Ahora el Grid actúa como contenedor bloque con <code>display: grid</code> y
-                <code>clear: both</code>. Cada tarjeta respeta el flujo del Grid.
+            <div class="method-highlight" style="margin-top: 1rem; background:#2d2a3e; color:#e2e8f0;">
+                💡 <strong>Resumen visual:</strong> map() transforma → fetch() lanza petición asíncrona → Promesa
+                gestiona el resultado → ¡sin floats, sin superposiciones!
             </div>
         </div>
 
+        <!-- Cards principales (sin floats, todo con Grid y Flex) -->
         <div class="grid-docs">
-            <!-- EJEMPLO 1: map() + Grid 2 columnas con datos locales -->
+            <!-- 1. .map() + Grid con datos locales -->
             <div class="card">
-                <h2>📁 1. .map() + Grid (Datos locales)</h2>
-                <p>Transformamos un arreglo JSON de 5 Pokémon en una cuadrícula de <strong>2 columnas</strong> usando
-                    CSS Grid.</p>
+                <h2>📁 1. .map() + Grid (local)</h2>
+                <p>Transformamos datos locales en HTML con <strong>.map()</strong> y CSS Grid (2 columnas fijas).</p>
                 <div class="code-block">
-                    <span class="code-comment">// 🔥 FUNCIÓN mostrarGridLocal():</span><br>
-                    <span class="code-comment">// 1. Toma array pokemonLocalData (objetos con nombre, imagen,
-                        tipo)</span><br>
-                    <span class="code-comment">// 2. .map() → itera cada pokemon y retorna template HTML
-                        string</span><br>
-                    <span class="code-comment">// 3. .join('') → une todos los strings en uno solo</span><br>
-                    <span class="code-comment">// 4. Inyecta dentro de div con clase 'pokemon-grid-2cols'</span><br>
-                    <span class="code-comment">// 5. CSS Grid: grid-template-columns: 1fr 1fr → organiza
-                        automático</span>
+                    <span class="code-comment">// Datos locales</span><br>
+                    const pokemones = [ {id:25, nombre:"Pikachu"}, ... ];<br>
+                    <span class="code-comment">// .map() genera tarjetas</span><br>
+                    const tarjetas = pokemones.map(p => `&lt;div class="pokemon-card"&gt;...&lt;/div&gt;`).join('');<br>
+                    <span class="code-comment">// Grid 1fr 1fr aplica 2 columnas automáticas</span>
                 </div>
-                <button id="btnGridLocal">🎨 Mostrar con Grid de 2 columnas</button>
-                <div id="outputGridLocal" class="output">
-                    ⚡ Haz clic para ver cómo <strong>.map()</strong> + <strong>Grid 1fr 1fr</strong> organizan los
-                    Pokémon.
-                </div>
+                <button id="btnGridLocal">🎨 Mostrar Grid 2 columnas</button>
+                <div id="outputGridLocal" class="output">⚡ Haz clic para ver .map() + Grid.</div>
             </div>
 
-            <!-- EJEMPLO 2: map() + PokéAPI + Grid 2 columnas -->
+            <!-- 2. PokéAPI + map + Grid -->
             <div class="card">
-                <h2>🌐 2. PokéAPI + map() + Grid 2 columnas</h2>
-                <p>Consumimos PokéAPI con async/await, transformamos con <strong>.map()</strong> y mostramos en
-                    <strong>2 columnas</strong>.</p>
+                <h2>🌐 2. PokéAPI + map() + Grid</h2>
+                <p>.map() + Promise.all + fetch() → Grid organiza sin floats.</p>
                 <div class="code-block">
-                    <span class="code-comment">// FUNCIÓN mostrarGridAPI (async):</span><br>
-                    <span class="code-comment">// 1. Array nombres = ["pikachu","charizard"...]</span><br>
-                    <span class="code-comment">// 2. .map(nombre => fetch(...).then(res => res.json())) →
-                        promesas</span><br>
-                    <span class="code-comment">// 3. Promise.all(promesas) → espera TODAS las respuestas en
-                        paralelo</span><br>
-                    <span class="code-comment">// 4. .map() sobre resultados → genera HTML con nombre, tipo,
-                        imagen</span><br>
-                    <span class="code-comment">// 5. join() y se inyecta en Grid 2 columnas</span>
+                    const nombres = ["pikachu","charizard","mewtwo"];<br>
+                    const promesas = nombres.map(n => fetch(...).then(r=>r.json()));<br>
+                    const data = await Promise.all(promesas);<br>
+                    const html = data.map(p=>`&lt;div&gt;${p.name}&lt;/div&gt;`).join('');
                 </div>
-                <button id="btnGridAPI">🚀 Cargar 6 Pokémon desde PokéAPI</button>
-                <div id="outputGridAPI" class="output">
-                    🌟 <strong>.map()</strong> genera el HTML, <strong>CSS Grid</strong> organiza en 2 columnas.
-                </div>
+                <button id="btnGridAPI">🚀 Cargar 6 Pokémon desde API</button>
+                <div id="outputGridAPI" class="output">🌟 .map() + Grid limpio.</div>
             </div>
 
-            <!-- EJEMPLO 3: Comparativa layout (Grid vs Flex) -->
+            <!-- 3. Grid vs Flex (sin floats) -->
             <div class="card">
                 <h2>🔄 3. Grid 1fr 1fr vs Flexbox</h2>
-                <p>Con <strong>Grid</strong> forzamos EXACTAMENTE 2 columnas. Con <strong>Flexbox</strong> las tarjetas
-                    se ajustan según el ancho.</p>
+                <p>Comparativa: Grid fuerza 2 columnas exactas, Flex se adapta.</p>
                 <div class="code-block">
-                    <span class="code-comment">/* 🔥 CSS Grid: columnas fijas 1fr 1fr -> siempre dos */</span>
-                    .pokemon-grid-2cols { display: grid; grid-template-columns: 1fr 1fr; }<br>
-                    <span class="code-comment">/* 🔄 Flexbox: flujo flexible con wrap */</span>
+                    .grid-2cols { display: grid; grid-template-columns: 1fr 1fr; }<br>
                     .flex-wrap { display: flex; flex-wrap: wrap; gap:1rem; }
                 </div>
-                <button id="btnCompararLayout">📊 Comparar Grid 2 cols vs Flexbox</button>
-                <div id="outputCompararLayout" class="output">
-                    💡 Muestra la diferencia entre Grid (2 columnas fijas) y Flexbox (responsive fluido).
+                <button id="btnCompararLayout">📊 Comparar layouts</button>
+                <div id="outputCompararLayout" class="output">Comparativa clara sin floats.</div>
+            </div>
+
+            <!-- 4. Grid responsivo (media query) -->
+            <div class="card">
+                <h2>📱 4. Grid responsivo</h2>
+                <p>Media query: 2 columnas en desktop, 1 en móvil.</p>
+                <div class="code-block">
+                    @media (max-width: 640px) {<br>
+                    &nbsp;&nbsp;.pokemon-grid-2cols { grid-template-columns: 1fr; }<br>
+                    }
                 </div>
+                <button id="btnGridResponsivo">📱 Mostrar responsivo</button>
+                <div id="outputResponsivo" class="output">Redimensiona para ver magia.</div>
             </div>
-        </div>
 
-        <!-- EJEMPLO 4: Grid responsivo (2 columnas en desktop, 1 en móvil) -->
-        <div class="card">
-            <h2>📱 4. Grid Responsivo con Media Query</h2>
-            <p>Usamos <strong>media query</strong> para que en móvil las tarjetas se muestren en <strong>1
-                    columna</strong> y en desktop en <strong>2 columnas</strong>.</p>
-            <div class="code-block">
-                <span class="code-comment">/* CSS responsivo: pantallas ≤640px cambia a 1fr */</span>
-                @media (max-width: 640px) {
-                .pokemon-grid-2cols { grid-template-columns: 1fr; }
-                }
-            </div>
-            <button id="btnGridResponsivo">📱 Mostrar Grid responsivo (redimensiona la ventana)</button>
-            <div id="outputResponsivo" class="output">
-                🖥️ Redimensiona tu navegador: en escritorio verás 2 columnas, en móvil 1 columna.
-            </div>
-        </div>
-
-        <!-- EJEMPLO 5: Grid con diferentes tamaños de tarjetas -->
-        <div class="card">
-            <h2>🎨 5. Grid avanzado: tarjetas con imágenes más grandes</h2>
-            <p>Usamos Grid de 2 columnas pero con tarjetas más vistosas (imagen de 100px).</p>
-            <div class="code-block">
-                <span class="code-comment">// La misma lógica .map() + join() pero con estilos mejorados</span>
-                .pokemon-card-grande { padding:1.2rem; img { width:100px; } }
-            </div>
-            <button id="btnGridGrande">🌟 Mostrar tarjetas grandes (Grid 2 cols)</button>
-            <div id="outputGrande" class="output">
-                🎯 Grid 1fr 1fr con tarjetas más grandes y detalles adicionales.
+            <!-- 5. Tarjetas grandes con Grid -->
+            <div class="card">
+                <h2>🎨 5. Grid con tarjetas grandes</h2>
+                <p>Grid 2 columnas + imágenes 100px, sin capas flotantes.</p>
+                <button id="btnGridGrande">🌟 Mostrar tarjetas grandes</button>
+                <div id="outputGrande" class="output">Grid + map + diseño robusto.</div>
             </div>
         </div>
 
         <footer>
-            🧪 <strong>CSS Grid + .map() = Layout perfecto</strong><br>
-            📌 <strong>grid-template-columns: 1fr 1fr</strong> → 2 columnas exactas | <strong>.map()</strong> genera el
-            contenido | <strong>join()</strong> solo concatena
+            🧪 <strong>CSS Grid + .map() + Promesas = sin floats, sin superposición</strong><br>
+            📌 layout basado en grid-template-columns: 1fr 1fr | contenido generado con map() y fetch() asíncrono.
         </footer>
     </div>
 
     <script>
-        // ===================== DATOS LOCALES =====================
+        // DATOS LOCALES (sin floats)
         const pokemonLocalData = [
             { id: 25, nombre: "Pikachu", tipo: "eléctrico", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" },
             { id: 4, nombre: "Charmander", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" },
@@ -412,213 +446,157 @@
             { id: 133, nombre: "Eevee", tipo: "normal", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" }
         ];
 
-        // --------------------------------------------------------------
-        // FUNCIÓN 1: mostrarGridLocal
-        // Qué hace: Toma datos locales, aplica .map() para generar HTML de cada pokémon,
-        // luego .join('') para unir todo en un solo string. El string final se inyecta
-        // en un contenedor con clase "pokemon-grid-2cols" que CSS convierte en 2 columnas.
-        // Evita floats y desorden gracias a display: grid.
-        // --------------------------------------------------------------
+        // 1. Local con map + grid
         function mostrarGridLocal() {
             const output = document.getElementById('outputGridLocal');
-
-            // 🔥 .map(): recorre cada pokemon y devuelve un template string
-            const tarjetasHTML = pokemonLocalData.map(pokemon => {
-                return `
-                <div class="pokemon-card">
-                    <img src="${pokemon.imagen}" alt="${pokemon.nombre}" loading="lazy">
-                    <strong>${pokemon.nombre}</strong><br>
-                    <small>${pokemon.tipo}</small><br>
-                    <span class="badge">#${pokemon.id}</span>
-                </div>
-            `;
-            }).join(''); // join('') une todos los elementos del array en una sola cadena, sin comas
-
-            output.innerHTML = `
-            <strong>✅ .map() generó ${pokemonLocalData.length} tarjetas</strong>
-            <div class="pokemon-grid-2cols">
-                ${tarjetasHTML}
+            const tarjetasHTML = pokemonLocalData.map(pokemon => `
+            <div class="pokemon-card">
+                <img src="${pokemon.imagen}" alt="${pokemon.nombre}" loading="lazy">
+                <strong>${pokemon.nombre}</strong><br>
+                <small>${pokemon.tipo}</small><br>
+                <span class="badge">#${pokemon.id}</span>
             </div>
-            <div class="method-highlight" style="margin-top: 10px;">
-                📌 <strong>Explicación función:</strong> mostrarGridLocal() → .map() itera y genera HTML, 
-                luego CSS Grid con 1fr 1fr organiza fijamente en 2 columnas. Sin float.
+        `).join('');
+            output.innerHTML = `
+            <strong>✅ .map() generó ${pokemonLocalData.length} tarjetas (Grid 2 columnas)</strong>
+            <div class="pokemon-grid-2cols">${tarjetasHTML}</div>
+            <div class="method-highlight" style="margin-top:10px;">
+                📌 <strong>CSS Grid:</strong> display: grid; grid-template-columns: 1fr 1fr; → SIN FLOATS, sin capas flotantes.
             </div>
         `;
         }
 
-        // --------------------------------------------------------------
-        // FUNCIÓN 2: mostrarGridAPI (async)
-        // Proceso asíncrono: 1) Array de nombres. 2) .map() crea promesas de fetch.
-        // 3) Promise.all() resuelve todas en paralelo. 4) .map() sobre los datos de la API
-        // para construir HTML. 5) join() une e inyecta en Grid.
-        // --------------------------------------------------------------
+        // 2. PokéAPI + map + Promise.all + fetch (totalmente asíncrono)
         async function mostrarGridAPI() {
             const output = document.getElementById('outputGridAPI');
-            output.innerHTML = '<div class="loading-pulse">🌐 Cargando 6 Pokémon desde PokéAPI...</div>';
-
+            output.innerHTML = '<div class="loading-pulse">🌐 Cargando Pokémon desde PokéAPI con fetch + map + Promise.all...</div>';
             try {
                 const nombres = ["pikachu", "charizard", "mewtwo", "eevee", "snorlax", "bulbasaur"];
-
-                // Crear array de promesas con .map(): cada promesa es un fetch a la API
-                const promesas = nombres.map(nombre => {
-                    return fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json());
-                });
-
-                // Esperar a que todas las promesas se resuelvan (paralelo)
+                // .map() crea un arreglo de promesas (cada fetch devuelve promesa)
+                const promesas = nombres.map(nombre => fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`).then(res => res.json()));
+                // Promise.all resuelve TODAS las promesas en paralelo
                 const resultados = await Promise.all(promesas);
-
-                // Segundo .map() para generar las tarjetas HTML a partir de los datos de la API
+                // .map() para transformar los datos en HTML
                 const tarjetasHTML = resultados.map(pokemon => {
                     const tipos = pokemon.types.map(t => t.type.name).join(', ');
                     return `
                     <div class="pokemon-card">
-                        <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" style="width: 80px;">
-                        <strong style="text-transform: capitalize;">${pokemon.name}</strong><br>
+                        <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" style="width:80px;">
+                        <strong style="text-transform:capitalize;">${pokemon.name}</strong><br>
                         <small>${tipos}</small>
                         <span class="badge">#${pokemon.id}</span>
                     </div>
                 `;
                 }).join('');
-
                 output.innerHTML = `
-                <strong>✅ ${resultados.length} Pokémon desde PokéAPI</strong>
-                <div class="pokemon-grid-2cols">
-                    ${tarjetasHTML}
-                </div>
-                <div class="method-highlight" style="margin-top: 10px;">
-                    💡 <strong>Explicación async:</strong> Promise.all + .map() en paralelo, luego .map() para maquetar. Grid 2 columnas.
+                <strong>✅ ${resultados.length} Pokémon desde PokéAPI (fetch + Promise.all + map)</strong>
+                <div class="pokemon-grid-2cols">${tarjetasHTML}</div>
+                <div class="method-highlight">
+                    🔍 <strong>Flujo explicado gráficamente:</strong><br>
+                    1️⃣ .map() sobre nombres → devuelve array de promesas de fetch.<br>
+                    2️⃣ Promise.all( promesas ) → espera a que todas terminen.<br>
+                    3️⃣ .map() sobre resultados → convierte datos en HTML.<br>
+                    4️⃣ CSS Grid organiza en 2 columnas → nada de floats.
                 </div>
             `;
             } catch (error) {
-                output.innerHTML = `❌ Error: ${error.message}`;
+                output.innerHTML = `❌ Error en fetch: ${error.message}`;
             }
         }
 
-        // --------------------------------------------------------------
-        // FUNCIÓN 3: compararLayouts
-        // Muestra lado a lado CSS Grid (2 columnas fijas) y Flexbox (wrap)
-        // para entender la diferencia en organización visual.
-        // --------------------------------------------------------------
+        // 3. Comparar Grid vs Flex (sin floats)
         function compararLayouts() {
             const output = document.getElementById('outputCompararLayout');
             const tarjetasHTML = pokemonLocalData.map(pokemon => `
             <div class="pokemon-card">
-                <img src="${pokemon.imagen}" alt="${pokemon.nombre}" style="width: 70px;">
+                <img src="${pokemon.imagen}" style="width:70px;">
                 <strong>${pokemon.nombre}</strong>
             </div>
         `).join('');
-
             output.innerHTML = `
-            <strong>📊 Comparativa: CSS Grid (1fr 1fr) vs Flexbox</strong>
-            <div style="margin-top: 1rem;">
+            <strong>📊 Comparativa: Grid (2 columnas fijas) vs Flex (fluido)</strong>
+            <div style="margin-top:1rem;">
                 <strong>🔹 CSS Grid - 2 columnas exactas:</strong>
-                <div class="pokemon-grid-2cols" style="margin-top: 0.5rem;">
-                    ${tarjetasHTML}
-                </div>
+                <div class="pokemon-grid-2cols" style="margin-top:0.5rem;">${tarjetasHTML}</div>
+                <code style="background:#fef3c7;">grid-template-columns: 1fr 1fr;</code>
             </div>
-            <div style="margin-top: 1.5rem;">
+            <div style="margin-top:1.5rem;">
                 <strong>🔸 Flexbox - Ajuste fluido (wrap):</strong>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.5rem;">
-                    ${tarjetasHTML}
-                </div>
+                <div style="display: flex; flex-wrap: wrap; gap:0.8rem; margin-top:0.5rem;">${tarjetasHTML}</div>
+                <code style="background:#fef3c7;">display: flex; flex-wrap: wrap;</code>
             </div>
-            <div class="method-highlight" style="margin-top: 1rem;">
-                🎯 <strong>Diferencia:</strong> Grid fuerza siempre 2 columnas; Flexbox se adapta al ancho.
+            <div class="method-highlight" style="margin-top:1rem;">
+                🎯 <strong>Conclusión:</strong> Grid controla columnas exactas, Flex se adapta al ancho. Ninguno usa float.
             </div>
         `;
         }
 
-        // --------------------------------------------------------------
-        // FUNCIÓN 4: mostrarGridResponsivo
-        // Agrega más pokémon y utiliza la misma clase .pokemon-grid-2cols
-        // que ya tiene media query (en móvil 1 columna, escritorio 2).
-        // --------------------------------------------------------------
+        // 4. Grid responsivo (media query ya definida en CSS, solo se crea contenido)
         function mostrarGridResponsivo() {
             const output = document.getElementById('outputResponsivo');
-            const masPokemones = [
-                ...pokemonLocalData,
-                { id: 6, nombre: "Charizard", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" },
-                { id: 9, nombre: "Blastoise", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png" }
+            const masPokemones = [...pokemonLocalData,
+            { id: 6, nombre: "Charizard", tipo: "fuego", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" },
+            { id: 9, nombre: "Blastoise", tipo: "agua", imagen: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png" }
             ];
-
-            const tarjetasHTML = masPokemones.map(pokemon => `
+            const tarjetasHTML = masPokemones.map(p => `
             <div class="pokemon-card">
-                <img src="${pokemon.imagen}" alt="${pokemon.nombre}">
-                <strong>${pokemon.nombre}</strong>
-                <small>${pokemon.tipo}</small>
+                <img src="${p.imagen}" alt="${p.nombre}">
+                <strong>${p.nombre}</strong>
+                <small>${p.tipo}</small>
             </div>
         `).join('');
-
             output.innerHTML = `
             <strong>📱 Grid responsivo (${masPokemones.length} Pokémon)</strong>
-            <div class="pokemon-grid-2cols">
-                ${tarjetasHTML}
-            </div>
+            <div class="pokemon-grid-2cols">${tarjetasHTML}</div>
             <div class="method-highlight">
-                💡 <strong>Media query activa:</strong> ≤640px cambia a 1 columna, >640px 2 columnas.
+                💡 <strong>Media query activa:</strong> @media (max-width:640px) { .pokemon-grid-2cols { grid-template-columns: 1fr; } }<br>
+                🔍 Redimensiona la ventana: en escritorio 2 columnas, en móvil 1 columna. Sin floats.
             </div>
         `;
         }
 
-        // --------------------------------------------------------------
-        // FUNCIÓN 5: mostrarGridGrande
-        // Usa Grid de 2 columnas pero con tarjetas más grandes (imagen 100px)
-        // y estilos hover mejorados. Mismo principio: .map()+join().
-        // --------------------------------------------------------------
+        // 5. Tarjetas grandes con Grid
         function mostrarGridGrande() {
             const output = document.getElementById('outputGrande');
-            const styleGrande = `
+            const styleExtra = `
             <style>
                 .pokemon-card-grande {
                     background: linear-gradient(135deg, #fffbeb, #fef3c7);
                     border-radius: 1.5rem;
                     padding: 1.2rem;
                     text-align: center;
-                    transition: transform 0.2s;
+                    transition: 0.2s;
                     border: 1px solid #fcd34d;
                 }
-                .pokemon-card-grande:hover {
-                    transform: scale(1.02);
-                    background: white;
-                }
-                .pokemon-card-grande img {
-                    width: 100px;
-                    height: 100px;
-                }
+                .pokemon-card-grande:hover { transform: scale(1.02); background: white; }
+                .pokemon-card-grande img { width: 100px; height: 100px; }
             </style>
         `;
-
             const tarjetasHTML = pokemonLocalData.map(pokemon => `
             <div class="pokemon-card-grande">
                 <img src="${pokemon.imagen}" alt="${pokemon.nombre}">
-                <h3 style="margin: 0.5rem 0 0.2rem;">${pokemon.nombre}</h3>
+                <h3 style="margin:0.5rem 0;">${pokemon.nombre}</h3>
                 <span class="badge">#${pokemon.id}</span>
-                <p style="font-size: 0.8rem;">Tipo: ${pokemon.tipo}</p>
+                <p>Tipo: ${pokemon.tipo}</p>
             </div>
         `).join('');
-
             output.innerHTML = `
-            ${styleGrande}
-            <strong>🌟 Tarjetas grandes + Grid 2 columnas</strong>
-            <div class="pokemon-grid-2cols">
-                ${tarjetasHTML}
-            </div>
-            <div class="method-highlight">
-                🎨 <strong>Mejora:</strong> Imagen 100px, hover con escala, Grid mantiene estructura firme sin flotación.
-            </div>
+            ${styleExtra}
+            <strong>🌟 Tarjetas grandes con Grid 2 columnas</strong>
+            <div class="pokemon-grid-2cols">${tarjetasHTML}</div>
+            <div class="method-highlight">🎨 Imágenes grandes, diseño limpio, sin floats ni solapamiento.</div>
         `;
         }
 
-        // ===================== EVENT LISTENERS =====================
+        // Eventos
         document.getElementById('btnGridLocal').addEventListener('click', mostrarGridLocal);
         document.getElementById('btnGridAPI').addEventListener('click', mostrarGridAPI);
         document.getElementById('btnCompararLayout').addEventListener('click', compararLayouts);
         document.getElementById('btnGridResponsivo').addEventListener('click', mostrarGridResponsivo);
         document.getElementById('btnGridGrande').addEventListener('click', mostrarGridGrande);
 
-        console.log('%c🎯 Playground corregido: sin divs flotantes, Grid puro + map() explicado', 'color: #f59e0b; font-size: 14px;');
+        console.log('%c✅ Playground mejorado: sin floats, sin capas flotantes, explicación de map, fetch y promesas', 'color:#f59e0b; font-size:14px');
     </script>
 </body>
 
 </html>
-```
