@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Despliegue: n8n en Docker Offline</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #ff6d5a;
+            /* Color característico de n8n */
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #cbd5e1;
+            --code-bg: #1e293b;
+            --warning-bg: #fffbeb;
+            --warning-border: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Encabezado Principal */
+        header {
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            color: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .meta-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Bloque de Prerrequisitos Críticos */
+        .prereq-section {
+            background-color: var(--warning-bg);
+            border-left: 5px solid var(--warning-border);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .prereq-section h2 {
+            color: #b45309;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prereq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-left: 4px;
+        }
+
+        .prereq-list li {
+            list-style: none;
+            position: relative;
+            padding-left: 20px;
+            font-size: 0.95rem;
+        }
+
+        .prereq-list li::before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+            font-size: 0.85rem;
+        }
+
+        /* Grilla Principal de Pasos (CSS Grid) */
+        .grid-fases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-fases {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fase-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .fase-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -5px rgba(15, 23, 42, 0.08);
+            border-color: var(--primary-light);
+        }
+
+        .fase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+
+        .fase-title {
+            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .fase-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            background: var(--light);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Lista de Sub-pasos con Flexbox */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .step-index {
+            background: var(--dark);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            min-width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+
+        .step-text {
+            flex-grow: 1;
+            font-size: 0.92rem;
+            color: #334155;
+        }
+
+        /* Bloques de Código */
+        code {
+            background-color: #e2e8f0;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: #f8fafc;
+            padding: 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.82rem;
+            margin-top: 6px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Botón de acción con transiciones */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(255, 109, 90, 0.15);
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .btn-action:hover {
+            background-color: #e05343;
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(255, 109, 90, 0.25);
+        }
+
+        footer {
+            margin-top: 16px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            .badge {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <div class="header-title">
+                <h1>Preparación y Despliegue de n8n Offline</h1>
+                <p>Guía Técnica de Portabilidad de Contenedores para Entornos con Restricciones de Red</p>
+            </div>
+            <div class="meta-flex">
+                <span class="badge">Escuela: Análisis de Sistemas</span>
+                <span class="badge">Orquestador: Docker Compose</span>
+                <span class="badge" style="background: var(--accent); font-weight: bold;">Estrategia Anti-Proxy</span>
+            </div>
+        </header>
+
+        <section class="prereq-section">
+            <h2>¡IMPORTANTE! Prerrequisitos Obligatorios en el Laboratorio</h2>
+            <p style="margin-bottom: 12px; font-size: 0.95rem; color: #78350f;">
+                Para que la arquitectura de contenedores funcione de manera local y offline, es **estrictamente
+                obligatorio** verificar y habilitar los siguientes componentes del sistema operativo antes de intentar
+                correr los scripts:
+            </p>
+            <ul class="prereq-list">
+                <li>
+                    <strong>Habilitar WSL (Windows Subsystem for Linux):</strong> Docker Desktop requiere el núcleo
+                    lúdico de Linux para operar en Windows de forma eficiente. Si no está activo, abre PowerShell como
+                    Administrador y ejecuta <code>wsl --install</code>, luego reinicia la computadora.
+                </li>
+                <li>
+                    <strong>Instalar Docker Desktop:</strong> Asegúrate de que las estaciones de trabajo cuenten con el
+                    motor de Docker instalado y en ejecución. (Si el proxy no permite la descarga, el instalador
+                    ejecutable offline debe ser provisto previamente en un pendrive).
+                </li>
+                <li>
+                    <strong>Verificar Permisos del Motor:</strong> El icono de Docker en la barra de tareas debe
+                    mostrarse en color verde (Running) antes de dar doble clic al automatizador.
+                </li>
+            </ul>
+        </section>
+
+        <main class="grid-fases">
+
+            <article class="fase-card">
+                <div class="fase-header">
+                    <span class="fase-title">Fase 1: Preparación en Casa</span>
+                    <span class="fase-tag">Con Internet Libre</span>
+                </div>
+                <p style="font-size: 0.9rem; color: #475569;">El objetivo es extraer y empaquetar la imagen del
+                    repositorio global de Docker Hub para transportarla sin consumo de red.</p>
+
+                <div class="steps-container">
+                    <div class="step-item">
+                        <div class="step-index">1</div>
+                        <div class="step-text">
+                            Descarga la última imagen oficial estables de n8n ejecutando en tu terminal:
+                            <pre>docker pull n8nio/n8n:latest</pre>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-index">2</div>
+                        <div class="step-text">
+                            Exporta la imagen descargada a un archivo binario plano comprimido tipo <code>.tar</code>:
+                            <pre>docker save -o n8n-latest.tar n8nio/n8n:latest</pre>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-index">3</div>
+                        <div class="step-text">
+                            Estructura tu directorio local creando un archivo llamado <code>docker-compose.yml</code> y
+                            un script automatizador por lotes <code>Iniciar_Laboratorio.bat</code> en la misma carpeta
+                            junto al archivo .tar extraído.
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-index">4</div>
+                        <div class="step-text">
+                            Comprime toda la estructura en un archivo <code>.zip</code> y súbelo a tu almacenamiento de
+                            Google Drive para la distribución masiva en el aula.
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="fase-card">
+                <div class="fase-header">
+                    <span class="fase-title">Fase 2: Despliegue en el Aula</span>
+                    <span class="fase-tag">Entorno Bloqueado</span>
+                </div>
+                <p style="font-size: 0.9rem; color: #475569;">Acción del estudiante para evadir el proxy de manera local
+                    interactuando con el software portado.</p>
+
+                <div class="steps-container">
+                    <div class="step-item">
+                        <div class="step-index">1</div>
+                        <div class="step-text">
+                            Descarga el paquete comprimido usando el enlace provisto de Google Drive y descomprímelo en
+                            un directorio local de la máquina (ej: Escritorio).
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-index">2</div>
+                        <div class="step-text">
+                            Ejecuta el script <code>Iniciar_Laboratorio.bat</code> mediante doble clic. Este comando
+                            forzará al motor local de Docker a ingerir la imagen física sin consultar servidores
+                            externos:
+                            <pre>docker load -i n8n-latest.tar</pre>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-index">3</div>
+                        <div class="step-text">
+                            Docker Compose levantará el contenedor en segundo plano e instanciará el volumen persistente
+                            dentro del directorio <code>datos_n8n</code>.
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-index">4</div>
+                        <div class="step-text">
+                            Abre tu navegador de preferencia (Chrome o Edge) e ingresa al ecosistema local:
+                            <pre>http://localhost:5678</pre>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="btn-action">Enlace de Descarga del Paquete (Google Drive)</a>
+            </article>
+
+        </main>
+
+        <footer>
+            <p>IUTPI - Escuela de Análisis de Sistemas | Profesor Robyir Loreto</p>
+            <p style="font-size: 0.75rem; margin-top: 4px; color: #94a3b8;">Diseñado con CSS Grid & Flexbox Responsivo
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
