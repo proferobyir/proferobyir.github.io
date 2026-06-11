@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Acceso Inteligente: Reconocimiento de Robyir</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Poppins', 'Roboto', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0b2b2c 0%, #1a4a4c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .access-container {
+            max-width: 1280px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 3rem;
+            padding: 1.8rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .camera-panel,
+        .info-panel {
+            background: #1e2f2fcc;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #ffd966;
+            padding-bottom: 0.6rem;
+        }
+
+        .cam-header h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #FFF9C4, #FFE0A3);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .badge {
+            background: #2c4a3e;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #e9f5e1;
+        }
+
+        #webcam-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #00000055;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            min-height: 260px;
+            border: 2px solid #ffd96688;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 1rem;
+        }
+
+        .btn-start {
+            background: linear-gradient(95deg, #ffb347, #ff8c1a);
+            border: none;
+            padding: 0.9rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2d2b1f;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 5px 0 #a65200;
+        }
+
+        .btn-start:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #a65200;
+        }
+
+        .result-card {
+            background: #0f2020;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            color: #cfe6cf;
+            margin-bottom: 1rem;
+            border-left: 4px solid #ffb347;
+            padding-left: 0.8rem;
+        }
+
+        #label-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        #label-container div {
+            background: #00000066;
+            padding: 0.8rem 1rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #ffd96644;
+            color: #f9f3cf;
+        }
+
+        .welcome-message {
+            background: radial-gradient(circle at 10% 30%, #2c5e2a, #0e3a2b);
+            border-radius: 1.8rem;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #ffe0a3;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .welcome-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #F9F3B0, #FFD966);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .status-badge {
+            font-size: 0.9rem;
+            background: #021a1a;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            margin-top: 0.6rem;
+            color: #bbd9b5;
+        }
+
+        .hidden-message {
+            display: none;
+        }
+
+        .footer-note {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #bdd4cf;
+            border-top: 1px solid #ffd96655;
+            padding-top: 1rem;
+        }
+
+        @media (max-width: 800px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .welcome-text {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="access-container">
+        <div class="dashboard">
+            <!-- Columna izquierda -->
+            <div class="camera-panel">
+                <div class="cam-header">
+                    <h2>📸 Escáner Visual</h2>
+                    <span class="badge">🔐 Reconocimiento IA</span>
+                </div>
+                <div id="webcam-container" style="min-height: 280px;">
+                    <div class="instruction" style="width:100%; text-align:center; color:#ffecb3;">Presiona "Iniciar"
+                        para acceder a la cámara</div>
+                </div>
+                <button type="button" class="btn-start" onclick="init()">▶ INICIAR RECONOCIMIENTO</button>
+                <div class="instruction" style="font-size:0.85rem; color:#ffecb3; text-align:center;">
+                    💡 El modelo identificará si eres <strong>Robyir</strong> u otra persona.
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="info-panel">
+                <div class="result-card">
+                    <div class="result-title">📊 Probabilidades detectadas</div>
+                    <div id="label-container">
+                        <div style="opacity:0.6;">Esperando predicción...</div>
+                    </div>
+                </div>
+
+                <div id="welcomeBox" class="welcome-message hidden-message">
+                    <div class="welcome-text">✨ BIENVENIDO ROBYIR ✨</div>
+                    <div class="status-badge">✔ Acceso concedido • Identidad verificada</div>
+                </div>
+                <div id="notRobyirMsg" class="welcome-message" style="background:#2d2a1ecc; border-color:#ffaa44;">
+                    <div class="welcome-text"
+                        style="font-size:1.2rem; background: #f5e2b0; background-clip:text; -webkit-background-clip:text; color:#f5e2b0;">
+                        🔍 Visitante detectado</div>
+                    <div class="status-badge">No se reconoce a Robyir. Acceso restringido.</div>
+                </div>
+                <div class="footer-note">
+                    ⚡ Modelo cargado desde Teachable Machine • Solo Robyir activa el saludo especial.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+    <script>
+        // ================= CONFIGURACIÓN =================
+        // URL DE TU MODELO (ACTUALIZADA)
+        const URL = "https://teachablemachine.withgoogle.com/models/jPHyFUk8J/";
+
+        const ROBYIR_THRESHOLD = 0.70; // 70% de confianza para mostrar bienvenida
+
+        // Variables globales
+        let model, webcam, labelContainer, maxPredictions;
+        let isModelReady = false;
+        let animationLoopId = null;
+        let webcamActive = false;
+        let isInitializing = false;
+
+        const webcamContainer = document.getElementById("webcam-container");
+        const labelContainerElem = document.getElementById("label-container");
+        const welcomeDiv = document.getElementById("welcomeBox");
+        const notRobyirDiv = document.getElementById("notRobyirMsg");
+
+        // Función para actualizar mensajes según la predicción
+        function updateWelcomeMessageBasedOnPrediction(predictions) {
+            if (!predictions || !Array.isArray(predictions) || predictions.length === 0) return;
+
+            let robyirProbability = 0;
+            let isRobyirDetected = false;
+
+            // Buscar la clase que se llama "Robyir" (exactamente como se llama en Teachable Machine)
+            for (let i = 0; i < predictions.length; i++) {
+                const className = predictions[i].className;
+                // Comparación exacta (ej: "Robyir") o si contiene la palabra (por si acaso)
+                if (className && (className.toLowerCase() === "robyir" || className.toLowerCase().includes("robyir"))) {
+                    robyirProbability = predictions[i].probability;
+                    if (robyirProbability >= ROBYIR_THRESHOLD) {
+                        isRobyirDetected = true;
+                    }
+                    break;
+                }
+            }
+
+            // Mostrar/ocultar mensajes según detección
+            if (isRobyirDetected) {
+                if (welcomeDiv) welcomeDiv.classList.remove("hidden-message");
+                if (notRobyirDiv) notRobyirDiv.classList.add("hidden-message");
+            } else {
+                if (welcomeDiv) welcomeDiv.classList.add("hidden-message");
+                if (notRobyirDiv) notRobyirDiv.classList.remove("hidden-message");
+            }
+        }
+
+        // Función de predicción continua
+        async function predict() {
+            if (!model || !webcam || !webcam.canvas || !isModelReady) return;
+            try {
+                const prediction = await model.predict(webcam.canvas);
+                if (prediction && labelContainerElem && maxPredictions) {
+                    // Actualizar las etiquetas de probabilidad
+                    for (let i = 0; i < maxPredictions; i++) {
+                        if (labelContainerElem.childNodes[i]) {
+                            const probPercent = (prediction[i].probability * 100).toFixed(1);
+                            labelContainerElem.childNodes[i].innerHTML = `${prediction[i].className}: ${probPercent}%`;
+                        }
+                    }
+                    // Actualizar mensaje de bienvenida
+                    updateWelcomeMessageBasedOnPrediction(prediction);
+                }
+            } catch (error) {
+                console.warn("Error en predicción:", error);
+            }
+        }
+
+        // Loop de animación
+        async function loop() {
+            if (!webcam || !webcamActive) return;
+            try {
+                webcam.update();
+                await predict();
+                animationLoopId = requestAnimationFrame(loop);
+            } catch (err) {
+                console.error("Loop error:", err);
+                if (animationLoopId) cancelAnimationFrame(animationLoopId);
+                webcamActive = false;
+            }
+        }
+
+        // Función init (botón Start)
+        async function init() {
+            if (isInitializing) {
+                console.log("Ya inicializando... espera");
+                return;
+            }
+
+            // Detener sesión anterior si existe
+            if (webcamActive && model) {
+                if (animationLoopId) cancelAnimationFrame(animationLoopId);
+                if (webcam && typeof webcam.stop === 'function') await webcam.stop().catch(e => console.warn);
+                webcamActive = false;
+                if (webcamContainer) {
+                    while (webcamContainer.firstChild) webcamContainer.removeChild(webcamContainer.firstChild);
+                    webcamContainer.innerHTML = '';
+                }
+            }
+
+            isInitializing = true;
+
+            if (webcamContainer) {
+                webcamContainer.innerHTML = '<div style="text-align:center; color:#ffecb3;">📷 Cargando modelo y solicitando cámara...</div>';
+            }
+
+            try {
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+
+                console.log("Cargando modelo desde:", modelURL);
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                console.log(`Modelo cargado. Clases: ${maxPredictions}`);
+                isModelReady = true;
+
+                // Configurar webcam (tamaño 320x240 para mejor rendimiento)
+                const flip = true;
+                webcam = new tmImage.Webcam(320, 240, flip);
+                await webcam.setup();
+                await webcam.play();
+                webcamActive = true;
+
+                // Limpiar y agregar canvas al contenedor
+                if (webcamContainer) {
+                    webcamContainer.innerHTML = '';
+                    webcamContainer.appendChild(webcam.canvas);
+                    webcam.canvas.style.width = '100%';
+                    webcam.canvas.style.height = 'auto';
+                    webcam.canvas.style.borderRadius = '1rem';
+                }
+
+                // Preparar contenedor de etiquetas
+                if (labelContainerElem) {
+                    labelContainerElem.innerHTML = '';
+                    for (let i = 0; i < maxPredictions; i++) {
+                        const newDiv = document.createElement("div");
+                        newDiv.textContent = "Esperando predicción...";
+                        labelContainerElem.appendChild(newDiv);
+                    }
+                }
+
+                // Ocultar mensajes de bienvenida hasta tener predicción
+                if (welcomeDiv) welcomeDiv.classList.add("hidden-message");
+                if (notRobyirDiv) notRobyirDiv.classList.remove("hidden-message");
+
+                // Iniciar loop
+                if (animationLoopId) cancelAnimationFrame(animationLoopId);
+                animationLoopId = requestAnimationFrame(loop);
+
+            } catch (error) {
+                console.error("Error al inicializar:", error);
+                if (webcamContainer) {
+                    webcamContainer.innerHTML = `<div style="color:#ffb347; text-align:center;">❌ Error al cargar el modelo.<br>Verifica la conexión y la URL del modelo.<br><small>${error.message}</small></div>`;
+                }
+                isModelReady = false;
+                webcamActive = false;
+            } finally {
+                isInitializing = false;
+            }
+        }
+
+        // Limpiar al cerrar la página
+        window.addEventListener('beforeunload', () => {
+            if (webcam && webcamActive && typeof webcam.stop === 'function') {
+                webcam.stop().catch(e => console.log);
+            }
+            if (animationLoopId) cancelAnimationFrame(animationLoopId);
+        });
+
+        console.log("Sistema listo. Usa el botón Start para comenzar.");
+    </script>
+</body>
+
+</html>
