@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Clase sobre el DOM (Modelo de Objetos del Documento)</title>
+    <title>DOM Playground: JavaScript + DOM - Aprende desde cero</title>
     <style>
         /* ---------- RESET Y ESTILOS GLOBALES ---------- */
         * {
@@ -31,9 +31,9 @@
             gap: 1.8rem;
         }
 
-        /* Header / sección de teoría */
+        /* Secciones de teoría con efecto sutil */
         .theory-card {
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(2px);
             border-radius: 2rem;
             padding: 1.5rem 2rem;
@@ -86,6 +86,24 @@
             padding: 0.1rem 0.3rem;
             border-radius: 8px;
             font-weight: 500;
+        }
+
+        code {
+            background: #e2e8f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
         }
 
         /* Panel interactivo: flexbox + grid interno */
@@ -173,10 +191,11 @@
         }
 
         .card-label {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: normal;
             display: block;
             margin-bottom: 0.3rem;
+            color: #475569;
         }
 
         button {
@@ -216,14 +235,6 @@
 
         .btn-primary:hover {
             background: #1d4ed8;
-        }
-
-        .btn-success {
-            background: #16a34a;
-        }
-
-        .btn-success:hover {
-            background: #15803d;
         }
 
         input,
@@ -315,64 +326,137 @@
 <body>
 
     <div class="playground">
-        <!-- SECCION TEORICA: DOM + variables + console + scope -->
-        <div class="theory-card">
-            <h1>¿Qu&eacute; es el DOM (Document Object Model)?</h1>
-            <p><strong>Que es el DOM?</strong> Es una representacion en arbol de tu documento HTML. Cada etiqueta es un
-                <span class="highlight">nodo</span> que JS puede modificar, crear o eliminar. El DOM permite que las
-                paginas web sean dinamicas e interactivas.</p>
 
-            <h2>Fundamentos JS + DOM</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;">
+        <!-- PRIMERA SECCION: QUE ES JAVASCRIPT Y COMO INCLUIRLO -->
+        <div class="theory-card">
+            <h1>JavaScript: El lenguaje de la web</h1>
+            <p><strong>¿Qué es JavaScript?</strong> Es un lenguaje de programación que permite agregar interactividad,
+                dinamismo y comportamiento a las páginas web. Mientras que HTML da estructura y CSS da estilo,
+                JavaScript controla el <span class="highlight">comportamiento</span>: responder a clics, modificar
+                contenido, comunicarse con servidores, animar elementos, etc.</p>
+
+            <h2>¿Cómo incluir JavaScript en un archivo HTML?</h2>
+            <p>Existen tres formas principales de incluir código JavaScript en un documento HTML:</p>
+
+            <h3>1. JavaScript interno (dentro de la etiqueta script)</h3>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script&gt;
+        console.log("Hola desde JavaScript interno");
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <h3>2. JavaScript externo (recomendado para proyectos grandes)</h3>
+            <pre><code>&lt;script src="mi-script.js"&gt;&lt;/script&gt;</code></pre>
+            <p>El archivo <code>mi-script.js</code> contendrá todo el código JavaScript. Esto mantiene HTML limpio y
+                permite reutilizar el código.</p>
+
+            <h3>3. JavaScript inline (en atributos de eventos, no recomendado)</h3>
+            <pre><code>&lt;button onclick="alert('Clic')"&gt;Click&lt;/button&gt;</code></pre>
+            <p><span class="highlight">Importante:</span> El orden de carga importa. Si el script manipula el DOM, se
+                recomienda colocarlo antes del cierre de <code>&lt;/body&gt;</code> o usar
+                <code>defer</code>/<code>DOMContentLoaded</code>.</p>
+            <hr>
+            <p>En este playground, todo el JavaScript está dentro de la etiqueta <code>&lt;script&gt;</code> al final
+                del body, asegurando que el HTML ya esté cargado.</p>
+        </div>
+
+        <!-- SEGUNDA SECCION: EL DOM -->
+        <div class="theory-card">
+            <h1>El DOM (Document Object Model)</h1>
+            <p><strong>¿Qué es el DOM?</strong> Es una representación en árbol de tu documento HTML. Cada etiqueta se
+                convierte en un <span class="highlight">nodo</span> que JavaScript puede leer, modificar, crear o
+                eliminar. El DOM es la interfaz que permite que JavaScript interactúe con la página.</p>
+
+            <h2>Conceptos clave del DOM</h2>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                <li><strong>Nodo raíz:</strong> <code>document</code> representa toda la página.</li>
+                <li><strong>Nodos elemento:</strong> cada etiqueta HTML (div, p, button...).</li>
+                <li><strong>Nodos texto:</strong> el contenido textual dentro de las etiquetas.</li>
+            </ul>
+
+            <h2>Selectores del DOM</h2>
+            <p>Para acceder a un elemento necesitamos <span class="highlight">selectores</span>. Métodos principales:
+            </p>
+            <pre><code>// Por ID
+const titulo = document.getElementById('miTitulo');
+
+// Por selector CSS (el más versátil)
+const contenedor = document.querySelector('.contenedor');
+const todosLosItems = document.querySelectorAll('.item');
+
+// Por clase
+const elementos = document.getElementsByClassName('clase');</code></pre>
+
+            <h2>Operaciones básicas: crear y borrar nodos</h2>
+            <pre><code>// Crear un nuevo elemento
+const nuevoDiv = document.createElement('div');
+nuevoDiv.textContent = 'Hola Mundo';
+
+// Añadirlo como hijo
+document.body.appendChild(nuevoDiv);
+
+// Eliminar un nodo
+const elementoAEliminar = document.querySelector('#viejo');
+elementoAEliminar.remove();   // método moderno
+// o: padre.removeChild(hijo);</code></pre>
+            <hr>
+            <p> En el panel inferior podrás practicar todas estas operaciones. Observa cómo se actualiza el DOM y revisa
+                los mensajes de <code>console.log</code>.</p>
+        </div>
+
+        <!-- TERCERA SECCION: VARIABLES, CONSOLE.LOG Y SCOPE -->
+        <div class="theory-card">
+            <h2>Variables en JavaScript, console.log y alcance (scope)</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
                 <div style="flex: 1; min-width: 200px;">
-                    <h3>Variables y scope</h3>
-                    <p><span class="code-badge">let</span> / <span class="code-badge">const</span> / <span
-                            class="code-badge">var</span><br>
-                        <code>let nombre = "Ana";</code> (alcance de bloque)<br>
-                        <code>const PI = 3.14;</code> (no reasignable)<br>
-                        El <span class="highlight">scope global</span> vs <span class="highlight">local</span>
-                        (funcion/bloque).
+                    <h3>Declaración de variables</h3>
+                    <p><code>let</code> → variable que puede cambiar (alcance de bloque).<br>
+                        <code>const</code> → constante, no se reasigna.<br>
+                        <code>var</code> → forma antigua, evitar (alcance de función).
                     </p>
                 </div>
                 <div style="flex: 1; min-width: 200px;">
                     <h3>console.log</h3>
-                    <p>Muestra valores en consola del navegador (F12). Ejemplo:<br>
-                        <code>console.log("valor:", miVariable);</code> -> Util para depurar.
+                    <p><code>console.log("Mensaje", miVariable);</code><br>
+                        Muestra valores en la consola del navegador (F12 → pestaña Consola). Esencial para depurar.</p>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <h3>Alcance (scope)</h3>
+                    <p><strong>Global:</strong> visible en todo el script.<br>
+                        <strong>Local:</strong> dentro de una función o bloque <code>{ }</code> con let/const.
                     </p>
                 </div>
-                <div style="flex: 1; min-width: 200px;">
-                    <h3>Selectores del DOM</h3>
-                    <p><code>document.getElementById()</code>, <code>querySelector()</code>,
-                        <code>querySelectorAll()</code>.<br>
-                        Ej: <code>const caja = document.querySelector("#miCaja");</code></p>
-                </div>
-                <div style="flex: 1; min-width: 200px;">
-                    <h3>Manipulacion de nodos</h3>
-                    <p><code>createElement()</code>, <code>appendChild()</code>, <code>removeChild()</code>,
-                        <code>remove()</code>, <code>innerHTML</code>.<br>
-                        Crear y borrar nodos hijos dinamicamente.</p>
-                </div>
             </div>
-            <hr>
-            <p><strong>En el panel de abajo</strong> podras aplicar creacion/borrado de nodos, veras como se actualiza
-                el DOM en tiempo real y los mensajes con <code>console.log</code> que muestran variables y alcance.</p>
+            <pre><code>// Ejemplo de scope
+let global = "Soy global";
+
+function miFuncion() {
+    let local = "Solo dentro de la función";
+    console.log(global); // Sí accede
+    console.log(local);  // Sí accede
+}
+// console.log(local); // Error: local no está definida fuera</code></pre>
         </div>
 
-        <!-- PANEL INTERACTIVO: practica con DOM -->
+        <!-- PANEL INTERACTIVO: PRACTICA CON DOM -->
         <div class="interactive-panel">
             <div class="panel-title">
-                Zona de practica: manipulacion del DOM
+                Zona de práctica: manipulando el DOM
                 <span style="font-size: 0.8rem; background: #e2e8f0; padding: 4px 10px; border-radius: 40px;">Usa
-                    selectores y modifica el arbol</span>
+                    selectores y modifica el árbol</span>
             </div>
 
             <div class="dom-demo">
-                <!-- AREA DE CONTROLES: botones y selectores -->
+                <!-- ÁREA DE CONTROLES -->
                 <div class="controls-area">
-                    <h3>Operaciones sobre el DOM</h3>
+                    <h3>Operaciones DOM</h3>
                     <div style="margin: 12px 0;">
                         <button id="btnCrearNodo" class="btn-primary">+ Crear nuevo nodo (hijo)</button>
-                        <button id="btnBorrarUltimo" class="btn-danger">- Borrar ultimo nodo hijo</button>
+                        <button id="btnBorrarUltimo" class="btn-danger">- Borrar último nodo hijo</button>
                         <button id="btnBorrarSeleccion" class="btn-danger">X Borrar nodo seleccionado</button>
                         <button id="btnVaciarTodo" class="btn-danger" style="background:#7f1a1a;">! Vaciar
                             contenedor</button>
@@ -396,19 +480,19 @@
                                 style="background:#334155; padding: 2px 12px; font-size: 0.7rem;">limpiar</button>
                         </div>
                         <div id="logMessages">
-                            <div class="log-line">Bienvenido. Cada accion generara mensajes de depuracion con variables,
-                                selectores y ambito.</div>
+                            <div class="log-line">Bienvenido. Cada acción generará mensajes de depuración con variables,
+                                selectores y ámbito.</div>
                         </div>
                     </div>
-                    <p style="font-size: 0.75rem; margin-top: 0.5rem;">Cada card es un nodo hijo. Puedes hacer clic en
-                        una card para seleccionarla (se marca y luego borrar con su boton).</p>
+                    <p style="font-size: 0.75rem; margin-top: 0.5rem;">Cada card es un nodo hijo. Haz clic en una card
+                        para seleccionarla (se marca y luego se puede borrar).</p>
                 </div>
 
-                <!-- AREA VISUAL: contenedor de nodos (grid) donde se crean/borran hijos -->
+                <!-- ÁREA VISUAL: CONTENEDOR DE NODOS (grid) -->
                 <div class="view-area">
                     <h3>Contenedor de nodos (<span id="nodeCount">0</span> elementos)</h3>
                     <div id="dynamicNodesContainer" class="node-container">
-                        <!-- Los nodos hijos se generaran dinamicamente aqui -->
+                        <!-- Nodo inicial de ejemplo -->
                         <div class="dynamic-card" data-id="ejemplo" style="border-left-color: #3b82f6;">
                             <div class="card-label">[Nodo]</div>
                             <span>Nodo inicial (ejemplo)</span>
@@ -416,39 +500,43 @@
                         </div>
                     </div>
                     <p style="font-size: 0.7rem; margin-top: 8px;">Selector activo:
-                        document.querySelector('#dynamicNodesContainer') y manipulamos sus hijos. Observa los mensajes.
-                    </p>
+                        <code>document.querySelector('#dynamicNodesContainer')</code> y manipulamos sus hijos. Observa
+                        los logs.</p>
                 </div>
             </div>
         </div>
         <footer>
-            Aprende DOM: variables (let/const), console.log, scope, selectores, creacion y borrado de nodos. Abre
-            tambien la consola real (F12) para mas detalle.
+            ⚡ Aprende JavaScript y DOM: variables (let/const), console.log, scope, selectores, creación y borrado de
+            nodos. Abre la consola real (F12) para más detalle.
         </footer>
     </div>
 
     <script>
-        // 1. Variables y alcance (scope)
-        let elementosCreados = 0;        // variable global (alcance de todo el script)
-        const NOMBRE_APP = "DOM Playground";   // constante no reasignable
+        // ==============================
+        // DEMOSTRACIÓN DE VARIABLES, SCOPE Y CONSOLE.LOG
+        // ==============================
 
-        // Selectores del DOM: obtenemos referencias a elementos
+        // Variable global (alcance global: todo el script puede acceder)
+        let elementosCreados = 0;
+        const NOMBRE_APP = "DOM Playground - JavaScript desde cero";
+
+        // Selectores del DOM (usando querySelector e getElementById)
         const container = document.getElementById('dynamicNodesContainer');
         const countSpan = document.getElementById('nodeCount');
         const logContainer = document.getElementById('logMessages');
         const textoInput = document.getElementById('nodoTexto');
         const colorSelect = document.getElementById('colorSelect');
 
-        // Variable para almacenar el nodo actualmente seleccionado (alcance de modulo)
+        // Variable para almacenar el nodo actualmente seleccionado
         let nodoSeleccionado = null;
 
-        // Funcion auxiliar para registrar mensajes en la consola VISUAL y REAL
+        // Función para agregar mensajes tanto a consola real como a consola visual
         function agregarLog(mensaje, tipo = 'info') {
-            // console.log real (muestra en consola del navegador)
+            // console.log REAL (en consola del navegador)
             const timestamp = new Date().toLocaleTimeString();
             console.log(`[${timestamp}] ${mensaje}`);
 
-            // Creamos un nuevo div para el log visual
+            // Creamos un nuevo nodo div para el log visual
             const logLine = document.createElement('div');
             logLine.className = 'log-line';
             let prefix = '';
@@ -457,30 +545,28 @@
             else prefix = '[INFO] ';
             logLine.innerHTML = `${prefix} ${mensaje}`;
             logContainer.appendChild(logLine);
-            // Auto-scroll
             logContainer.scrollTop = logContainer.scrollHeight;
-            // Limitar mensajes visuales (no mas de 45, opcional)
-            while (logContainer.children.length > 45) {
+
+            // Limitar mensajes visuales (mantener máximo 40)
+            while (logContainer.children.length > 40) {
                 if (logContainer.firstChild) logContainer.removeChild(logContainer.firstChild);
             }
         }
 
-        // Funcion que actualiza el contador visual de nodos hijos usando querySelectorAll
+        // Actualizar contador usando querySelectorAll
         function actualizarContador() {
-            // Uso de querySelectorAll para contar los nodos con clase .dynamic-card dentro del container
             const nodosHijos = container.querySelectorAll('.dynamic-card');
             const total = nodosHijos.length;
             countSpan.innerText = total;
-            agregarLog(`Contador actualizado: ${total} nodo(s) en el DOM. Metodo: container.querySelectorAll('.dynamic-card').length`, 'info');
+            agregarLog(`Contador: ${total} nodo(s) en el DOM. Método: container.querySelectorAll('.dynamic-card')`, 'info');
             return total;
         }
 
-        // Funcion para limpiar el estilo de seleccion de todas las cards
+        // Limpiar estilo de selección
         function limpiarSeleccionEstilo() {
             const todas = document.querySelectorAll('#dynamicNodesContainer .dynamic-card');
             todas.forEach(card => {
                 card.style.background = '';
-                // restauramos el borde izquierdo segun el color original guardado o por defecto
                 const originalColor = card.getAttribute('data-border-color') || '#3b82f6';
                 card.style.borderLeftColor = originalColor;
                 card.style.boxShadow = '';
@@ -496,30 +582,26 @@
                 card.style.boxShadow = '0 6px 12px -6px #2563eb40';
                 nodoSeleccionado = card;
                 const textoCard = card.querySelector('span')?.innerText || 'card';
-                agregarLog(`Nodo seleccionado mediante evento click: "${textoCard}"`, 'info');
+                agregarLog(`Nodo seleccionado: "${textoCard}"`, 'info');
             } else {
                 nodoSeleccionado = null;
             }
         }
 
-        // FUNCION PARA CREAR NUEVO NODO (crear elemento hijo)
+        // FUNCIÓN PARA CREAR NUEVO NODO (createElement + appendChild)
         function crearNuevoNodo(textoPersonalizado, colorBorde) {
-            // 1. createElement: crea un nuevo nodo div
             const nuevoDiv = document.createElement('div');
             nuevoDiv.className = 'dynamic-card';
 
-            // Guardamos el color de borde como atributo personalizado
             const bordeColor = colorBorde || '#3b82f6';
             nuevoDiv.style.borderLeftColor = bordeColor;
             nuevoDiv.setAttribute('data-border-color', bordeColor);
 
-            // 2. Construir contenido interno
             const labelSpan = document.createElement('div');
             labelSpan.className = 'card-label';
             labelSpan.innerText = '[Nodo]';
 
             const textoSpan = document.createElement('span');
-            // Asignar el texto: si esta vacio usar por defecto
             const finalText = textoPersonalizado && textoPersonalizado.trim() !== "" ? textoPersonalizado : `Elemento ${elementosCreados + 1}`;
             textoSpan.innerText = finalText;
 
@@ -530,94 +612,80 @@
             nuevoDiv.appendChild(textoSpan);
             nuevoDiv.appendChild(smallTag);
 
-            // Agregar evento de seleccion al nuevo nodo
             nuevoDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
                 marcarSeleccionado(nuevoDiv);
             });
 
-            // 3. Anadirlo como hijo al contenedor principal (appendChild)
+            // Añadir al contenedor (appendChild)
             container.appendChild(nuevoDiv);
             elementosCreados++;
 
-            // Mostrar en logs y actualizar contador
-            agregarLog(`Nodo CREADO: "${finalText}" | Metodo: createElement + appendChild. Variable 'elementosCreados' = ${elementosCreados} (ambito global)`, 'creacion');
+            agregarLog(`Nodo CREADO: "${finalText}" | createElement + appendChild. Variable 'elementosCreados' = ${elementosCreados}`, 'creacion');
             actualizarContador();
             return nuevoDiv;
         }
 
-        // BORRAR ULTIMO NODO HIJO (removeChild)
+        // Borrar último nodo hijo (removeChild)
         function borrarUltimoNodo() {
-            // Obtenemos todos los hijos con clase .dynamic-card dentro del container
             const nodos = container.querySelectorAll('.dynamic-card');
             if (nodos.length === 0) {
-                agregarLog(`No hay nodos para borrar. container.children.length = 0`, 'error');
+                agregarLog(`No hay nodos para borrar.`, 'error');
                 return;
             }
             const ultimoNodo = nodos[nodos.length - 1];
-            // Extraemos texto para log antes de eliminar
             let textoInfo = ultimoNodo.querySelector('span')?.innerText || 'nodo';
-            // Eliminacion usando removeChild desde el padre
             container.removeChild(ultimoNodo);
-            // Si el nodo eliminado era el seleccionado, reiniciamos variable de seleccion
             if (nodoSeleccionado === ultimoNodo) {
                 nodoSeleccionado = null;
-                agregarLog(`El nodo seleccionado fue eliminado, se limpia referencia.`, 'info');
             }
-            agregarLog(`Borrado ultimo nodo: "${textoInfo}" usando container.removeChild(ultimoNodo)`, 'info');
+            agregarLog(`Borrado último nodo: "${textoInfo}" usando container.removeChild()`, 'info');
             actualizarContador();
         }
 
-        // Borrar nodo especifico seleccionado
+        // Borrar nodo seleccionado
         function borrarNodoSeleccionado() {
             if (!nodoSeleccionado) {
-                agregarLog(`No hay ningun nodo seleccionado. Haz click en una card primero.`, 'error');
+                agregarLog(`No hay ningún nodo seleccionado. Haz clic en una card.`, 'error');
                 return;
             }
-            // Verificar que aun sea hijo del container
             if (!container.contains(nodoSeleccionado)) {
-                agregarLog(`El nodo ya no existe en el DOM.`, 'error');
+                agregarLog(`El nodo ya no existe.`, 'error');
                 nodoSeleccionado = null;
                 return;
             }
             const textoNodo = nodoSeleccionado.querySelector('span')?.innerText || 'elemento';
-            // Eliminar el nodo seleccionado usando remove() (metodo moderno)
-            nodoSeleccionado.remove();
-            agregarLog(`Nodo seleccionado "${textoNodo}" eliminado con .remove() (eliminacion directa del DOM)`, 'creacion');
+            nodoSeleccionado.remove();  // método moderno
+            agregarLog(`Nodo seleccionado "${textoNodo}" eliminado con .remove()`, 'creacion');
             nodoSeleccionado = null;
             actualizarContador();
         }
 
-        // Vaciar contenedor por completo: borra todos los nodos hijos pero conserva el contenedor
+        // Vaciar contenedor
         function vaciarContenedor() {
             const nodosActuales = container.querySelectorAll('.dynamic-card');
             if (nodosActuales.length === 0) {
-                agregarLog(`El contenedor ya esta vacio.`, 'info');
+                agregarLog(`El contenedor ya está vacío.`, 'info');
                 return;
             }
             const cantidad = nodosActuales.length;
-            // Recorremos y removemos cada hijo: usando while con firstChild
             while (container.firstChild) {
                 container.removeChild(container.firstChild);
             }
-            agregarLog(`Vaciar contenedor: se eliminaron ${cantidad} nodos hijos usando while(container.firstChild) removeChild.`, 'info');
+            agregarLog(`Vaciar contenedor: se eliminaron ${cantidad} nodos.`, 'info');
             nodoSeleccionado = null;
             actualizarContador();
         }
 
-        // MANEJO DE BOTONES Y SELECTORES
+        // ========== EVENTOS DE BOTONES ==========
         document.getElementById('btnCrearNodo').addEventListener('click', () => {
-            // Demostracion del uso de variables locales y globales
-            let textoPersonal = textoInput.value;       // variable local dentro del callback
-            const colorElegido = colorSelect.value;     // const local
-
-            // Scope: dentro de esta funcion podemos acceder a variables globales y de closure
-            agregarLog(`Boton crear. Texto ingresado: "${textoPersonal}", color: ${colorElegido} (variables locales)`, 'info');
+            let textoPersonal = textoInput.value;   // variable local
+            const colorElegido = colorSelect.value;
+            agregarLog(`Botón crear: texto="${textoPersonal}", color=${colorElegido} (variables locales)`, 'info');
             crearNuevoNodo(textoPersonal, colorElegido);
         });
 
         document.getElementById('btnBorrarUltimo').addEventListener('click', () => {
-            agregarLog(`Ejecutando borrado del ultimo hijo mediante selector y removeChild`, 'info');
             borrarUltimoNodo();
         });
 
@@ -630,18 +698,16 @@
         });
 
         document.getElementById('btnLimpiarConsola').addEventListener('click', () => {
-            // Limpiar los logs visuales pero manteniendo el primero de bienvenida
             while (logContainer.children.length > 1) {
                 logContainer.removeChild(logContainer.lastChild);
             }
             agregarLog('Consola visual limpiada.', 'info');
         });
 
-        // Agregar evento a las cards existentes para seleccion (incluyendo la card de ejemplo)
+        // Inicializar eventos de selección para nodos existentes
         function inicializarEventosSeleccion() {
             const todasCards = container.querySelectorAll('.dynamic-card');
             todasCards.forEach(card => {
-                // Evitar duplicar eventos
                 card.removeEventListener('click', card.clickHandler);
                 const handler = (e) => {
                     e.stopPropagation();
@@ -652,43 +718,38 @@
             });
         }
 
-        // Tambien hacer que si se hace clic fuera de una card, se pueda limpiar seleccion
+        // Clic fuera para limpiar selección
         document.addEventListener('click', function (e) {
             if (!e.target.closest('.dynamic-card')) {
                 if (nodoSeleccionado) {
                     limpiarSeleccionEstilo();
                     nodoSeleccionado = null;
-                    agregarLog(`Seleccion limpiada (clic fuera de nodo).`, 'info');
+                    agregarLog(`Selección limpiada.`, 'info');
                 }
             }
         });
 
-        // Inicializar contador y eventos sobre la card por defecto
+        // Inicialización
         actualizarContador();
         inicializarEventosSeleccion();
 
-        // Demostracion adicional de console.log y alcance con variables declaradas
-        let mensajeInicial = `Aplicacion ${NOMBRE_APP} lista. El DOM esta cargado.`;
-        agregarLog(mensajeInicial, 'info');
-        agregarLog(`Ejemplo de alcance: variable global 'elementosCreados' = ${elementosCreados}, const NOMBRE_APP no se puede modificar.`, 'info');
-        agregarLog(`Selector document.getElementById('dynamicNodesContainer') obtenido correctamente.`, 'info');
+        // Mensajes de bienvenida
+        agregarLog(`Aplicación "${NOMBRE_APP}" lista.`, 'info');
+        agregarLog(`Variable global 'elementosCreados' = ${elementosCreados}, const NOMBRE_APP no se reasigna.`, 'info');
+        agregarLog(`Selector document.getElementById('dynamicNodesContainer') funcionando.`, 'info');
 
-        // Mostrar en consola real un objeto del DOM para ensenar
-        console.log("=== DEMO DOM ===");
-        console.log("Contenedor de nodos:", container);
-        console.log("Nodos iniciales:", container.querySelectorAll('.dynamic-card'));
-        console.log("Demostracion de scope: variable local vs global");
-
-        // Ejemplo adicional de ambito (scope)
+        // Demostración de alcance (scope)
         function demostrarScope() {
-            let variableLocal = "Solo existe dentro de esta funcion";
-            console.log("Dentro de funcion - variableLocal:", variableLocal);
-            console.log("Dentro de funcion - elementosCreados (global):", elementosCreados);
+            let variableLocal = "Esta variable solo existe dentro de esta función";
+            console.log("Dentro de función - variableLocal:", variableLocal);
+            console.log("Dentro de función - elementosCreados (global):", elementosCreados);
+            agregarLog(`Función demostrarScope: variable local = "${variableLocal}"`, 'info');
         }
         demostrarScope();
-        // console.log(variableLocal); // Esto daria error si se descomenta: variableLocal no esta definida aqui
+        agregarLog(`Fuera de la función no podemos acceder a 'variableLocal' (scope local).`, 'info');
 
-        agregarLog(`Demostracion de scope ejecutada. Variable local no accesible fuera de la funcion.`, 'info');
+        console.log("=== PLAYGROUND LISTO ===");
+        console.log("Contenedor:", container);
     </script>
 </body>
 
