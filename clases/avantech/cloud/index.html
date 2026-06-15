@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Computing Cloud AWS | IAM & S3 Explicado</title>
-    <!-- Fuente moderna y limpia -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- Font Awesome 6 (gratis, para iconos complementarios, pero usaremos SVG inline para los "nuevos iconos AWS" con colores) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Computing & AWS | Guía Completa Paso a Paso con S3 + Lambda</title>
     <style>
+        /* =========================================
+           ESTILOS PRINCIPALES
+           ========================================= */
+        :root {
+            --aws-squid-ink: #232F3E;
+            --aws-smile: #FF9900;
+            --aws-blue: #0073BB;
+            --aws-light-gray: #F2F3F3;
+            --card-bg: #ffffff;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,432 +24,988 @@
         }
 
         body {
-            background: linear-gradient(145deg, #f1f4fa 0%, #e9eefa 100%);
-            font-family: 'Inter', sans-serif;
-            padding: 2rem 1.5rem;
-            color: #1a2c3e;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--aws-light-gray);
+            color: #16191F;
+            line-height: 1.6;
         }
 
-        /* Contenedor principal con GRID: layout de diapositivas estilo cards responsivas */
-        .cloud-grid {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            align-items: stretch;
-        }
-
-        /* Cada "diapositiva" es una card que simula slide */
-        .slide-card {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(0px);
-            border-radius: 2rem;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(156, 180, 204, 0.2);
-            overflow: hidden;
-            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            display: flex;
-            flex-direction: column;
-            transform: translateY(0px);
-        }
-
-        .slide-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 45px -15px rgba(0, 0, 0, 0.25);
-            background: #ffffff;
-        }
-
-        /* Encabezado de diapositiva con ícono AWS estilo nuevo */
-        .slide-header {
-            padding: 1.8rem 1.8rem 1rem 1.8rem;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .icon-aws-svg {
-            width: 58px;
-            height: 58px;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
-            transition: transform 0.25s ease;
-        }
-
-        .slide-card:hover .icon-aws-svg {
-            transform: scale(1.02);
-        }
-
-        .title-group h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        .title-group p {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #4a627a;
-            margin-top: 0.2rem;
-        }
-
-        /* contenido flex para descripciones */
-        .content-flex {
-            padding: 1.6rem 1.8rem 1.8rem 1.8rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1.3rem;
-        }
-
-        .feature-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            background: #f0f4f9;
-            padding: 0.5rem 1rem;
-            border-radius: 60px;
-            width: fit-content;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #1f4f7a;
-            transition: all 0.2s;
-        }
-
-        .feature-badge i, .feature-badge span {
-            font-size: 1rem;
-        }
-
-        .desc-text {
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #2c3e4e;
-            font-weight: 400;
-        }
-
-        .highlight-list {
-            list-style: none;
-            margin-top: 0.25rem;
-        }
-
-        .highlight-list li {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            background: #f9fbfd;
-            padding: 0.6rem 0.9rem;
-            border-radius: 1.2rem;
-            transition: all 0.2s;
-            border-left: 4px solid;
-        }
-
-        .highlight-list li:hover {
-            background: #ffffff;
-            transform: translateX(5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-        }
-
-        /* colores específicos para AWS IAM y S3 */
-        .iam-color { border-left-color: #DD3F2C; }  /* Rojo AWS IAM característico */
-        .s3-color { border-left-color: #4CAF50; }    /* Verde Amazon S3 */
-        
-        .badge-iam { background: #fdeae8; color: #b13b2a; }
-        .badge-s3 { background: #e3f5e4; color: #2c6e2f; }
-
-        .btn-mock {
-            margin-top: 0.8rem;
-            align-self: flex-start;
-            background: transparent;
-            border: 1px solid #cbdde9;
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #2c6280;
-            cursor: default;
-            transition: all 0.2s;
-        }
-
-        .btn-mock i {
-            margin-right: 6px;
-        }
-
-        .slide-card:hover .btn-mock {
-            background: #eef3fc;
-            border-color: #8bb3cf;
-        }
-
-        /* Diapositiva adicional de resumen o introducción (tarjeta central) con grid interno */
-        .overview-card {
-            background: linear-gradient(125deg, #0f212e, #1c3c4f);
-            color: white;
-        }
-        .overview-card .title-group h2, .overview-card .title-group p {
-            color: white;
-            background: none;
-            -webkit-background-clip: unset;
-        }
-        .overview-card .desc-text {
-            color: #e0edf5;
-        }
-        .overview-card .feature-badge {
-            background: rgba(255,255,240,0.15);
-            color: #ffeedd;
-        }
-        
-        /* Footer tiny */
-        .footer-note {
-            text-align: center;
-            margin-top: 3rem;
-            font-size: 0.8rem;
-            color: #5f7f9c;
-            border-top: 1px solid #cbdbe2;
-            padding-top: 1.8rem;
+        .container {
             max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
         }
 
-        /* Responsive refinamiento */
-        @media (max-width: 760px) {
-            body {
-                padding: 1.2rem;
-            }
-            .slide-header {
-                padding: 1.2rem 1.2rem 0.8rem;
-            }
-            .content-flex {
-                padding: 1.2rem;
-            }
-            .title-group h2 {
-                font-size: 1.45rem;
-            }
-            .highlight-list li {
-                font-size: 0.85rem;
-            }
+        header {
+            background: linear-gradient(135deg, #232F3E 0%, #16191F 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid #FF9900;
         }
 
-        /* micro interacciones */
-        .transition-all {
-            transition: all 0.2s ease;
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
         }
-        .slide-card:active {
-            transform: scale(0.99);
+
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: #232F3E;
+            border-left: 5px solid #FF9900;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            color: #0073BB;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        /* Grids */
+        .spi-grid,
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .spi-card,
+        .servicio-card {
+            background: #F2F3F3;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 3px solid #0073BB;
+        }
+
+        .servicio-card {
+            text-align: center;
+        }
+
+        .servicio-logo {
+            background: #232F3E;
+            border-radius: 12px;
+            padding: 1rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        /* Regiones */
+        .regiones-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .region-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .az-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .az-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            border-left: 4px solid #FF9900;
+            font-weight: 600;
+            color: #232F3E;
+        }
+
+        /* ARN */
+        .arn-container {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .arn-partes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .arn-parte {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+
+        /* Playgrounds */
+        .playground {
+            background: #F2F3F3;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .control-group {
+            margin-bottom: 1rem;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #FF9900;
+            color: #232F3E;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .resultado {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: monospace;
+            margin-top: 1rem;
+        }
+
+        /* Bloques de código */
+        .bloque-codigo {
+            background: #1e1e1e;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .codigo-header {
+            background: #2d2d2d;
+            color: #ccc;
+            padding: 0.75rem 1rem;
+            font-family: monospace;
+            border-bottom: 2px solid #FF9900;
+        }
+
+        .codigo-body {
+            padding: 1.5rem;
+            color: #d4d4d4;
+            font-family: monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .comentario {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .palabra-clave {
+            color: #569cd6;
+        }
+
+        .cadena {
+            color: #ce9178;
+        }
+
+        .funcion {
+            color: #dcdcaa;
+        }
+
+        .numero {
+            color: #b5cea8;
+        }
+
+        /* Caja de explicación */
+        .explicacion {
+            background: #fff8e6;
+            border-left: 4px solid #FF9900;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .paso {
+            background: #e8f0fe;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 3px solid #0073BB;
+        }
+
+        .log {
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .log-line {
+            margin-bottom: 0.5rem;
+            border-left: 2px solid #FF9900;
+            padding-left: 0.5rem;
+        }
+
+        .imagen-preview {
+            margin-top: 0.5rem;
+            max-width: 100px;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #545b64;
+        }
+
+        @media (max-width: 768px) {
+            .regiones-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .az-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="cloud-grid">
-    
-    <!-- DIAPOSITIVA 1: INTRODUCCIÓN A COMPUTING CLOUD AWS (estilo nueva generación) -->
-    <div class="slide-card overview-card">
-        <div class="slide-header">
-            <!-- Icono AWS moderno estilo "nuevos iconos" simulando la nube y el logo de AWS en SVG con colores oficiales -->
-            <div class="icon-aws-svg">
-                <svg width="58" height="58" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="32" cy="32" r="28" fill="#FF9900" stroke="#FFFFFF" stroke-width="1.5"/>
-                    <path d="M32 18L44 26V42L32 50L20 42V26L32 18Z" fill="white" stroke="#232F3E" stroke-width="1.2" stroke-linejoin="round"/>
-                    <circle cx="32" cy="32" r="5" fill="#FF9900"/>
-                    <path d="M28 28L36 36M36 28L28 36" stroke="#232F3E" stroke-width="1.2"/>
-                </svg>
-            </div>
-            <div class="title-group">
-                <h2>☁️ AWS Cloud Computing</h2>
-                <p>La columna vertebral de la nube moderna</p>
-            </div>
-        </div>
-        <div class="content-flex">
-            <div class="feature-badge"><i class="fas fa-globe-americas"></i> <span>Infraestructura global · 99.99% disponibilidad</span></div>
-            <div class="desc-text">
-                Amazon Web Services (AWS) ofrece más de 200 servicios completos. Entre los pilares fundamentales destacan 
-                <strong>IAM</strong> (Identity and Access Management) y <strong>Amazon S3</strong> (Simple Storage Service). 
-                En esta clase interactiva exploramos sus funciones más importantes como si fueran diapositivas vivas.
-            </div>
-            <div class="btn-mock"><i class="fas fa-chalkboard-user"></i> Diapositiva 1 · Core Cloud</div>
-        </div>
-    </div>
+    <header>
+        <h1>☁️ Cloud Computing & AWS</h1>
+        <p>Aprende paso a paso cómo funciona la nube y cómo desplegar aplicaciones web</p>
+    </header>
 
-    <!-- DIAPOSITIVA 2: AWS IAM (IDENTIDAD Y ACCESO) con iconos nuevos y colores distintivos rojo/naranja -->
-    <div class="slide-card">
-        <div class="slide-header">
-            <!-- Icono nuevo AWS IAM: combina candado y usuario, colores corporativos -->
-            <div class="icon-aws-svg">
-                <svg width="58" height="58" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="8" y="28" width="48" height="28" rx="6" fill="#DD3F2C" stroke="#fff" stroke-width="1.2"/>
-                    <circle cx="32" cy="18" r="8" fill="#FFFFFF" stroke="#DD3F2C" stroke-width="2"/>
-                    <path d="M20 50L32 38L44 50" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <circle cx="32" cy="42" r="3" fill="white"/>
-                    <path d="M28 30L36 30" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div class="title-group">
-                <h2>🔐 AWS IAM</h2>
-                <p>Identity & Access Management</p>
-            </div>
-        </div>
-        <div class="content-flex">
-            <div class="feature-badge badge-iam"><i class="fas fa-shield-alt"></i> <span>Seguridad granular · Control total</span></div>
-            <div class="desc-text">
-                IAM permite administrar <strong>usuarios, grupos, roles y políticas</strong> de acceso a los recursos AWS de forma segura. 
-                Sigue el principio de <strong>mínimo privilegio</strong> y autenticación multifactor (MFA). 
-            </div>
-            <ul class="highlight-list">
-                <li class="iam-color"><i class="fas fa-user-check" style="color:#DD3F2C; width: 22px;"></i> <strong>Usuarios y grupos</strong> – identidades permanentes con credenciales</li>
-                <li class="iam-color"><i class="fas fa-exchange-alt" style="color:#DD3F2C;"></i> <strong>Roles AWS</strong> – asume permisos temporales para aplicaciones o servicios</li>
-                <li class="iam-color"><i class="fas fa-file-alt" style="color:#DD3F2C;"></i> <strong>Políticas JSON</strong> – define qué acciones se permiten o deniegan</li>
-                <li class="iam-color"><i class="fas fa-fingerprint" style="color:#DD3F2C;"></i> <strong>MFA / SSO</strong> – autenticación robusta y federación de identidades</li>
-            </ul>
-            <div class="btn-mock"><i class="fas fa-chalkboard-user"></i> Diapositiva 2 · IAM en Acción</div>
-        </div>
-    </div>
+    <main class="container">
 
-    <!-- DIAPOSITIVA 3: AMAZON S3 (STORAGE SERVICE) con colores verde/azul nuevos iconos -->
-    <div class="slide-card">
-        <div class="slide-header">
-            <div class="icon-aws-svg">
-                <svg width="58" height="58" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="12" y="22" width="40" height="28" rx="5" fill="#4CAF50" stroke="#fff" stroke-width="1.4"/>
-                    <path d="M20 32H44" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    <path d="M20 40H35" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="48" cy="44" r="5" fill="#F4A261" stroke="white" stroke-width="1.2"/>
-                    <path d="M24 16L32 24L40 16" stroke="#2d6a4f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div class="title-group">
-                <h2>📦 Amazon S3</h2>
-                <p>Simple Storage Service</p>
-            </div>
-        </div>
-        <div class="content-flex">
-            <div class="feature-badge badge-s3"><i class="fas fa-database"></i> <span>Almacenamiento objeto · escalable infinito</span></div>
-            <div class="desc-text">
-                S3 es el servicio de almacenamiento en la nube más popular del mundo. Ideal para backups, sitios web estáticos, data lakes y contenido multimedia. Ofrece alta durabilidad (11 nueves) y seguridad avanzada.
-            </div>
-            <ul class="highlight-list">
-                <li class="s3-color"><i class="fas fa-folder-tree" style="color:#2e7d32;"></i> <strong>Buckets & Objects</strong> – contenedores globales con clave-valor y metadatos</li>
-                <li class="s3-color"><i class="fas fa-tachometer-alt" style="color:#2e7d32;"></i> <strong>Clases de almacenamiento</strong> – S3 Standard, Intelligent-Tiering, Glacier para archivado</li>
-                <li class="s3-color"><i class="fas fa-lock" style="color:#2e7d32;"></i> <strong>Políticas de bucket & versionado</strong> – control de acceso y recuperación ante borrados</li>
-                <li class="s3-color"><i class="fas fa-charging-station" style="color:#2e7d32;"></i> <strong>Eventos y notificaciones</strong> – dispara Lambdas o procesos automáticos</li>
-            </ul>
-            <div class="btn-mock"><i class="fas fa-chart-line"></i> Diapositiva 3 · S3 escalabilidad</div>
-        </div>
-    </div>
+        <!-- ============================================ -->
+        <!-- PASO 1: ¿QUÉ ES CLOUD COMPUTING?               -->
+        <!-- ============================================ -->
+        <section>
+            <h2>📚 PASO 1: ¿Qué es Cloud Computing?</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                <strong>Cloud Computing</strong> significa usar recursos de computación (servidores, almacenamiento,
+                bases de datos) <strong>a través de Internet</strong>, pagando solo por lo que usas. Es como pagar por
+                la electricidad: pagas lo que consumes, no tienes que construir tu propia planta eléctrica.
+            </p>
 
-    <!-- DIAPOSITIVA 4: INTEGRACIÓN IAM + S3 (mejores prácticas) con grid interno y transiciones finas -->
-    <div class="slide-card">
-        <div class="slide-header">
-            <div class="icon-aws-svg">
-                <svg width="58" height="58" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 26 L32 16 L48 26 L48 46 L32 56 L16 46 L16 26Z" fill="#2C5F8A" stroke="#FFFFFF" stroke-width="1.2"/>
-                    <circle cx="32" cy="32" r="8" fill="#FFB347"/>
-                    <path d="M26 32L30 36L40 26" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div class="title-group">
-                <h2>⚙️ IAM + S3: Integración Potente</h2>
-                <p>Políticas de bucket y roles para acceso seguro</p>
-            </div>
-        </div>
-        <div class="content-flex">
-            <div class="desc-text">
-                Combinar IAM y S3 permite un control preciso sobre quién puede leer/escribir objetos. 
-                Utiliza <strong>políticas de recursos (bucket policies)</strong> junto a roles IAM para una postura de seguridad robusta.
-            </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 0.5rem 0;">
-                <span class="feature-badge" style="background:#e9f0f5;"><i class="fas fa-check-circle" style="color:#DD3F2C;"></i> Acceso privado por defecto</span>
-                <span class="feature-badge" style="background:#e9f0f5;"><i class="fas fa-key"></i> Pre-signed URLs</span>
-                <span class="feature-badge" style="background:#e9f0f5;"><i class="fas fa-cloud-upload-alt"></i> Cargas seguras</span>
-            </div>
-            <ul class="highlight-list">
-                <li style="border-left-color: #FF9900;"><i class="fas fa-user-tag"></i> <strong>Roles de servicio EC2 → S3</strong>: sin credenciales hardcodeadas</li>
-                <li style="border-left-color: #FF9900;"><i class="fas fa-file-contract"></i> <strong>Condiciones IAM (IP, MFA)</strong>: restringir acceso solo desde ubicaciones autorizadas</li>
-                <li style="border-left-color: #FF9900;"><i class="fas fa-shield-virus"></i> <strong>Block Public Access</strong> y políticas anti-riesgos</li>
-            </ul>
-            <div class="btn-mock"><i class="fas fa-microchip"></i> Mejores prácticas Cloud</div>
-        </div>
-    </div>
-</div>
-
-<!-- Segunda fila: Mostramos más funcionalidades clave como una diapositiva adicional complementaria usando grid automático (seguimos con el mismo contenedor) -->
-<div class="cloud-grid" style="margin-top: 1rem;">
-    <!-- Diapositiva 5: Uso de AWS IAM avanzado + ejemplos -->
-    <div class="slide-card">
-        <div class="slide-header">
-            <div class="icon-aws-svg">
-                <svg width="58" height="58" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 36L32 22L44 36L32 50L20 36Z" fill="#E67E22" stroke="#FFF" stroke-width="1.2"/>
-                    <circle cx="32" cy="36" r="6" fill="white"/>
-                    <path d="M28 36L30 38L36 32" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div class="title-group">
-                <h2>🎯 Funciones IAM Esenciales</h2>
-                <p>Gobernanza y cumplimiento</p>
-            </div>
-        </div>
-        <div class="content-flex">
-            <div class="desc-text">
-                <strong>Permisos granulares, análisis de acceso y políticas administradas.</strong> IAM Access Analyzer ayuda a identificar recursos compartidos públicamente.
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px; background: #F7F9FC; padding: 8px 12px; border-radius: 20px;">
-                    <i class="fas fa-chart-simple" style="color:#E67E22;"></i> <span>IAM Credential Report</span>
+            <div class="spi-grid">
+                <div class="spi-card">
+                    <h3>🏢 IaaS - Infraestructura</h3>
+                    <p>Alquilas servidores, almacenamiento y redes. Tú controlas el sistema operativo.</p>
+                    <small>Ejemplo: Amazon EC2, Google Compute Engine</small>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px; background: #F7F9FC; padding: 8px 12px; border-radius: 20px;">
-                    <i class="fas fa-clipboard-list" style="color:#E67E22;"></i> <span>Políticas basadas en etiquetas (ABAC)</span>
+                <div class="spi-card">
+                    <h3>⚙️ PaaS - Plataforma</h3>
+                    <p>Te concentras solo en tu código. El proveedor maneja los servidores y el sistema operativo.</p>
+                    <small>Ejemplo: AWS Elastic Beanstalk, Heroku</small>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px; background: #F7F9FC; padding: 8px 12px; border-radius: 20px;">
-                    <i class="fas fa-clock" style="color:#E67E22;"></i> <span>Roles temporales con STS</span>
+                <div class="spi-card">
+                    <h3>📱 SaaS - Software</h3>
+                    <p>Aplicaciones completas que usas por Internet. No instalas nada en tu computadora.</p>
+                    <small>Ejemplo: Gmail, Netflix, Spotify</small>
                 </div>
             </div>
-            <div class="btn-mock"><i class="fas fa-crown"></i> Security first</div>
-        </div>
-    </div>
 
-    <!-- Diapositiva 6: S3 Avanzado - Características estrella -->
-    <div class="slide-card">
-        <div class="slide-header">
-            <div class="icon-aws-svg">
-                <svg width="58" height="58" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="20" width="36" height="30" rx="4" fill="#1F7A44" stroke="#fff" stroke-width="1.2"/>
-                    <path d="M22 32L32 42L42 28" stroke="white" stroke-width="2.5" fill="none"/>
-                    <circle cx="32" cy="48" r="5" fill="#F4C542"/>
-                </svg>
+            <div class="explicacion">
+                <strong>🎯 PARA RECORDAR:</strong> IaaS = alquilas la computadora, PaaS = alquilas el entorno para
+                programar, SaaS = usas la aplicación directamente.
             </div>
-            <div class="title-group">
-                <h2>🚀 S3 Funciones Clave</h2>
-                <p>Performance y gestión de datos</p>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PASO 2: REGIONES Y ZONAS DE AWS              -->
+        <!-- ============================================ -->
+        <section>
+            <h2>🌎 PASO 2: Regiones y Zonas de Disponibilidad</h2>
+            <p>AWS tiene centros de datos en todo el mundo. Cada <strong>Región</strong> es una ubicación geográfica
+                (ej: Norte de Virginia). Cada Región tiene múltiples <strong>Zonas de Disponibilidad (AZs)</strong> que
+                son centros de datos separados físicamente.</p>
+
+            <div class="regiones-grid">
+                <div class="region-card">
+                    <h3>📍 Regiones de AWS</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>us-east-1 - Norte de Virginia (EE.UU.)</li>
+                        <li>us-west-2 - Oregón (EE.UU.)</li>
+                        <li>eu-west-1 - Irlanda (Europa)</li>
+                        <li>sa-east-1 - São Paulo (Brasil)</li>
+                        <li>ap-northeast-1 - Tokio (Japón)</li>
+                    </ul>
+                </div>
+                <div class="region-card" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);">
+                    <h3>🎯 ¿Por qué elegir bien la región?</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Latencia:</strong> Más cerca del usuario = más rápida la respuesta</li>
+                        <li><strong>Precios:</strong> Cada región tiene costos diferentes</li>
+                        <li><strong>Leyes:</strong> Algunos datos deben quedarse en un país específico</li>
+                        <li><strong>Disponibilidad:</strong> Si una AZ falla, las otras siguen funcionando</li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="content-flex">
-            <div class="desc-text">
-                Además del almacenamiento base, S3 ofrece capacidades como <strong>replicación entre regiones, S3 Object Lock, y S3 Inventory</strong> para cumplimiento normativo.
+
+            <div class="az-grid">
+                <div class="az-item">us-east-1a<br><small>Centro de Datos 1</small></div>
+                <div class="az-item">us-east-1b<br><small>Centro de Datos 2</small></div>
+                <div class="az-item">us-east-1c<br><small>Centro de Datos 3</small></div>
             </div>
-            <ul class="highlight-list">
-                <li style="border-left-color: #2e7d32;"><i class="fas fa-copy"></i> <strong>S3 Replication</strong> (CRR & SRR) para DR y latencia</li>
-                <li style="border-left-color: #2e7d32;"><i class="fas fa-stopwatch"></i> <strong>S3 Transfer Acceleration</strong> uploads rápidos</li>
-                <li style="border-left-color: #2e7d32;"><i class="fas fa-chart-pie"></i> <strong>S3 Analytics & Storage Lens</strong> visibilidad total</li>
-                <li style="border-left-color: #2e7d32;"><i class="fas fa-laptop-code"></i> <strong>Alojamiento web estático</strong> sitios serverless</li>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">✅ Cada AZ está a kilómetros de distancia, pero conectadas
+                por fibra óptica de alta velocidad.</p>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PASO 3: ARN - IDENTIFICADOR DE RECURSOS       -->
+        <!-- ============================================ -->
+        <section>
+            <h2>🏷️ PASO 3: ARN - El "Cédula de Identidad" de cada recurso</h2>
+            <p><strong>ARN (Amazon Resource Name)</strong> es un identificador único que AWS usa para cada recurso. Así
+                como tú tienes una cédula, cada recurso tiene un ARN.</p>
+
+            <div class="arn-container">
+                <div class="arn-partes">
+                    <span class="arn-parte" style="background:#e74c3c;">arn:</span>
+                    <span class="arn-parte" style="background:#f39c12;">aws:</span>
+                    <span class="arn-parte" style="background:#27ae60;">s3:</span>
+                    <span class="arn-parte" style="background:#3498db;">:</span>
+                    <span class="arn-parte" style="background:#9b59b6;">123456789012:</span>
+                    <span class="arn-parte" style="background:#34495e;">bucket/mi-bucket</span>
+                </div>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 0.5rem; font-size: 0.85rem;">
+                    <div>🔴 <strong>arn:</strong> Prefijo fijo</div>
+                    <div>🟠 <strong>aws:</strong> Partición (nube pública)</div>
+                    <div>🟢 <strong>s3:</strong> Servicio AWS</div>
+                    <div>🔵 <strong>(vacío):</strong> S3 es global, no lleva región</div>
+                    <div>🟣 <strong>123456789012:</strong> Tu ID de cuenta</div>
+                    <div>⚫ <strong>bucket/mi-bucket:</strong> Recurso específico</div>
+                </div>
+
+                <div class="playground" style="background: rgba(0,0,0,0.2); margin-top: 1rem;">
+                    <h3 style="color: white;">🎮 Prueba: Construye un ARN</h3>
+                    <div class="control-group">
+                        <label style="color: white;">Servicio:</label>
+                        <select id="selectorServicio">
+                            <option value="s3">s3 (Almacenamiento S3)</option>
+                            <option value="lambda">lambda (Funciones)</option>
+                            <option value="dynamodb">dynamodb (Base de Datos)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label style="color: white;">ID de Cuenta:</label>
+                        <input type="text" id="inputCuenta" value="123456789012">
+                    </div>
+                    <div class="control-group">
+                        <label style="color: white;">Región:</label>
+                        <input type="text" id="inputRegion" value="us-east-1">
+                    </div>
+                    <div class="control-group">
+                        <label style="color: white;">Recurso:</label>
+                        <input type="text" id="inputRecurso" value="bucket/fotos-usuarios">
+                    </div>
+                    <button id="btnGenerarARN">Generar ARN</button>
+                    <div id="arnGenerado" class="resultado">arn:aws:s3:::bucket/fotos-usuarios</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PASO 4: SERVICIOS PRINCIPALES DE AWS          -->
+        <!-- ============================================ -->
+        <section>
+            <h2>⚡ PASO 4: Servicios que usaremos</h2>
+            <div class="servicios-grid">
+                <div class="servicio-card">
+                    <div class="servicio-logo">
+                        <img src="pictures/logos/iamLogo.svg" width="60" height="60" alt="IAM">
+                    </div>
+                    <h3>AWS IAM</h3>
+                    <p><strong>Identity and Access Management</strong> - Controla quién puede hacer qué en tu nube.</p>
+                    <small>🔐 Servicio GLOBAL</small>
+                </div>
+                <div class="servicio-card">
+                    <div class="servicio-logo">
+                        <img src="pictures/logos/lambdaLogo.svg" width="60" height="60" alt="Lambda">
+                    </div>
+                    <h3>AWS Lambda</h3>
+                    <p><strong>Serverless</strong> - Ejecuta código sin administrar servidores. Solo pagas cuando se
+                        ejecuta.</p>
+                    <small>⚡ Por demanda - sin servidores</small>
+                </div>
+                <div class="servicio-card">
+                    <div class="servicio-logo">
+                        <img src="pictures/logos/apiGatewayLogo.svg" width="60" height="60" alt="API Gateway">
+                    </div>
+                    <h3>API Gateway</h3>
+                    <p><strong>Puerta de entrada</strong> - Crea URLs públicas que activan tus funciones Lambda.</p>
+                    <small>🌐 El "puente" entre el mundo exterior y Lambda</small>
+                </div>
+                <div class="servicio-card">
+                    <div class="servicio-logo">
+                        <img src="pictures/logos/s3Logo.svg" width="60" height="60" alt="S3">
+                    </div>
+                    <h3>Amazon S3</h3>
+                    <p><strong>Simple Storage Service</strong> - Almacena archivos, imágenes, videos. Ideal para fotos
+                        de perfil.</p>
+                    <small>📦 Almacenamiento de objetos</small>
+                </div>
+                <div class="servicio-card">
+                    <div class="servicio-logo">
+                        <img src="pictures/logos/dynamodbLogo.svg" width="60" height="60" alt="DynamoDB">
+                    </div>
+                    <h3>Amazon DynamoDB</h3>
+                    <p><strong>Base de datos NoSQL</strong> - Rápida, escalable y totalmente administrada.</p>
+                    <small>💾 Guarda datos de forma segura</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PASO 5: EJEMPLO PRÁCTICO - FORMULARIO + S3 + LAMBDA -->
+        <!-- ============================================ -->
+        <section>
+            <h2>📝 PASO 5: Ejemplo Real - Formulario con Foto + Datos</h2>
+            <p>Vamos a crear una aplicación completa que:</p>
+            <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                <li>📋 Muestra un formulario con <strong>Cédula, Nombre, Email y Foto de perfil</strong></li>
+                <li>🖼️ La <strong>foto se guarda en S3 Bucket</strong> (almacenamiento de archivos)</li>
+                <li>📝 Los <strong>datos del usuario se guardan en DynamoDB</strong></li>
+                <li>🚀 Todo se procesa con <strong>AWS Lambda</strong> (sin servidores)</li>
             </ul>
-            <div class="btn-mock"><i class="fas fa-charging-station"></i> Innovación continua</div>
-        </div>
-    </div>
-</div>
 
-<!-- pie con crédito y explicación tipo diapositiva -->
-<div class="footer-note">
-    <i class="fas fa-cloud-arrow-up"></i> Clase Computing Cloud AWS — IAM & S3 explicados con diseño responsive (Grid + Flexbox) y transiciones. 
-    Iconografía moderna inspirada en los nuevos iconos oficiales de AWS y colores distintivos. 
-    <strong>#AWSenAcción</strong> 
-</div>
+            <!-- ========== DEMOSTRACIÓN INTERACTIVA ========== -->
+            <div class="playground"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3 style="color: white;">🎮 ¡Prueba el formulario completo aquí!</h3>
+
+                <div class="control-group">
+                    <label style="color: white;">📋 Cédula:</label>
+                    <input type="text" id="demoCedula" value="12345678">
+                </div>
+                <div class="control-group">
+                    <label style="color: white;">👤 Nombre:</label>
+                    <input type="text" id="demoNombre" value="Ana García">
+                </div>
+                <div class="control-group">
+                    <label style="color: white;">📧 Email:</label>
+                    <input type="email" id="demoEmail" value="ana@ejemplo.com">
+                </div>
+                <div class="control-group">
+                    <label style="color: white;">🖼️ Foto de perfil:</label>
+                    <input type="file" id="demoFoto" accept="image/*">
+                    <div id="previewFoto"></div>
+                </div>
+                <button id="demoEnviar">🚀 Enviar a AWS (Lambda + S3 + DynamoDB)</button>
+                <div id="demoLog" class="log" style="margin-top: 1rem;">
+                    💡 1. Completa los campos<br>
+                    💡 2. Selecciona una foto (opcional)<br>
+                    💡 3. Haz clic en "Enviar" para ver el flujo completo
+                </div>
+            </div>
+
+            <!-- ========== EXPLICACIÓN DE S3 ========== -->
+            <div class="explicacion" style="margin-top: 1.5rem;">
+                <h3>🖼️ ¿Para qué usamos S3 Bucket en este ejemplo?</h3>
+                <p><strong>S3 (Simple Storage Service)</strong> es donde AWS guarda archivos (imágenes, videos,
+                    documentos). Es como un "disco duro en la nube" pero infinito y muy económico.</p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><strong>La foto del usuario</strong> se guarda en S3 para que pueda ser accedida después</li>
+                    <li><strong>La URL de la foto</strong> (dónde está guardada) se guarda en DynamoDB junto con los
+                        datos del usuario</li>
+                    <li><strong>Ventajas:</strong> Las fotos no abruman la base de datos, S3 es más barato para
+                        archivos grandes</li>
+                </ul>
+            </div>
+
+            <!-- ========== PASO 5A: CÓDIGO FRONTEND ========== -->
+            <h3 style="margin-top: 2rem;">📄 5.1 El Formulario HTML con Foto (Frontend)</h3>
+            <div class="bloque-codigo">
+                <div class="codigo-header">📁 frontend.html - Formulario con selector de archivo</div>
+                <div class="codigo-body">
+                    <span class="comentario">&lt;!-- El input de tipo "file" permite seleccionar una foto --&gt;</span>
+                    <span class="palabra-clave">&lt;input</span> <span class="func">type</span>=<span
+                        class="cadena">"file"</span>
+                    <span class="func">id</span>=<span class="cadena">"fotoPerfil"</span>
+                    <span class="func">accept</span>=<span class="cadena">"image/*"</span><span
+                        class="palabra-clave">&gt;</span>
+
+                    <span class="comentario">&lt;!-- JavaScript que convierte la foto a Base64 y la envía a Lambda
+                        --&gt;</span>
+                    <span class="palabra-clave">&lt;script&gt;</span>
+                    <span class="palabra-clave">const</span> API_URL = <span
+                        class="cadena">"https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/registrar"</span>;
+
+                    <span class="palabra-clave">async</span> <span class="func">function</span> enviarFormulario() {
+                    <span class="comentario">// 1. Obtener los datos del formulario</span>
+                    <span class="palabra-clave">const</span> cedula = document.getElementById(<span
+                        class="cadena">'cedula'</span>).value;
+                    <span class="palabra-clave">const</span> nombre = document.getElementById(<span
+                        class="cadena">'nombre'</span>).value;
+                    <span class="palabra-clave">const</span> email = document.getElementById(<span
+                        class="cadena">'email'</span>).value;
+
+                    <span class="comentario">// 2. Leer la foto seleccionada (si hay)</span>
+                    <span class="palabra-clave">const</span> archivoFoto = document.getElementById(<span
+                        class="cadena">'fotoPerfil'</span>).files[0];
+                    <span class="palabra-clave">let</span> fotoBase64 = <span class="cadena">""</span>;
+
+                    <span class="palabra-clave">if</span> (archivoFoto) {
+                    <span class="comentario">// Convertir la foto a Base64 para enviarla en JSON</span>
+                    fotoBase64 = <span class="palabra-clave">await</span> <span
+                        class="func">leerArchivoComoBase64</span>(archivoFoto);
+                    }
+
+                    <span class="comentario">// 3. Armar el objeto con todos los datos (incluyendo la foto)</span>
+                    <span class="palabra-clave">const</span> datosCompletos = {
+                    cedula: cedula,
+                    nombre: nombre,
+                    email: email,
+                    foto: fotoBase64, <span class="comentario">// La foto en formato Base64</span>
+                    nombreArchivo: archivoFoto ? archivoFoto.name : <span class="cadena">""</span>,
+                    tipoArchivo: archivoFoto ? archivoFoto.type : <span class="cadena">""</span>
+                    };
+
+                    <span class="comentario">// 4. Enviar a AWS Lambda</span>
+                    <span class="palabra-clave">const</span> respuesta = <span class="palabra-clave">await</span> <span
+                        class="func">fetch</span>(API_URL, {
+                    method: <span class="cadena">'POST'</span>,
+                    headers: { <span class="cadena">'Content-Type'</span>: <span
+                        class="cadena">'application/json'</span> },
+                    body: JSON.stringify(datosCompletos)
+                    });
+
+                    <span class="palabra-clave">const</span> resultado = <span class="palabra-clave">await</span>
+                    respuesta.json();
+                    alert(resultado.mensaje);
+                    }
+
+                    <span class="comentario">// Función auxiliar para leer archivos como Base64</span>
+                    <span class="func">function</span> leerArchivoComoBase64(archivo) {
+                    <span class="palabra-clave">return new</span> <span class="func">Promise</span>(<span
+                        class="palabra-clave">function</span>(resolver, reject) {
+                    <span class="palabra-clave">const</span> lector = <span class="palabra-clave">new</span>
+                    FileReader();
+                    lector.onload = () =&gt; resolver(lector.result.split(<span class="cadena">','</span>)[1]);
+                    lector.onerror = reject;
+                    lector.readAsDataURL(archivo);
+                    });
+                    }
+                    <span class="palabra-clave">&lt;/script&gt;</span>
+                </div>
+            </div>
+
+            <!-- ========== PASO 5B: CÓDIGO LAMBDA (CON S3) ========== -->
+            <h3 style="margin-top: 2rem;">⚡ 5.2 La Función Lambda (Backend que guarda en S3 y DynamoDB)</h3>
+            <div class="bloque-codigo">
+                <div class="codigo-header">📁 lambda.js - Guarda foto en S3 y datos en DynamoDB</div>
+                <div class="codigo-body">
+                    <span class="comentario">// ============================================</span>
+                    <span class="comentario">// AWS LAMBDA - Guarda foto en S3 y datos en DynamoDB</span>
+                    <span class="comentario">// Se ejecuta CADA VEZ que alguien envía el formulario</span>
+                    <span class="comentario">// ============================================</span>
+
+                    <span class="comentario">// 1. IMPORTAR las bibliotecas de AWS</span>
+                    <span class="palabra-clave">const</span> { S3Client, PutObjectCommand } = <span
+                        class="palabra-clave">require</span>(<span class="cadena">"@aws-sdk/client-s3"</span>);
+                    <span class="palabra-clave">const</span> { DynamoDBClient, PutItemCommand } = <span
+                        class="palabra-clave">require</span>(<span class="cadena">"@aws-sdk/client-dynamodb"</span>);
+
+                    <span class="comentario">// 2. CREAR los clientes</span>
+                    <span class="palabra-clave">const</span> s3Cliente = <span class="palabra-clave">new</span>
+                    S3Client({ region: <span class="cadena">"us-east-1"</span> });
+                    <span class="palabra-clave">const</span> dynamoCliente = <span class="palabra-clave">new</span>
+                    DynamoDBClient({ region: <span class="cadena">"us-east-1"</span> });
+
+                    <span class="comentario">// 3. Nombres de los recursos</span>
+                    <span class="palabra-clave">const</span> BUCKET_NOMBRE = <span
+                        class="cadena">"fotos-perfil-usuarios"</span>; <span class="comentario">// S3 Bucket</span>
+                    <span class="palabra-clave">const</span> TABLA_NOMBRE = <span
+                        class="cadena">"UsuariosRegistrados"</span>; <span class="comentario">// DynamoDB Table</span>
+
+                    <span class="comentario">// 4. FUNCIÓN PRINCIPAL</span>
+                    <span class="palabra-clave">exports</span>.handler = <span class="palabra-clave">async</span>
+                    (evento) => {
+
+                    <span class="comentario">// 4.1 Extraer los datos que envió el formulario</span>
+                    <span class="palabra-clave">const</span> { cedula, nombre, email, foto, nombreArchivo, tipoArchivo }
+                    = JSON.parse(evento.body);
+
+                    <span class="comentario">// 4.2 Si hay foto, guardarla en S3</span>
+                    <span class="palabra-clave">let</span> urlFoto = <span class="cadena">""</span>;
+                    <span class="palabra-clave">if</span> (foto && foto.length > 0) {
+
+                    <span class="comentario">// Crear un nombre único para la foto (evita colisiones)</span>
+                    <span class="palabra-clave">const</span> timestamp = Date.now();
+                    <span class="palabra-clave">const</span> llaveS3 = <span
+                        class="cadena">`${cedula}-${timestamp}-${nombreArchivo}`</span>;
+
+                    <span class="comentario">// Parámetros para guardar en S3</span>
+                    <span class="palabra-clave">const</span> parametrosS3 = {
+                    Bucket: BUCKET_NOMBRE,
+                    Key: llaveS3,
+                    Body: Buffer.from(foto, <span class="cadena">'base64'</span>), <span class="comentario">// Convertir
+                        Base64 a binario</span>
+                    ContentType: tipoArchivo,
+                    Metadata: {
+                    <span class="cadena">'cedula'</span>: cedula,
+                    <span class="cadena">'nombre'</span>: nombre
+                    }
+                    };
+
+                    <span class="comentario">// Guardar en S3</span>
+                    <span class="palabra-clave">await</span> s3Cliente.send(<span class="palabra-clave">new</span>
+                    PutObjectCommand(parametrosS3));
+
+                    <span class="comentario">// Construir la URL pública de la foto</span>
+                    urlFoto = <span class="cadena">`https://${BUCKET_NOMBRE}.s3.amazonaws.com/${llaveS3}`</span>;
+                    }
+
+                    <span class="comentario">// 4.3 Guardar los datos del usuario en DynamoDB (incluyendo la URL de la
+                        foto)</span>
+                    <span class="palabra-clave">const</span> parametrosDynamo = {
+                    TableName: TABLA_NOMBRE,
+                    Item: {
+                    <span class="cadena">"Cedula"</span>: { S: cedula },
+                    <span class="cadena">"Nombre"</span>: { S: nombre },
+                    <span class="cadena">"Email"</span>: { S: email },
+                    <span class="cadena">"UrlFoto"</span>: { S: urlFoto }, <span class="comentario">// URL de la foto en
+                        S3</span>
+                    <span class="cadena">"FechaRegistro"</span>: { N: Date.now().toString() }
+                    }
+                    };
+
+                    <span class="palabra-clave">await</span> dynamoCliente.send(<span class="palabra-clave">new</span>
+                    PutItemCommand(parametrosDynamo));
+
+                    <span class="comentario">// 4.4 Responder al formulario</span>
+                    <span class="palabra-clave">return</span> {
+                    statusCode: <span class="numero">200</span>,
+                    headers: { <span class="cadena">"Access-Control-Allow-Origin"</span>: <span
+                        class="cadena">"*"</span> },
+                    body: JSON.stringify({
+                    mensaje: <span class="cadena">`✅ Usuario ${nombre} registrado exitosamente`</span>,
+                    urlFoto: urlFoto,
+                    cedula: cedula
+                    })
+                    };
+                    };
+                </div>
+            </div>
+
+            <!-- ========== EXPLICACIÓN DE S3 EN EL CÓDIGO ========== -->
+            <div class="explicacion">
+                <h3>🔍 ¿Qué hace S3 en este código?</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Línea 25-26:</strong> Importamos <code>S3Client</code> y <code>PutObjectCommand</code>
+                        - las herramientas para hablar con S3</li>
+                    <li><strong>Línea 29:</strong> Creamos el cliente S3 que se conecta al servicio</li>
+                    <li><strong>Línea 33:</strong> Definimos el nombre del bucket <code>"fotos-perfil-usuarios"</code>
+                        (este bucket debe crearse antes)</li>
+                    <li><strong>Línea 44-56:</strong> Preparamos los parámetros: <strong>Bucket</strong> (dónde),
+                        <strong>Key</strong> (nombre del archivo), <strong>Body</strong> (el contenido de la foto),
+                        <strong>ContentType</strong> (tipo de imagen)
+                    </li>
+                    <li><strong>Línea 59:</strong> ¡Guardamos la foto en S3 con <code>s3Cliente.send()</code>!</li>
+                    <li><strong>Línea 62:</strong> Generamos la URL pública para poder ver la foto después</li>
+                    <li><strong>Línea 70:</strong> Guardamos la URL en DynamoDB junto con los datos del usuario</li>
+                </ul>
+            </div>
+
+            <!-- ========== PASO 5C: POLÍTICA IAM PARA S3 ========== -->
+            <h3 style="margin-top: 2rem;">🔐 5.3 Política IAM (Permisos para S3 + DynamoDB)</h3>
+            <div class="bloque-codigo">
+                <div class="codigo-header">📁 iam-policy.json - Permisos que necesita Lambda</div>
+                <div class="codigo-body">
+                    {
+                    <span class="cadena">"Version"</span>: <span class="cadena">"2012-10-17"</span>,
+                    <span class="cadena">"Statement"</span>: [
+                    {
+                    <span class="cadena">"Sid"</span>: <span class="cadena">"PermisoParaGuardarEnS3"</span>,
+                    <span class="cadena">"Effect"</span>: <span class="cadena">"Allow"</span>,
+                    <span class="cadena">"Action"</span>: <span class="cadena">"s3:PutObject"</span>,
+                    <span class="cadena">"Resource"</span>: <span
+                        class="cadena">"arn:aws:s3:::fotos-perfil-usuarios/*"</span>
+                    },
+                    {
+                    <span class="cadena">"Sid"</span>: <span class="cadena">"PermisoParaGuardarEnDynamoDB"</span>,
+                    <span class="cadena">"Effect"</span>: <span class="cadena">"Allow"</span>,
+                    <span class="cadena">"Action"</span>: <span class="cadena">"dynamodb:PutItem"</span>,
+                    <span class="cadena">"Resource"</span>: <span
+                        class="cadena">"arn:aws:dynamodb:us-east-1:123456789012:table/UsuariosRegistrados"</span>
+                    }
+                    ]
+                    }
+
+                    <span class="comentario">// 🔐 Lambda SOLO puede escribir en S3 (subir fotos) y SOLO puede escribir
+                        en esa tabla</span>
+                    <span class="comentario">// No puede leer, no puede borrar, no puede acceder a otros recursos</span>
+                </div>
+            </div>
+
+            <!-- ========== PASO 5D: ESTRUCTURA DEL S3 BUCKET ========== -->
+            <h3 style="margin-top: 2rem;">📦 5.4 ¿Cómo se ve la foto guardada en S3?</h3>
+            <div class="explicacion" style="background: #e8f0fe;">
+                <p>Cuando el usuario sube una foto, Lambda la guarda en S3 con esta estructura:</p>
+                <pre
+                    style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; margin: 0.5rem 0; overflow-x: auto;">
+Bucket: fotos-perfil-usuarios/
+└── 12345678-1704067200000-mi-foto.jpg
+
+URL pública: https://fotos-perfil-usuarios.s3.amazonaws.com/12345678-1704067200000-mi-foto.jpg</pre>
+                <p>✅ <strong>Ventajas de guardar fotos en S3:</strong></p>
+                <ul>
+                    <li>Las fotos no saturan la base de datos (DynamoDB es para datos pequeños)</li>
+                    <li>S3 es más económico para archivos grandes (imágenes, videos, PDFs)</li>
+                    <li>S3 entrega las fotos rápidamente a los usuarios (CDN integrado)</li>
+                    <li>Puedes hacer que las fotos sean públicas o privadas con permisos IAM</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PASO 6: DIAGRAMA COMPLETO DEL FLUJO          -->
+        <!-- ============================================ -->
+        <section>
+            <h2>📊 PASO 6: Diagrama del Flujo Completo</h2>
+
+            <div class="explicacion" style="background: #e8f0fe;">
+                <h3>🔄 ¿Qué pasa cuando el usuario envía el formulario con foto?</h3>
+
+                <div class="paso">
+                    <strong>PASO 1:</strong> Usuario completa el formulario (Cédula, Nombre, Email) y selecciona una
+                    foto.
+                </div>
+                <div class="paso">
+                    <strong>PASO 2:</strong> JavaScript convierte la foto a Base64 y envía TODO a API Gateway mediante
+                    <strong>fetch()</strong>.
+                </div>
+                <div class="paso">
+                    <strong>PASO 3:</strong> <strong>API Gateway</strong> recibe la petición y activa
+                    <strong>Lambda</strong>.
+                </div>
+                <div class="paso">
+                    <strong>PASO 4:</strong> <strong>Lambda</strong> guarda la foto en <strong>S3 Bucket</strong> y
+                    obtiene la URL.
+                </div>
+                <div class="paso">
+                    <strong>PASO 5:</strong> <strong>Lambda</strong> guarda los datos del usuario + la URL de la foto
+                    en <strong>DynamoDB</strong>.
+                </div>
+                <div class="paso">
+                    <strong>PASO 6:</strong> <strong>Lambda</strong> responde con éxito y la URL de la foto.
+                </div>
+                <div class="paso">
+                    <strong>PASO 7:</strong> El usuario ve el mensaje: "✅ Usuario registrado exitosamente".
+                </div>
+            </div>
+
+            <div class="explicacion" style="margin-top: 1rem;">
+                <strong>🎯 PUNTOS CLAVE SOBRE S3:</strong>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><strong>S3 es para ARCHIVOS</strong> (imágenes, videos, documentos, backups)</li>
+                    <li><strong>DynamoDB es para DATOS ESTRUCTURADOS</strong> (texto, números, fechas)</li>
+                    <li><strong>La URL de la foto se guarda en DynamoDB</strong> para saber dónde está cada foto</li>
+                    <li><strong>Los ARN de S3</strong> tienen formato: <code>arn:aws:s3:::nombre-del-bucket/ruta</code>
+                    </li>
+                    <li><strong>S3 es REGIONAL</strong> - eliges en qué región se guardan tus archivos</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Clase de Cloud Computing | Profesor Robyir Loreto | Aprendizaje paso a paso con S3 + Lambda + DynamoDB
+        </p>
+    </footer>
+
+    <script>
+        // ============================================
+        // PLAYGROUND ARN
+        // ============================================
+        function generarARN() {
+            const servicio = document.getElementById('selectorServicio').value;
+            const cuenta = document.getElementById('inputCuenta').value;
+            const region = document.getElementById('inputRegion').value;
+            const recurso = document.getElementById('inputRecurso').value;
+
+            let arn = `arn:aws:${servicio}:${region}:${cuenta}:${recurso}`;
+            if (servicio === 's3') arn = `arn:aws:s3:::${recurso}`;
+            if (servicio === 'dynamodb') arn = `arn:aws:dynamodb:${region}:${cuenta}:table/${recurso}`;
+
+            document.getElementById('arnGenerado').innerHTML = arn;
+        }
+
+        document.getElementById('selectorServicio').addEventListener('change', generarARN);
+        document.getElementById('inputCuenta').addEventListener('input', generarARN);
+        document.getElementById('inputRegion').addEventListener('input', generarARN);
+        document.getElementById('inputRecurso').addEventListener('input', generarARN);
+        document.getElementById('btnGenerarARN').addEventListener('click', generarARN);
+        generarARN();
+
+        // ============================================
+        // PREVISUALIZACIÓN DE FOTO
+        // ============================================
+        document.getElementById('demoFoto').addEventListener('change', function (e) {
+            const preview = document.getElementById('previewFoto');
+            const archivo = e.target.files[0];
+            if (archivo) {
+                const lector = new FileReader();
+                lector.onload = function (evento) {
+                    preview.innerHTML = `<img src="${evento.target.result}" class="imagen-preview" style="max-width: 100px; margin-top: 0.5rem; border-radius: 8px;">`;
+                };
+                lector.readAsDataURL(archivo);
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        // ============================================
+        // SIMULADOR DEL FORMULARIO CON S3
+        // ============================================
+        document.getElementById('demoEnviar').addEventListener('click', () => {
+            const cedula = document.getElementById('demoCedula').value;
+            const nombre = document.getElementById('demoNombre').value;
+            const email = document.getElementById('demoEmail').value;
+            const archivoFoto = document.getElementById('demoFoto').files[0];
+            const logDiv = document.getElementById('demoLog');
+
+            if (!cedula || !nombre || !email) {
+                logDiv.innerHTML = '❌ ERROR: Completa todos los campos antes de enviar.';
+                return;
+            }
+
+            logDiv.innerHTML = '';
+
+            // Paso 1: Datos del formulario
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">📋 PASO 1: Usuario completa el formulario</div>';
+                logDiv.innerHTML += `<div class="log-line">   Datos: Cédula=${cedula}, Nombre=${nombre}, Email=${email}</div>`;
+                if (archivoFoto) {
+                    logDiv.innerHTML += `<div class="log-line">   🖼️ Foto seleccionada: ${archivoFoto.name} (${(archivoFoto.size / 1024).toFixed(2)} KB)</div>`;
+                } else {
+                    logDiv.innerHTML += `<div class="log-line">   🖼️ No se seleccionó foto</div>`;
+                }
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 500);
+
+            // Paso 2: Convertir foto a Base64
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">🔄 PASO 2: JavaScript convierte la foto a Base64 (si hay)</div>';
+                if (archivoFoto) {
+                    logDiv.innerHTML += '<div class="log-line">   ✅ Foto convertida a Base64 correctamente</div>';
+                } else {
+                    logDiv.innerHTML += '<div class="log-line">   ⏭️ Sin foto, se omite este paso</div>';
+                }
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 1200);
+
+            // Paso 3: Enviar a API Gateway
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">🌐 PASO 3: JavaScript ejecuta fetch() hacia API Gateway</div>';
+                logDiv.innerHTML += '<div class="log-line">   URL: https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/registrar</div>';
+                logDiv.innerHTML += '<div class="log-line">   Body: { cedula, nombre, email, foto (Base64), nombreArchivo, tipoArchivo }</div>';
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 1900);
+
+            // Paso 4: API Gateway activa Lambda
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">🚪 PASO 4: API Gateway recibe la petición y activa Lambda</div>';
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 2600);
+
+            // Paso 5: Lambda guarda en S3
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">⚡ PASO 5: Lambda comienza a ejecutarse</div>';
+                logDiv.innerHTML += '<div class="log-line">   🔐 Verificando permisos IAM...</div>';
+                logDiv.innerHTML += '<div class="log-line">   ✅ Permiso s3:PutObject concedido</div>';
+                logDiv.innerHTML += '<div class="log-line">   ✅ Permiso dynamodb:PutItem concedido</div>';
+
+                if (archivoFoto) {
+                    const nombreS3 = `${cedula}-${Date.now()}-${archivoFoto.name}`;
+                    logDiv.innerHTML += `<div class="log-line">📦 PASO 5B: Lambda guarda la foto en S3 Bucket</div>`;
+                    logDiv.innerHTML += `<div class="log-line">   Bucket: fotos-perfil-usuarios</div>`;
+                    logDiv.innerHTML += `<div class="log-line">   Key: ${nombreS3}</div>`;
+                    logDiv.innerHTML += `<div class="log-line">   ✅ Foto guardada exitosamente en S3</div>`;
+                    logDiv.innerHTML += `<div class="log-line">   🔗 URL: https://fotos-perfil-usuarios.s3.amazonaws.com/${nombreS3}</div>`;
+                } else {
+                    logDiv.innerHTML += '<div class="log-line">   ⏭️ Sin foto, se omite guardado en S3</div>';
+                }
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 3300);
+
+            // Paso 6: Lambda guarda en DynamoDB
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">💾 PASO 6: Lambda guarda los datos en DynamoDB</div>';
+                logDiv.innerHTML += '<div class="log-line">   Tabla: UsuariosRegistrados</div>';
+                if (archivoFoto) {
+                    logDiv.innerHTML += `<div class="log-line">   Item: { Cedula: "${cedula}", Nombre: "${nombre}", Email: "${email}", UrlFoto: "https://...", Fecha: "${new Date().toLocaleString()}" }</div>`;
+                } else {
+                    logDiv.innerHTML += `<div class="log-line">   Item: { Cedula: "${cedula}", Nombre: "${nombre}", Email: "${email}", UrlFoto: "", Fecha: "${new Date().toLocaleString()}" }</div>`;
+                }
+                logDiv.innerHTML += '<div class="log-line">   ✅ Datos guardados exitosamente en DynamoDB</div>';
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 4000);
+
+            // Paso 7: Respuesta de éxito
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">✅ PASO 7: Lambda responde con éxito</div>';
+                logDiv.innerHTML += `<div class="log-line">   Respuesta: { statusCode: 200, mensaje: "✅ Usuario ${nombre} registrado exitosamente" }</div>`;
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 4700);
+
+            // Paso 8: Mensaje final
+            setTimeout(() => {
+                logDiv.innerHTML += '<div class="log-line">📱 PASO 8: El navegador recibe la respuesta y muestra el mensaje</div>';
+                logDiv.innerHTML += `<div class="log-line" style="color:#0f0; font-weight:bold;">🎉 ¡COMPLETADO! Usuario ${nombre} registrado.</div>`;
+                if (archivoFoto) {
+                    logDiv.innerHTML += `<div class="log-line" style="color:#0f0;">🖼️ La foto se guardó en S3 Bucket: fotos-perfil-usuarios/</div>`;
+                }
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }, 5400);
+        });
+    </script>
 
 </body>
+
 </html>
