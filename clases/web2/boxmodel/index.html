@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CSS Box Model Interactivo para los estudiantes del Profesor Robyir Loreto.</title>
+    <style>
+        /* ========== RESETEAR MÁRGENES & GLOBALES ========== */
+
+        /* Selector universal (*) - aplica estilos a TODOS los elementos HTML */
+        * {
+            margin: 0;
+            /* Elimina todos los márgenes externos por defecto */
+            padding: 0;
+            /* Elimina todos los rellenos internos por defecto */
+            box-sizing: border-box;
+            /* Hace que el ancho/alto incluyan borde y relleno, no solo contenido */
+        }
+
+        /* Estilos para el elemento <body> - el contenedor principal de toda la página */
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            /* Define la fuente principal (con fallbacks) */
+            background: #f1f5f9;
+            /* Color de fondo gris muy claro para toda la página */
+            color: #0f172a;
+            /* Color de texto gris oscuro (casi negro azulado) */
+            display: block;
+            /* Cambiamos a block para permitir scroll natural */
+            overflow-y: auto;
+            /* Scroll vertical normal */
+            overflow-x: hidden;
+            /* Oculta scroll horizontal */
+        }
+
+        /* Modo oscuro - estilos cuando la clase "dark" está presente en el <body> */
+        body.dark {
+            background: #0f172a;
+            /* Fondo azul muy oscuro para modo noche */
+            color: #e2e8f0;
+            /* Texto gris claro para buen contraste en modo oscuro */
+        }
+
+        /* ========== BARRA SUPERIOR ========== */
+
+        /* Contenedor de la barra de herramientas superior */
+        .toolbar {
+            background: #ffffff;
+            /* Fondo blanco para la barra */
+            padding: 0.75rem 1.5rem;
+            /* Relleno: arriba/abajo 0.75rem, izquierda/derecha 1.5rem */
+            display: flex;
+            /* Activa Flexbox para alinear elementos horizontalmente */
+            flex-wrap: wrap;
+            /* Permite que los elementos salten a nueva línea si no hay espacio */
+            align-items: center;
+            /* Centra verticalmente los elementos hijos */
+            justify-content: space-between;
+            /* Distribuye espacio entre elementos (primero y último pegados a bordes) */
+            gap: 1rem;
+            /* Espacio de 1rem entre cada elemento hijo */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            /* Sombra suave debajo de la barra */
+            z-index: 10;
+            /* Asegura que quede por encima de otros elementos */
+            border-bottom: 1px solid #e2e8f0;
+            /* Línea divisoria inferior */
+            transition: background 0.2s, border-color 0.2s;
+            /* Transición suave para cambios de estilo */
+            position: sticky;
+            /* Hace que la barra quede fija al hacer scroll */
+            top: 0;
+            /* Se pega en la parte superior */
+        }
+
+        /* Modo oscuro: barra de herramientas */
+        body.dark .toolbar {
+            background: #1e293b;
+            /* Fondo gris azulado oscuro para modo noche */
+            border-bottom-color: #334155;
+            /* Color de la línea divisoria más oscuro */
+        }
+
+        /* Área que contiene el logo o título */
+        .logo-area h1 {
+            font-size: 1.4rem;
+            /* Tamaño de fuente grande pero moderado */
+            font-weight: 600;
+            /* Peso seminegrita (600 de 400-normal a 700-bold) */
+            background: linear-gradient(135deg, #0f766e, #0ea5e9);
+            /* Degradado diagonal de verde a azul */
+            background-clip: text;
+            /* Recorta el fondo para que solo se muestre dentro del texto */
+            -webkit-background-clip: text;
+            /* Versión con prefijo para compatibilidad con navegadores WebKit */
+            color: transparent;
+            /* Hace el texto transparente para ver el degradado subyacente */
+            letter-spacing: -0.3px;
+            /* Reduce ligeramente el espacio entre letras */
+        }
+
+        /* Subtítulo debajo del logo */
+        .logo-area p {
+            font-size: 0.7rem;
+            /* Tamaño de fuente pequeño */
+            color: #475569;
+            /* Color gris medio para el subtítulo */
+        }
+
+        /* Modo oscuro: subtítulo del logo */
+        body.dark .logo-area p {
+            color: #94a3b8;
+            /* Gris más claro para mejor visibilidad en fondo oscuro */
+        }
+
+        /* Contenedor para los botones de acción */
+        .actions {
+            display: flex;
+            /* Organiza botones horizontalmente */
+            gap: 12px;
+            /* Espacio de 12px entre cada botón */
+            flex-wrap: wrap;
+            /* Permite que botones se envuelvan en pantallas pequeñas */
+        }
+
+        /* Estilos base para todos los botones */
+        button {
+            background: #f8fafc;
+            /* Fondo gris muy claro */
+            border: 1px solid #cbd5e1;
+            /* Borde gris claro */
+            padding: 0.5rem 1rem;
+            /* Relleno vertical 0.5rem, horizontal 1rem */
+            border-radius: 40px;
+            /* Bordes muy redondeados (efecto píldora) */
+            font-weight: 500;
+            /* Peso de fuente seminegrita */
+            font-size: 0.85rem;
+            /* Tamaño de fuente ligeramente reducido */
+            cursor: pointer;
+            /* Cambia el cursor a la mano (indica que es clickeable) */
+            transition: all 0.2s ease;
+            /* Transición suave para todas las propiedades */
+            display: inline-flex;
+            /* Flex en línea para alinear íconos y texto */
+            align-items: center;
+            /* Centra verticalmente ícono y texto */
+            gap: 8px;
+            /* Espacio de 8px entre ícono y texto */
+            color: #1e293b;
+            /* Color de texto gris oscuro */
+        }
+
+        /* Modo oscuro: botones */
+        body.dark button {
+            background: #334155;
+            /* Fondo gris azulado oscuro */
+            border-color: #475569;
+            /* Borde gris más oscuro */
+            color: #f1f5f9;
+            /* Texto gris muy claro para contraste */
+        }
+
+        /* Efecto hover (al pasar el mouse) para todos los botones */
+        button:hover {
+            transform: translateY(-2px);
+            /* Mueve el botón ligeramente hacia arriba */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            /* Sombra más pronunciada al flotar */
+            background: #e6f7f5;
+            /* Fondo verde muy claro */
+            border-color: #14b8a6;
+            /* Borde verde turquesa */
+        }
+
+        /* Estilo específico para el botón de ejecutar (btn-run) */
+        .btn-run {
+            background: #0f766e;
+            /* Fondo verde oscuro */
+            border-color: #0f766e;
+            /* Borde del mismo color verde */
+            color: white;
+            /* Texto blanco para contraste */
+        }
+
+        /* Efecto hover para el botón ejecutar */
+        .btn-run:hover {
+            background: #0d9488;
+            /* Fondo verde más claro al pasar el mouse */
+            transform: scale(1.02);
+            /* Aumenta ligeramente el tamaño (2%) */
+        }
+
+        /* Modo oscuro: botón ejecutar */
+        body.dark .btn-run {
+            background: #0d9488;
+            /* Verde turquesa para modo oscuro */
+        }
+
+        /* ========== SECCIÓN EDUCATIVA: MODELO DE CAJA ========== */
+
+        /* Contenedor de la lección - ahora con scroll normal */
+        .box-model-lesson {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Degradado morado-azul llamativo */
+            margin: 1rem;
+            /* Margen externo */
+            padding: 1.5rem;
+            /* Relleno interno */
+            border-radius: 24px;
+            /* Bordes redondeados */
+            color: white;
+            /* Texto blanco para contraste */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            /* Sombra más pronunciada */
+        }
+
+        /* Modo oscuro: mantiene el degradado pero ajusta sombra */
+        body.dark .box-model-lesson {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            /* Sombra más oscura para modo noche */
+        }
+
+        /* Título de la sección educativa */
+        .lesson-title {
+            display: flex;
+            /* Flex para alinear ícono y texto */
+            align-items: center;
+            /* Centrado vertical */
+            gap: 12px;
+            /* Espacio entre ícono y texto */
+            font-size: 1.3rem;
+            /* Tamaño grande */
+            font-weight: 700;
+            /* Negrita */
+            margin-bottom: 16px;
+            /* Margen inferior para separar del contenido */
+        }
+
+        /* Texto de definición */
+        .definition-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        /* Grid de 4 columnas para mostrar los componentes del box model */
+        .box-components {
+            display: grid;
+            /* CSS Grid para organización */
+            grid-template-columns: repeat(4, 1fr);
+            /* 4 columnas iguales */
+            gap: 15px;
+            /* Espacio entre tarjetas */
+            margin: 20px 0;
+            /* Margen vertical */
+        }
+
+        /* Cada tarjeta que explica un componente */
+        .component-card {
+            background: rgba(255, 255, 255, 0.15);
+            /* Fondo blanco semi-transparente */
+            backdrop-filter: blur(5px);
+            /* Efecto de vidrio esmerilado */
+            padding: 12px;
+            /* Relleno interno */
+            border-radius: 16px;
+            /* Bordes redondeados */
+            transition: transform 0.2s ease;
+            /* Transición suave para hover */
+        }
+
+        /* Efecto hover en tarjetas */
+        .component-card:hover {
+            transform: translateY(-5px);
+            /* Levanta la tarjeta */
+            background: rgba(255, 255, 255, 0.25);
+            /* Aumenta opacidad */
+        }
+
+        /* Título de cada componente */
+        .component-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            border-left: 3px solid #fbbf24;
+            padding-left: 8px;
+        }
+
+        /* Texto descriptivo */
+        .component-card p {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            opacity: 0.95;
+        }
+
+        /* Código de ejemplo */
+        .code-example {
+            background: #1e1e2e;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-top: 16px;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        body.dark .code-example {
+            background: #0a0a0f;
+        }
+
+        .code-example span.prop {
+            color: #7ee787;
+        }
+
+        .code-example span.value {
+            color: #ffa657;
+        }
+
+        .code-example span.comment {
+            color: #8b949e;
+        }
+
+        /* ========== PLAYGROUND (EDITOR + PREVIEW) ========== */
+
+        /* Contenedor del playground */
+        .playground-container {
+            background: #f1f5f9;
+            padding: 0 1rem 1rem 1rem;
+        }
+
+        body.dark .playground-container {
+            background: #0f172a;
+        }
+
+        /* Título del playground */
+        .playground-title {
+            padding: 1rem 0.5rem 0.5rem 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark .playground-title {
+            color: #e2e8f0;
+        }
+
+        /* Área de trabajo principal que contiene editor y previsualización */
+        .workspace {
+            display: flex;
+            /* Activa Flexbox para organización horizontal */
+            flex-direction: row;
+            /* Organiza hijos en fila (izquierda a derecha) */
+            gap: 0;
+            /* Sin espacio entre elementos hijos */
+            background: #f1f5f9;
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 550px;
+            /* Altura mínima para que se vea bien */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark .workspace {
+            background: #0f172a;
+        }
+
+        /* Panel del editor de código (lado izquierdo) */
+        .editor-panel {
+            flex: 1;
+            /* Ocupa la mitad del espacio disponible */
+            display: flex;
+            /* Activa Flexbox interno */
+            flex-direction: column;
+            /* Organiza contenido internamente en columna */
+            background: #ffffff;
+            /* Fondo blanco para el editor */
+            transition: all 0.2s;
+            /* Transición suave */
+            overflow: hidden;
+            /* Oculta desbordamientos */
+        }
+
+        /* Modo oscuro: panel del editor */
+        body.dark .editor-panel {
+            background: #0f172a;
+            /* Fondo azul muy oscuro */
+        }
+
+        /* Panel de previsualización (lado derecho) */
+        .preview-panel {
+            flex: 1;
+            /* Ocupa la otra mitad del espacio disponible */
+            background: #fefefe;
+            /* Fondo casi blanco */
+            display: flex;
+            /* Activa Flexbox interno */
+            flex-direction: column;
+            /* Organiza contenido en columna */
+            overflow: hidden;
+            /* Oculta desbordamientos */
+        }
+
+        /* Modo oscuro: panel de previsualización */
+        body.dark .preview-panel {
+            background: #020617;
+            /* Fondo azul muy profundo (casi negro) */
+        }
+
+        /* Cabeceras de cada panel */
+        .panel-header {
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark .panel-header {
+            background: #1e293b;
+            border-bottom-color: #334155;
+        }
+
+        /* Área que contiene el textarea */
+        .code-area {
+            flex: 1;
+            padding: 1rem;
+            overflow: auto;
+        }
+
+        /* Estilos del textarea */
+        textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 450px;
+            font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            background: #fefcf5;
+            resize: none;
+            outline: none;
+            transition: all 0.2s ease;
+            color: #0f172a;
+        }
+
+        body.dark textarea {
+            background: #111827;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        textarea:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+        }
+
+        /* Vista previa */
+        .preview-frame {
+            flex: 1;
+            background: white;
+            margin: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: auto;
+            border: 1px solid #e2e8f0;
+        }
+
+        body.dark .preview-frame {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 450px;
+            border: none;
+            background: white;
+            border-radius: 12px;
+        }
+
+        /* Dividor arrastrable */
+        .resize-handle {
+            width: 6px;
+            background: #cbd5e1;
+            cursor: col-resize;
+            transition: background 0.2s;
+        }
+
+        .resize-handle:hover {
+            background: #14b8a6;
+        }
+
+        body.dark .resize-handle {
+            background: #334155;
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 12px;
+            background: #eef2ff;
+            border-top: 1px solid #e2e8f0;
+            color: #334155;
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+
+        body.dark .footer-note {
+            background: #111827;
+            border-top-color: #1e293b;
+            color: #94a3b8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .workspace {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .resize-handle {
+                width: 100%;
+                height: 6px;
+                cursor: row-resize;
+            }
+
+            .box-components {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .box-model-lesson {
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+
+            .lesson-title {
+                font-size: 1.1rem;
+            }
+
+            .definition-text {
+                font-size: 0.9rem;
+            }
+
+            textarea,
+            iframe {
+                min-height: 300px;
+            }
+        }
+
+        /* Animación */
+        @keyframes fadeSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .box-model-lesson,
+        .workspace {
+            animation: fadeSlideUp 0.4s ease-out;
+        }
+    </style>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea' rx='20'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E📦%3C/text%3E%3C/svg%3E">
+</head>
+
+<body>
+
+    <!-- Barra superior fija (sticky) -->
+    <div class="toolbar">
+        <div class="logo-area">
+            <h1>📦 CSS Box Model Playground</h1>
+            <p>Experimenta con margin · border · padding · content</p>
+        </div>
+        <div class="actions">
+            <button id="runBtn" class="btn-run" data-tip="Ejecutar código (Ctrl + Enter)">▶️ EJECUTAR</button>
+            <button id="resetBtn" data-tip="Restaurar demo del Box Model">⟳ Restaurar ejemplo</button>
+            <button id="themeToggle" data-tip="Modo oscuro / claro">🌙 Tema</button>
+            <button id="orientationBtn" data-tip="Cambiar disposición (horizontal/vertical)">🔄 Orientación</button>
+        </div>
+    </div>
+
+    <!-- ========== SECCIÓN EDUCATIVA: DEFINICIÓN DEL MODELO DE CAJA ========== -->
+    <div class="box-model-lesson">
+        <div class="lesson-title">
+            <span>📚</span>
+            <span>¿Qué es el Modelo de Caja (Box Model) de CSS?</span>
+        </div>
+
+        <p class="definition-text">
+            <strong>✨ Definición:</strong> El <strong>Modelo de Caja</strong> es el concepto fundamental de CSS que
+            describe
+            cómo se representa cada elemento HTML como una "caja" rectangular. Esta caja está compuesta por
+            <strong>cuatro
+                capas concéntricas</strong> que, de adentro hacia afuera, son: <strong>CONTENIDO → RELLENO (PADDING) →
+                BORDE
+                (BORDER) → MARGEN (MARGIN)</strong>. La suma de todas estas capas determina el <strong>espacio
+                total</strong>
+            que ocupa un elemento en la página.
+        </p>
+
+        <!-- Componentes del Box Model explicados visualmente -->
+        <div class="box-components">
+            <div class="component-card">
+                <h3>📄 CONTENIDO (Content)</h3>
+                <p>Área donde se muestra el texto o imágenes. Sus dimensiones se definen con <strong>width</strong> y
+                    <strong>height</strong>.
+                </p>
+            </div>
+            <div class="component-card">
+                <h3>📏 RELLENO (Padding)</h3>
+                <p>Espacio <strong>interno</strong> entre el contenido y el borde. Aumenta el área interior sin afectar
+                    el
+                    exterior.</p>
+            </div>
+            <div class="component-card">
+                <h3>🖼️ BORDE (Border)</h3>
+                <p>Línea que rodea el padding y el contenido. Puede tener grosor, estilo (sólido, punteado) y color.</p>
+            </div>
+            <div class="component-card">
+                <h3>⬜ MARGEN (Margin)</h3>
+                <p>Espacio <strong>externo</strong> que separa esta caja de otros elementos. Es transparente y no forma
+                    parte
+                    del tamaño visible.</p>
+            </div>
+        </div>
+
+        <!-- Ejemplo práctico de código CSS -->
+        <div class="code-example">
+            <code>
+        .mi-caja { <br>
+        &nbsp;&nbsp;<span class="prop">width</span>: <span class="value">200px</span>; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* Contenido */</span><br>
+        &nbsp;&nbsp;<span class="prop">padding</span>: <span class="value">20px</span>; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* Relleno interno */</span><br>
+        &nbsp;&nbsp;<span class="prop">border</span>: <span class="value">5px solid #333</span>; &nbsp;<span class="comment">/* Borde */</span><br>
+        &nbsp;&nbsp;<span class="prop">margin</span>: <span class="value">15px</span>; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* Margen externo */</span><br>
+        }
+      </code>
+            <p style="margin-top: 10px; font-size: 0.75rem; opacity: 0.9;">
+                💡 El ancho TOTAL real sería: 200px (content) + 40px (padding izq+der) + 10px (border izq+der) = 250px
+                <br>
+                (sin contar margin, que es espacio externo)
+            </p>
+        </div>
+    </div>
+
+    <!-- ========== PLAYGROUND (donde se experimenta) ========== -->
+    <div class="playground-container">
+        <div class="playground-title">
+            <span>🎮</span>
+            <span>¡Ahora practica tú mismo!</span>
+        </div>
+
+        <div class="workspace" id="workspace">
+            <div class="editor-panel" id="editorPanel">
+                <div class="panel-header">
+                    <span>✏️ EDITOR HTML + CSS</span>
+                    <span style="font-size:11px; opacity:0.7">— Modifica los valores del Box Model</span>
+                </div>
+                <div class="code-area">
+                    <textarea id="htmlCode" spellcheck="false" aria-label="Editor de código"></textarea>
+                </div>
+            </div>
+            <div class="resize-handle" id="dragHandle"></div>
+            <div class="preview-panel" id="previewPanel">
+                <div class="panel-header">
+                    <span>🖥️ VISTA PREVIA EN VIVO</span>
+                    <span style="font-size:11px;">(observa cómo cambia la caja)</span>
+                </div>
+                <div class="preview-frame">
+                    <iframe id="liveFrame" title="Resultado del Box Model"
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            💡 Modifica los valores de padding, margin, border, width, background-color — mira cómo cambia la "caja"
+            mágicamente.
+        </div>
+    </div>
+
+    <script>
+        // Código base demo (SIN el botón resetBtnDown dentro del iframe)
+        const DEFAULT_CODE = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Box Model - Práctica interactiva</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, 'Segoe UI', monospace;
+      background: linear-gradient(145deg, #f9fafb 0%, #eef2ff 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      margin: 0;
+    }
+    .playground {
+      max-width: 900px;
+      width: 100%;
+      background: rgba(255,255,255,0.3);
+      border-radius: 32px;
+      padding: 2rem;
+      backdrop-filter: blur(2px);
+    }
+    h2 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #0f172a;
+      letter-spacing: -0.3px;
+    }
+    .demo-card {
+      background-color: #ffe6b3;
+      width: 280px;
+      border: 8px solid #2b9348;
+      padding: 32px;
+      margin: 40px auto;
+      border-radius: 24px;
+      transition: all 0.2s ease;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      font-family: inherit;
+    }
+    .demo-card p {
+      font-size: 1rem;
+      line-height: 1.4;
+      color: #1e293b;
+      font-weight: 500;
+    }
+    .label-box {
+      background: #2b9348;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 60px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .inspector {
+      background: #f1f5f9;
+      padding: 16px;
+      border-radius: 28px;
+      margin-top: 28px;
+      font-size: 0.8rem;
+      text-align: center;
+      font-family: monospace;
+      border: 1px dashed #64748b;
+    }
+    .highlight {
+      background: #facc15;
+      padding: 2px 5px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+    .flex-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    button {
+      background: white;
+      border: 1px solid #2b9348;
+      padding: 6px 12px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.1s;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #2b9348;
+      color: white;
+      transform: scale(1.02);
+    }
+    @media (max-width: 500px) {
+      .demo-card { width: 220px; padding: 20px; margin: 24px auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="playground">
+  <h2>📐 El Modelo de Caja (Box Model)</h2>
+  <div class="demo-card" id="cajaDemo">
+    <span class="label-box">CONTENIDO</span>
+    <p><strong>✨ Content ✨</strong><br> Este es el área de contenido. <br> Su <span class="highlight">width</span> y <span class="highlight">height</span> definen el espacio interior.</p>
+    <p>🔹 <strong>Padding</strong> → espacio interno<br>
+    🔹 <strong>Border</strong> → borde sólido verde<br>
+    🔹 <strong>Margin</strong> → separación externa</p>
+  </div>
+  <div class="inspector">
+    💡 <strong>Información del Box Model:</strong><br>
+    🟩 content + 🟦 padding + 🟢 border + ⬜ margin = espacio total.<br>
+    ¡Modifica los valores en el editor de la izquierda!
+  </div>
+  <div class="flex-buttons">
+    <button onclick="alert('Edita los estilos en el panel izquierdo → Cambia padding, margin, border, width')">🧪 Experimentar</button>
+  </div>
+</div>
+</body>
+</html>`;
+
+        // Referencias DOM
+        const htmlEditor = document.getElementById('htmlCode');
+        const liveFrame = document.getElementById('liveFrame');
+        const runBtn = document.getElementById('runBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        const orientationBtn = document.getElementById('orientationBtn');
+        const workspace = document.getElementById('workspace');
+        const dragHandle = document.getElementById('dragHandle');
+        const editorPanel = document.getElementById('editorPanel');
+        const previewPanel = document.getElementById('previewPanel');
+
+        let dragActive = false;
+        let startX = 0;
+        let startY = 0;
+        let startWidth = 0;
+        let startHeight = 0;
+
+        // Inicializar con código demo
+        htmlEditor.value = DEFAULT_CODE;
+
+        // Actualizar vista previa
+        function updatePreview() {
+            const code = htmlEditor.value;
+            const doc = liveFrame.contentDocument || liveFrame.contentWindow.document;
+            doc.open();
+            doc.write(code);
+            doc.close();
+        }
+
+        // Restaurar ejemplo - ESTA ES LA FUNCIÓN QUE RESETEA EL CÓDIGO
+        function resetToExample() {
+            htmlEditor.value = DEFAULT_CODE;
+            updatePreview();
+        }
+
+        // Modo oscuro
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            themeToggle.innerHTML = isDark ? '☀️ Claro' : '🌙 Oscuro';
+            localStorage.setItem('boxmodel-theme', isDark ? 'dark' : 'light');
+        }
+
+        // Cambiar orientación
+        function toggleOrientation() {
+            const currentDirection = window.getComputedStyle(workspace).flexDirection;
+            if (currentDirection === 'row') {
+                workspace.style.flexDirection = 'column';
+                dragHandle.style.cursor = 'row-resize';
+                dragHandle.style.width = '100%';
+                dragHandle.style.height = '6px';
+            } else {
+                workspace.style.flexDirection = 'row';
+                dragHandle.style.cursor = 'col-resize';
+                dragHandle.style.width = '6px';
+                dragHandle.style.height = 'auto';
+            }
+        }
+
+        // Redimensionamiento
+        function initDrag() {
+            dragHandle.addEventListener('mousedown', (e) => {
+                dragActive = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const isRow = window.getComputedStyle(workspace).flexDirection === 'row';
+                if (isRow) {
+                    startWidth = editorPanel.offsetWidth;
+                } else {
+                    startHeight = editorPanel.offsetHeight;
+                }
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!dragActive) return;
+                const isRow = window.getComputedStyle(workspace).flexDirection === 'row';
+                const containerRect = workspace.getBoundingClientRect();
+
+                if (isRow) {
+                    let newWidth = startWidth + (e.clientX - startX);
+                    newWidth = Math.min(containerRect.width - 200, Math.max(200, newWidth));
+                    editorPanel.style.flex = `0 0 ${newWidth}px`;
+                    previewPanel.style.flex = `1 1 auto`;
+                } else {
+                    let newHeight = startHeight + (e.clientY - startY);
+                    newHeight = Math.min(containerRect.height - 200, Math.max(200, newHeight));
+                    editorPanel.style.flex = `0 0 ${newHeight}px`;
+                    previewPanel.style.flex = `1 1 auto`;
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                dragActive = false;
+                document.body.style.userSelect = '';
+            });
+        }
+
+        // Atajos de teclado
+        function handleShortcuts(e) {
+            if ((e.ctrlKey && e.key === 'Enter') || (e.metaKey && e.key === 'Enter')) {
+                e.preventDefault();
+                updatePreview();
+            }
+        }
+
+        // Cargar tema guardado
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('boxmodel-theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.innerHTML = '☀️ Claro';
+            }
+        }
+
+        // Inicializar
+        function init() {
+            loadThemePreference();
+            updatePreview();
+            initDrag();
+
+            // El botón resetBtn de la barra superior funciona correctamente
+            runBtn.addEventListener('click', updatePreview);
+            resetBtn.addEventListener('click', resetToExample);
+            themeToggle.addEventListener('click', toggleTheme);
+            orientationBtn.addEventListener('click', toggleOrientation);
+            document.addEventListener('keydown', handleShortcuts);
+
+            let debounceTimer;
+            htmlEditor.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updatePreview, 400);
+            });
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
