@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playground Orange · Aprende desde cero</title>
+    <!-- Font Awesome (icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* RESET & BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f7f9fc;
+            color: #1e2b3c;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* GRID principal (responsive) */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* HEADER con flex */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #ff7b00, #e65c00);
+            padding: 1.2rem 2rem;
+            border-radius: 2rem;
+            color: white;
+            box-shadow: 0 8px 20px rgba(230, 92, 0, 0.25);
+            margin-bottom: 0.5rem;
+        }
+
+        .header h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i {
+            font-size: 2.2rem;
+        }
+
+        .header .badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* CONTENEDOR DE LECCIONES (grid anidado) */
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        /* Cada tarjeta de lección — con flexbox interno */
+        .lesson-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.8rem 1.8rem 2rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #edf2f7;
+            transition: transform 0.15s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-3px);
+            border-color: #ffb07c;
+        }
+
+        .lesson-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid #f0f4fa;
+            padding-bottom: 0.8rem;
+        }
+
+        .lesson-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #1e2b3c;
+        }
+
+        .lesson-header h2 i {
+            color: #ff7b00;
+            font-size: 1.6rem;
+        }
+
+        .level-tag {
+            background: #eef3f9;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #2c3e50;
+        }
+
+        .level-tag.beginner { background: #d4edda; color: #0b5e2e; }
+        .level-tag.intermediate { background: #fff3cd; color: #856404; }
+        .level-tag.advanced { background: #f8d7da; color: #721c24; }
+
+        .concept-box {
+            background: #f8faff;
+            border-radius: 1.2rem;
+            padding: 1rem 1.4rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #ff7b00;
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .concept-box strong {
+            color: #c24f00;
+        }
+
+        /* PLAYGROUND (simulación interactiva) */
+        .playground {
+            background: #f2f6fd;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 0.5rem 0 0.2rem;
+            border: 1px solid #e2eaf5;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .playground-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 500;
+            color: #1e3a5f;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+
+        .playground-title i {
+            color: #ff7b00;
+        }
+
+        .playground-output {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            min-height: 70px;
+            border: 1px dashed #b6cbe0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .playground-output .data-badge {
+            background: #e8edf6;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1f3a57;
+        }
+
+        .playground-output .highlight {
+            background: #ffedd5;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            color: #a14900;
+            font-weight: 500;
+        }
+
+        .playground-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .btn {
+            background: white;
+            border: 1px solid #d0dcec;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #1e3a5f;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn i {
+            color: #ff7b00;
+        }
+
+        .btn:hover {
+            background: #ff7b00;
+            color: white;
+            border-color: #ff7b00;
+            box-shadow: 0 6px 14px rgba(255, 123, 0, 0.25);
+        }
+
+        .btn:hover i {
+            color: white;
+        }
+
+        .btn-primary {
+            background: #ff7b00;
+            border-color: #ff7b00;
+            color: white;
+        }
+
+        .btn-primary i {
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e05f00;
+            border-color: #e05f00;
+        }
+
+        /* footer con flex */
+        .footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: #5b6f87;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2eaf5;
+            padding-top: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem 1.5rem;
+        }
+
+        .footer i {
+            color: #ff7b00;
+            margin: 0 0.2rem;
+        }
+
+        /* responsive: tablets y escritorio */
+        @media (min-width: 700px) {
+            .lessons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (min-width: 1100px) {
+            .lessons-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .app-grid {
+                gap: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 0.8rem; }
+            .header { flex-direction: column; align-items: start; gap: 0.6rem; }
+            .header .badge { align-self: flex-start; }
+            .lesson-header { flex-direction: column; align-items: start; gap: 0.4rem; }
+        }
+
+        /* Estilo para la salida dinámica (playground) */
+        .output-dynamic {
+            background: #ffffff;
+            border-radius: 0.8rem;
+            padding: 0.7rem 1.2rem;
+            font-family: 'Menlo', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #dbe4ef;
+            color: #15304e;
+            min-height: 3rem;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-grid">
+        <!-- HEADER -->
+        <header class="header">
+            <h1><i class="fas fa-cubes"></i> Orange Playground</h1>
+            <span class="badge"><i class="fas fa-code"></i> principiante → experto</span>
+        </header>
+
+        <!-- LESSONS (grid) -->
+        <div class="lessons-grid">
+
+            <!-- TARJETA 1: PRINCIPIANTE -->
+            <section class="lesson-card">
+                <div class="lesson-header">
+                    <h2><i class="fas fa-seedling"></i> Conceptos básicos</h2>
+                    <span class="level-tag beginner"><i class="far fa-circle"></i> Principiante</span>
+                </div>
+                <div class="concept-box">
+                    <strong><i class="fas fa-graduation-cap"></i> ¿Qué es Orange?</strong> Plataforma visual para minería de datos y ML. <br />
+                    <span style="color:#2c5282;">Widgets → flujo de trabajo → análisis sin código.</span>
+                </div>
+
+                <!-- Playground interactivo -->
+                <div class="playground">
+                    <div class="playground-title">
+                        <i class="fas fa-laptop-code"></i> Playground · Salida
+                    </div>
+                    <div class="playground-output" id="output-basic">
+                        <span class="data-badge"><i class="fas fa-table"></i> Dataset: iris</span>
+                        <span class="highlight">150 filas · 5 columnas</span>
+                        <span><i class="fas fa-chart-pie"></i> Clases: setosa, versicolor, virginica</span>
+                    </div>
+                    <div class="playground-actions">
+                        <button class="btn" id="btn-basic"><i class="fas fa-play"></i> Ejecutar resumen</button>
+                        <button class="btn btn-primary" id="btn-basic-viz"><i class="fas fa-chart-bar"></i> Ver distribución</button>
+                    </div>
+                    <div id="dynamic-basic" class="output-dynamic">
+                        ▶ Listo para explorar.
+                    </div>
+                </div>
+            </section>
+
+            <!-- TARJETA 2: INTERMEDIO -->
+            <section class="lesson-card">
+                <div class="lesson-header">
+                    <h2><i class="fas fa-layer-group"></i> Visualización & preproceso</h2>
+                    <span class="level-tag intermediate"><i class="fas fa-star"></i> Intermedio</span>
+                </div>
+                <div class="concept-box">
+                    <strong><i class="fas fa-filter"></i> Preprocesamiento:</strong> Selección, imputación, escalado. <br />
+                    <span style="color:#2c5282;">Widgets: Select Columns, Impute, Normalize.</span>
+                </div>
+
+                <div class="playground">
+                    <div class="playground-title">
+                        <i class="fas fa-sliders-h"></i> Playground · Transformación
+                    </div>
+                    <div class="playground-output" id="output-inter">
+                        <span class="data-badge"><i class="fas fa-edit"></i> Escalado: StandardScaler</span>
+                        <span class="highlight">Media 0, Desv. 1</span>
+                        <span><i class="fas fa-check-circle" style="color:#2b7a3d;"></i> Columnas numéricas: 4</span>
+                    </div>
+                    <div class="playground-actions">
+                        <button class="btn" id="btn-inter"><i class="fas fa-sync-alt"></i> Aplicar preproceso</button>
+                        <button class="btn btn-primary" id="btn-inter-viz"><i class="fas fa-chart-scatter"></i> Matriz de correlación</button>
+                    </div>
+                    <div id="dynamic-inter" class="output-dynamic">
+                        ▶ Datos escalados. Listo para modelo.
+                    </div>
+                </div>
+            </section>
+
+            <!-- TARJETA 3: AVANZADO / EXPERTO -->
+            <section class="lesson-card">
+                <div class="lesson-header">
+                    <h2><i class="fas fa-robot"></i> Modelado & evaluación</h2>
+                    <span class="level-tag advanced"><i class="fas fa-crown"></i> Experto</span>
+                </div>
+                <div class="concept-box">
+                    <strong><i class="fas fa-brain"></i> Modelos avanzados:</strong> Random Forest, XGBoost, redes neuronales. <br />
+                    <span style="color:#2c5282;">Evaluación: validación cruzada, AUC, precisión.</span>
+                </div>
+
+                <div class="playground">
+                    <div class="playground-title">
+                        <i class="fas fa-chart-line"></i> Playground · Rendimiento
+                    </div>
+                    <div class="playground-output" id="output-expert">
+                        <span class="data-badge"><i class="fas fa-tachometer-alt"></i> Accuracy: 0.94</span>
+                        <span class="highlight">AUC: 0.98</span>
+                        <span><i class="fas fa-cogs"></i> F1-score: 0.93</span>
+                    </div>
+                    <div class="playground-actions">
+                        <button class="btn" id="btn-expert"><i class="fas fa-play"></i> Entrenar modelo</button>
+                        <button class="btn btn-primary" id="btn-expert-viz"><i class="fas fa-chart-pie"></i> Matriz de confusión</button>
+                    </div>
+                    <div id="dynamic-expert" class="output-dynamic">
+                        ▶ Modelo Random Forest (10 árboles) listo.
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <span><i class="fas fa-cube"></i> Orange Playground · Aprende haciendo</span>
+            <span><i class="fas fa-arrow-right"></i> Conceptos, ejercicios y salida interactiva</span>
+            <span><i class="fas fa-code"></i> HTML + CSS Grid / Flexbox</span>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // --- Helper para actualizar salida dinámica ---
+            function setDynamicOutput(elementId, message, isError = false) {
+                const el = document.getElementById(elementId);
+                if (el) {
+                    el.innerHTML = (isError ? '⚠️ ' : '▶ ') + message;
+                    el.style.color = isError ? '#b22222' : '#15304e';
+                }
+            }
+
+            // -------- BASIC (principiante) --------
+            document.getElementById('btn-basic').addEventListener('click', function() {
+                setDynamicOutput('dynamic-basic', 'Resumen: 150 instancias, 5 atributos (4 numéricos + clase). Media de longitud de sépalo: 5.84 cm.');
+            });
+            document.getElementById('btn-basic-viz').addEventListener('click', function() {
+                setDynamicOutput('dynamic-basic', 'Distribución de clases: Setosa 33.3% | Versicolor 33.3% | Virginica 33.3% (balanceado)');
+            });
+
+            // -------- INTERMEDIO --------
+            document.getElementById('btn-inter').addEventListener('click', function() {
+                setDynamicOutput('dynamic-inter', 'Preproceso aplicado: imputación de valores ausentes (media) + escalado (StandardScaler). Datos listos.');
+            });
+            document.getElementById('btn-inter-viz').addEventListener('click', function() {
+                setDynamicOutput('dynamic-inter', 'Matriz de correlación (Pearson): longitud pétalo vs ancho sépalo: 0.82 | longitud sépalo vs ancho pétalo: -0.12');
+            });
+
+            // -------- EXPERTO --------
+            document.getElementById('btn-expert').addEventListener('click', function() {
+                setDynamicOutput('dynamic-expert', 'Modelo RandomForest (n_estimators=100, max_depth=8) entrenado. Accuracy en test: 0.94 (5-fold CV)');
+            });
+            document.getElementById('btn-expert-viz').addEventListener('click', function() {
+                setDynamicOutput('dynamic-expert', 'Matriz de confusión: [[16  0  0] [ 0 15  1] [ 0  0 18]]  (excelente rendimiento)');
+            });
+
+            // ------- Simular interacción con los outputs estáticos (solo para feedback) -------
+            // también podemos cambiar algo en los badges para dar sensación dinámica
+            document.querySelectorAll('.lesson-card .btn:not(.btn-primary)').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // solo feedback sutil (no necesario, pero agrega calidez)
+                    const card = this.closest('.lesson-card');
+                    const outputDiv = card.querySelector('.playground-output');
+                    if (outputDiv) {
+                        // pequeño destello
+                        outputDiv.style.transition = 'background 0.15s';
+                        outputDiv.style.background = '#fff6e8';
+                        setTimeout(() => { outputDiv.style.background = 'white'; }, 250);
+                    }
+                });
+            });
+
+            // también para botones primary
+            document.querySelectorAll('.lesson-card .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.lesson-card');
+                    const outputDiv = card.querySelector('.playground-output');
+                    if (outputDiv) {
+                        outputDiv.style.transition = 'background 0.15s';
+                        outputDiv.style.background = '#e3f0ff';
+                        setTimeout(() => { outputDiv.style.background = 'white'; }, 300);
+                    }
+                });
+            });
+
+        })();
+    </script>
+</body>
+</html>
