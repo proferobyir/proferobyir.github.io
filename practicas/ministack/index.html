@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="author" content="Profesor Robyir Loreto">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 2 L62 16 L62 48 L32 62 L2 48 L2 16 Z' fill='%23232F3E'/><path d='M32 2 L62 16 L32 30 L2 16 Z' fill='%23FF9900'/><path d='M32 30 L62 16 L62 48 L32 62 Z' fill='%23E07700'/><path d='M2 16 L32 30 L32 62 L2 48 Z' fill='%23B85C00'/><path d='M12 21 L32 31 L52 21' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/></svg>">
     <title>Guía Definitiva: AWS MiniStack en Windows</title>
     <style>
         :root {
@@ -200,6 +202,21 @@
             color: #664d03;
         }
 
+        /* Caja de Descarga */
+        .download-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .download-box a {
+            color: #15803d;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
         /* RESPONSIVO (Media Queries) */
         @media (min-width: 768px) {
             .wrapper {
@@ -233,10 +250,11 @@
         <nav class="sidebar">
             <h3>Pasos Secuenciales</h3>
             <ul>
-                <li><a href="#step1">1. Configuración Local</a></li>
+                <li><a href="#step0">0. Servidor Local (Docker)</a></li>
+                <li><a href="#step1">1. Cliente y Entorno</a></li>
                 <li><a href="#step2">2. Capa de Datos (DynamoDB)</a></li>
                 <li><a href="#step3">3. Código Lambda (index.js)</a></li>
-                <li><a href="#step4">4. Carga de la Lambda</a></li>
+                <li><a href="#step4">4. Empaquetado e Inyección</a></li>
                 <li><a href="#step5">5. Integración (API Gateway)</a></li>
                 <li><a href="#step6">6. Código Cliente (index.html)</a></li>
             </ul>
@@ -244,12 +262,64 @@
 
         <main class="content">
 
+            <section id="step0" class="step-card" style="border-left-color: var(--aws-orange);">
+                <h2>0. Inicialización de la Infraestructura Emulada</h2>
+                <p>Crea un archivo llamado <code>docker-compose.yml</code> en la raíz de tu proyecto para orquestar el contenedor que simulará los servidores de Amazon Web Services (AWS) de forma local:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">docker-compose.yml</span>
+                        <button class="btn-copy" onclick="copyCode('code0')">Copiar</button>
+                    </div>
+                    <pre><code id="code0">version: '3.8'
+
+services:
+  ministack:
+    image: ministackorg/ministack:full
+    container_name: ministack_practica
+    ports:
+      - "4566:4566"           # Puerto principal de los servicios de AWS
+      - "4510-4559:4510-4559" # Puertos que usa MiniStack internamente para las Lambdas de Docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Crucial para que funcionen las Lambdas
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1</code></pre>
+                </div>
+
+                <p><strong>Comando para encender los servidores desde la consola:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code0b')">Copiar</button>
+                    </div>
+                    <pre><code id="code0b">docker-compose up -d</code></pre>
+                </div>
+            </section>
+
             <section id="step1" class="step-card">
-                <h2>1. Configuración de Entorno en el Servidor</h2>
+                <h2>1. Instalación del Cliente AWS y Configuración de Entorno</h2>
+                <p>Para poder enviar comandos a la infraestructura emulada, la máquina de desarrollo requiere de la interfaz de línea de comandos oficial de Amazon.</p>
+                
+                <div class="download-box">
+                    <strong>📥 Descarga del AWS CLI:</strong><br>
+                    Para sistemas Windows de 64 bits, descargar e instalar el instalador oficial MSI desde el siguiente enlace:<br>
+                    👉 <a href="https://awscli.amazonaws.com/AWSCLIV2.msi" target="_blank">Instalador Directo AWS CLI v2 (.msi)</a>
+                </div>
+
+                <p><strong>A. Verificar la instalación del cliente:</strong></p>
+                <p>Abre una terminal de comandos nueva (CMD) y ejecuta la siguiente línea para certificar que el sistema reconoce la herramienta:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code1verify')">Copiar</button>
+                    </div>
+                    <pre><code id="code1verify">aws --version</code></pre>
+                </div>
+
                 <div class="note-box" style="background-color: #e3f2fd; border-color: #bbdefb; margin-bottom: 20px;">
                     <span class="icon" style="color: #0d47a1;">📂</span>
-                    <p style="color: #0d47a1;"><strong>Ruta Obligatoria de Almacenamiento:</strong><br>
-                    Los siguientes dos archivos deben guardarse estrictamente en el directorio de tu perfil de usuario en Windows:<br>
+                    <p style="color: #0d47a1;"><strong>Ruta Obligatoria de Credenciales:</strong><br>
+                    Una vez verificado el cliente, los siguientes dos archivos de configuración deben guardarse estrictamente en el directorio del perfil de usuario de Windows:<br>
                     <code>C:\Users\TU_USUARIO\.aws\</code></p>
                 </div>
 
@@ -278,7 +348,7 @@ output = json</code></pre>
 
             <section id="step2" class="step-card">
                 <h2>2. Capa de Datos: Creación de Tabla en DynamoDB</h2>
-                <p>Se inicializa la persistencia. Definimos la clave primaria limpia como <code>email</code> de tipo String (S).</p>
+                <p>Se inicializa la persistencia de datos. Definimos la clave primaria limpia como <code>email</code> de tipo String (S).</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
@@ -289,14 +359,16 @@ output = json</code></pre>
             </section>
 
             <section id="step3" class="step-card">
-                <h2>3. Capa de Lógica: El Código de la Función (index.js)</h2>
+                <h2>3. Capa de Lógica: El Código Adaptado (index.js)</h2>
                 <div class="note-box" style="background-color: #e8f5e9; border-color: #c8e6c9; margin-bottom: 20px;">
                     <span class="icon" style="color: #1b5e20;">💻</span>
                     <p style="color: #1b5e20;"><strong>Ubicación del Espacio de Trabajo:</strong><br>
-                    Guarda el archivo <code>index.js</code> dentro de tu directorio de usuario:<br>
+                    Crea una carpeta llamada <code>lab</code> dentro de tu carpeta de usuario y guarda el archivo allí:<br>
                     <code>C:\Users\TU_USUARIO\lab\index.js</code><br>
-                    Tu consola CMD debe estar abierta apuntando a esta ruta (<code>cd %USERPROFILE%\lab</code>).</p>
+                    Tu consola CMD debe operar apuntando a este directorio (<code>cd %USERPROFILE%\lab</code>).</p>
                 </div>
+
+                <p>Este código está normalizado para soportar el mapeo de eventos clásico de <strong>API Gateway REST APIs</strong> (capturando <code>event.httpMethod</code>) evitando colapsos de propiedades indefinidas en tiempo de ejecución:</p>
 
                 <div class="code-container">
                     <div class="code-header">
@@ -310,13 +382,17 @@ const client = new DynamoDBClient({ endpoint: process.env.AWS_ENDPOINT_URL || "h
 const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
+    console.log("Evento recibido:", JSON.stringify(event));
+
     const headers = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Methods": "OPTIONS,POST"
     };
 
-    if (event.requestContext.http.method === "OPTIONS") {
+    const method = event.httpMethod || (event.requestContext && event.requestContext.http && event.requestContext.http.method);
+
+    if (method === "OPTIONS") {
         return { statusCode: 200, headers, body: "" };
     }
 
@@ -360,31 +436,43 @@ exports.handler = async (event) => {
             </section>
 
             <section id="step4" class="step-card">
-                <h2>4. Capa de Lógica: Compresión y Carga a MiniStack</h2>
-                <p>Empaqueta el archivo y súbelo al contenedor Docker:</p>
+                <h2>4. Capa de Lógica: Gestión de Dependencias e Inyección Completa</h2>
+                <p>Dado que el entorno de ejecución requiere el SDK utilitario de DynamoDB, es obligatorio inicializar el paquete localmente e incluir la carpeta <code>node_modules</code> dentro de la compresión binaria:</p>
                 
+                <p><strong>A. Descargar dependencias necesarias (Ejecutar parados dentro de \lab):</strong></p>
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD (Comprimir)</span>
+                        <span class="code-lang">Windows CMD</span>
                         <button class="btn-copy" onclick="copyCode('code4a')">Copiar</button>
                     </div>
-                    <pre><code id="code4a">tar -a -c -f funcion-lambda.zip index.js</code></pre>
+                    <pre><code id="code4a">npm init -y
+npm install @aws-sdk/lib-dynamodb</code></pre>
                 </div>
 
+                <p><strong>B. Comprimir de forma compuesta (Código + Módulos):</strong></p>
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD (Subir Lambda)</span>
+                        <span class="code-lang">Windows CMD</span>
                         <button class="btn-copy" onclick="copyCode('code4b')">Copiar</button>
                     </div>
-                    <pre><code id="code4b">aws lambda create-function --function-name procesarEstudiantes --runtime nodejs18.x --role arn:aws:iam::000000000000:role/lambda-ex --handler index.handler --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code4b">tar -a -c -f funcion-lambda.zip index.js node_modules package.json</code></pre>
+                </div>
+
+                <p><strong>C. Crear el recurso funcional en MiniStack:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code4c')">Copiar</button>
+                    </div>
+                    <pre><code id="code4c">aws lambda create-function --function-name procesarEstudiantes --runtime nodejs18.x --role arn:aws:iam::000000000000:role/lambda-ex --handler index.handler --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code></pre>
                 </div>
             </section>
 
             <section id="step5" class="step-card">
                 <h2>5. Capa de Integración: Configurar API Gateway con Trazabilidad de IDs</h2>
-                <p>Mapea las peticiones HTTP externas ejecutando estas líneas en orden cronológico estricto. Presta mucha atención a las salidas JSON del servidor:</p>
+                <p>Mapea las peticiones HTTP externas ejecutando estas líneas en orden secuencial estricto, prestando atención a los flujos de salida del servidor:</p>
                 
-                <p><strong>A. Instanciar la API REST:</strong></p>
+                <p><strong>A. Instanciar la API REST en el contenedor:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
@@ -395,16 +483,22 @@ exports.handler = async (event) => {
 
                 <div class="note-box" style="background-color: #fff3cd; border-color: #ffeba2;">
                     <span class="icon">🔍</span>
-                    <p><strong>Salida esperada en Consola (JSON de Creación):</strong><br>
-                    La consola te devolverá una estructura como esta. Extrae el valor de <code>"id"</code> de la API:<br>
+                    <p><strong>Salida JSON Esperada en Consola (Paso A):</strong><br>
+                    La terminal te arrojará la metadata de creación. Identifica de inmediato el campo de ID único de la API:<br>
                     <code style="color: #664d03; display:block; white-space:pre; background:#fff; padding:10px; margin-top:5px; border-radius:3px;">{
-    "items": [{ "id": "05dd485d", "name": "API-Estudiantes", ... }]
+    "items": [
+        {
+            "id": "05dd485d",
+            "name": "API-Estudiantes",
+            "endpointConfiguration": { "types": ["REGIONAL"] }
+        }
+    ]
 }</code>
-                    <br>➔ En este ejemplo, el ID extraído es <strong>05dd485d</strong> (Este valor es tu <strong>TU_API_ID</strong>).</p>
+                    <br>➔ El valor capturado representa tu <strong>TU_API_ID</strong> (Ejemplo real: <code>05dd485d</code>).</p>
                 </div><br>
 
-                <p><strong>B. Consultar la raíz de la API para obtener el Parent ID:</strong></p>
-                <p>Usa el ID del paso anterior para consultar el recurso base <code>/</code> de la infraestructura:</p>
+                <p><strong>B. Consultar el identificador del recurso raíz (/):</strong></p>
+                <p>Reemplaza tu ID capturado para extraer la ruta raíz jerárquica del servidor:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
@@ -415,16 +509,22 @@ exports.handler = async (event) => {
 
                 <div class="note-box" style="background-color: #fff3cd; border-color: #ffeba2;">
                     <span class="icon">🔍</span>
-                    <p><strong>Salida esperada en Consola (JSON de Recursos):</strong><br>
-                    Al ejecutar la línea anterior, el servidor te devolverá los recursos base. Captura el <code>"id"</code> asociado al path raíz <code>"/"</code>:<br>
+                    <p><strong>Salida JSON Esperada en Consola (Paso B):</strong><br>
+                    El servidor te responderá el mapeo base. Captura el ID enlazado al path principal <code>"/"</code>:<br>
                     <code style="color: #664d03; display:block; white-space:pre; background:#fff; padding:10px; margin-top:5px; border-radius:3px;">{
-    "items": [{ "id": "aac51348", "path": "/", "resourceMethods": {} }]
+    "items": [
+        {
+            "id": "aac51348",
+            "path": "/",
+            "resourceMethods": {}
+        }
+    ]
 }</code>
-                    <br>➔ En este ejemplo, el ID de la raíz es <strong>aac51348</strong> (Este valor es tu <strong>TU_PARENT_ID</strong>).</p>
+                    <br>➔ El valor capturado representa tu <strong>TU_PARENT_ID</strong> (Ejemplo real: <code>aac51348</code>).</p>
                 </div><br>
 
-                <p><strong>C. Crear la ruta secundaria /estudiantes:</strong></p>
-                <p>Combina ambos identificadores capturados para instanciar el nuevo endpoint de la base de datos:</p>
+                <p><strong>C. Crear la ruta secundaria (/estudiantes):</strong></p>
+                <p>Utiliza ambos parámetros extraídos para instanciar el nuevo recurso de red:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
@@ -433,30 +533,37 @@ exports.handler = async (event) => {
                     <pre><code id="code5c">aws apigateway create-resource --rest-api-id 05dd485d --parent-id aac51348 --path-part estudiantes --endpoint-url http://localhost:4566</code></pre>
                 </div>
 
-                <div class="note-box">
-                    <span class="icon">⚠️</span>
-                    <p><strong>¡ÚLTIMA ALERTA DE CAPTURA!</strong><br>
-                    Este comando "C" te generará un tercer JSON en la consola que contiene los datos del sub-recurso. Copia el <code>"id"</code> de esa respuesta (por ejemplo: <code>987654xx</code>). Ese valor final representa tu <strong>RESOURCE_ID</strong> y lo necesitarás en los pasos "D" inferiores.</p>
+                <div class="note-box" style="background-color: #fff3cd; border-color: #ffeba2;">
+                    <span class="icon">🔍</span>
+                    <p><strong>Salida JSON Esperada en Consola (Paso C):</strong><br>
+                    Este comando registrará la ruta del endpoint. Captura el ID asignado a la subruta:<br>
+                    <code style="color: #664d03; display:block; white-space:pre; background:#fff; padding:10px; margin-top:5px; border-radius:3px;">{
+    "id": "d4f56816",
+    "parentId": "aac51348",
+    "pathPart": "estudiantes",
+    "path": "/estudiantes"
+}</code>
+                    <br>➔ El valor capturado representa tu <strong>RESOURCE_ID</strong> (Ejemplo real: <code>d4f56816</code>).</p>
                 </div><br>
 
-                <p><strong>D. Habilitar método POST y enlazarlo con la Lambda:</strong></p>
+                <p><strong>D. Abrir método POST e inyectar el enlace Proxy con la Lambda:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD (Método)</span>
+                        <span class="code-lang">Windows CMD (Habilitar Método)</span>
                         <button class="btn-copy" onclick="copyCode('code5d1')">Copiar</button>
                     </div>
-                    <pre><code id="code5d1">aws apigateway put-method --rest-api-id 05dd485d --resource-id RESOURCE_ID --http-method POST --authorization-type "NONE" --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code5d1">aws apigateway put-method --rest-api-id 05dd485d --resource-id d4f56816 --http-method POST --authorization-type "NONE" --endpoint-url http://localhost:4566</code></pre>
                 </div>
 
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD (Integración proxy)</span>
+                        <span class="code-lang">Windows CMD (Soldar Integración)</span>
                         <button class="btn-copy" onclick="copyCode('code5d2')">Copiar</button>
                     </div>
-                    <pre><code id="code5d2">aws apigateway put-integration --rest-api-id 05dd485d --resource-id RESOURCE_ID --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code5d2">aws apigateway put-integration --rest-api-id 05dd485d --resource-id d4f56816 --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
                 </div>
 
-                <p><strong>E. Publicar el despliegue al entorno "prod":</strong></p>
+                <p><strong>E. Publicar y congelar el despliegue en producción (prod):</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
@@ -482,7 +589,7 @@ exports.handler = async (event) => {
 &lt;body&gt;
 
     &lt;h2&gt;Formulario de Registro Cloud&lt;/h2&gt;
-    &lt;p id="responseMessage" style="font-weight: bold; color: blue;"&gt;&lt;/p>
+    &lt;p id="responseMessage" style="font-weight: bold; color: blue;"&gt;&lt;/p&gt;
 
     &lt;form id="studentForm"&gt;
         &lt;div&gt;
@@ -498,7 +605,7 @@ exports.handler = async (event) => {
             &lt;input type="email" id="txtemail" required&gt;
         &lt;/div&gt;&lt;br&gt;
         &lt;button type="submit"&gt;Enviar a AWS MiniStack&lt;/button&gt;
-    &lt;/form>
+    &lt;/form&gt;
 
     &lt;script&gt;
         document.getElementById('studentForm').addEventListener('submit', async (e) => {
