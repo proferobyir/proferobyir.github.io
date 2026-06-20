@@ -169,6 +169,7 @@
             overflow-x: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
+            margin: 0;
         }
 
         code {
@@ -796,7 +797,7 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
             .wrapper { grid-template-columns: 250px 1fr; }
             .sidebar { min-height: calc(100vh - 88px); position: sticky; top: 0; }
         }
-    </style>
+    &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 
@@ -817,7 +818,7 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
                 &lt;div class="panel-actions"&gt;
                     &lt;h2&gt;Estudiantes Registrados&lt;/h2&gt;
                     &lt;button class="btn-refresh" onclick="fetchData()"&gt;Actualizar Tabla&lt;/button&gt;
-                </div>
+                &lt;/div&gt;
 
                 &lt;div id="statusBox" class="status-message loading"&gt;Consultando base de datos NoSQL...&lt;/div&gt;
 
@@ -892,12 +893,48 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
 
     <script>
         function copyCode(id) {
-            const codeText = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(codeText).then(() => {
+            const element = document.getElementById(id);
+            if (!element) {
+                alert("Error: Bloque de código no encontrado");
+                return;
+            }
+            
+            // Obtener el texto limpio (sin indentación extra)
+            let text = element.textContent;
+            
+            // Usar la API Clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const btn = document.querySelector(`[onclick="copyCode('${id}')"]`);
+                    if (btn) {
+                        const originalText = btn.textContent;
+                        btn.textContent = "¡Copiado!";
+                        setTimeout(() => { btn.textContent = originalText; }, 1500);
+                    }
+                }).catch(err => {
+                    console.error('Error al copiar: ', err);
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            // Método alternativo para navegadores antiguos
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
                 alert("¡Copiado con éxito!");
-            }).catch(err => {
-                console.error('Error al copiar: ', err);
-            });
+            } catch (err) {
+                alert("Error al copiar. Por favor, copia manualmente.");
+            }
+            document.body.removeChild(textarea);
         }
     </script>
 </body>
