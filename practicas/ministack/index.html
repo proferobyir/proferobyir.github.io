@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Práctica: AWS MiniStack en Windows</title>
+    <style>
+        :root {
+            --primary-dark: #1a222d;
+            --aws-squid: #232f3e;
+            --aws-orange: #ff9900;
+            --bg-light: #f4f6f6;
+            --text-dark: #333333;
+            --code-bg: #272822;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--aws-squid);
+            color: var(--white);
+            padding: 20px;
+            border-bottom: 4px solid var(--aws-orange);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        header p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* DISEÑO PRINCIPAL CON CSS GRID */
+        .wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            flex: 1;
+        }
+
+        /* Barra lateral de navegación */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: var(--aws-orange);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 12px;
+        }
+
+        .sidebar ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            color: var(--aws-orange);
+        }
+
+        /* Contenido Principal */
+        .content {
+            padding: 30px;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .step-card {
+            background: var(--white);
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid var(--aws-squid);
+        }
+
+        .step-card h2 {
+            color: var(--aws-squid);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-card p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        /* Bloques de Código con FLEXBOX */
+        .code-container {
+            background-color: var(--code-bg);
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e1e1e;
+            padding: 8px 12px;
+            margin: -15px -15px 15px -15px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            border-bottom: 1px solid #333;
+        }
+
+        .code-lang {
+            color: #888;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .btn-copy {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: var(--aws-orange);
+            color: var(--aws-squid);
+        }
+
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #f8f8f2;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Notas de advertencia con Flexbox */
+        .note-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            background-color: #fff9e6;
+            border: 1px solid #ffe0b2;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .note-box .icon {
+            font-size: 1.3rem;
+        }
+
+        .note-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #664d03;
+        }
+
+        /* RESPONSIVO (Media Queries) */
+        @media (min-width: 768px) {
+            .wrapper {
+                grid-template-columns: 250px 1fr; /* Sidebar fija a la izquierda en PC */
+            }
+            .sidebar {
+                min-height: calc(100vh - 88px);
+                position: sticky;
+                top: 0;
+            }
+        }
+
+        footer {
+            background-color: var(--aws-squid);
+            color: #888;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85rem;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Guía de Despliegue: MiniStack en Windows (CMD)</h1>
+        <p>Laboratorio Cloud Computing sin Restricciones de Proxy</p>
+    </header>
+
+    <div class="wrapper">
+        <nav class="sidebar">
+            <h3>Pasos del Backend</h3>
+            <ul>
+                <li><a href="#step1">1. Tabla DynamoDB</a></li>
+                <li><a href="#step2">2. Desplegar Lambda</a></li>
+                <li><a href="#step3">3. Configurar API Gateway</a></li>
+                <li><a href="#endpoint">4. Endpoint Final</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+
+            <section id="step1" class="step-card">
+                <h2>1. Crear la Tabla en DynamoDB</h2>
+                <p>Crea la tabla persistente utilizando comandos puros de una sola línea compatibles con el CMD de Windows para evitar errores de salto de línea.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code1')">Copiar</button>
+                    </div>
+                    <pre><code id="code1">aws dynamodb create-table --table-name estudiantes --attribute-definitions AttributeName=email,AttributeType=S --key-schema AttributeName=email,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 --endpoint-url http://localhost:4566</code></pre>
+                </div>
+            </section>
+
+            <section id="step2" class="step-card">
+                <h2>2. Empaquetar y Desplegar la Función Lambda</h2>
+                <p>Genera el archivo comprimido sin depender de software externo usando el empaquetador nativo de Windows y súbelo a MiniStack:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD (Paso A)</span>
+                        <button class="btn-copy" onclick="copyCode('code2a')">Copiar</button>
+                    </div>
+                    <pre><code id="code2a">tar -a -c -f funcion-lambda.zip index.js</code></pre>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD (Paso B)</span>
+                        <button class="btn-copy" onclick="copyCode('code2b')">Copiar</button>
+                    </div>
+                    <pre><code id="code2b">aws lambda create-function --function-name procesarEstudiantes --runtime nodejs18.x --role arn:aws:iam::000000000000:role/lambda-ex --handler index.handler --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code></pre>
+                </div>
+            </section>
+
+            <section id="step3" class="step-card">
+                <h2>3. Crear y Enlazar el API Gateway</h2>
+                <p>Ejecuta la secuencia de comandos secuenciales para exponer públicamente tu microservicio HTTP:</p>
+                
+                <p><strong>A. Crear la API REST (Guarda el ID retornado):</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code3a')">Copiar</button>
+                    </div>
+                    <pre><code id="code3a">aws apigateway create-rest-api --name "API-Estudiantes" --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>B. Obtener el ID del recurso raíz (/):</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code3b')">Copiar</button>
+                    </div>
+                    <pre><code id="code3b">aws apigateway get-resources --rest-api-id TU_API_ID --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>C. Crear el recurso /estudiantes (Usa el Parent ID anterior):</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code3c')">Copiar</button>
+                    </div>
+                    <pre><code id="code3c">aws apigateway create-resource --rest-api-id TU_API_ID --parent-id TU_PARENT_ID --path-part estudiantes --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>D. Crear el método POST y mapearlo a la Lambda:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD (Método)</span>
+                        <button class="btn-copy" onclick="copyCode('code3d1')">Copiar</button>
+                    </div>
+                    <pre><code id="code3d1">aws apigateway put-method --rest-api-id TU_API_ID --resource-id RESOURCE_ID --http-method POST --authorization-type "NONE" --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD (Integración)</span>
+                        <button class="btn-copy" onclick="copyCode('code3d2')">Copiar</button>
+                    </div>
+                    <pre><code id="code3d2">aws apigateway put-integration --rest-api-id TU_API_ID --resource-id RESOURCE_ID --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>E. Desplegar la API a Producción:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code3e')">Copiar</button>
+                    </div>
+                    <pre><code id="code3e">aws apigateway create-deployment --rest-api-id TU_API_ID --stage-name prod --endpoint-url http://localhost:4566</code></pre>
+                </div>
+            </section>
+
+            <section id="endpoint" class="step-card" style="border-left-color: var(--aws-orange);">
+                <h2>4. Estructura de la URL del Laboratorio</h2>
+                <p>Esta es la dirección base que debes escribir en la pizarra reemplazando tu identificador único para que los alumnos configuren el <code>fetch</code> de JavaScript:</p>
+                
+                <div class="note-box">
+                    <span class="icon">💡</span>
+                    <p><strong>URL para los Estudiantes:</strong><br>
+                    <code>http://awslocal.ddns.net:4566/restapis/<span style="color:red; font-weight:bold;">TU_API_ID</span>/prod/_user_request_/estudiantes</code></p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        &copy; 2026 - Material de Apoyo Práctico para Laboratorios Avanzados
+    </footer>
+
+    <script>
+        function copyCode(id) {
+            const codeText = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                alert("¡Comando copiado al portapapeles!");
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
