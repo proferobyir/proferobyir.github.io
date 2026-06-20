@@ -2,9 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="author" content="Profesor Robyir Loreto">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 2 L62 16 L62 48 L32 62 L2 48 L2 16 Z' fill='%23232F3E'/><path d='M32 2 L62 16 L32 30 L2 16 Z' fill='%23FF9900'/><path d='M32 30 L62 16 L62 48 L32 62 Z' fill='%23E07700'/><path d='M2 16 L32 30 L32 62 L2 48 Z' fill='%23B85C00'/><path d='M12 21 L32 31 L52 21' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/></svg>">
     <title>Guía Definitiva: AWS MiniStack en Windows</title>
     <style>
         :root {
@@ -93,7 +91,7 @@
         /* Contenido Principal */
         .content {
             padding: 30px;
-            max-width: 1000px;
+            max-width: 10000px;
             width: 100%;
             margin: 0 auto;
         }
@@ -256,6 +254,7 @@
                 <li><a href="#step3">3. Código Lambda (index.js)</a></li>
                 <li><a href="#step4">4. Empaquetado e Inyección</a></li>
                 <li><a href="#step5">5. Integración (API Gateway)</a></li>
+                <li><a href="#step5cors">5B. Capa de Red (CORS)</a></li>
                 <li><a href="#step6">6. Código Cliente (index.html)</a></li>
             </ul>
         </nav>
@@ -264,6 +263,16 @@
 
             <section id="step0" class="step-card" style="border-left-color: var(--aws-orange);">
                 <h2>0. Inicialización de la Infraestructura Emulada</h2>
+                
+                <div class="note-box" style="background-color: #fef2f2; border-color: #fca5a5; margin-bottom: 20px;">
+                    <span class="icon" style="color: #dc2626;">⚙️</span>
+                    <p style="color: #991b1b;"><strong>REQUISITOS PREVIOS OBLIGATORIOS EN WINDOWS:</strong><br><br>
+                    <strong>1. Habilitar WSL (Windows Subsystem for Linux):</strong> Docker Desktop requiere de la arquitectura Linux interna de Windows para operar. Si no está instalado, abre una consola de comandos (CMD) como Administrador y ejecuta:<br>
+                    <code style="background:#fff; padding:2px 6px; border-radius:3px; color:#c2185b; font-family:monospace;">wsl --install</code><br>
+                    *(Nota: Si la máquina lo requiere, reinicia el equipo tras completar la instalación).*<br><br>
+                    <strong>2. Ejecutar Docker Desktop:</strong> Una vez activo WSL, abre la aplicación Docker Desktop. Certifica que el icono inferior de la barra de tareas cambie a color verde (Running). Si el motor de Docker no está activo en segundo plano, la consola fallará al intentar inicializar los contenedores.</p>
+                </div>
+
                 <p>Crea un archivo llamado <code>docker-compose.yml</code> en la raíz de tu proyecto para orquestar el contenedor que simulará los servidores de Amazon Web Services (AWS) de forma local:</p>
                 
                 <div class="code-container">
@@ -384,6 +393,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 exports.handler = async (event) => {
     console.log("Evento recibido:", JSON.stringify(event));
 
+    // Cabeceras CORS mandatorias para navegadores web
     const headers = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type",
@@ -465,6 +475,15 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
                         <button class="btn-copy" onclick="copyCode('code4c')">Copiar</button>
                     </div>
                     <pre><code id="code4c">aws lambda create-function --function-name procesarEstudiantes --runtime nodejs18.x --role arn:aws:iam::000000000000:role/lambda-ex --handler index.handler --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <div class="note-box" style="background-color: #fce4ec; border-color: #f8bbd0; margin-top: 20px;">
+                    <span class="icon" style="color: #c2185b;">⚠️</span>
+                    <p style="color: #c2185b;"><strong>REGLA DE ORO DE ARQUITECTURA CLOUD (MANTENIMIENTO):</strong><br>
+                    Si modificas el código interno de <code>index.js</code> más adelante, la Lambda <strong>NO</strong> se actualiza sola. Tienes que seguir obligatoriamente este flujo secuencial:<br>
+                    1. Re-empaquetar el zip con el comando <strong>B</strong>.<br>
+                    2. Inyectar el código nuevo: <code>aws lambda update-function-code --function-name procesarEstudiantes --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code><br>
+                    3. <strong>¡CRUCIAL!</strong> Volver a ejecutar el comando de Despliegue de API Gateway (Paso 5-E) para refrescar el backend.</p>
                 </div>
             </section>
 
@@ -562,14 +581,42 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
                     </div>
                     <pre><code id="code5d2">aws apigateway put-integration --rest-api-id 05dd485d --resource-id d4f56816 --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
                 </div>
+            </section>
 
-                <p><strong>E. Publicar y congelar el despliegue en producción (prod):</strong></p>
+            <section id="step5cors" class="step-card" style="border-left-color: #e91e63;">
+                <h2>5B. Capa de Seguridad de Red: Soporte de Tráfico Cruzado (CORS)</h2>
+                <p>Los navegadores web ejecutan una validación previa de seguridad (petición <code>OPTIONS</code>) antes de enviar el JSON. Si no abres este canal, la interfaz web arrojará <strong>"Error de red: Conexión fallida"</strong>.</p>
+                
+                <p><strong>A. Habilitar el método OPTIONS en la subruta:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('codecors1')">Copiar</button>
+                    </div>
+                    <pre><code id="codecors1">aws apigateway put-method --rest-api-id 05dd485d --resource-id d4f56816 --http-method OPTIONS --authorization-type "NONE" --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>B. Enlazar OPTIONS con el flujo Proxy de la Lambda:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('codecors2')">Copiar</button>
+                    </div>
+                    <pre><code id="codecors2">aws apigateway put-integration --rest-api-id 05dd485d --resource-id d4f56816 --http-method OPTIONS --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>E. Publicar/Congelar el despliegue en producción (OBLIGATORIO tras añadir métodos o actualizar código):</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
                         <button class="btn-copy" onclick="copyCode('code5e')">Copiar</button>
                     </div>
                     <pre><code id="code5e">aws apigateway create-deployment --rest-api-id 05dd485d --stage-name prod --endpoint-url http://localhost:4566</code></pre>
+                </div>
+                
+                <div class="note-box" style="background-color: #fce4ec; border-color: #f8bbd0;">
+                    <span class="icon" style="color: #c2185b;">⚠️</span>
+                    <p style="color: #c2185b;"><strong>Recordatorio para el Estudiante:</strong> Cada vez que agregues un método, modifiques un recurso o actualices la lógica de la Lambda, debes volver a correr este comando <code>create-deployment</code> para que el Gateway compile el estado nuevo.</p>
                 </div>
             </section>
 
@@ -589,7 +636,7 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
 &lt;body&gt;
 
     &lt;h2&gt;Formulario de Registro Cloud&lt;/h2&gt;
-    &lt;p id="responseMessage" style="font-weight: bold; color: blue;"&gt;&lt;/p&gt;
+    &lt;p id="responseMessage" style="font-weight: bold; color: blue;"&gt;&lt;/p>
 
     &lt;form id="studentForm"&gt;
         &lt;div&gt;
@@ -605,7 +652,7 @@ npm install @aws-sdk/lib-dynamodb</code></pre>
             &lt;input type="email" id="txtemail" required&gt;
         &lt;/div&gt;&lt;br&gt;
         &lt;button type="submit"&gt;Enviar a AWS MiniStack&lt;/button&gt;
-    &lt;/form&gt;
+    &lt;/form>
 
     &lt;script&gt;
         document.getElementById('studentForm').addEventListener('submit', async (e) => {
