@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Práctica: AWS MiniStack en Windows</title>
+    <title>Guía Secuencial: AWS MiniStack en Windows</title>
     <style>
         :root {
             --primary-dark: #1a222d;
@@ -225,122 +225,152 @@
 <body>
 
     <header>
-        <h1>Guía de Despliegue: MiniStack en Windows (CMD)</h1>
-        <p>Laboratorio Cloud Computing sin Restricciones de Proxy</p>
+        <h1>Guía de Despliegue Secuencial: AWS MiniStack (Windows)</h1>
+        <p>Estructura lógica paso a paso para la preparación de laboratorios</p>
     </header>
 
     <div class="wrapper">
         <nav class="sidebar">
-            <h3>Pasos del Backend</h3>
+            <h3>Pasos Secuenciales</h3>
             <ul>
-                <li><a href="#step1">1. Tabla DynamoDB</a></li>
-                <li><a href="#step2">2. Desplegar Lambda</a></li>
-                <li><a href="#step3">3. Configurar API Gateway</a></li>
-                <li><a href="#endpoint">4. Endpoint Final</a></li>
+                <li><a href="#step1">1. Configuración Local</a></li>
+                <li><a href="#step2">2. Capa de Datos (DynamoDB)</a></li>
+                <li><a href="#step3">3. Capa de Lógica (Lambda)</a></li>
+                <li><a href="#step4">4. Integración (API Gateway)</a></li>
+                <li><a href="#endpoint">5. Endpoint del Laboratorio</a></li>
             </ul>
         </nav>
 
         <main class="content">
 
             <section id="step1" class="step-card">
-                <h2>1. Crear la Tabla en DynamoDB</h2>
-                <p>Crea la tabla persistente utilizando comandos puros de una sola línea compatibles con el CMD de Windows para evitar errores de salto de línea.</p>
+                <h2>1. Configuración de Entorno en el Servidor</h2>
+                <p>Antes de lanzar servicios, la AWS CLI necesita sus archivos de identidad de simulacro creados en la ruta <code>C:\Users\TU_USUARIO\.aws\</code>.</p>
                 
+                <p><strong>Archivo A: credentials (Crear sin extensión)</strong></p>
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD</span>
-                        <button class="btn-copy" onclick="copyCode('code1')">Copiar</button>
+                        <span class="code-lang">credentials</span>
+                        <button class="btn-copy" onclick="copyCode('code1a')">Copiar</button>
                     </div>
-                    <pre><code id="code1">aws dynamodb create-table --table-name estudiantes --attribute-definitions AttributeName=email,AttributeType=S --key-schema AttributeName=email,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code1a">[default]
+aws_access_key_id = test
+aws_secret_access_key = test</code></pre>
+                </div>
+
+                <p><strong>Archivo B: config (Crear sin extensión)</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">config</span>
+                        <button class="btn-copy" onclick="copyCode('code1b')">Copiar</button>
+                    </div>
+                    <pre><code id="code1b">[default]
+region = us-east-1
+output = json</code></pre>
                 </div>
             </section>
 
             <section id="step2" class="step-card">
-                <h2>2. Empaquetar y Desplegar la Función Lambda</h2>
-                <p>Genera el archivo comprimido sin depender de software externo usando el empaquetador nativo de Windows y súbelo a MiniStack:</p>
+                <h2>2. Capa de Datos: Creación de Tabla en DynamoDB</h2>
+                <p>Se inicializa el almacenamiento persistente. Definimos la clave primaria limpia como <code>email</code> de tipo String (S).</p>
                 
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD (Paso A)</span>
-                        <button class="btn-copy" onclick="copyCode('code2a')">Copiar</button>
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code2')">Copiar</button>
                     </div>
-                    <pre><code id="code2a">tar -a -c -f funcion-lambda.zip index.js</code></pre>
-                </div>
-
-                <div class="code-container">
-                    <div class="code-header">
-                        <span class="code-lang">Windows CMD (Paso B)</span>
-                        <button class="btn-copy" onclick="copyCode('code2b')">Copiar</button>
-                    </div>
-                    <pre><code id="code2b">aws lambda create-function --function-name procesarEstudiantes --runtime nodejs18.x --role arn:aws:iam::000000000000:role/lambda-ex --handler index.handler --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code2">aws dynamodb create-table --table-name estudiantes --attribute-definitions AttributeName=email,AttributeType=S --key-schema AttributeName=email,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 --endpoint-url http://localhost:4566</code></pre>
                 </div>
             </section>
 
             <section id="step3" class="step-card">
-                <h2>3. Crear y Enlazar el API Gateway</h2>
-                <p>Ejecuta la secuencia de comandos secuenciales para exponer públicamente tu microservicio HTTP:</p>
+                <h2>3. Capa de Lógica: Compresión y Carga de la Lambda</h2>
+                <p>Empaqueta el archivo <code>index.js</code> que traduce los nombres mnemotécnicos (<code>txt...</code>) a campos limpios y despliega el backend:</p>
                 
-                <p><strong>A. Crear la API REST (Guarda el ID retornado):</strong></p>
+                <p><strong>A. Empaquetar usando tar nativo de Windows:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
                         <button class="btn-copy" onclick="copyCode('code3a')">Copiar</button>
                     </div>
-                    <pre><code id="code3a">aws apigateway create-rest-api --name "API-Estudiantes" --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code3a">tar -a -c -f funcion-lambda.zip index.js</code></pre>
                 </div>
 
-                <p><strong>B. Obtener el ID del recurso raíz (/):</strong></p>
+                <p><strong>B. Crear la función en MiniStack:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
                         <button class="btn-copy" onclick="copyCode('code3b')">Copiar</button>
                     </div>
-                    <pre><code id="code3b">aws apigateway get-resources --rest-api-id TU_API_ID --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code3b">aws lambda create-function --function-name procesarEstudiantes --runtime nodejs18.x --role arn:aws:iam::000000000000:role/lambda-ex --handler index.handler --zip-file fileb://funcion-lambda.zip --endpoint-url http://localhost:4566</code></pre>
                 </div>
+            </section>
 
-                <p><strong>C. Crear el recurso /estudiantes (Usa el Parent ID anterior):</strong></p>
+            <section id="step4" class="step-card">
+                <h2>4. Capa de Integración: Configurar API Gateway</h2>
+                <p>Sigue la cadena de comandos en estricto orden para mapear las peticiones HTTP externas hacia la Lambda interna:</p>
+                
+                <p><strong>A. Instanciar la API REST:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
-                        <button class="btn-copy" onclick="copyCode('code3c')">Copiar</button>
+                        <button class="btn-copy" onclick="copyCode('code4a')">Copiar</button>
                     </div>
-                    <pre><code id="code3c">aws apigateway create-resource --rest-api-id TU_API_ID --parent-id TU_PARENT_ID --path-part estudiantes --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code4a">aws apigateway create-rest-api --name "API-Estudiantes" --endpoint-url http://localhost:4566</code></pre>
                 </div>
 
-                <p><strong>D. Crear el método POST y mapearlo a la Lambda:</strong></p>
+                <p><strong>B. Consultar el ID del recurso raíz (/):</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code4b')">Copiar</button>
+                    </div>
+                    <pre><code id="code4b">aws apigateway get-resources --rest-api-id TU_API_ID --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>C. Crear la ruta secundaria /estudiantes:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span class="code-lang">Windows CMD</span>
+                        <button class="btn-copy" onclick="copyCode('code4c')">Copiar</button>
+                    </div>
+                    <pre><code id="code4c">aws apigateway create-resource --rest-api-id TU_API_ID --parent-id TU_PARENT_ID --path-part estudiantes --endpoint-url http://localhost:4566</code></pre>
+                </div>
+
+                <p><strong>D. Habilitar el método POST y enlazarlo con la Lambda:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD (Método)</span>
-                        <button class="btn-copy" onclick="copyCode('code3d1')">Copiar</button>
+                        <button class="btn-copy" onclick="copyCode('code4d1')">Copiar</button>
                     </div>
-                    <pre><code id="code3d1">aws apigateway put-method --rest-api-id TU_API_ID --resource-id RESOURCE_ID --http-method POST --authorization-type "NONE" --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code4d1">aws apigateway put-method --rest-api-id TU_API_ID --resource-id RESOURCE_ID --http-method POST --authorization-type "NONE" --endpoint-url http://localhost:4566</code></pre>
                 </div>
 
                 <div class="code-container">
                     <div class="code-header">
-                        <span class="code-lang">Windows CMD (Integración)</span>
-                        <button class="btn-copy" onclick="copyCode('code3d2')">Copiar</button>
+                        <span class="code-lang">Windows CMD (Integración proxy)</span>
+                        <button class="btn-copy" onclick="copyCode('code4d2')">Copiar</button>
                     </div>
-                    <pre><code id="code3d2">aws apigateway put-integration --rest-api-id TU_API_ID --resource-id RESOURCE_ID --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code4d2">aws apigateway put-integration --rest-api-id TU_API_ID --resource-id RESOURCE_ID --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:procesarEstudiantes/submissions --endpoint-url http://localhost:4566</code></pre>
                 </div>
 
-                <p><strong>E. Desplegar la API a Producción:</strong></p>
+                <p><strong>E. Publicar el despliegue al entorno "prod":</strong></p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-lang">Windows CMD</span>
-                        <button class="btn-copy" onclick="copyCode('code3e')">Copiar</button>
+                        <button class="btn-copy" onclick="copyCode('code4e')">Copiar</button>
                     </div>
-                    <pre><code id="code3e">aws apigateway create-deployment --rest-api-id TU_API_ID --stage-name prod --endpoint-url http://localhost:4566</code></pre>
+                    <pre><code id="code4e">aws apigateway create-deployment --rest-api-id TU_API_ID --stage-name prod --endpoint-url http://localhost:4566</code></pre>
                 </div>
             </section>
 
             <section id="endpoint" class="step-card" style="border-left-color: var(--aws-orange);">
-                <h2>4. Estructura de la URL del Laboratorio</h2>
-                <p>Esta es la dirección base que debes escribir en la pizarra reemplazando tu identificador único para que los alumnos configuren el <code>fetch</code> de JavaScript:</p>
+                <h2>5. URL de Conexión para los Estudiantes</h2>
+                <p>Con la arquitectura integrada, esta es la ruta pública final que tus alumnos llamarán mediante el JavaScript de sus archivos locales:</p>
                 
                 <div class="note-box">
-                    <span class="icon">💡</span>
-                    <p><strong>URL para los Estudiantes:</strong><br>
+                    <span class="icon">🔗</span>
+                    <p><strong>Ruta del Laboratorio:</strong><br>
                     <code>http://awslocal.ddns.net:4566/restapis/<span style="color:red; font-weight:bold;">TU_API_ID</span>/prod/_user_request_/estudiantes</code></p>
                 </div>
             </section>
@@ -349,14 +379,14 @@
     </div>
 
     <footer>
-        &copy; 2026 - Material de Apoyo Práctico para Laboratorios Avanzados
+        &copy; 2026 - Guía de Infraestructura y Despliegue de Servicios Cloud
     </footer>
 
     <script>
         function copyCode(id) {
             const codeText = document.getElementById(id).innerText;
             navigator.clipboard.writeText(codeText).then(() => {
-                alert("¡Comando copiado al portapapeles!");
+                alert("¡Comando copiado!");
             }).catch(err => {
                 console.error('Error al copiar: ', err);
             });
