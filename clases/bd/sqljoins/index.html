@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground SQL - Northwind con JOINs y Mapa de Tablas</title>
+    <style>
+        :root {
+            --primary-blue: #1a3a5c;
+            --secondary-blue: #2c5f8a;
+            --light-blue: #e8f0f8;
+            --gray-100: #f5f7fa;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --join-inner: #2c5f8a;
+            --join-left: #16a34a;
+            --join-right: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 10px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--secondary-blue);
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header .badge {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #b0cce0;
+        }
+
+        /* MAIN LAYOUT */
+        .playground {
+            display: flex;
+            height: calc(100vh - 60px);
+            width: 100%;
+        }
+
+        /* LEFT PANEL - SQL */
+        .panel-left {
+            flex: 0 0 40%;
+            background: var(--gray-900);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            border-right: 2px solid var(--gray-700);
+        }
+
+        .panel-left .panel-header {
+            background: var(--gray-800);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-700);
+            flex-shrink: 0;
+        }
+
+        .panel-left .panel-header span {
+            color: var(--gray-300);
+            font-size: 12px;
+            font-weight: 500;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-copy {
+            background: var(--secondary-blue);
+            color: var(--white);
+            border: none;
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: #3a7bb5;
+        }
+
+        .code-container {
+            flex: 1;
+            overflow: auto;
+            padding: 12px 16px;
+            background: var(--gray-900);
+        }
+
+        .code-container pre {
+            margin: 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #d4d4d4;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* RIGHT PANEL */
+        .panel-right {
+            flex: 1;
+            background: var(--white);
+            padding: 16px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* JOIN SECTIONS */
+        .join-section {
+            background: var(--gray-100);
+            border-radius: var(--border-radius);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--gray-300);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .join-section.active-inner {
+            border-left-color: var(--join-inner);
+            background: #f0f5fa;
+        }
+
+        .join-section.active-left {
+            border-left-color: var(--join-left);
+            background: #f0faf4;
+        }
+
+        .join-section.active-right {
+            border-left-color: var(--join-right);
+            background: #faf0f0;
+        }
+
+        .join-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .join-header h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .join-header .join-type {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .join-type.inner {
+            background: var(--join-inner);
+            color: white;
+        }
+
+        .join-type.left {
+            background: var(--join-left);
+            color: white;
+        }
+
+        .join-type.right {
+            background: var(--join-right);
+            color: white;
+        }
+
+        .join-query {
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            background: var(--gray-800);
+            color: #d4d4d4;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0 10px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .join-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .join-visual .set {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .join-visual .set-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            border: 3px solid rgba(255,255,255,0.3);
+            box-shadow: var(--shadow);
+        }
+
+        .join-visual .set-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--gray-600);
+            text-align: center;
+        }
+
+        .join-visual .set-count {
+            font-size: 9px;
+            color: var(--gray-400);
+        }
+
+        .join-visual .operator {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-400);
+        }
+
+        .join-visual .result {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 14px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed var(--gray-300);
+            min-width: 50px;
+        }
+
+        .join-visual .result .result-count {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .join-visual .result .result-label {
+            font-size: 9px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        .join-visual .result.highlight-inner {
+            border-color: var(--join-inner);
+            background: #f0f5fa;
+        }
+
+        .join-visual .result.highlight-left {
+            border-color: var(--join-left);
+            background: #f0faf4;
+        }
+
+        .join-visual .result.highlight-right {
+            border-color: var(--join-right);
+            background: #faf0f0;
+        }
+
+        .join-details {
+            font-size: 11px;
+            color: var(--gray-600);
+            padding: 6px 0 0 0;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 6px;
+        }
+
+        .join-details strong {
+            color: var(--gray-800);
+        }
+
+        .join-details .highlight {
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+
+        .highlight-inner-text {
+            background: #dbeafe;
+            color: var(--join-inner);
+        }
+
+        .highlight-left-text {
+            background: #dcfce7;
+            color: var(--join-left);
+        }
+
+        .highlight-right-text {
+            background: #fecaca;
+            color: var(--join-right);
+        }
+
+        /* MAPA DE TABLAS - SVG */
+        .map-container {
+            margin-top: 12px;
+            background: var(--gray-100);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            border: 1px solid var(--gray-200);
+            flex: 0 0 auto;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .map-container h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .map-container h3 small {
+            font-weight: 400;
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+
+        .map-svg-wrapper {
+            width: 100%;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--gray-200);
+            overflow: auto;
+            position: relative;
+        }
+
+        .map-svg-wrapper svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Scrollbar */
+        .code-container::-webkit-scrollbar,
+        .panel-right::-webkit-scrollbar,
+        .map-svg-wrapper::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .code-container::-webkit-scrollbar-track {
+            background: var(--gray-800);
+        }
+        .code-container::-webkit-scrollbar-thumb {
+            background: var(--gray-600);
+            border-radius: 4px;
+        }
+        .code-container::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        .panel-right::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        .panel-right::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+        .panel-right::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        .map-svg-wrapper::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        .map-svg-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .playground {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+            .panel-left, .panel-right {
+                flex: none;
+                height: 50vh;
+            }
+            .panel-left {
+                border-right: none;
+                border-bottom: 2px solid var(--gray-700);
+            }
+            .panel-right {
+                height: auto;
+                min-height: 50vh;
+            }
+            .join-visual {
+                gap: 10px;
+            }
+            .join-visual .set-circle {
+                width: 40px;
+                height: 40px;
+                font-size: 11px;
+            }
+            .map-container {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 8px 16px;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .header h1 {
+                font-size: 14px;
+            }
+            .header .badge {
+                font-size: 10px;
+                padding: 2px 10px;
+            }
+            .panel-right {
+                padding: 10px;
+            }
+            .join-section {
+                padding: 10px 12px;
+            }
+            .join-visual {
+                gap: 6px;
+            }
+            .join-visual .set-circle {
+                width: 34px;
+                height: 34px;
+                font-size: 10px;
+            }
+            .join-visual .operator {
+                font-size: 16px;
+            }
+            .join-query {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+            .join-details {
+                font-size: 10px;
+            }
+            .map-container {
+                padding: 8px;
+            }
+            .map-container h3 {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <h1>▌ Playground SQL · Northwind · JOINs + Mapa</h1>
+        <div>
+            <span class="badge">MySQL</span>
+            <span class="badge" style="margin-left: 8px;">8 tablas</span>
+            <span class="badge" style="margin-left: 8px;">Interactivo</span>
+        </div>
+    </header>
+
+    <!-- PLAYGROUND -->
+    <div class="playground">
+
+        <!-- LEFT: SQL CODE -->
+        <div class="panel-left">
+            <div class="panel-header">
+                <span>📄 script_northwind.sql</span>
+                <button class="btn-copy" onclick="copyToClipboard()">Copiar</button>
+            </div>
+            <div class="code-container" id="sqlCode">
+                <pre>-- =========================================================================
+-- SCRIPT DE CREACIÓN Y CARGA DE BASE DE DATOS TIPO NORTHWIND
+-- =========================================================================
+
+CREATE DATABASE IF NOT EXISTS tienda_northwind
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
+USE tienda_northwind;
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS detalles_pedidos;
+DROP TABLE IF EXISTS pedidos;
+DROP TABLE IF EXISTS productos;
+DROP TABLE IF EXISTS proveedores;
+DROP TABLE IF EXISTS categorias;
+DROP TABLE IF EXISTS clientes;
+DROP TABLE IF EXISTS empleados;
+DROP TABLE IF EXISTS transportistas;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- =========================================================================
+-- 1. CREACIÓN DE TABLAS
+-- =========================================================================
+
+CREATE TABLE categorias (
+    categoria_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_categoria VARCHAR(50) NOT NULL,
+    descripcion TEXT
+) ENGINE=InnoDB;
+
+CREATE TABLE proveedores (
+    proveedor_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_empresa VARCHAR(100) NOT NULL,
+    nombre_contacto VARCHAR(50),
+    puesto_contacto VARCHAR(50),
+    direccion VARCHAR(100),
+    ciudad VARCHAR(50),
+    region VARCHAR(50),
+    codigo_postal VARCHAR(20),
+    pais VARCHAR(50),
+    telefono VARCHAR(20)
+) ENGINE=InnoDB;
+
+CREATE TABLE productos (
+    producto_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_producto VARCHAR(100) NOT NULL,
+    proveedor_id INT,
+    categoria_id INT,
+    precio_unitario DECIMAL(10,2) DEFAULT 0.00,
+    unidades_stock INT DEFAULT 0,
+    FOREIGN KEY (proveedor_id) REFERENCES proveedores(proveedor_id),
+    FOREIGN KEY (categoria_id) REFERENCES categorias(categoria_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE clientes (
+    cliente_id VARCHAR(5) PRIMARY KEY,
+    nombre_empresa VARCHAR(100) NOT NULL,
+    nombre_contacto VARCHAR(50),
+    puesto_contacto VARCHAR(50),
+    direccion VARCHAR(100),
+    ciudad VARCHAR(50),
+    region VARCHAR(50),
+    codigo_postal VARCHAR(20),
+    pais VARCHAR(50)
+) ENGINE=InnoDB;
+
+CREATE TABLE empleados (
+    empleado_id INT AUTO_INCREMENT PRIMARY KEY,
+    apellido VARCHAR(50) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    puesto VARCHAR(50),
+    tratamiento VARCHAR(10),
+    fecha_nacimiento DATE,
+    fecha_contratacion DATE,
+    direccion VARCHAR(100),
+    ciudad VARCHAR(50),
+    region VARCHAR(50),
+    codigo_postal VARCHAR(20),
+    pais VARCHAR(50),
+    reporta_a INT,
+    FOREIGN KEY (reporta_a) REFERENCES empleados(empleado_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE transportistas (
+    transportista_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_empresa VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20)
+) ENGINE=InnoDB;
+
+CREATE TABLE pedidos (
+    pedido_id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id VARCHAR(5),
+    empleado_id INT,
+    fecha_pedido DATE,
+    fecha_entrega DATE,
+    transportista_id INT,
+    flete DECIMAL(10,2) DEFAULT 0.00,
+    nombre_destinatario VARCHAR(100),
+    direccion_destinatario VARCHAR(100),
+    ciudad_destinatario VARCHAR(50),
+    pais_destinatario VARCHAR(50),
+    FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id),
+    FOREIGN KEY (empleado_id) REFERENCES empleados(empleado_id),
+    FOREIGN KEY (transportista_id) REFERENCES transportistas(transportista_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE detalles_pedidos (
+    pedido_id INT,
+    producto_id INT,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    descuento DECIMAL(4,2) DEFAULT 0.00,
+    PRIMARY KEY (pedido_id, producto_id),
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id),
+    FOREIGN KEY (producto_id) REFERENCES productos(producto_id)
+) ENGINE=InnoDB;
+
+-- =========================================================================
+-- 2. INSERCIÓN DE DATOS (Resumida)
+-- =========================================================================
+
+INSERT INTO categorias (categoria_id, nombre_categoria, descripcion) VALUES
+(1, 'Bebidas', 'Cafés, tés, refrescos, zumos y cervezas'),
+(2, 'Condimentos', 'Salsas, especias, aderezos y picantes'),
+(3, 'Repostería', 'Postres, dulces, pasteles y panes'),
+(4, 'Lácteos', 'Quesos, leches, mantequillas y yogures'),
+(5, 'Granos y Cereales', 'Arroz, pastas, harinas y cereales integrales'),
+(6, 'Carnes y Aves', 'Carnes preparadas, res, pollo y cerdo'),
+(7, 'Pescados y Mariscos', 'Pescados frescos, mariscos, moluscos y algas'),
+(8, 'Frutas y Verduras', 'Frutas secas, vegetales frescos y conservas');
+
+INSERT INTO proveedores (proveedor_id, nombre_empresa, nombre_contacto, ciudad, pais) VALUES
+(1, 'Importaciones Antillanas S.A.', 'Carlos Mendoza', 'Caracas', 'Venezuela'),
+(2, 'Distribuidora del Pacífico', 'Ana María Silva', 'Lima', 'Perú'),
+(3, 'Lácteos del Sur SRL', 'Juan Carlos López', 'Osorno', 'Chile'),
+(4, 'Especias y Sabores del Mundo', 'María Carmen Ortiz', 'Madrid', 'España'),
+(5, 'Granja Marina Atlántica', 'Sven Hansen', 'Bergen', 'Noruega'),
+(6, 'Molinos del Plata', 'Ricardo Darín', 'Buenos Aires', 'Argentina'),
+(7, 'Frutales del Valle', 'Elena Rostova', 'Ciudad de México', 'México'),
+(8, 'Cafetalera Central', 'Alonso Quijano', 'Medellín', 'Colombia'),
+(9, 'Proveedor Nacional San Cristóbal', 'Contacto 9', 'San Cristóbal', 'Venezuela'),
+(10, 'Proveedor Nacional Maracaibo', 'Contacto 10', 'Maracaibo', 'Venezuela'),
+(11, 'Proveedor Nacional Valencia', 'Contacto 11', 'Valencia', 'Venezuela'),
+(12, 'Proveedor Nacional Barcelona', 'Contacto 12', 'Barcelona', 'Venezuela');
+
+INSERT INTO productos (producto_id, nombre_producto, categoria_id, proveedor_id, precio_unitario, unidades_stock) VALUES
+(1, 'Café Espresso Premium', 1, 1, 15.50, 45),
+(2, 'Té Verde Orgánico', 1, 1, 8.20, 60),
+(3, 'Refresco de Cola Artesanal', 1, 2, 2.50, 120),
+(4, 'Jugo de Mango Natural', 1, 8, 3.75, 80),
+(5, 'Cerveza Tostada Ale', 1, 2, 4.50, 50),
+(6, 'Salsa de Tomate Picante', 2, 4, 3.20, 40),
+(7, 'Aceite de Oliva Extra', 2, 4, 18.90, 25),
+(8, 'Pimienta Negra Molida', 2, 4, 1.80, 100),
+(9, 'Vinagre Balsámico', 2, 2, 9.10, 30),
+(10, 'Aderezo César', 2, 2, 4.25, 35),
+(11, 'Chocolate Amargo 70%', 3, 7, 5.00, 75),
+(12, 'Galletas de Avena y Miel', 3, 7, 3.50, 90),
+(13, 'Pastel de Zanahoria', 3, 7, 22.00, 10),
+(14, 'Mermelada de Fresa', 3, 8, 4.10, 55),
+(15, 'Alfajores de Maicena', 3, 6, 6.00, 40),
+(16, 'Queso Manchego Curado', 4, 3, 24.50, 20),
+(17, 'Leche Entera Pasteurizada', 4, 3, 1.20, 200),
+(18, 'Mantequilla con Sal', 4, 3, 2.80, 85),
+(19, 'Yogur Griego Natural', 4, 3, 1.75, 110),
+(20, 'Queso Cream', 4, 3, 3.40, 65),
+(21, 'Arroz Basmati', 5, 6, 3.90, 150),
+(22, 'Espagueti Integral', 5, 6, 1.60, 180),
+(23, 'Harina de Trigo Todo Uso', 5, 6, 1.10, 250),
+(24, 'Cereal de Trigo y Pasas', 5, 6, 4.80, 70),
+(25, 'Avena en Hojuelas', 5, 6, 2.30, 130),
+(26, 'Pechuga de Pollo', 6, 3, 7.50, 45),
+(27, 'Chorizo Ahumado', 6, 1, 6.80, 35),
+(28, 'Carne de Res para Hamburguesa', 6, 6, 9.20, 50),
+(29, 'Lomo de Cerdo', 6, 1, 11.40, 30),
+(30, 'Jamón Serrano Loncheado', 6, 4, 14.00, 25),
+(31, 'Filete de Salmón Fresco', 7, 5, 26.00, 18),
+(32, 'Camarones Tigre', 7, 5, 19.50, 30),
+(33, 'Atún en Lata en Aceite', 7, 2, 2.10, 140),
+(34, 'Sardinas en Salsa de Tomate', 7, 2, 1.45, 160),
+(35, 'Filete de Merluza', 7, 5, 8.90, 40),
+(36, 'Manzanas Rojas Gala', 8, 7, 3.00, 100),
+(37, 'Plátanos Canarios', 8, 7, 1.80, 150),
+(38, 'Espinacas Frescas', 8, 7, 2.15, 40),
+(39, 'Papas Sabaneras', 8, 8, 1.25, 300),
+(40, 'Zanahorias Orgánicas', 8, 7, 1.50, 120),
+(41, 'Crema de Avellanas', 3, 7, 6.50, 45),
+(42, 'Licor de Café', 1, 1, 18.00, 20),
+(43, 'Salsa Soja Tradicional', 2, 2, 3.80, 70),
+(44, 'Queso Parmesano Rallado', 4, 3, 5.90, 55),
+(45, 'Lentejas Pardinas', 5, 6, 2.10, 90),
+(46, 'Garbanzos Cocidos', 5, 6, 1.40, 110),
+(47, 'Salchichas de Pavo', 6, 3, 3.99, 80),
+(48, 'Pulpo Congelado', 7, 5, 32.00, 12),
+(49, 'Aguacates Hass', 8, 7, 4.50, 60),
+(50, 'Tomates Cherry', 8, 7, 2.50, 75);
+
+INSERT INTO empleados (empleado_id, apellido, nombre, puesto, tratamiento, fecha_nacimiento, fecha_contratacion, ciudad, pais, reporta_a) VALUES
+(2, 'Fuller', 'Andrés', 'Vicepresidente de Ventas', 'Dr.', '1972-02-19', '2012-08-14', 'Valencia', 'Venezuela', NULL),
+(1, 'Davolio', 'Nancy', 'Representante de Ventas', 'Sra.', '1988-12-08', '2018-05-01', 'Caracas', 'Venezuela', 2),
+(3, 'Leverling', 'Janet', 'Representante de Ventas', 'Sra.', '1983-08-30', '2015-04-01', 'Caracas', 'Venezuela', 2),
+(4, 'Peacock', 'Margarita', 'Representante de Ventas', 'Sra.', '1967-09-19', '2014-05-03', 'Maracay', 'Venezuela', 2),
+(5, 'Buchanan', 'Steven', 'Gerente de Ventas', 'Sr.', '1975-03-04', '2013-10-17', 'Valencia', 'Venezuela', 2),
+(6, 'Suyama', 'Miguel', 'Representante de Ventas', 'Sr.', '1983-07-02', '2016-10-17', 'Valencia', 'Venezuela', 5),
+(7, 'King', 'Roberto', 'Representante de Ventas', 'Sr.', '1980-05-29', '2017-01-02', 'San Diego', 'Venezuela', 5),
+(8, 'Callahan', 'Laura', 'Coordinadora de Ventas', 'Sra.', '1978-01-09', '2015-03-05', 'Barquisimeto', 'Venezuela', 2),
+(9, 'Dodsworth', 'Ana', 'Representante de Ventas', 'Sra.', '1986-01-27', '2019-11-15', 'Maracaibo', 'Venezuela', 5);
+
+INSERT INTO clientes (cliente_id, nombre_empresa, nombre_contacto, ciudad, pais) VALUES
+('ALFKI', 'Comestibles Alva', 'María Alva', 'Guadalajara', 'México'),
+('ANATR', 'Empanadas Ana', 'Ana Trujillo', 'Lima', 'Perú'),
+('ANTON', 'Antojitos Antonio', 'Antonio Moreno', 'Buenos Aires', 'Argentina'),
+('AROUT', 'Alimentos de la Ruta', 'Tomás González', 'Madrid', 'España'),
+('BERGS', 'Bodegas Berglund', 'Christina Berglund', 'Luleå', 'Suecia'),
+('BLAUS', 'Delicias Blauer See', 'Hanna Moos', 'Mannheim', 'Alemania'),
+('BLONP', 'Confitería Blondel', 'Frédérique Citeaux', 'Strasbourg', 'Francia'),
+('BOLID', 'Bólido Comestibles', 'Martín Sommer', 'Madrid', 'España'),
+('BONAP', 'Bon Appétit', 'Laurence Lebihan', 'Marseille', 'Francia'),
+('BOTTM', 'Supermercado Bottom-Dollar', 'Elizabeth Lincoln', 'Tsawassen', 'Canadá'),
+('BSBEV', 'Bebidas B\'s', 'Victoria Ashworth', 'London', 'Reino Unido'),
+('CACTU', 'Cactus Comestibles', 'Patricio Simpson', 'Buenos Aires', 'Argentina'),
+('CENTC', 'Centro Comercial del Norte', 'Francisco Chang', 'Sevilla', 'España'),
+('CHOPS', 'Chopsuey Chino', 'Yang Chang', 'Bern', 'Suiza'),
+('COMMI', 'Comercial Comisaria', 'Pedro Afonso', 'São Paulo', 'Brasil'),
+('CLI16', 'Inversiones Valencia C.A.', 'Manuel Silva', 'Valencia', 'Venezuela'),
+('CLI17', 'Supermercados del Centro S.A.', 'Laura Pérez', 'Maracay', 'Venezuela'),
+('CLI18', 'Distribuidora El Sol', 'Jorge Rodríguez', 'Barquisimeto', 'Venezuela'),
+('CLI19', 'Alimentos Occidente', 'Patricia Colmenares', 'Maracaibo', 'Venezuela'),
+('CLI20', 'Abastos La Entrada', 'Luis Fernández', 'Naguanagua', 'Venezuela'),
+('CLI21', 'Cliente Automático 21 S.A.', 'Contacto 21', 'Valencia', 'Venezuela'),
+('CLI22', 'Cliente Automático 22 S.A.', 'Contacto 22', 'Valencia', 'Venezuela'),
+('CLI23', 'Cliente Automático 23 S.A.', 'Contacto 23', 'Valencia', 'Venezuela'),
+('CLI24', 'Cliente Automático 24 S.A.', 'Contacto 24', 'Valencia', 'Venezuela'),
+('CLI25', 'Cliente Automático 25 S.A.', 'Contacto 25', 'Valencia', 'Venezuela'),
+('CLI26', 'Cliente Automático 26 S.A.', 'Contacto 26', 'Valencia', 'Venezuela'),
+('CLI27', 'Cliente Automático 27 S.A.', 'Contacto 27', 'Valencia', 'Venezuela'),
+('CLI28', 'Cliente Automático 28 S.A.', 'Contacto 28', 'Valencia', 'Venezuela'),
+('CLI29', 'Cliente Automático 29 S.A.', 'Contacto 29', 'Valencia', 'Venezuela'),
+('CLI30', 'Cliente Automático 30 S.A.', 'Contacto 30', 'Valencia', 'Venezuela'),
+('CLI31', 'Cliente Automático 31 S.A.', 'Contacto 31', 'Valencia', 'Venezuela'),
+('CLI32', 'Cliente Automático 32 S.A.', 'Contacto 32', 'Valencia', 'Venezuela'),
+('CLI33', 'Cliente Automático 33 S.A.', 'Contacto 33', 'Valencia', 'Venezuela'),
+('CLI34', 'Cliente Automático 34 S.A.', 'Contacto 34', 'Valencia', 'Venezuela'),
+('CLI35', 'Cliente Automático 35 S.A.', 'Contacto 35', 'Valencia', 'Venezuela'),
+('CLI36', 'Cliente Automático 36 S.A.', 'Contacto 36', 'Valencia', 'Venezuela'),
+('CLI37', 'Cliente Automático 37 S.A.', 'Contacto 37', 'Valencia', 'Venezuela'),
+('CLI38', 'Cliente Automático 38 S.A.', 'Contacto 38', 'Valencia', 'Venezuela'),
+('CLI39', 'Cliente Automático 39 S.A.', 'Contacto 39', 'Valencia', 'Venezuela'),
+('CLI40', 'Cliente Automático 40 S.A.', 'Contacto 40', 'Valencia', 'Venezuela'),
+('CLI41', 'Cliente Automático 41 S.A.', 'Contacto 41', 'Valencia', 'Venezuela'),
+('CLI42', 'Cliente Automático 42 S.A.', 'Contacto 42', 'Valencia', 'Venezuela'),
+('CLI43', 'Cliente Automático 43 S.A.', 'Contacto 43', 'Valencia', 'Venezuela'),
+('CLI44', 'Cliente Automático 44 S.A.', 'Contacto 44', 'Valencia', 'Venezuela'),
+('CLI45', 'Cliente Automático 45 S.A.', 'Contacto 45', 'Valencia', 'Venezuela'),
+('CLI46', 'Cliente Automático 46 S.A.', 'Contacto 46', 'Valencia', 'Venezuela'),
+('CLI47', 'Cliente Automático 47 S.A.', 'Contacto 47', 'Valencia', 'Venezuela'),
+('CLI48', 'Cliente Automático 48 S.A.', 'Contacto 48', 'Valencia', 'Venezuela'),
+('CLI49', 'Cliente Automático 49 S.A.', 'Contacto 49', 'Valencia', 'Venezuela'),
+('CLI50', 'Cliente Automático 50 S.A.', 'Contacto 50', 'Valencia', 'Venezuela');
+
+INSERT INTO transportistas (transportista_id, nombre_empresa, telefono) VALUES
+(1, 'Envíos Rápidos', '+58-212-555-9876'),
+(2, 'Logística del Atlántico', '+34-91-555-8822'),
+(3, 'Transportes Continental', '+1-503-555-3131'),
+(4, 'Carga Express Latinoamericana', '+51-1-444-5566'),
+(5, 'Fletes del Caribe', '+58-241-555-1122');
+
+INSERT INTO pedidos (pedido_id, cliente_id, empleado_id, fecha_pedido, fecha_entrega, transportista_id, flete) VALUES
+(1, 'ALFKI', 2, '2025-01-02', '2025-01-04', 2, 24.32),
+(2, 'ANATR', 3, '2025-02-03', '2025-02-05', 3, 44.50),
+(3, 'ANTON', 4, '2025-03-04', '2025-03-06', 4, 15.20),
+(4, 'AROUT', 5, '2025-04-05', '2025-04-07', 5, 33.15),
+(5, 'BERGS', 6, '2025-05-06', '2025-05-08', 1, 10.90),
+(6, 'BLAUS', 7, '2025-06-07', '2025-06-09', 2, 8.40),
+(7, 'BLONP', 8, '2025-07-08', '2025-07-10', 3, 22.10),
+(8, 'BOLID', 9, '2025-08-09', '2025-08-11', 4, 19.30),
+(9, 'BONAP', 1, '2025-09-10', '2025-09-12', 5, 41.25),
+(10, 'BOTTM', 2, '2025-10-11', '2025-10-13', 1, 14.60),
+(11, 'BSBEV', 3, '2025-11-12', '2025-11-14', 2, 36.70),
+(12, 'CACTU', 4, '2025-12-13', '2025-12-15', 3, 28.90),
+(13, 'CENTC', 5, '2025-01-14', '2025-01-16', 4, 30.50),
+(14, 'CHOPS', 6, '2025-02-15', '2025-02-17', 5, 12.15),
+(15, 'COMMI', 7, '2025-03-16', '2025-03-18', 1, 49.80),
+(16, 'CLI16', 8, '2025-04-17', '2025-04-19', 2, 23.40),
+(17, 'CLI17', 9, '2025-05-18', '2025-05-20', 3, 11.20),
+(18, 'CLI18', 1, '2025-06-19', '2025-06-21', 4, 34.60),
+(19, 'CLI19', 2, '2025-07-20', '2025-07-22', 5, 27.15),
+(20, 'CLI20', 3, '2025-08-21', '2025-08-23', 1, 45.90),
+(21, 'CLI21', 4, '2025-09-22', '2025-09-24', 2, 18.25),
+(22, 'CLI22', 5, '2025-10-23', '2025-10-25', 3, 13.40),
+(23, 'CLI23', 6, '2025-11-24', '2025-11-26', 4, 29.99),
+(24, 'CLI24', 7, '2025-12-25', '2025-12-27', 5, 38.50),
+(25, 'CLI25', 8, '2025-01-26', '2025-01-28', 1, 42.10),
+(26, 'CLI26', 9, '2025-02-27', '2025-02-27', 2, 9.15),
+(27, 'CLI27', 1, '2025-03-28', '2025-03-28', 3, 21.60),
+(28, 'CLI28', 2, '2025-04-01', '2025-04-03', 4, 31.25),
+(29, 'CLI29', 3, '2025-05-02', '2025-05-04', 5, 26.80),
+(30, 'CLI30', 4, '2025-06-03', '2025-06-05', 1, 17.40),
+(31, 'CLI31', 5, '2025-07-04', '2025-07-06', 2, 12.95),
+(32, 'CLI32', 6, '2025-08-05', '2025-08-07', 3, 35.60),
+(33, 'CLI33', 7, '2025-09-06', '2025-09-08', 4, 48.10),
+(34, 'CLI34', 8, '2025-10-07', '2025-10-09', 5, 22.30),
+(35, 'CLI35', 9, '2025-11-08', '2025-11-10', 1, 19.85),
+(36, 'CLI36', 1, '2025-12-09', '2025-12-11', 2, 14.20),
+(37, 'CLI37', 2, '2025-01-10', '2025-01-12', 3, 27.50),
+(38, 'CLI38', 3, '2025-02-11', '2025-02-13', 4, 39.90),
+(39, 'CLI39', 4, '2025-03-12', '2025-03-14', 5, 43.15),
+(40, 'CLI40', 5, '2025-04-13', '2025-04-15', 1, 11.50),
+(41, 'CLI41', 6, '2025-05-14', '2025-05-16', 2, 23.60),
+(42, 'CLI42', 7, '2025-06-15', '2025-06-17', 3, 31.80),
+(43, 'CLI43', 8, '2025-07-16', '2025-07-18', 4, 15.75),
+(44, 'CLI44', 9, '2025-08-17', '2025-08-19', 5, 26.40),
+(45, 'CLI45', 1, '2025-09-18', '2025-09-20', 1, 37.90),
+(46, 'CLI46', 2, '2025-10-19', '2025-10-21', 2, 42.50),
+(47, 'CLI47', 3, '2025-11-20', '2025-11-22', 3, 8.60),
+(48, 'CLI48', 4, '2025-12-21', '2025-12-23', 4, 19.30),
+(49, 'CLI49', 5, '2025-01-22', '2025-01-24', 5, 24.15),
+(50, 'CLI50', 6, '2025-02-23', '2025-02-25', 1, 33.45);
+
+INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad, descuento) VALUES
+(1, 12, 3.50, 10, 0.05), (1, 45, 2.10, 5, 0.00), (1, 23, 1.10, 15, 0.10),
+(2, 34, 1.45, 20, 0.00), (2, 7, 18.90, 2, 0.15), (2, 19, 1.75, 12, 0.00),
+(3, 3, 2.50, 24, 0.10), (3, 50, 2.50, 8, 0.00),
+(4, 21, 3.90, 6, 0.05), (4, 14, 4.10, 4, 0.05), (4, 39, 1.25, 50, 0.00),
+(5, 8, 1.80, 15, 0.00), (5, 29, 11.40, 3, 0.15),
+(6, 42, 18.00, 2, 0.10), (6, 16, 24.50, 1, 0.00), (6, 5, 4.50, 12, 0.00),
+(7, 11, 5.00, 20, 0.05), (7, 22, 1.60, 10, 0.00),
+(8, 27, 6.80, 5, 0.00), (8, 49, 4.50, 6, 0.10), (8, 33, 2.10, 18, 0.10),
+(9, 2, 8.20, 8, 0.00), (9, 31, 26.00, 4, 0.15),
+(10, 40, 1.50, 30, 0.00), (10, 13, 22.00, 2, 0.05), (10, 6, 3.20, 12, 0.05),
+(11, 44, 5.90, 7, 0.00), (11, 1, 15.50, 4, 0.10),
+(12, 25, 2.30, 16, 0.00), (12, 48, 32.00, 1, 0.00), (12, 18, 2.80, 9, 0.15),
+(13, 9, 9.10, 5, 0.05), (13, 37, 1.80, 22, 0.00),
+(14, 43, 3.80, 14, 0.10), (14, 28, 9.20, 10, 0.10), (14, 4, 3.75, 25, 0.00),
+(15, 17, 1.20, 40, 0.00), (15, 35, 8.90, 6, 0.00),
+(16, 10, 4.25, 8, 0.05), (16, 46, 1.40, 15, 0.05), (16, 26, 7.50, 5, 0.10),
+(17, 24, 4.80, 11, 0.00), (17, 30, 14.00, 3, 0.00),
+(18, 15, 6.00, 12, 0.15), (18, 38, 2.15, 20, 0.15), (18, 47, 3.99, 10, 0.00),
+(19, 20, 3.40, 14, 0.00), (19, 36, 3.00, 18, 0.05),
+(20, 32, 19.50, 5, 0.10), (20, 41, 6.50, 8, 0.10), (20, 2, 8.20, 15, 0.00),
+(21, 12, 3.50, 12, 0.00), (21, 45, 2.10, 10, 0.00),
+(22, 34, 1.45, 30, 0.05), (22, 7, 18.90, 4, 0.05), (22, 23, 1.10, 25, 0.10),
+(23, 3, 2.50, 12, 0.00), (23, 50, 2.50, 15, 0.00),
+(24, 21, 3.90, 8, 0.15), (24, 14, 4.10, 6, 0.15), (24, 19, 1.75, 24, 0.00),
+(25, 8, 1.80, 20, 0.00), (25, 29, 11.40, 5, 0.00),
+(26, 42, 18.00, 3, 0.10), (26, 16, 24.50, 2, 0.10), (26, 39, 1.25, 45, 0.05),
+(27, 11, 5.00, 15, 0.00), (27, 22, 1.60, 25, 0.00),
+(28, 27, 6.80, 8, 0.05), (28, 49, 4.50, 12, 0.05), (28, 5, 4.50, 20, 0.00),
+(29, 2, 8.20, 10, 0.00), (29, 31, 26.00, 5, 0.15),
+(30, 40, 1.50, 25, 0.10), (30, 13, 22.00, 3, 0.10), (30, 33, 2.10, 15, 0.00),
+(31, 44, 5.90, 10, 0.00), (31, 1, 15.50, 6, 0.00), (31, 6, 3.20, 8, 0.00),
+(32, 25, 2.30, 20, 0.05), (32, 48, 32.00, 2, 0.05),
+(33, 9, 9.10, 8, 0.00), (33, 37, 1.80, 35, 0.10), (33, 18, 2.80, 12, 0.10),
+(34, 43, 3.80, 16, 0.00), (34, 28, 9.20, 12, 0.00),
+(35, 17, 1.20, 50, 0.15), (35, 35, 8.90, 10, 0.15), (35, 4, 3.75, 15, 0.05),
+(36, 10, 4.25, 12, 0.00), (36, 46, 1.40, 20, 0.00),
+(37, 24, 4.80, 15, 0.10), (37, 30, 14.00, 5, 0.10), (37, 35, 8.90, 12, 0.00),
+(38, 15, 6.00, 18, 0.00), (38, 38, 2.15, 25, 0.00),
+(39, 20, 3.40, 20, 0.05), (39, 36, 3.00, 30, 0.05), (39, 26, 7.50, 8, 0.15),
+(40, 32, 19.50, 6, 0.00), (40, 41, 6.50, 10, 0.00),
+(41, 12, 3.50, 15, 0.10), (41, 45, 2.10, 12, 0.10), (41, 47, 3.99, 14, 0.00),
+(42, 34, 1.45, 25, 0.00), (42, 7, 18.90, 5, 0.00),
+(43, 3, 2.50, 30, 0.15), (43, 50, 2.50, 20, 0.15), (43, 36, 3.00, 10, 0.05),
+(44, 21, 3.90, 10, 0.00), (44, 14, 4.10, 8, 0.00),
+(45, 8, 1.80, 18, 0.05), (45, 29, 11.40, 4, 0.05), (45, 2, 8.20, 12, 0.00),
+(46, 42, 18.00, 4, 0.00), (46, 16, 24.50, 3, 0.00),
+(47, 11, 5.00, 22, 0.10), (47, 22, 1.60, 30, 0.10), (47, 41, 6.50, 5, 0.10),
+(48, 27, 6.80, 10, 0.00), (48, 49, 4.50, 15, 0.00),
+(49, 2, 8.20, 12, 0.15), (49, 31, 26.00, 3, 0.15), (49, 23, 1.10, 30, 0.00),
+(50, 40, 1.50, 40, 0.00), (50, 13, 22.00, 5, 0.00), (50, 5, 4.50, 15, 0.05);</pre>
+            </div>
+        </div>
+
+        <!-- RIGHT: JOIN SECTIONS + MAPA -->
+        <div class="panel-right">
+
+            <!-- JOIN SECTIONS -->
+            <h2 style="font-size: 15px; font-weight: 600; color: var(--primary-blue); margin-bottom: 10px; flex-shrink: 0;">
+                🔗 Tipos de JOIN · Simulación
+            </h2>
+
+            <!-- INNER JOIN -->
+            <div class="join-section active-inner" id="innerJoin">
+                <div class="join-header" onclick="toggleJoin('innerJoin')">
+                    <h3>INNER JOIN · Productos con Categorías</h3>
+                    <span class="join-type inner">INNER</span>
+                </div>
+                <div class="join-content">
+                    <div class="join-query">
+SELECT p.nombre_producto, c.nombre_categoria
+FROM productos p
+INNER JOIN categorias c ON p.categoria_id = c.categoria_id;
+                    </div>
+                    <div class="join-visual">
+                        <div class="set">
+                            <div class="set-circle" style="background: var(--secondary-blue);">50</div>
+                            <span class="set-label">Productos</span>
+                            <span class="set-count">50 reg</span>
+                        </div>
+                        <span class="operator">∩</span>
+                        <div class="set">
+                            <div class="set-circle" style="background: #4a8fc9;">8</div>
+                            <span class="set-label">Categorías</span>
+                            <span class="set-count">8 reg</span>
+                        </div>
+                        <span class="operator">=</span>
+                        <div class="result highlight-inner">
+                            <span class="result-count">50</span>
+                            <span class="result-label">registros</span>
+                        </div>
+                    </div>
+                    <div class="join-details">
+                        <strong>🔍 Explicación:</strong> 
+                        <span class="highlight highlight-inner-text">INNER JOIN</span> devuelve solo los productos que tienen categoría. 
+                        Como <strong>todos</strong> tienen <strong>categoria_id</strong>, resultado = <strong>50</strong> registros.
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEFT JOIN -->
+            <div class="join-section active-left" id="leftJoin">
+                <div class="join-header" onclick="toggleJoin('leftJoin')">
+                    <h3>LEFT JOIN · Clientes con Pedidos</h3>
+                    <span class="join-type left">LEFT</span>
+                </div>
+                <div class="join-content">
+                    <div class="join-query">
+SELECT c.nombre_empresa, COUNT(p.pedido_id) AS total_pedidos
+FROM clientes c
+LEFT JOIN pedidos p ON c.cliente_id = p.cliente_id
+GROUP BY c.cliente_id;
+                    </div>
+                    <div class="join-visual">
+                        <div class="set">
+                            <div class="set-circle" style="background: var(--join-left);">50</div>
+                            <span class="set-label">Clientes</span>
+                            <span class="set-count">50 reg</span>
+                        </div>
+                        <span class="operator">⟕</span>
+                        <div class="set">
+                            <div class="set-circle" style="background: #4ade80;">50</div>
+                            <span class="set-label">Pedidos</span>
+                            <span class="set-count">50 reg</span>
+                        </div>
+                        <span class="operator">=</span>
+                        <div class="result highlight-left">
+                            <span class="result-count">50</span>
+                            <span class="result-label">registros</span>
+                        </div>
+                    </div>
+                    <div class="join-details">
+                        <strong>🔍 Explicación:</strong> 
+                        <span class="highlight highlight-left-text">LEFT JOIN</span> devuelve <strong>todos los clientes</strong> y sus pedidos. 
+                        Como todos tienen pedidos, resultado = <strong>50</strong> registros.
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT JOIN -->
+            <div class="join-section active-right" id="rightJoin">
+                <div class="join-header" onclick="toggleJoin('rightJoin')">
+                    <h3>RIGHT JOIN · Pedidos con Transportistas</h3>
+                    <span class="join-type right">RIGHT</span>
+                </div>
+                <div class="join-content">
+                    <div class="join-query">
+SELECT t.nombre_empresa, COUNT(p.pedido_id) AS pedidos_asignados
+FROM pedidos p
+RIGHT JOIN transportistas t ON p.transportista_id = t.transportista_id
+GROUP BY t.transportista_id;
+                    </div>
+                    <div class="join-visual">
+                        <div class="set">
+                            <div class="set-circle" style="background: #f87171;">50</div>
+                            <span class="set-label">Pedidos</span>
+                            <span class="set-count">50 reg</span>
+                        </div>
+                        <span class="operator">⟕</span>
+                        <div class="set">
+                            <div class="set-circle" style="background: var(--join-right);">5</div>
+                            <span class="set-label">Transportistas</span>
+                            <span class="set-count">5 reg</span>
+                        </div>
+                        <span class="operator">=</span>
+                        <div class="result highlight-right">
+                            <span class="result-count">5</span>
+                            <span class="result-label">registros</span>
+                        </div>
+                    </div>
+                    <div class="join-details">
+                        <strong>🔍 Explicación:</strong> 
+                        <span class="highlight highlight-right-text">RIGHT JOIN</span> devuelve <strong>todos los transportistas</strong> y sus pedidos. 
+                        Como todos tienen pedidos, resultado = <strong>5</strong> registros.
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAPA DE TABLAS (esquema proporcionado) -->
+            <div class="map-container">
+                <h3>
+                    🗺️ Mapa de Relaciones · Northwind
+                    <small>— Usa este diagrama para construir tus queries</small>
+                </h3>
+                <div class="map-svg-wrapper">
+                    <svg class="diagrama-svg" viewBox="0 0 1050 750" width="1050" height="750" xmlns="http://www.w3.org/2000/svg" style="display: block; margin: 0 auto; max-width: 100%; height: auto;">
+                        <defs>
+                            <marker id="flecha" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#34495e"/>
+                            </marker>
+                            <marker id="flecha-fuerte" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#e74c3c"/>
+                            </marker>
+                        </defs>
+
+                        <!-- TABLA: categorias -->
+                        <g transform="translate(20, 40)">
+                            <rect class="tabla-bg" width="180" height="90" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L174,0 Q180,0 180,6 L180,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">categorias</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">categoria_id</text>
+                            <text class="tipo-texto" x="140" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">nombre_categoria</text>
+                            <text class="tipo-texto" x="140" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+                            
+                            <text class="campo-texto" x="35" y="79" fill="#333333" font-size="11">descripcion</text>
+                            <text class="tipo-texto" x="140" y="79" fill="#7f8c8d" font-size="10">TEXT</text>
+                        </g>
+
+                        <!-- TABLA: proveedores -->
+                        <g transform="translate(20, 200)">
+                            <rect class="tabla-bg" width="180" height="110" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L174,0 Q180,0 180,6 L180,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">proveedores</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">proveedor_id</text>
+                            <text class="tipo-texto" x="140" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">nombre_empresa</text>
+                            <text class="tipo-texto" x="140" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <text class="campo-texto" x="35" y="79" fill="#333333" font-size="11">nombre_contacto</text>
+                            <text class="tipo-texto" x="140" y="79" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <text class="campo-texto" x="35" y="96" fill="#333333" font-size="11">pais</text>
+                            <text class="tipo-texto" x="140" y="96" fill="#7f8c8d" font-size="10">VARCHAR</text>
+                        </g>
+
+                        <!-- TABLA: productos -->
+                        <g transform="translate(300, 100)">
+                            <rect class="tabla-bg" width="190" height="140" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L184,0 Q190,0 190,6 L190,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">productos</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">producto_id</text>
+                            <text class="tipo-texto" x="145" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">nombre_producto</text>
+                            <text class="tipo-texto" x="145" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <rect class="fk-badge" x="10" y="71" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="80" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="35" y="79" fill="#333333" font-size="11">proveedor_id</text>
+                            <text class="tipo-texto" x="145" y="79" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <rect class="fk-badge" x="10" y="88" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="97" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="35" y="96" fill="#333333" font-size="11">categoria_id</text>
+                            <text class="tipo-texto" x="145" y="96" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="113" fill="#333333" font-size="11">precio_unitario</text>
+                            <text class="tipo-texto" x="145" y="113" fill="#7f8c8d" font-size="10">DECIMAL</text>
+
+                            <text class="campo-texto" x="35" y="130" fill="#333333" font-size="11">unidades_stock</text>
+                            <text class="tipo-texto" x="145" y="130" fill="#7f8c8d" font-size="10">INT</text>
+                        </g>
+
+                        <!-- TABLA: detalles_pedidos -->
+                        <g transform="translate(580, 220)">
+                            <rect class="tabla-bg" width="200" height="130" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L194,0 Q200,0 200,6 L200,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">detalles_pedidos</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <rect class="fk-badge" x="32" y="35" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="badge-texto" x="41" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="55" y="45" fill="#333333" font-size="11">pedido_id</text>
+                            <text class="tipo-texto" x="155" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <rect class="pk-badge" x="10" y="52" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <rect class="fk-badge" x="32" y="52" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="61" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="badge-texto" x="41" y="61" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="55" y="62" fill="#333333" font-size="11">producto_id</text>
+                            <text class="tipo-texto" x="155" y="62" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="55" y="79" fill="#333333" font-size="11">precio_unitario</text>
+                            <text class="tipo-texto" x="155" y="79" fill="#7f8c8d" font-size="10">DECIMAL</text>
+
+                            <text class="campo-texto" x="55" y="96" fill="#333333" font-size="11">cantidad</text>
+                            <text class="tipo-texto" x="155" y="96" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="55" y="113" fill="#333333" font-size="11">descuento</text>
+                            <text class="tipo-texto" x="155" y="113" fill="#7f8c8d" font-size="10">DECIMAL</text>
+                        </g>
+
+                        <!-- TABLA: pedidos -->
+                        <g transform="translate(840, 320)">
+                            <rect class="tabla-bg" width="190" height="160" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L184,0 Q190,0 190,6 L190,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">pedidos</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">pedido_id</text>
+                            <text class="tipo-texto" x="145" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <rect class="fk-badge" x="10" y="52" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="61" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">cliente_id</text>
+                            <text class="tipo-texto" x="145" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <rect class="fk-badge" x="10" y="69" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="78" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="35" y="79" fill="#333333" font-size="11">empleado_id</text>
+                            <text class="tipo-texto" x="145" y="79" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <rect class="fk-badge" x="10" y="86" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="95" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="35" y="96" fill="#333333" font-size="11">transportista_id</text>
+                            <text class="tipo-texto" x="145" y="96" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="113" fill="#333333" font-size="11">fecha_pedido</text>
+                            <text class="tipo-texto" x="145" y="113" fill="#7f8c8d" font-size="10">DATE</text>
+
+                            <text class="campo-texto" x="35" y="130" fill="#333333" font-size="11">flete</text>
+                            <text class="tipo-texto" x="145" y="130" fill="#7f8c8d" font-size="10">DECIMAL</text>
+                        </g>
+
+                        <!-- TABLA: clientes -->
+                        <g transform="translate(580, 530)">
+                            <rect class="tabla-bg" width="180" height="90" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L174,0 Q180,0 180,6 L180,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">clientes</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">cliente_id</text>
+                            <text class="tipo-texto" x="135" y="45" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">nombre_empresa</text>
+                            <text class="tipo-texto" x="135" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <text class="campo-texto" x="35" y="79" fill="#333333" font-size="11">ciudad</text>
+                            <text class="tipo-texto" x="135" y="79" fill="#7f8c8d" font-size="10">VARCHAR</text>
+                        </g>
+
+                        <!-- TABLA: empleados -->
+                        <g transform="translate(280, 480)">
+                            <rect class="tabla-bg" width="190" height="130" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L184,0 Q190,0 190,6 L190,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">empleados</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">empleado_id</text>
+                            <text class="tipo-texto" x="145" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">apellido</text>
+                            <text class="tipo-texto" x="145" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <text class="campo-texto" x="35" y="79" fill="#333333" font-size="11">nombre</text>
+                            <text class="tipo-texto" x="145" y="79" fill="#7f8c8d" font-size="10">VARCHAR</text>
+
+                            <rect class="fk-badge" x="10" y="88" width="18" height="12" fill="#3498db" rx="3"/>
+                            <text class="badge-texto" x="19" y="97" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+                            <text class="campo-texto" x="35" y="96" fill="#333333" font-size="11">reporta_a</text>
+                            <text class="tipo-texto" x="145" y="96" fill="#7f8c8d" font-size="10">INT</text>
+                        </g>
+
+                        <!-- TABLA: transportistas -->
+                        <g transform="translate(20, 400)">
+                            <rect class="tabla-bg" width="180" height="75" fill="#ffffff" stroke="#b0bec5" stroke-width="1.5" rx="6"/>
+                            <path class="tabla-header" d="M0,6 Q0,0 6,0 L174,0 Q180,0 180,6 L180,25 L0,25 Z" fill="#2c3e50" rx="6"/>
+                            <text class="tabla-titulo" x="10" y="17" fill="#ffffff" font-size="14" font-weight="bold">transportistas</text>
+                            
+                            <rect class="pk-badge" x="10" y="35" width="18" height="12" fill="#f1c40f" rx="3"/>
+                            <text class="badge-texto" x="19" y="44" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+                            <text class="campo-texto" x="35" y="45" fill="#333333" font-size="11">transportista_id</text>
+                            <text class="tipo-texto" x="140" y="45" fill="#7f8c8d" font-size="10">INT</text>
+
+                            <text class="campo-texto" x="35" y="62" fill="#333333" font-size="11">nombre_empresa</text>
+                            <text class="tipo-texto" x="140" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
+                        </g>
+
+                        <!-- RELACIONES -->
+                        <path class="linea-relacion" d="M 200,85 L 250,85 L 250,196 L 300,196" fill="none" stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)"/>
+                        <text class="puntos-cardinales" x="205" y="80" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="288" y="191" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion" d="M 200,255 L 250,255 L 250,178 L 300,178" fill="none" stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)"/>
+                        <text class="puntos-cardinales" x="205" y="250" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="288" y="173" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion-fuerte" d="M 490,170 L 540,170 L 540,282 L 580,282" fill="none" stroke="#e74c3c" stroke-width="2" marker-start="url(#flecha-fuerte)"/>
+                        <text class="puntos-cardinales" x="495" y="165" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="565" y="277" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion-fuerte" d="M 840,365 L 800,365 L 800,245 L 780,245" fill="none" stroke="#e74c3c" stroke-width="2" marker-start="url(#flecha-fuerte)"/>
+                        <text class="puntos-cardinales" x="825" y="360" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="785" y="240" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion" d="M 760,575 L 810,575 L 810,402 L 840,402" fill="none" stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)"/>
+                        <text class="puntos-cardinales" x="765" y="570" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="825" y="397" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion" d="M 470,545 L 520,545 L 520,440 L 840,440" fill="none" stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)"/>
+                        <text class="puntos-cardinales" x="475" y="540" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="825" y="435" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion" d="M 200,437 L 240,437 L 240,465 L 840,465" fill="none" stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)"/>
+                        <text class="puntos-cardinales" x="205" y="432" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="825" y="460" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                        <path class="linea-relacion" d="M 470,577 L 490,577 L 490,625 L 400,625 L 400,610" fill="none" stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)"/>
+                        <text class="puntos-cardinales" x="472" y="572" fill="#34495e" font-size="12" font-weight="bold">1</text>
+                        <text class="puntos-cardinales" x="405" y="620" fill="#34495e" font-size="12" font-weight="bold">N</text>
+
+                    </svg>
+                </div>
+            </div>
+
+            <div style="margin-top: 8px; font-size: 11px; color: var(--gray-500); text-align: center; flex-shrink: 0; border-top: 1px solid var(--gray-200); padding-top: 8px;">
+                💡 Haz clic en el encabezado de cada JOIN para colapsar/expandir · Usa el mapa para guiar tus consultas
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Función para copiar
+        function copyToClipboard() {
+            const codeElement = document.querySelector('.code-container pre');
+            if (!codeElement) return;
+
+            const text = codeElement.textContent || codeElement.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                btn.textContent = '✓ Copiado';
+                setTimeout(() => {
+                    btn.textContent = 'Copiar';
+                }, 2000);
+            }).catch(() => {
+                const range = document.createRange();
+                range.selectNode(codeElement);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                const btn = document.querySelector('.btn-copy');
+                btn.textContent = '✓ Copiado';
+                setTimeout(() => {
+                    btn.textContent = 'Copiar';
+                }, 2000);
+            });
+        }
+
+        // Toggle para colapsar/expandir secciones JOIN
+        function toggleJoin(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+
+            const content = section.querySelector('.join-content');
+            if (!content) return;
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+            } else {
+                content.style.display = 'none';
+            }
+        }
+
+        // Inicializar: todas las secciones visibles
+        document.querySelectorAll('.join-content').forEach(el => {
+            el.style.display = 'block';
+        });
+
+        // Efecto hover en las secciones
+        document.querySelectorAll('.join-section').forEach(section => {
+            section.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+            });
+            section.addEventListener('mouseleave', function() {
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
