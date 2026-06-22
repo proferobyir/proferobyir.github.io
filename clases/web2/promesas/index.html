@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase Interactiva: Asincronía en JavaScript</title>
+    <style>
+        /* ==========================================================================
+           VARIABLES DE COLOR (Basadas en la paleta institucional adjunta)
+           ========================================================================== */
+        :root {
+            --color-bg-light: #ffffff;
+            /* Blanco */
+            --color-surface: #dce4d3;
+            /* Verde pálido/crema */
+            --color-accent: #9bb1a5;
+            /* Verde grisáceo medio */
+            --color-primary: #3f6674;
+            /* Azul grisáceo / Corporativo */
+            --color-dark: #16303f;
+            /* Azul petróleo oscuro */
+            --text-dark: #16303f;
+            --text-light: #ffffff;
+        }
+
+        /* ==========================================================================
+           ESTILOS BASE Y MAQUETACIÓN CON GRID
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--color-bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            min-height: 100vh;
+        }
+
+        /* Cabecera Institucional */
+        header {
+            background-color: var(--color-dark);
+            color: var(--text-light);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 4px solid var(--color-accent);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        header p {
+            color: var(--color-surface);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Navegación / Barra de Estado (Flexbox) */
+        nav {
+            background-color: var(--color-primary);
+            color: var(--text-light);
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        /* Contenedor Principal (Grid de dos columnas en pantallas grandes) */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 992px) {
+            .main-container {
+                grid-template-columns: 1.2fr 0.8fr;
+            }
+        }
+
+        /* ==========================================================================
+           CONTENIDO DIDÁCTICO (Panel Izquierdo)
+           ========================================================================== */
+        .lesson-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .step-card {
+            background-color: var(--color-bg-light);
+            border-left: 5px solid var(--color-primary);
+            padding: 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(22, 48, 63, 0.08);
+        }
+
+        .step-card h2 {
+            color: var(--color-dark);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-card h2 .badge {
+            background-color: var(--color-surface);
+            color: var(--color-dark);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+
+        p code,
+        li code {
+            background-color: var(--color-surface);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: var(--color-dark);
+            color: #e0e0e0;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        /* ==========================================================================
+           ENTORNO DE PRUEBAS / INTERFAZ API (Panel Derecho)
+           ========================================================================== */
+        .sandbox-panel {
+            background-color: var(--color-surface);
+            padding: 1.5rem;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: fit-content;
+            border: 1px solid var(--color-accent);
+        }
+
+        .sandbox-panel h3 {
+            color: var(--color-dark);
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .btn-fetch {
+            background-color: var(--color-dark);
+            color: var(--text-light);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            width: 100%;
+        }
+
+        .btn-fetch:hover {
+            background-color: var(--color-primary);
+        }
+
+        /* Grid de personajes (Flexbox dinámico para las cards de la API) */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .character-card {
+            background-color: var(--color-bg-light);
+            border: 1px solid var(--color-accent);
+            border-radius: 4px;
+            width: 100%;
+            display: flex;
+            /* Flexbox horizontal para la fila del personaje */
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 600px) and (max-width: 991px) {
+            .character-card {
+                width: calc(50% - 0.5rem);
+                /* Dos columnas en tablets */
+            }
+        }
+
+        .character-card img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            background-color: var(--color-surface);
+            border-radius: 4px;
+            padding: 0.2rem;
+        }
+
+        .character-info h4 {
+            color: var(--color-dark);
+            font-size: 1rem;
+        }
+
+        .character-info p {
+            font-size: 0.8rem;
+            color: var(--color-primary);
+        }
+
+        /* Estado de carga y errores */
+        .status-message {
+            text-align: center;
+            font-style: italic;
+            color: var(--color-primary);
+            padding: 1rem;
+            width: 100%;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--color-dark);
+            color: var(--text-light);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+            border-top: 4px solid var(--color-accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Entorno de Aprendizaje de JavaScript</h1>
+        <p>Unidad: Programación Asíncrona (Promesas y Async/Await)</p>
+    </header>
+
+    <nav>
+        <span><strong>Tópico:</strong> Consumo de APIs con Fetch</span>
+        <span>Módulo Didáctico</span>
+    </nav>
+
+    <div class="main-container">
+
+        <main class="lesson-panel">
+
+            <article class="step-card">
+                <h2><span class="badge">Paso 1</span> El Concepto de Asincronía</h2>
+                <p>En JavaScript, operaciones como consultar un servidor web tardan tiempo en completarse. Para evitar
+                    que la aplicación web se congele mientras espera la respuesta, utilizamos funciones
+                    <strong>asíncronas</strong> que devuelven una <strong>Promesa</strong> (un objeto que representa un
+                    valor que estará disponible ahora, en el futuro o nunca).</p>
+            </article>
+
+            <article class="step-card">
+                <h2><span class="badge">Paso 2</span> La anatomía de Async / Await</h2>
+                <p>La combinación <code>async/await</code> es una forma elegante y legible de trabajar con promesas,
+                    permitiendo escribir código asíncrono que se lee como si fuera síncrono (línea por línea).</p>
+                <ul>
+                    <li><code>async</code>: Declara que una función contiene procesos asíncronos. Siempre retorna una
+                        promesa.</li>
+                    <li><code>await</code>: Pausa la ejecución de la función de forma interna hasta que la promesa se
+                        resuelva (con éxito o error).</li>
+                </ul>
+            </article>
+
+            <article class="step-card">
+                <h2><span class="badge">Paso 3</span> Analizando el código de la API</h2>
+                <p>Para conectarnos a la API de Dragon Ball y traer los datos de los personajes, estructuramos nuestra
+                    función utilizando un bloque <code>try...catch</code> para capturar posibles errores de red:</p>
+
+                <pre><span class="keyword">async function</span> <span class="function">obtenerPersonajes</span>() {
+    <span class="keyword">try</span> {
+        <span class="comment">// 1. Enviamos la petición HTTP GET</span>
+        <span class="keyword">const</span> respuesta = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'https://dragonball-api.com/api/characters'</span>);
+        
+        <span class="comment">// 2. Convertimos el flujo de datos a formato JSON</span>
+        <span class="keyword">const</span> datos = <span class="keyword">await</span> respuesta.<span class="function">json</span>();
+        
+        <span class="comment">// 3. Retornamos la estructura de los datos (el arreglo viene en la propiedad 'items')</span>
+        <span class="keyword">return</span> datos.items; 
+    } <span class="keyword">catch</span> (error) {
+        console.<span class="function">error</span>(<span class="string">"Error en la comunicación con la API:"</span>, error);
+    }
+}</pre>
+            </article>
+
+        </main>
+
+        <aside class="sandbox-panel">
+            <h3>Demostración en Vivo</h3>
+            <p>Presiona el botón para ejecutar la función asíncrona real y renderizar los datos obtenidos de
+                <code>dragonball-api.com</code>.</p>
+
+            <button class="btn-fetch" id="btnCargar">Ejecutar petición (fetch)</button>
+
+            <div class="cards-container" id="contenedorCards">
+                <div class="status-message">El contenedor está vacío. Presiona el botón de arriba para iniciar el flujo
+                    asíncrono.</div>
+            </div>
+        </aside>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Entorno Académico de Ingeniería Informática. Uso exclusivo didáctico.
+    </footer>
+
+    <script>
+        // Selección de elementos del DOM
+        const btnCargar = document.getElementById('btnCargar');
+        const contenedorCards = document.getElementById('contenedorCards');
+
+        // Definición de la función asíncrona utilizando Async/Await
+        async function obtenerPersonajes() {
+            try {
+                // Modificamos el estado visual para indicar la espera activa
+                contenedorCards.innerHTML = '<div class="status-message">Consultando al servidor de la API... Por favor espere.</div>';
+
+                // Petición HTTP a la API pública
+                const respuesta = await fetch('https://dragonball-api.com/api/characters');
+
+                if (!respuesta.ok) {
+                    throw new Error(`Error HTTP! Estado: ${respuesta.status}`);
+                }
+
+                // Extracción de datos en formato plano JSON
+                const datos = await respuesta.json();
+
+                // La API entrega los personajes principales dentro de un arreglo llamado 'items'
+                return datos.items;
+
+            } catch (error) {
+                // Manejo explícito de excepciones (Falta de internet, caída del servidor, etc)
+                contenedorCards.innerHTML = `<div class="status-message" style="color: red;">Ocurrió un error al procesar la Promesa: ${error.message}</div>`;
+                return null;
+            }
+        }
+
+        // Función auxiliar encargada del renderizado utilizando Flexbox dinámico
+        function renderizarPersonajes(personajes) {
+            if (!personajes || personajes.length === 0) return;
+
+            // Limpiamos el mensaje de carga antes de renderizar
+            contenedorCards.innerHTML = '';
+
+            // Iteramos sobre el arreglo de datos devuelto
+            personajes.forEach(personaje => {
+                // Creamos la estructura de la tarjeta
+                const card = document.createElement('div');
+                card.classList.add('character-card');
+
+                card.innerHTML = `
+                    <img src="${personaje.image}" alt="${personaje.name}">
+                    <div class="character-info">
+                        <h4>${personaje.name}</h4>
+                        <p>Ki: ${personaje.ki}</p>
+                        <p>Raza: ${personaje.race}</p>
+                    </div>
+                `;
+
+                // Inserción en el contenedor mapeado
+                contenedorCards.appendChild(card);
+            });
+        }
+
+        // Evento que desencadena el proceso asíncrono al hacer click
+        btnCargar.addEventListener('click', async () => {
+            btnCargar.disabled = true;
+            btnCargar.textContent = 'Procesando...';
+
+            const listaPersonajes = await obtenerPersonajes();
+
+            if (listaPersonajes) {
+                renderizarPersonajes(listaPersonajes);
+            }
+
+            btnCargar.disabled = false;
+            btnCargar.textContent = 'Ejecutar petición (fetch)';
+        });
+    </script>
+</body>
+
+</html>

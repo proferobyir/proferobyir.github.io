@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎓 Aprende SQL con Northwind - JOINs Fáciles</title>
+    <title>Playground SQL - Northwind con JOINs y Mapa de Tablas</title>
     <style>
         :root {
             --primary-blue: #1a3a5c;
@@ -20,12 +20,11 @@
             --gray-800: #1e293b;
             --gray-900: #0f172a;
             --white: #ffffff;
-            --border-radius: 12px;
-            --shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
-            --join-inner: #2563eb;
+            --border-radius: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --join-inner: #2c5f8a;
             --join-left: #16a34a;
             --join-right: #dc2626;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -36,56 +35,47 @@
 
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f0f4f8;
+            background: var(--gray-100);
             color: var(--gray-800);
             height: 100vh;
             overflow: hidden;
         }
 
-        /* HEADER mejorado */
+        /* HEADER */
         .header {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e4d7a 100%);
+            background: var(--primary-blue);
             color: var(--white);
-            padding: 12px 32px;
+            padding: 10px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 3px solid var(--secondary-blue);
             flex-shrink: 0;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
         }
 
         .header h1 {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 600;
             letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header h1 .emoji {
-            font-size: 24px;
         }
 
         .header .badge {
             background: rgba(255, 255, 255, 0.15);
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
-            color: #b0d4f0;
-            backdrop-filter: blur(4px);
+            color: #b0cce0;
         }
 
         /* MAIN LAYOUT */
         .playground {
             display: flex;
-            height: calc(100vh - 68px);
+            height: calc(100vh - 60px);
             width: 100%;
         }
 
-        /* LEFT PANEL - SQL con mejoras */
+        /* LEFT PANEL - SQL */
         .panel-left {
             flex: 0 0 40%;
             background: var(--gray-900);
@@ -97,99 +87,89 @@
 
         .panel-left .panel-header {
             background: var(--gray-800);
-            padding: 10px 20px;
+            padding: 8px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--gray-700);
+            border-bottom: 1px solid var(--gray-700);
             flex-shrink: 0;
         }
 
         .panel-left .panel-header span {
             color: var(--gray-300);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             font-family: 'Courier New', monospace;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .btn-copy {
             background: var(--secondary-blue);
             color: var(--white);
             border: none;
-            padding: 6px 18px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: background 0.2s;
         }
 
         .btn-copy:hover {
             background: #3a7bb5;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(44, 95, 138, 0.4);
         }
 
         .code-container {
             flex: 1;
             overflow: auto;
-            padding: 16px 20px;
+            padding: 12px 16px;
             background: var(--gray-900);
         }
 
         .code-container pre {
             margin: 0;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.6;
+            font-size: 11px;
+            line-height: 1.5;
             color: #d4d4d4;
             white-space: pre-wrap;
             word-break: break-word;
         }
 
-        /* RIGHT PANEL - Más amigable */
+        /* RIGHT PANEL */
         .panel-right {
             flex: 1;
             background: var(--white);
-            padding: 20px 24px;
+            padding: 16px 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             min-width: 0;
         }
 
-        /* JOIN SECTIONS - Diseño mejorado */
+        /* JOIN SECTIONS */
         .join-section {
             background: var(--gray-100);
             border-radius: var(--border-radius);
-            padding: 16px 20px;
-            margin-bottom: 14px;
-            border-left: 6px solid var(--gray-300);
-            transition: var(--transition);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--gray-300);
+            transition: all 0.3s ease;
             flex-shrink: 0;
-            box-shadow: var(--shadow);
-        }
-
-        .join-section:hover {
-            transform: translateX(4px);
         }
 
         .join-section.active-inner {
             border-left-color: var(--join-inner);
-            background: #eff6ff;
+            background: #f0f5fa;
         }
 
         .join-section.active-left {
             border-left-color: var(--join-left);
-            background: #f0fdf4;
+            background: #f0faf4;
         }
 
         .join-section.active-right {
             border-left-color: var(--join-right);
-            background: #fef2f2;
+            background: #faf0f0;
         }
 
         .join-header {
@@ -201,22 +181,18 @@
         }
 
         .join-header h3 {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--gray-700);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .join-header .join-type {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 4px 16px;
-            border-radius: 20px;
+            padding: 2px 12px;
+            border-radius: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
         }
 
         .join-type.inner {
@@ -236,87 +212,61 @@
 
         .join-query {
             font-family: 'Consolas', monospace;
-            font-size: 12px;
+            font-size: 11px;
             background: var(--gray-800);
             color: #d4d4d4;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin: 12px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0 10px 0;
             overflow-x: auto;
             white-space: pre-wrap;
             word-break: break-word;
-            border-left: 4px solid var(--secondary-blue);
-        }
-
-        .join-query .sql-keyword {
-            color: #569cd6;
-            font-weight: 600;
-        }
-
-        .join-query .sql-table {
-            color: #4ec9b0;
-        }
-
-        .join-query .sql-column {
-            color: #9cdcfe;
-        }
-
-        .join-query .sql-string {
-            color: #ce9178;
         }
 
         .join-visual {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            padding: 16px 0;
+            gap: 16px;
+            padding: 10px 0;
             flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            margin: 8px 0;
         }
 
         .join-visual .set {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         .join-visual .set-circle {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 13px;
             color: white;
             border: 3px solid rgba(255, 255, 255, 0.3);
             box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .join-visual .set-circle:hover {
-            transform: scale(1.08);
         }
 
         .join-visual .set-label {
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 500;
             color: var(--gray-600);
             text-align: center;
         }
 
         .join-visual .set-count {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--gray-400);
         }
 
         .join-visual .operator {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--gray-400);
         }
@@ -325,49 +275,47 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 8px 20px;
+            gap: 3px;
+            padding: 6px 14px;
             background: white;
-            border-radius: 12px;
-            border: 3px dashed var(--gray-300);
-            min-width: 60px;
-            transition: var(--transition);
+            border-radius: 8px;
+            border: 2px dashed var(--gray-300);
+            min-width: 50px;
         }
 
         .join-visual .result .result-count {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--gray-700);
         }
 
         .join-visual .result .result-label {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--gray-400);
             font-weight: 500;
         }
 
         .join-visual .result.highlight-inner {
             border-color: var(--join-inner);
-            background: #dbeafe;
+            background: #f0f5fa;
         }
 
         .join-visual .result.highlight-left {
             border-color: var(--join-left);
-            background: #dcfce7;
+            background: #f0faf4;
         }
 
         .join-visual .result.highlight-right {
             border-color: var(--join-right);
-            background: #fecaca;
+            background: #faf0f0;
         }
 
         .join-details {
-            font-size: 13px;
+            font-size: 11px;
             color: var(--gray-600);
-            padding: 10px 0 4px 0;
-            border-top: 2px solid var(--gray-200);
-            margin-top: 8px;
-            line-height: 1.6;
+            padding: 6px 0 0 0;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 6px;
         }
 
         .join-details strong {
@@ -376,8 +324,8 @@
 
         .join-details .highlight {
             font-weight: 600;
-            padding: 2px 10px;
-            border-radius: 4px;
+            padding: 1px 6px;
+            border-radius: 3px;
         }
 
         .highlight-inner-text {
@@ -395,49 +343,42 @@
             color: var(--join-right);
         }
 
-        .join-details .explanation-icon {
-            font-size: 16px;
-            margin-right: 4px;
-        }
-
-        /* MAPA DE TABLAS - Mejorado */
+        /* MAPA DE TABLAS - SVG */
         .map-container {
-            margin-top: 16px;
+            margin-top: 12px;
             background: var(--gray-100);
             border-radius: var(--border-radius);
-            padding: 20px;
-            border: 2px solid var(--gray-200);
+            padding: 16px;
+            border: 1px solid var(--gray-200);
             flex: 0 0 auto;
             width: 100%;
             overflow: hidden;
-            box-shadow: var(--shadow);
         }
 
         .map-container h3 {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--primary-blue);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
         .map-container h3 small {
             font-weight: 400;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--gray-500);
         }
 
         .map-svg-wrapper {
             width: 100%;
             background: white;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid var(--gray-200);
             overflow: auto;
             position: relative;
-            padding: 4px;
         }
 
         .map-svg-wrapper svg {
@@ -447,12 +388,12 @@
             height: auto;
         }
 
-        /* Scrollbar mejorada */
+        /* Scrollbar */
         .code-container::-webkit-scrollbar,
         .panel-right::-webkit-scrollbar,
         .map-svg-wrapper::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
 
         .code-container::-webkit-scrollbar-track {
@@ -490,19 +431,7 @@
             border-radius: 4px;
         }
 
-        /* Tooltip flotante */
-        .tooltip-tag {
-            display: inline-block;
-            background: var(--gray-700);
-            color: white;
-            padding: 2px 10px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-            margin: 0 4px;
-        }
-
-        /* Responsive mejorado */
+        /* Responsive */
         @media (max-width: 1024px) {
             .playground {
                 flex-direction: column;
@@ -527,17 +456,17 @@
             }
 
             .join-visual {
-                gap: 12px;
+                gap: 10px;
             }
 
             .join-visual .set-circle {
-                width: 44px;
-                height: 44px;
-                font-size: 13px;
+                width: 40px;
+                height: 40px;
+                font-size: 11px;
             }
 
             .map-container {
-                padding: 12px;
+                padding: 10px;
             }
         }
 
@@ -549,43 +478,43 @@
             }
 
             .header h1 {
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .header .badge {
                 font-size: 10px;
-                padding: 3px 10px;
+                padding: 2px 10px;
             }
 
             .panel-right {
-                padding: 12px;
+                padding: 10px;
             }
 
             .join-section {
-                padding: 12px 14px;
+                padding: 10px 12px;
             }
 
             .join-visual {
-                gap: 8px;
+                gap: 6px;
             }
 
             .join-visual .set-circle {
-                width: 38px;
-                height: 38px;
-                font-size: 11px;
+                width: 34px;
+                height: 34px;
+                font-size: 10px;
             }
 
             .join-visual .operator {
-                font-size: 18px;
+                font-size: 16px;
             }
 
             .join-query {
-                font-size: 11px;
-                padding: 8px 12px;
+                font-size: 10px;
+                padding: 6px 10px;
             }
 
             .join-details {
-                font-size: 12px;
+                font-size: 10px;
             }
 
             .map-container {
@@ -593,7 +522,7 @@
             }
 
             .map-container h3 {
-                font-size: 13px;
+                font-size: 12px;
             }
         }
     </style>
@@ -601,16 +530,13 @@
 
 <body>
 
-    <!-- HEADER mejorado -->
+    <!-- HEADER -->
     <header class="header">
-        <h1>
-            <span class="emoji">📚</span>
-            Aprende SQL con Northwind
-        </h1>
+        <h1>▌ Playground SQL · Northwind · JOINs + Mapa</h1>
         <div>
-            <span class="badge">🎯 JOINs explicados</span>
-            <span class="badge" style="margin-left: 8px;">🗄️ 8 tablas</span>
-            <span class="badge" style="margin-left: 8px;">✨ Interactivo</span>
+            <span class="badge">MySQL</span>
+            <span class="badge" style="margin-left: 8px;">8 tablas</span>
+            <span class="badge" style="margin-left: 8px;">Interactivo</span>
         </div>
     </header>
 
@@ -620,21 +546,18 @@
         <!-- LEFT: SQL CODE -->
         <div class="panel-left">
             <div class="panel-header">
-                <span>📄 Script de base de datos Northwind</span>
-                <button class="btn-copy" onclick="copyToClipboard()">📋 Copiar</button>
+                <span>📄 script_northwind.sql</span>
+                <button class="btn-copy" onclick="copyToClipboard()">Copiar</button>
             </div>
             <div class="code-container" id="sqlCode">
-                <pre>-- ============================================================
--- 🗄️ BASE DE DATOS NORTHWIND - Esquema completo
--- ============================================================
--- Este script crea todas las tablas y datos necesarios
--- para practicar consultas SQL con JOINs
+                <pre>-- =========================================================================
+-- SCRIPT DE CREACIÓN Y CARGA DE BASE DE DATOS TIPO NORTHWIND
+-- =========================================================================
 
 CREATE DATABASE IF NOT EXISTS tienda_northwind
   CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
 USE tienda_northwind;
 
--- 🔄 Limpieza inicial
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS detalles_pedidos;
 DROP TABLE IF EXISTS pedidos;
@@ -646,18 +569,16 @@ DROP TABLE IF EXISTS empleados;
 DROP TABLE IF EXISTS transportistas;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ============================================================
--- 📋 1. CREACIÓN DE TABLAS
--- ============================================================
+-- =========================================================================
+-- 1. CREACIÓN DE TABLAS
+-- =========================================================================
 
--- 🏷️ Categorías de productos
 CREATE TABLE categorias (
     categoria_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_categoria VARCHAR(50) NOT NULL,
     descripcion TEXT
 ) ENGINE=InnoDB;
 
--- 🏢 Proveedores de productos
 CREATE TABLE proveedores (
     proveedor_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_empresa VARCHAR(100) NOT NULL,
@@ -671,7 +592,6 @@ CREATE TABLE proveedores (
     telefono VARCHAR(20)
 ) ENGINE=InnoDB;
 
--- 📦 Productos (tabla principal)
 CREATE TABLE productos (
     producto_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_producto VARCHAR(100) NOT NULL,
@@ -683,7 +603,6 @@ CREATE TABLE productos (
     FOREIGN KEY (categoria_id) REFERENCES categorias(categoria_id)
 ) ENGINE=InnoDB;
 
--- 👤 Clientes
 CREATE TABLE clientes (
     cliente_id VARCHAR(5) PRIMARY KEY,
     nombre_empresa VARCHAR(100) NOT NULL,
@@ -696,7 +615,6 @@ CREATE TABLE clientes (
     pais VARCHAR(50)
 ) ENGINE=InnoDB;
 
--- 👔 Empleados
 CREATE TABLE empleados (
     empleado_id INT AUTO_INCREMENT PRIMARY KEY,
     apellido VARCHAR(50) NOT NULL,
@@ -714,14 +632,12 @@ CREATE TABLE empleados (
     FOREIGN KEY (reporta_a) REFERENCES empleados(empleado_id)
 ) ENGINE=InnoDB;
 
--- 🚚 Transportistas
 CREATE TABLE transportistas (
     transportista_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_empresa VARCHAR(100) NOT NULL,
     telefono VARCHAR(20)
 ) ENGINE=InnoDB;
 
--- 🛒 Pedidos
 CREATE TABLE pedidos (
     pedido_id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id VARCHAR(5),
@@ -739,7 +655,6 @@ CREATE TABLE pedidos (
     FOREIGN KEY (transportista_id) REFERENCES transportistas(transportista_id)
 ) ENGINE=InnoDB;
 
--- 📋 Detalles de pedidos (tabla de unión)
 CREATE TABLE detalles_pedidos (
     pedido_id INT,
     producto_id INT,
@@ -751,11 +666,10 @@ CREATE TABLE detalles_pedidos (
     FOREIGN KEY (producto_id) REFERENCES productos(producto_id)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- 📊 2. INSERCIÓN DE DATOS (muestra representativa)
--- ============================================================
+-- =========================================================================
+-- 2. INSERCIÓN DE DATOS (Resumida)
+-- =========================================================================
 
--- 🏷️ Categorías (8 categorías)
 INSERT INTO categorias (categoria_id, nombre_categoria, descripcion) VALUES
 (1, 'Bebidas', 'Cafés, tés, refrescos, zumos y cervezas'),
 (2, 'Condimentos', 'Salsas, especias, aderezos y picantes'),
@@ -766,7 +680,6 @@ INSERT INTO categorias (categoria_id, nombre_categoria, descripcion) VALUES
 (7, 'Pescados y Mariscos', 'Pescados frescos, mariscos, moluscos y algas'),
 (8, 'Frutas y Verduras', 'Frutas secas, vegetales frescos y conservas');
 
--- 🏢 Proveedores (12 proveedores)
 INSERT INTO proveedores (proveedor_id, nombre_empresa, nombre_contacto, ciudad, pais) VALUES
 (1, 'Importaciones Antillanas S.A.', 'Carlos Mendoza', 'Caracas', 'Venezuela'),
 (2, 'Distribuidora del Pacífico', 'Ana María Silva', 'Lima', 'Perú'),
@@ -781,7 +694,6 @@ INSERT INTO proveedores (proveedor_id, nombre_empresa, nombre_contacto, ciudad, 
 (11, 'Proveedor Nacional Valencia', 'Contacto 11', 'Valencia', 'Venezuela'),
 (12, 'Proveedor Nacional Barcelona', 'Contacto 12', 'Barcelona', 'Venezuela');
 
--- 📦 Productos (50 productos)
 INSERT INTO productos (producto_id, nombre_producto, categoria_id, proveedor_id, precio_unitario, unidades_stock) VALUES
 (1, 'Café Espresso Premium', 1, 1, 15.50, 45),
 (2, 'Té Verde Orgánico', 1, 1, 8.20, 60),
@@ -834,7 +746,17 @@ INSERT INTO productos (producto_id, nombre_producto, categoria_id, proveedor_id,
 (49, 'Aguacates Hass', 8, 7, 4.50, 60),
 (50, 'Tomates Cherry', 8, 7, 2.50, 75);
 
--- 👤 Clientes (50 clientes)
+INSERT INTO empleados (empleado_id, apellido, nombre, puesto, tratamiento, fecha_nacimiento, fecha_contratacion, ciudad, pais, reporta_a) VALUES
+(2, 'Fuller', 'Andrés', 'Vicepresidente de Ventas', 'Dr.', '1972-02-19', '2012-08-14', 'Valencia', 'Venezuela', NULL),
+(1, 'Davolio', 'Nancy', 'Representante de Ventas', 'Sra.', '1988-12-08', '2018-05-01', 'Caracas', 'Venezuela', 2),
+(3, 'Leverling', 'Janet', 'Representante de Ventas', 'Sra.', '1983-08-30', '2015-04-01', 'Caracas', 'Venezuela', 2),
+(4, 'Peacock', 'Margarita', 'Representante de Ventas', 'Sra.', '1967-09-19', '2014-05-03', 'Maracay', 'Venezuela', 2),
+(5, 'Buchanan', 'Steven', 'Gerente de Ventas', 'Sr.', '1975-03-04', '2013-10-17', 'Valencia', 'Venezuela', 2),
+(6, 'Suyama', 'Miguel', 'Representante de Ventas', 'Sr.', '1983-07-02', '2016-10-17', 'Valencia', 'Venezuela', 5),
+(7, 'King', 'Roberto', 'Representante de Ventas', 'Sr.', '1980-05-29', '2017-01-02', 'San Diego', 'Venezuela', 5),
+(8, 'Callahan', 'Laura', 'Coordinadora de Ventas', 'Sra.', '1978-01-09', '2015-03-05', 'Barquisimeto', 'Venezuela', 2),
+(9, 'Dodsworth', 'Ana', 'Representante de Ventas', 'Sra.', '1986-01-27', '2019-11-15', 'Maracaibo', 'Venezuela', 5);
+
 INSERT INTO clientes (cliente_id, nombre_empresa, nombre_contacto, ciudad, pais) VALUES
 ('ALFKI', 'Comestibles Alva', 'María Alva', 'Guadalajara', 'México'),
 ('ANATR', 'Empanadas Ana', 'Ana Trujillo', 'Lima', 'Perú'),
@@ -887,19 +809,6 @@ INSERT INTO clientes (cliente_id, nombre_empresa, nombre_contacto, ciudad, pais)
 ('CLI49', 'Cliente Automático 49 S.A.', 'Contacto 49', 'Valencia', 'Venezuela'),
 ('CLI50', 'Cliente Automático 50 S.A.', 'Contacto 50', 'Valencia', 'Venezuela');
 
--- 👔 Empleados (9 empleados)
-INSERT INTO empleados (empleado_id, apellido, nombre, puesto, tratamiento, fecha_nacimiento, fecha_contratacion, ciudad, pais, reporta_a) VALUES
-(2, 'Fuller', 'Andrés', 'Vicepresidente de Ventas', 'Dr.', '1972-02-19', '2012-08-14', 'Valencia', 'Venezuela', NULL),
-(1, 'Davolio', 'Nancy', 'Representante de Ventas', 'Sra.', '1988-12-08', '2018-05-01', 'Caracas', 'Venezuela', 2),
-(3, 'Leverling', 'Janet', 'Representante de Ventas', 'Sra.', '1983-08-30', '2015-04-01', 'Caracas', 'Venezuela', 2),
-(4, 'Peacock', 'Margarita', 'Representante de Ventas', 'Sra.', '1967-09-19', '2014-05-03', 'Maracay', 'Venezuela', 2),
-(5, 'Buchanan', 'Steven', 'Gerente de Ventas', 'Sr.', '1975-03-04', '2013-10-17', 'Valencia', 'Venezuela', 2),
-(6, 'Suyama', 'Miguel', 'Representante de Ventas', 'Sr.', '1983-07-02', '2016-10-17', 'Valencia', 'Venezuela', 5),
-(7, 'King', 'Roberto', 'Representante de Ventas', 'Sr.', '1980-05-29', '2017-01-02', 'San Diego', 'Venezuela', 5),
-(8, 'Callahan', 'Laura', 'Coordinadora de Ventas', 'Sra.', '1978-01-09', '2015-03-05', 'Barquisimeto', 'Venezuela', 2),
-(9, 'Dodsworth', 'Ana', 'Representante de Ventas', 'Sra.', '1986-01-27', '2019-11-15', 'Maracaibo', 'Venezuela', 5);
-
--- 🚚 Transportistas (5 transportistas)
 INSERT INTO transportistas (transportista_id, nombre_empresa, telefono) VALUES
 (1, 'Envíos Rápidos', '+58-212-555-9876'),
 (2, 'Logística del Atlántico', '+34-91-555-8822'),
@@ -907,7 +816,6 @@ INSERT INTO transportistas (transportista_id, nombre_empresa, telefono) VALUES
 (4, 'Carga Express Latinoamericana', '+51-1-444-5566'),
 (5, 'Fletes del Caribe', '+58-241-555-1122');
 
--- 🛒 Pedidos (50 pedidos)
 INSERT INTO pedidos (pedido_id, cliente_id, empleado_id, fecha_pedido, fecha_entrega, transportista_id, flete) VALUES
 (1, 'ALFKI', 2, '2025-01-02', '2025-01-04', 2, 24.32),
 (2, 'ANATR', 3, '2025-02-03', '2025-02-05', 3, 44.50),
@@ -960,7 +868,6 @@ INSERT INTO pedidos (pedido_id, cliente_id, empleado_id, fecha_pedido, fecha_ent
 (49, 'CLI49', 5, '2025-01-22', '2025-01-24', 5, 24.15),
 (50, 'CLI50', 6, '2025-02-23', '2025-02-25', 1, 33.45);
 
--- 📋 Detalles de pedidos (ejemplos representativos)
 INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad, descuento) VALUES
 (1, 12, 3.50, 10, 0.05), (1, 45, 2.10, 5, 0.00), (1, 23, 1.10, 15, 0.10),
 (2, 34, 1.45, 20, 0.00), (2, 7, 18.90, 2, 0.15), (2, 19, 1.75, 12, 0.00),
@@ -1018,182 +925,137 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
         <!-- RIGHT: JOIN SECTIONS + MAPA -->
         <div class="panel-right">
 
-            <!-- JOIN SECTIONS con explicaciones mejoradas -->
+            <!-- JOIN SECTIONS -->
             <h2
-                style="font-size: 17px; font-weight: 700; color: var(--primary-blue); margin-bottom: 14px; flex-shrink: 0; display: flex; align-items: center; gap: 10px;">
-                🔗 Tipos de JOIN · Aprende con ejemplos
-                <span style="font-size: 12px; font-weight: 400; color: var(--gray-500);">(Haz clic para colapsar)</span>
+                style="font-size: 15px; font-weight: 600; color: var(--primary-blue); margin-bottom: 10px; flex-shrink: 0;">
+                🔗 Tipos de JOIN · Simulación
             </h2>
 
-            <!-- INNER JOIN - Explicación mejorada -->
+            <!-- INNER JOIN -->
             <div class="join-section active-inner" id="innerJoin">
                 <div class="join-header" onclick="toggleJoin('innerJoin')">
-                    <h3>🎯 INNER JOIN · Solo lo que coincide</h3>
+                    <h3>INNER JOIN · Productos con Categorías</h3>
                     <span class="join-type inner">INNER</span>
                 </div>
                 <div class="join-content">
                     <div class="join-query">
-                        <span class="sql-keyword">SELECT</span> <span class="sql-column">p.nombre_producto</span>, <span
-                            class="sql-column">c.nombre_categoria</span>
-                        <span class="sql-keyword">FROM</span> <span class="sql-table">productos</span> <span
-                            class="sql-keyword">p</span>
-                        <span class="sql-keyword">INNER JOIN</span> <span class="sql-table">categorias</span> <span
-                            class="sql-keyword">c</span> <span class="sql-keyword">ON</span> <span
-                            class="sql-column">p.categoria_id</span> = <span class="sql-column">c.categoria_id</span>;
+                        SELECT p.nombre_producto, c.nombre_categoria
+                        FROM productos p
+                        INNER JOIN categorias c ON p.categoria_id = c.categoria_id;
                     </div>
                     <div class="join-visual">
                         <div class="set">
                             <div class="set-circle" style="background: var(--secondary-blue);">50</div>
-                            <span class="set-label">📦 Productos</span>
-                            <span class="set-count">50 registros</span>
+                            <span class="set-label">Productos</span>
+                            <span class="set-count">50 reg</span>
                         </div>
                         <span class="operator">∩</span>
                         <div class="set">
                             <div class="set-circle" style="background: #4a8fc9;">8</div>
-                            <span class="set-label">🏷️ Categorías</span>
-                            <span class="set-count">8 registros</span>
+                            <span class="set-label">Categorías</span>
+                            <span class="set-count">8 reg</span>
                         </div>
                         <span class="operator">=</span>
                         <div class="result highlight-inner">
                             <span class="result-count">50</span>
-                            <span class="result-label">✅ Coinciden</span>
+                            <span class="result-label">registros</span>
                         </div>
                     </div>
                     <div class="join-details">
-                        <strong>🔍 ¿Qué hace este JOIN?</strong><br>
-                        <span class="explanation-icon">📌</span>
-                        <span class="highlight highlight-inner-text">INNER JOIN</span> devuelve <strong>solo los
-                            productos que tienen categoría asignada</strong>.
-                        En nuestra base de datos, <strong>todos los 50 productos</strong> tienen un
-                        <strong>categoria_id</strong> válido,
-                        por lo que el resultado es <strong>50 registros</strong>.
-                        <br><br>
-                        <span class="explanation-icon">💡</span>
-                        <strong>Piensa en esto como:</strong> "Muéstrame solo los productos que están en una categoría
-                        existente".
-                        Si un producto no tuviera categoría, no aparecería en el resultado.
+                        <strong>🔍 Explicación:</strong>
+                        <span class="highlight highlight-inner-text">INNER JOIN</span> devuelve solo los productos que
+                        tienen categoría.
+                        Como <strong>todos</strong> tienen <strong>categoria_id</strong>, resultado =
+                        <strong>50</strong> registros.
                     </div>
                 </div>
             </div>
 
-            <!-- LEFT JOIN - Explicación mejorada -->
+            <!-- LEFT JOIN -->
             <div class="join-section active-left" id="leftJoin">
                 <div class="join-header" onclick="toggleJoin('leftJoin')">
-                    <h3>⬅️ LEFT JOIN · Todo de la izquierda + coincidencias</h3>
+                    <h3>LEFT JOIN · Clientes con Pedidos</h3>
                     <span class="join-type left">LEFT</span>
                 </div>
                 <div class="join-content">
                     <div class="join-query">
-                        <span class="sql-keyword">SELECT</span> <span class="sql-column">c.nombre_empresa</span>, <span
-                            class="sql-keyword">COUNT</span>(<span class="sql-column">p.pedido_id</span>) <span
-                            class="sql-keyword">AS</span> <span class="sql-column">total_pedidos</span>
-                        <span class="sql-keyword">FROM</span> <span class="sql-table">clientes</span> <span
-                            class="sql-keyword">c</span>
-                        <span class="sql-keyword">LEFT JOIN</span> <span class="sql-table">pedidos</span> <span
-                            class="sql-keyword">p</span> <span class="sql-keyword">ON</span> <span
-                            class="sql-column">c.cliente_id</span> = <span class="sql-column">p.cliente_id</span>
-                        <span class="sql-keyword">GROUP BY</span> <span class="sql-column">c.cliente_id</span>;
+                        SELECT c.nombre_empresa, COUNT(p.pedido_id) AS total_pedidos
+                        FROM clientes c
+                        LEFT JOIN pedidos p ON c.cliente_id = p.cliente_id
+                        GROUP BY c.cliente_id;
                     </div>
                     <div class="join-visual">
                         <div class="set">
                             <div class="set-circle" style="background: var(--join-left);">50</div>
-                            <span class="set-label">👤 Clientes</span>
-                            <span class="set-count">50 registros</span>
+                            <span class="set-label">Clientes</span>
+                            <span class="set-count">50 reg</span>
                         </div>
                         <span class="operator">⟕</span>
                         <div class="set">
                             <div class="set-circle" style="background: #4ade80;">50</div>
-                            <span class="set-label">🛒 Pedidos</span>
-                            <span class="set-count">50 registros</span>
+                            <span class="set-label">Pedidos</span>
+                            <span class="set-count">50 reg</span>
                         </div>
                         <span class="operator">=</span>
                         <div class="result highlight-left">
                             <span class="result-count">50</span>
-                            <span class="result-label">📊 Registros</span>
+                            <span class="result-label">registros</span>
                         </div>
                     </div>
                     <div class="join-details">
-                        <strong>🔍 ¿Qué hace este JOIN?</strong><br>
-                        <span class="explanation-icon">📌</span>
+                        <strong>🔍 Explicación:</strong>
                         <span class="highlight highlight-left-text">LEFT JOIN</span> devuelve <strong>todos los
-                            clientes</strong> (tabla izquierda)
-                        y sus pedidos (tabla derecha) si los tienen.
-                        <br><br>
-                        <span class="explanation-icon">💡</span>
-                        <strong>Piensa en esto como:</strong> "Muéstrame todos los clientes, y si tienen pedidos,
-                        muéstrame cuántos".
-                        Como <strong>todos los 50 clientes</strong> tienen al menos un pedido, el resultado es
-                        <strong>50 registros</strong>.
-                        <br><br>
-                        <span class="explanation-icon">⚠️</span>
-                        Si algún cliente no tuviera pedidos, igual aparecería en el resultado, pero con
-                        <strong>total_pedidos = 0</strong>.
+                            clientes</strong> y sus pedidos.
+                        Como todos tienen pedidos, resultado = <strong>50</strong> registros.
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT JOIN - Explicación mejorada -->
+            <!-- RIGHT JOIN -->
             <div class="join-section active-right" id="rightJoin">
                 <div class="join-header" onclick="toggleJoin('rightJoin')">
-                    <h3>➡️ RIGHT JOIN · Todo de la derecha + coincidencias</h3>
+                    <h3>RIGHT JOIN · Pedidos con Transportistas</h3>
                     <span class="join-type right">RIGHT</span>
                 </div>
                 <div class="join-content">
                     <div class="join-query">
-                        <span class="sql-keyword">SELECT</span> <span class="sql-column">t.nombre_empresa</span>, <span
-                            class="sql-keyword">COUNT</span>(<span class="sql-column">p.pedido_id</span>) <span
-                            class="sql-keyword">AS</span> <span class="sql-column">pedidos_asignados</span>
-                        <span class="sql-keyword">FROM</span> <span class="sql-table">pedidos</span> <span
-                            class="sql-keyword">p</span>
-                        <span class="sql-keyword">RIGHT JOIN</span> <span class="sql-table">transportistas</span> <span
-                            class="sql-keyword">t</span> <span class="sql-keyword">ON</span> <span
-                            class="sql-column">p.transportista_id</span> = <span
-                            class="sql-column">t.transportista_id</span>
-                        <span class="sql-keyword">GROUP BY</span> <span class="sql-column">t.transportista_id</span>;
+                        SELECT t.nombre_empresa, COUNT(p.pedido_id) AS pedidos_asignados
+                        FROM pedidos p
+                        RIGHT JOIN transportistas t ON p.transportista_id = t.transportista_id
+                        GROUP BY t.transportista_id;
                     </div>
                     <div class="join-visual">
                         <div class="set">
                             <div class="set-circle" style="background: #f87171;">50</div>
-                            <span class="set-label">📦 Pedidos</span>
-                            <span class="set-count">50 registros</span>
+                            <span class="set-label">Pedidos</span>
+                            <span class="set-count">50 reg</span>
                         </div>
                         <span class="operator">⟕</span>
                         <div class="set">
                             <div class="set-circle" style="background: var(--join-right);">5</div>
-                            <span class="set-label">🚚 Transportistas</span>
-                            <span class="set-count">5 registros</span>
+                            <span class="set-label">Transportistas</span>
+                            <span class="set-count">5 reg</span>
                         </div>
                         <span class="operator">=</span>
                         <div class="result highlight-right">
                             <span class="result-count">5</span>
-                            <span class="result-label">📊 Registros</span>
+                            <span class="result-label">registros</span>
                         </div>
                     </div>
                     <div class="join-details">
-                        <strong>🔍 ¿Qué hace este JOIN?</strong><br>
-                        <span class="explanation-icon">📌</span>
+                        <strong>🔍 Explicación:</strong>
                         <span class="highlight highlight-right-text">RIGHT JOIN</span> devuelve <strong>todos los
-                            transportistas</strong> (tabla derecha)
-                        y sus pedidos (tabla izquierda) si los tienen.
-                        <br><br>
-                        <span class="explanation-icon">💡</span>
-                        <strong>Piensa en esto como:</strong> "Muéstrame todos los transportistas, y cuántos pedidos ha
-                        entregado cada uno".
-                        Como <strong>todos los 5 transportistas</strong> tienen al menos un pedido, el resultado es
-                        <strong>5 registros</strong>.
-                        <br><br>
-                        <span class="explanation-icon">🔄</span>
-                        <strong>NOTA:</strong> RIGHT JOIN es menos común que LEFT JOIN. Puedes obtener el mismo
-                        resultado cambiando el orden de las tablas.
+                            transportistas</strong> y sus pedidos.
+                        Como todos tienen pedidos, resultado = <strong>5</strong> registros.
                     </div>
                 </div>
             </div>
 
-            <!-- MAPA DE TABLAS mejorado -->
+            <!-- MAPA DE TABLAS (esquema proporcionado) -->
             <div class="map-container">
                 <h3>
                     🗺️ Mapa de Relaciones · Northwind
-                    <small>— Guía visual para tus consultas</small>
+                    <small>— Usa este diagrama para construir tus queries</small>
                 </h3>
                 <div class="map-svg-wrapper">
                     <svg class="diagrama-svg" viewBox="0 0 1050 750" width="1050" height="750"
@@ -1444,7 +1306,7 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
                             <text class="tipo-texto" x="140" y="62" fill="#7f8c8d" font-size="10">VARCHAR</text>
                         </g>
 
-                        <!-- RELACIONES mejoradas -->
+                        <!-- RELACIONES -->
                         <path class="linea-relacion" d="M 200,85 L 250,85 L 250,196 L 300,196" fill="none"
                             stroke="#34495e" stroke-width="2" stroke-dasharray="4,4" marker-start="url(#flecha)" />
                         <text class="puntos-cardinales" x="205" y="80" fill="#34495e" font-size="12"
@@ -1506,16 +1368,15 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
             </div>
 
             <div
-                style="margin-top: 10px; font-size: 12px; color: var(--gray-500); text-align: center; flex-shrink: 0; border-top: 2px solid var(--gray-200); padding-top: 10px;">
-                💡 <strong>Consejo:</strong> Haz clic en el encabezado de cada JOIN para colapsar/expandir · Usa el mapa
-                como guía visual
+                style="margin-top: 8px; font-size: 11px; color: var(--gray-500); text-align: center; flex-shrink: 0; border-top: 1px solid var(--gray-200); padding-top: 8px;">
+                💡 Haz clic en el encabezado de cada JOIN para colapsar/expandir · Usa el mapa para guiar tus consultas
             </div>
         </div>
 
     </div>
 
     <script>
-        // Función para copiar mejorada
+        // Función para copiar
         function copyToClipboard() {
             const codeElement = document.querySelector('.code-container pre');
             if (!codeElement) return;
@@ -1523,11 +1384,9 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
             const text = codeElement.textContent || codeElement.innerText;
             navigator.clipboard.writeText(text).then(() => {
                 const btn = document.querySelector('.btn-copy');
-                btn.textContent = '✅ ¡Copiado!';
-                btn.style.background = '#16a34a';
+                btn.textContent = '✓ Copiado';
                 setTimeout(() => {
-                    btn.textContent = '📋 Copiar';
-                    btn.style.background = '#2c5f8a';
+                    btn.textContent = 'Copiar';
                 }, 2000);
             }).catch(() => {
                 const range = document.createRange();
@@ -1537,11 +1396,9 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
                 document.execCommand('copy');
                 window.getSelection().removeAllRanges();
                 const btn = document.querySelector('.btn-copy');
-                btn.textContent = '✅ ¡Copiado!';
-                btn.style.background = '#16a34a';
+                btn.textContent = '✓ Copiado';
                 setTimeout(() => {
-                    btn.textContent = '📋 Copiar';
-                    btn.style.background = '#2c5f8a';
+                    btn.textContent = 'Copiar';
                 }, 2000);
             });
         }
@@ -1556,10 +1413,8 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
 
             if (content.style.display === 'none') {
                 content.style.display = 'block';
-                section.style.borderLeftWidth = '6px';
             } else {
                 content.style.display = 'none';
-                section.style.borderLeftWidth = '3px';
             }
         }
 
@@ -1568,15 +1423,13 @@ INSERT INTO detalles_pedidos (pedido_id, producto_id, precio_unitario, cantidad,
             el.style.display = 'block';
         });
 
-        // Efecto hover mejorado en las secciones
+        // Efecto hover en las secciones
         document.querySelectorAll('.join-section').forEach(section => {
             section.addEventListener('mouseenter', function () {
-                this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
-                this.style.transform = 'translateX(4px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
             });
             section.addEventListener('mouseleave', function () {
-                this.style.boxShadow = 'var(--shadow)';
-                this.style.transform = 'translateX(0)';
+                this.style.boxShadow = 'none';
             });
         });
     </script>
