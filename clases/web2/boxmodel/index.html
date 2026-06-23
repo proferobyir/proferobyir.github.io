@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>CSS Box Model · Live Editor</title>
+    <title>CSS Box Model · Editor Interactivo</title>
     <style>
         /* ========== RESET & GLOBAL ========== */
         * {
@@ -75,11 +75,6 @@
             border-color: #888;
             transform: scale(1.02);
             box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-run {
-            display: none;
-            /* oculto porque ahora es live */
         }
 
         /* ========== SECCIÓN EDUCATIVA ========== */
@@ -412,10 +407,14 @@
     <!-- ========== BARRA SUPERIOR ========== -->
     <div class="toolbar">
         <div class="logo-area">
-            <h1>📦 CSS Box Model · Live</h1>
-            <p>margin · border · padding · content — cambios en caliente</p>
+            <h1>📦 CSS Box Model · Editor Interactivo</h1>
+            <p>margin · border · padding · content — modifica y visualiza al instante</p>
         </div>
-
+        <div class="actions">
+            <button id="resetBtn">⟳ Restaurar ejemplo</button>
+            <button id="themeToggle">🌙 Oscuro</button>
+            <button id="orientationBtn">🔄 Orientación</button>
+        </div>
     </div>
 
     <!-- ========== SECCIÓN EDUCATIVA ========== -->
@@ -474,7 +473,7 @@
                 </p>
             </div>
             <div>
-                <img src="https://proferobyir.github.io/pictures/boxmodelpic.jpg" alt="Diagrama del Box Model"
+                <img src="../../../pictures/boxmodelpic.jpg" alt="Diagrama del Box Model"
                     style="width:100%; max-width:350px; box-shadow:0 4px 12px rgba(0,0,0,0.3);"
                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22350%22 height=%22200%22%3E%3Crect fill=%22%232a2a3a%22 width=%22350%22 height=%22200%22/%3E%3Ctext x=%2225%22 y=%22120%22 fill=%22%23f0f0f0%22 font-family=%22sans-serif%22 font-size=%2232%22%3E📦 Box Model%3C/text%3E%3C/svg%3E'">
             </div>
@@ -485,14 +484,14 @@
     <div class="playground-container">
         <div class="playground-title">
             <span>🎮</span>
-            <span>Edita en vivo — los cambios se reflejan al instante</span>
+            <span>Experimenta modificando los valores — la vista previa se actualiza automáticamente</span>
         </div>
 
         <div class="workspace" id="workspace">
             <div class="editor-panel" id="editorPanel">
                 <div class="panel-header">
                     <span>✏️ EDITOR · HTML + CSS</span>
-                    <span style="font-size:11px; opacity:0.7">— escribe y mira el cambio en caliente</span>
+                    <span style="font-size:11px; opacity:0.7">— escribe y observa los cambios</span>
                 </div>
                 <div class="code-area">
                     <textarea id="htmlCode" spellcheck="false" aria-label="Editor de código"></textarea>
@@ -501,8 +500,8 @@
             <div class="resize-handle" id="dragHandle"></div>
             <div class="preview-panel" id="previewPanel">
                 <div class="panel-header">
-                    <span>🖥️ VISTA PREVIA (live)</span>
-                    <span style="font-size:11px;">actualización automática</span>
+                    <span>🖥️ VISTA PREVIA</span>
+                    <span style="font-size:11px;">actualización en tiempo real</span>
                 </div>
                 <div class="preview-frame">
                     <iframe id="liveFrame" title="Resultado del Box Model"
@@ -512,12 +511,12 @@
         </div>
 
         <div class="footer-note">
-            💡 Modifica padding, margin, border, width, background-color — la vista previa se actualiza en tiempo real.
+            💡 Modifica padding, margin, border, width, background-color — la vista previa se actualiza al instante.
         </div>
     </div>
 
     <script>
-        // ========== CÓDIGO BASE DEMO ==========
+        // ========== CÓDIGO BASE DEMO (con estilos predefinidos para interactuar) ==========
         const DEFAULT_CODE = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -662,7 +661,7 @@
         let startX = 0, startY = 0;
         let startWidth = 0, startHeight = 0;
 
-        // ========== ACTUALIZAR VISTA PREVIA (LIVE) ==========
+        // ========== ACTUALIZAR VISTA PREVIA ==========
         function updatePreview() {
             const code = htmlEditor.value;
             const doc = liveFrame.contentDocument || liveFrame.contentWindow.document;
@@ -752,6 +751,8 @@
 
         // ========== INICIALIZAR ==========
         function init() {
+            // Cargar el código base en el editor
+            htmlEditor.value = DEFAULT_CODE;
             loadThemePreference();
             updatePreview();
             initDrag();
@@ -760,7 +761,7 @@
             themeToggle.addEventListener('click', toggleTheme);
             orientationBtn.addEventListener('click', toggleOrientation);
 
-            // === LIVE: cada vez que el usuario escribe, se actualiza al instante ===
+            // Actualización automática al escribir
             htmlEditor.addEventListener('input', updatePreview);
         }
 
