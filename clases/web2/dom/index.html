@@ -4,294 +4,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clase Interactiva: Asincronía y Manipulación del DOM</title>
+    <title>🌳 Guía Didáctica del DOM en JavaScript</title>
     <style>
-        /* ==========================================================================
-           VARIABLES DE COLOR (Paleta Institucional)
-           ========================================================================== */
         :root {
-            --color-bg-light: #ffffff;
-            /* Blanco */
-            --color-surface: #dce4d3;
-            /* Verde pálido / Crema */
-            --color-accent: #9bb1a5;
-            /* Verde grisáceo medio */
-            --color-primary: #3f6674;
-            /* Azul grisáceo corporativo */
-            --color-dark: #16303f;
-            /* Azul petróleo oscuro */
-            --text-dark: #16303f;
-            --text-light: #ffffff;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --card: #1e293b;
+            --card-hover: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --code-bg: #0b1120;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #334155;
         }
 
-        /* ==========================================================================
-           ESTILOS BASE Y MAQUETACIÓN CON GRID
-           ========================================================================== */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--color-bg-light);
-            color: var(--text-dark);
-            line-height: 1.6;
-            display: grid;
-            grid-template-rows: auto auto 1fr auto;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            scroll-behavior: smooth;
         }
 
-        /* Cabecera */
+        /* HEADER */
         header {
-            background-color: var(--color-dark);
-            color: var(--text-light);
-            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 3rem 2rem;
             text-align: center;
-            border-bottom: 4px solid var(--color-accent);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         header p {
-            color: var(--color-surface);
-            font-size: 0.9rem;
-            margin-top: 0.3rem;
+            font-size: 1.2rem;
+            opacity: 0.95;
         }
 
-        /* Navegación (Flexbox) */
+        /* NAV */
         nav {
-            background-color: var(--color-primary);
-            color: var(--text-light);
-            padding: 0.7rem 1.5rem;
+            background: var(--bg-light);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        nav ul {
+            list-style: none;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
             font-size: 0.9rem;
         }
 
-        /* Contenedor Principal (Grid de dos columnas en pantallas grandes) */
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
+        nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* MAIN */
+        main {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        section {
+            background: var(--card);
+            border-radius: 16px;
             padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        @media (min-width: 992px) {
-            .main-container {
-                grid-template-columns: 1.2fr 0.8fr;
-            }
-        }
-
-        /* ==========================================================================
-           PANEL IZQUIERDO: SECCIONES DIDÁCTICAS
-           ========================================================================== */
-        .lesson-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .step-card {
-            background-color: var(--color-bg-light);
-            border-left: 5px solid var(--color-primary);
-            padding: 1.5rem;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(22, 48, 63, 0.08);
-        }
-
-        /* Destacado especial para la nueva sección visual */
-        .step-card.visual-section {
-            border-left: 5px solid var(--color-dark);
-            background-color: #f9fbf8;
-        }
-
-        .step-card h2 {
-            color: var(--color-dark);
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
+        h2 {
+            color: var(--accent);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .step-card h2 .badge {
-            background-color: var(--color-surface);
-            color: var(--color-dark);
-            padding: 0.2rem 0.6rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
+        h3 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.8rem;
         }
 
-        .step-card h2 .badge.badge-dark {
-            background-color: var(--color-dark);
-            color: var(--text-light);
+        h4 {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
         }
 
-        p code,
-        li code {
-            background-color: var(--color-surface);
-            padding: 0.1rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
         }
 
-        ul {
-            margin-left: 1.5rem;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        pre {
-            background-color: var(--color-dark);
-            color: #e0e0e0;
-            padding: 1rem;
-            border-radius: 4px;
-            overflow-x: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
+        .intro-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15));
+            border-left: 4px solid var(--primary);
+            padding: 1.2rem;
+            border-radius: 8px;
             margin: 1rem 0;
         }
 
-        /* Marcadores de resaltado de sintaxis */
-        .keyword {
-            color: #ff79c6;
+        .tip-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
 
-        .function {
-            color: #50fa7b;
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
 
-        .string {
-            color: #f1fa8c;
+        /* CODE */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
-        .comment {
-            color: #6272a4;
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+        }
+
+        .kw {
+            color: #c084fc;
+        }
+
+        .str {
+            color: #86efac;
+        }
+
+        .num {
+            color: #fbbf24;
+        }
+
+        .com {
+            color: #64748b;
             font-style: italic;
         }
 
-        .html-tag {
-            color: #8be9fd;
+        .fn {
+            color: #60a5fa;
         }
 
-        .html-attr {
-            color: #50fa7b;
+        .prop {
+            color: #f472b6;
         }
 
-        /* ==========================================================================
-           PANEL DERECHO: ENTORNO DE PRUEBAS (SANDBOX)
-           ========================================================================== */
-        .sandbox-panel {
-            background-color: var(--color-surface);
-            padding: 1.5rem;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            height: fit-content;
-            border: 1px solid var(--color-accent);
-            position: sticky;
-            top: 2rem;
+        /* DEMO BOX */
+        .demo {
+            background: var(--bg-light);
+            border: 2px dashed var(--primary);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin: 1rem 0;
         }
 
-        .sandbox-panel h3 {
-            color: var(--color-dark);
-            border-bottom: 2px solid var(--color-accent);
-            padding-bottom: 0.5rem;
-        }
-
-        .btn-fetch {
-            background-color: var(--color-dark);
-            color: var(--text-light);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
+        .demo-title {
+            color: var(--success);
             font-weight: bold;
-            border-radius: 4px;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .demo button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease;
-            width: 100%;
+            margin: 0.3rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
-        .btn-fetch:hover {
-            background-color: var(--color-primary);
+        .demo button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
         }
 
-        /* Contenedor dinámico (Flexbox) */
-        .cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
+        .demo button.danger {
+            background: var(--danger);
+        }
+
+        .demo button.success {
+            background: var(--success);
+        }
+
+        .output {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
             margin-top: 1rem;
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 0.5rem;
+            min-height: 50px;
+            border: 1px solid var(--border);
         }
 
-        .character-card {
-            background-color: var(--color-bg-light);
-            border: 1px solid var(--color-accent);
-            border-radius: 4px;
+        table {
             width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: var(--bg-light);
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        @media (min-width: 600px) and (max-width: 991px) {
-            .character-card {
-                width: calc(50% - 0.5rem);
-            }
+        th,
+        td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
         }
 
-        .character-card img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            background-color: var(--color-surface);
-            border-radius: 4px;
-            padding: 0.2rem;
+        th {
+            background: var(--primary);
+            color: white;
         }
 
-        .character-info h4 {
-            color: var(--color-dark);
-            font-size: 1rem;
+        tr:hover {
+            background: var(--card-hover);
         }
 
-        .character-info p {
-            font-size: 0.8rem;
-            color: var(--color-primary);
+        ul,
+        ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
         }
 
-        .status-message {
-            text-align: center;
-            font-style: italic;
-            color: var(--color-primary);
-            padding: 1rem;
-            width: 100%;
+        li {
+            margin-bottom: 0.4rem;
         }
 
-        /* Footer */
         footer {
-            background-color: var(--color-dark);
-            color: var(--text-light);
             text-align: center;
-            padding: 1rem;
-            font-size: 0.85rem;
-            border-top: 4px solid var(--color-accent);
-            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--bg-light);
+            color: var(--text-muted);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            section {
+                padding: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -299,168 +322,466 @@
 <body>
 
     <header>
-        <h1>Entorno de Aprendizaje de JavaScript</h1>
-        <p>Unidad: Programación Asíncrona e Inyección Dinámica en el DOM</p>
+        <h1>🌳 Guía Didáctica del DOM</h1>
+        <p>Aprende a manipular páginas web con JavaScript paso a paso</p>
     </header>
 
     <nav>
-        <span><strong>Tópico:</strong> Consumo de APIs & Manipulación del Frontend</span>
-        <span>Módulo Didáctico de Ingeniería</span>
+        <ul>
+            <li><a href="#que-es">¿Qué es el DOM?</a></li>
+            <li><a href="#selectores">Selectores</a></li>
+            <li><a href="#innerHTML">innerHTML vs textContent</a></li>
+            <li><a href="#nodos">Agregar / Eliminar nodos</a></li>
+            <li><a href="#variables">Variables</a></li>
+            <li><a href="#arreglos">Arreglos</a></li>
+            <li><a href="#json">Arreglos JSON</a></li>
+            <li><a href="#bucles">Bucles</a></li>
+            <li><a href="#recorrido">Recorrer JSON</a></li>
+        </ul>
     </nav>
 
-    <div class="main-container">
+    <main>
 
-        <main class="lesson-panel">
+        <!-- SECCIÓN 1 -->
+        <section id="que-es">
+            <h2>📖 ¿Qué es el DOM?</h2>
+            <p>El <strong>DOM</strong> (Document Object Model) es como un <strong>árbol genealógico</strong> que
+                representa tu página HTML. Cuando el navegador carga una página, convierte cada etiqueta HTML en un
+                <em>objeto</em> que JavaScript puede leer, modificar, agregar o eliminar.</p>
 
-            <article class="step-card">
-                <h2><span class="badge">Paso 1</span> El Concepto de Asincronía</h2>
-                <p>En JavaScript, operaciones como consultar un servidor web tardan tiempo en completarse. Para evitar
-                    que la interfaz se bloquee, utilizamos funciones asíncronas basadas en <strong>Promesas</strong>.
-                </p>
-            </article>
-
-            <article class="step-card">
-                <h2><span class="badge">Paso 2</span> La estructura Async / Await</h2>
-                <p>La combinación <code>async/await</code> nos permite procesar la espera del servidor de forma
-                    ordenada, capturando las respuestas dentro de bloques de control de errores
-                    <code>try...catch</code>.</p>
-            </article>
-
-            <article class="step-card">
-                <h2><span class="badge">Paso 3</span> Petición de Datos (Fetch)</h2>
-                <p>Estructura lógica utilizada para conectarse al servidor y retornar el arreglo crudo de personajes
-                    extraídos de la API externa:</p>
-                <pre><span class="keyword">async function</span> <span class="function">obtenerPersonajes</span>() {
-    <span class="keyword">try</span> {
-        <span class="keyword">const</span> respuesta = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'https://dragonball-api.com/api/characters'</span>);
-        <span class="keyword">const</span> datos = <span class="keyword">await</span> respuesta.<span class="function">json</span>();
-        <span class="keyword">return</span> datos.items; <span class="comment">// Retorna el arreglo</span>
-    } <span class="keyword">catch</span> (error) {
-        console.<span class="function">error</span>(error);
-    }
-}</pre>
-            </article>
-
-            <article class="step-card visual-section">
-                <h2><span class="badge badge-dark">Paso 4</span> Renderizado: Pintando los Datos en el Frontend</h2>
-                <p>Una vez que la promesa se resuelve y tenemos los datos en memoria, el siguiente paso crítico en el
-                    desarrollo web es la <strong>manipulación del DOM</strong>. Necesitamos transformar objetos de
-                    JavaScript en elementos visuales HTML reales.</p>
-
-                <p><strong>1. El contenedor base (HTML):</strong> En nuestra vista preparamos un elemento vacío con un
-                    identificador único (<code>id</code>), que servirá como el anclaje donde se "inyectarán"
-                    dinámicamente las tarjetas:</p>
-
-                <pre>&lt;<span class="html-tag">div</span> <span class="html-attr">class</span>=<span class="string">"cards-container"</span> <span class="html-attr">id</span>=<span class="string">"contenedorCards"</span>&gt;
-    <span class="comment">&lt;!-- Las tarjetas de los personajes se sembrarán aquí mediante código --&gt;</span>
-&lt;/<span class="html-tag">div</span>&gt;</pre>
-
-                <p><strong>2. La función de Renderizado (JavaScript):</strong> Esta función recibe el arreglo de datos,
-                    limpia los mensajes de carga previos utilizando <code>innerHTML = ''</code>, y recorre uno a uno los
-                    elementos para maquetar la interfaz usando <em>Template Literals</em> (comillas invertidas
-                    <code>`</code>):</p>
-
-                <pre><span class="keyword">function</span> <span class="function">renderizarPersonajes</span>(personajes) {
-    <span class="comment">// 1. Seleccionamos el contenedor HTML de destino</span>
-    <span class="keyword">const</span> destino = document.<span class="function">getElementById</span>(<span class="string">'contenedorCards'</span>);
-    destino.innerHTML = <span class="string">''</span>; <span class="comment">// Limpiamos el contenedor</span>
-
-    <span class="comment">// 2. Iteramos sobre el arreglo de datos procesado de la API</span>
-    personajes.<span class="function">forEach</span>(personaje => {
-        
-        <span class="comment">// 3. Creamos un nuevo elemento contenedor 'div' en memoria</span>
-        <span class="keyword">const</span> card = document.<span class="function">createElement</span>(<span class="string">'div'</span>);
-        card.classList.<span class="function">add</span>(<span class="string">'character-card'</span>); <span class="comment">// Asignamos clase Flexbox</span>
-
-        <span class="comment">// 4. Estructuramos el contenido HTML interno mapeando las propiedades del objeto</span>
-        card.innerHTML = `
-            &lt;<span class="html-tag">img</span> <span class="html-attr">src</span>=<span class="string">"${personaje.image}"</span> <span class="html-attr">alt</span>=<span class="string">"${personaje.name}"</span>&gt;
-            &lt;<span class="html-tag">div</span> <span class="html-attr">class</span>=<span class="string">"character-info"</span>&gt;
-                &lt;<span class="html-tag">h4</span>&gt;${personaje.name}&lt;/<span class="html-tag">h4</span>&gt;
-                &lt;<span class="html-tag">p</span>&gt;Ki: ${personaje.ki}&lt;/<span class="html-tag">p</span>&gt;
-                &lt;<span class="html-tag">p</span>&gt;Raza: ${personaje.race}&lt;/<span class="html-tag">p</span>&gt;
-            &lt;/<span class="html-tag">div</span>&gt;
-        `;
-        
-        <span class="comment">// 5. Insertamos la tarjeta física dentro del nodo padre del DOM</span>
-        destino.<span class="function">appendChild</span>(card);
-    });
-}</pre>
-            </article>
-
-        </main>
-
-        <aside class="sandbox-panel">
-            <h3>Demostración en Vivo</h3>
-            <p>Presiona el botón para ejecutar de forma secuencial los pasos anteriores: solicitar datos a la API
-                pública e inyectar el HTML dinámico.</p>
-
-            <button class="btn-fetch" id="btnCargar">Ejecutar petición (fetch)</button>
-
-            <div class="cards-container" id="contenedorCards">
-                <div class="status-message">El contenedor está vacío. Presiona el botón de arriba para iniciar el flujo
-                    asíncrono.</div>
+            <div class="intro-box">
+                <strong>🌳 Analogía:</strong> Imagina que tu HTML es una casa. El DOM es el plano de la casa: te dice
+                dónde está cada habitación (etiqueta), qué hay dentro (contenido) y te permite remodelar sin construir
+                desde cero.
             </div>
-        </aside>
 
-    </div>
+            <h3>Estructura del DOM</h3>
+            <pre><code><span class="com">&lt;!-- HTML --&gt;</span>
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;Mi página&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hola&lt;/h1&gt;
+    &lt;p&gt;Texto&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <p>Se convierte en este árbol:</p>
+            <pre><code>document
+└── html
+    ├── head
+    │   └── title ── "Mi página"
+    └── body
+        ├── h1 ── "Hola"
+        └── p  ── "Texto"</code></pre>
+
+            <div class="tip-box">
+                💡 <strong>Recuerda:</strong> Cada etiqueta es un <strong>nodo</strong>. JavaScript puede acceder a
+                cualquier nodo usando el objeto <code>document</code>.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2 -->
+        <section id="selectores">
+            <h2>🎯 Selectores de elementos</h2>
+            <p>Antes de modificar un elemento, necesitas <strong>seleccionarlo</strong>. JavaScript ofrece varias formas
+                de hacerlo:</p>
+
+            <h3>1. <code>document.getElementById()</code></h3>
+            <p>Selecciona <strong>un solo elemento</strong> por su atributo <code>id</code>. Es el más rápido y común.
+            </p>
+            <pre><code><span class="com">// HTML: &lt;p id="saludo"&gt;Hola&lt;/p&gt;</span>
+<span class="kw">const</span> elemento = document.<span class="fn">getElementById</span>(<span class="str">"saludo"</span>);
+console.<span class="fn">log</span>(elemento.textContent); <span class="com">// "Hola"</span></code></pre>
+
+            <h3>2. <code>document.getElementsByClassName()</code></h3>
+            <p>Selecciona <strong>todos los elementos</strong> que tengan una clase específica. Devuelve una colección
+                (similar a un arreglo).</p>
+            <pre><code><span class="com">// HTML: &lt;p class="rojo"&gt;...&lt;/p&gt; &lt;p class="rojo"&gt;...&lt;/p&gt;</span>
+<span class="kw">const</span> rojos = document.<span class="fn">getElementsByClassName</span>(<span class="str">"rojo"</span>);
+console.<span class="fn">log</span>(rojos.length); <span class="com">// 2</span></code></pre>
+
+            <h3>3. <code>document.getElementsByTagName()</code></h3>
+            <p>Selecciona <strong>todas las etiquetas</strong> de un tipo (todos los <code>p</code>, todos los
+                <code>div</code>, etc.).</p>
+            <pre><code><span class="kw">const</span> parrafos = document.<span class="fn">getElementsByTagName</span>(<span class="str">"p"</span>);</code></pre>
+
+            <h3>4. <code>document.querySelector()</code> ⭐</h3>
+            <p>El más <strong>poderoso</strong>: usa selectores tipo CSS y devuelve el <strong>primer elemento</strong>
+                que coincida.</p>
+            <pre><code><span class="kw">const</span> primero = document.<span class="fn">querySelector</span>(<span class="str">".clase"</span>);       <span class="com">// por clase</span>
+<span class="kw">const</span> unico   = document.<span class="fn">querySelector</span>(<span class="str">"#miId"</span>);       <span class="com">// por id</span>
+<span class="kw">const</span> combo   = document.<span class="fn">querySelector</span>(<span class="str">"div.rojo"</span>);    <span class="com">// div con clase rojo</span>
+<span class="kw">const</span> hijo    = document.<span class="fn">querySelector</span>(<span class="str">"ul &gt; li"</span>);     <span class="com">// li hijo directo de ul</span></code></pre>
+
+            <h3>5. <code>document.querySelectorAll()</code></h3>
+            <p>Igual que <code>querySelector</code>, pero devuelve <strong>todos</strong> los elementos que coincidan
+                (como un arreglo).</p>
+            <pre><code><span class="kw">const</span> items = document.<span class="fn">querySelectorAll</span>(<span class="str">"li.activo"</span>);
+items.<span class="fn">forEach</span>(item =&gt; console.<span class="fn">log</span>(item.textContent));</code></pre>
+
+            <h4>📊 Comparativa rápida</h4>
+            <table>
+                <tr>
+                    <th>Método</th>
+                    <th>Devuelve</th>
+                    <th>Selector</th>
+                </tr>
+                <tr>
+                    <td>getElementById</td>
+                    <td>1 elemento</td>
+                    <td>id</td>
+                </tr>
+                <tr>
+                    <td>getElementsByClassName</td>
+                    <td>Colección</td>
+                    <td>clase</td>
+                </tr>
+                <tr>
+                    <td>getElementsByTagName</td>
+                    <td>Colección</td>
+                    <td>etiqueta</td>
+                </tr>
+                <tr>
+                    <td>querySelector</td>
+                    <td>1 elemento</td>
+                    <td>CSS (cualquiera)</td>
+                </tr>
+                <tr>
+                    <td>querySelectorAll</td>
+                    <td>Colección</td>
+                    <td>CSS (cualquiera)</td>
+                </tr>
+            </table>
+
+            <div class="demo">
+                <div class="demo-title">🎮 Prueba en vivo:</div>
+                <p id="demo-selector" class="mensaje">Soy un párrafo con id="demo-selector"</p>
+                <p class="mensaje">Soy un párrafo con clase "mensaje"</p>
+                <p class="mensaje">Yo también tengo clase "mensaje"</p>
+                <button onclick="demoSelectores()">Seleccionar con querySelector</button>
+                <button onclick="demoSelectoresAll()">Seleccionar con querySelectorAll</button>
+                <div class="output" id="out-selectores">Haz clic en un botón...</div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3 -->
+        <section id="innerHTML">
+            <h2>✍️ innerHTML vs textContent</h2>
+            <p>Ambas propiedades permiten <strong>leer o cambiar el contenido</strong> de un elemento, pero se comportan
+                distinto:</p>
+
+            <h3><code>textContent</code></h3>
+            <p>Trata todo como <strong>texto plano</strong>. Si pones etiquetas HTML, se mostrarán como texto literal.
+            </p>
+            <pre><code>elemento.textContent = <span class="str">"&lt;b&gt;Hola&lt;/b&gt;"</span>;
+<span class="com">// Resultado visible: &lt;b&gt;Hola&lt;/b&gt;</span></code></pre>
+
+            <h3><code>innerHTML</code></h3>
+            <p><strong>Interpreta</strong> el HTML. Puedes insertar etiquetas y se renderizarán.</p>
+            <pre><code>elemento.innerHTML = <span class="str">"&lt;b&gt;Hola&lt;/b&gt;"</span>;
+<span class="com">// Resultado visible: Hola (en negrita)</span></code></pre>
+
+            <div class="warning-box">
+                ⚠️ <strong>Cuidado con innerHTML:</strong> Si insertas contenido que viene del usuario, un atacante
+                podría inyectar código malicioso (XSS). Usa <code>textContent</code> cuando no necesites HTML.
+            </div>
+
+            <div class="demo">
+                <div class="demo-title">🎮 Prueba en vivo:</div>
+                <div id="caja-inner" style="padding:1rem; background:var(--code-bg); border-radius:8px;"></div>
+                <button onclick="usarTextContent()">Usar textContent</button>
+                <button onclick="usarInnerHTML()">Usar innerHTML</button>
+                <button onclick="limpiarCaja()">Limpiar</button>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4 -->
+        <section id="nodos">
+            <h2>🧱 Agregar y eliminar nodos hijos</h2>
+            <p>El DOM es dinámico: puedes <strong>crear, agregar y eliminar</strong> elementos en tiempo real.</p>
+
+            <h3>Crear un elemento</h3>
+            <pre><code><span class="kw">const</span> nuevo = document.<span class="fn">createElement</span>(<span class="str">"p"</span>);
+nuevo.textContent = <span class="str">"Soy nuevo"</span>;</code></pre>
+
+            <h3>Agregar como hijo</h3>
+            <ul>
+                <li><code>padre.appendChild(nuevo)</code> → lo agrega al <strong>final</strong>.</li>
+                <li><code>padre.prepend(nuevo)</code> → lo agrega al <strong>inicio</strong>.</li>
+                <li><code>padre.insertBefore(nuevo, referencia)</code> → antes de un elemento específico.</li>
+                <li><code>padre.append("texto", nuevo)</code> → acepta varios elementos o texto.</li>
+            </ul>
+
+            <h3>Eliminar un elemento</h3>
+            <pre><code><span class="com">// Forma moderna (la más fácil):</span>
+elemento.<span class="fn">remove</span>();
+
+<span class="com">// Forma clásica (desde el padre):</span>
+padre.<span class="fn">removeChild</span>(hijo);</code></pre>
+
+            <div class="demo">
+                <div class="demo-title">🎮 Prueba en vivo — Lista dinámica:</div>
+                <ul id="lista-demo">
+                    <li>Manzana 🍎</li>
+                    <li>Pera 🍐</li>
+                </ul>
+                <button class="success" onclick="agregarNodo()">➕ Agregar fruta</button>
+                <button class="danger" onclick="eliminarUltimo()">🗑️ Eliminar última</button>
+                <button class="danger" onclick="eliminarTodas()">💥 Eliminar todas</button>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5 -->
+        <section id="variables">
+            <h2>📦 Declaración de variables en JavaScript</h2>
+            <p>Una variable es una <strong>caja con nombre</strong> donde guardas información.</p>
+
+            <h3>Las 3 formas de declarar</h3>
+            <table>
+                <tr>
+                    <th>Palabra</th>
+                    <th>¿Se puede reasignar?</th>
+                    <th>¿Se puede redeclarar?</th>
+                    <th>Ámbito</th>
+                </tr>
+                <tr>
+                    <td><code>var</code></td>
+                    <td>✅ Sí</td>
+                    <td>✅ Sí</td>
+                    <td>Función (antiguo, evita usarlo)</td>
+                </tr>
+                <tr>
+                    <td><code>let</code></td>
+                    <td>✅ Sí</td>
+                    <td>❌ No</td>
+                    <td>Bloque <code>{}</code></td>
+                </tr>
+                <tr>
+                    <td><code>const</code></td>
+                    <td>❌ No</td>
+                    <td>❌ No</td>
+                    <td>Bloque <code>{}</code></td>
+                </tr>
+            </table>
+
+            <pre><code><span class="kw">var</span> nombre = <span class="str">"Ana"</span>;      <span class="com">// antiguo, mejor evitar</span>
+<span class="kw">let</span> edad = <span class="num">25</span>;            <span class="com">// puede cambiar</span>
+<span class="kw">const</span> PI = <span class="num">3.1416</span>;        <span class="com">// constante, no cambia</span>
+
+edad = <span class="num">26</span>;                <span class="com">// ✅ OK</span>
+<span class="com">// PI = 3;                // ❌ Error</span></code></pre>
+
+            <div class="tip-box">
+                💡 <strong>Regla de oro:</strong> Usa <code>const</code> por defecto. Solo usa <code>let</code> cuando
+                sepas que el valor va a cambiar. Evita <code>var</code>.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6 -->
+        <section id="arreglos">
+            <h2>📚 Arreglos (Arrays)</h2>
+            <p>Un arreglo es una <strong>lista ordenada</strong> de valores. Se declara con corchetes <code>[]</code>.
+            </p>
+
+            <pre><code><span class="kw">const</span> frutas = [<span class="str">"manzana"</span>, <span class="str">"pera"</span>, <span class="str">"uva"</span>];
+<span class="kw">const</span> numeros = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>];
+<span class="kw">const</span> mixto = [<span class="str">"hola"</span>, <span class="num">42</span>, <span class="kw">true</span>];</code></pre>
+
+            <h3>Acceder por índice (empieza en 0)</h3>
+            <pre><code>console.<span class="fn">log</span>(frutas[<span class="num">0</span>]); <span class="com">// "manzana"</span>
+console.<span class="fn">log</span>(frutas[<span class="num">2</span>]); <span class="com">// "uva"</span>
+console.<span class="fn">log</span>(frutas.length); <span class="com">// 3</span></code></pre>
+
+            <h3>Métodos útiles</h3>
+            <pre><code>frutas.<span class="fn">push</span>(<span class="str">"kiwi"</span>);       <span class="com">// agrega al final</span>
+frutas.<span class="fn">pop</span>();              <span class="com">// elimina el último</span>
+frutas.<span class="fn">unshift</span>(<span class="str">"mango"</span>);   <span class="com">// agrega al inicio</span>
+frutas.<span class="fn">shift</span>();            <span class="com">// elimina el primero</span>
+frutas.<span class="fn">includes</span>(<span class="str">"pera"</span>);  <span class="com">// true</span></code></pre>
+        </section>
+
+        <!-- SECCIÓN 7 -->
+        <section id="json">
+            <h2>🗂️ Arreglos JSON (arrays de objetos)</h2>
+            <p>En la práctica, casi siempre trabajamos con <strong>arreglos de objetos</strong>. Cada objeto representa
+                un <strong>registro</strong> con varias propiedades.</p>
+
+            <pre><code><span class="kw">const</span> estudiantes = [
+  { nombre: <span class="str">"Ana"</span>,   edad: <span class="num">20</span>, carrera: <span class="str">"Sistemas"</span> },
+  { nombre: <span class="str">"Luis"</span>,  edad: <span class="num">22</span>, carrera: <span class="str">"Diseño"</span> },
+  { nombre: <span class="str">"María"</span>, edad: <span class="num">19</span>, carrera: <span class="str">"Medicina"</span> }
+];</code></pre>
+
+            <h3>Acceder a datos</h3>
+            <pre><code>console.<span class="fn">log</span>(estudiantes[<span class="num">0</span>].nombre);   <span class="com">// "Ana"</span>
+console.<span class="fn">log</span>(estudiantes[<span class="num">1</span>].carrera);  <span class="com">// "Diseño"</span></code></pre>
+
+            <div class="tip-box">
+                💡 <strong>JSON</strong> significa <em>JavaScript Object Notation</em>. Es el formato estándar para
+                intercambiar datos en la web.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 8 -->
+        <section id="bucles">
+            <h2>🔁 Bucles</h2>
+            <p>Los bucles repiten código varias veces. Son esenciales para recorrer arreglos.</p>
+
+            <h3>1. <code>for</code> clásico</h3>
+            <pre><code><span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) {
+  console.<span class="fn">log</span>(i); <span class="com">// 0, 1, 2, 3, 4</span>
+}</code></pre>
+
+            <h3>2. <code>while</code></h3>
+            <pre><code><span class="kw">let</span> n = <span class="num">3</span>;
+<span class="kw">while</span> (n &gt; <span class="num">0</span>) {
+  console.<span class="fn">log</span>(n);
+  n--;
+}</code></pre>
+
+            <h3>3. <code>for...of</code> (ideal para arreglos)</h3>
+            <pre><code><span class="kw">const</span> colores = [<span class="str">"rojo"</span>, <span class="str">"verde"</span>, <span class="str">"azul"</span>];
+<span class="kw">for</span> (<span class="kw">const</span> color <span class="kw">of</span> colores) {
+  console.<span class="fn">log</span>(color);
+}</code></pre>
+
+            <h3>4. <code>forEach</code> (método de arreglos)</h3>
+            <pre><code>colores.<span class="fn">forEach</span>((color, indice) =&gt; {
+  console.<span class="fn">log</span>(indice, color);
+});</code></pre>
+        </section>
+
+        <!-- SECCIÓN 9 -->
+        <section id="recorrido">
+            <h2>🚀 Recorrer arreglos JSON con registros estáticos</h2>
+            <p>Combinemos todo: un arreglo JSON + un bucle + manipulación del DOM.</p>
+
+            <h3>Ejemplo completo: mostrar estudiantes en una tabla</h3>
+            <pre><code><span class="kw">const</span> estudiantes = [
+  { nombre: <span class="str">"Ana"</span>,   edad: <span class="num">20</span>, carrera: <span class="str">"Sistemas"</span> },
+  { nombre: <span class="str">"Luis"</span>,  edad: <span class="num">22</span>, carrera: <span class="str">"Diseño"</span> },
+  { nombre: <span class="str">"María"</span>, edad: <span class="num">19</span>, carrera: <span class="str">"Medicina"</span> }
+];
+
+<span class="kw">const</span> contenedor = document.<span class="fn">querySelector</span>(<span class="str">"#tabla"</span>);
+
+estudiantes.<span class="fn">forEach</span>(est =&gt; {
+  <span class="kw">const</span> fila = document.<span class="fn">createElement</span>(<span class="str">"tr"</span>);
+  fila.innerHTML = <span class="str">`
+    &lt;td&gt;${est.nombre}&lt;/td&gt;
+    &lt;td&gt;${est.edad}&lt;/td&gt;
+    &lt;td&gt;${est.carrera}&lt;/td&gt;
+  `</span>;
+  contenedor.<span class="fn">appendChild</span>(fila);
+});</code></pre>
+
+            <div class="demo">
+                <div class="demo-title">🎮 Prueba en vivo — Generar tabla desde JSON:</div>
+                <button onclick="generarTabla()">📊 Generar tabla</button>
+                <button onclick="filtrarMayores()" class="success">🔍 Mostrar solo mayores de 20</button>
+                <button onclick="limpiarTabla()" class="danger">🧹 Limpiar</button>
+                <div class="output" id="tabla-output"></div>
+            </div>
+
+            <h3>Ejemplo 2: tarjetas dinámicas</h3>
+            <pre><code><span class="kw">const</span> productos = [
+  { nombre: <span class="str">"Laptop"</span>,  precio: <span class="num">1500</span> },
+  { nombre: <span class="str">"Mouse"</span>,   precio: <span class="num">25</span> },
+  { nombre: <span class="str">"Teclado"</span>, precio: <span class="num">80</span> }
+];
+
+<span class="kw">const</span> cont = document.<span class="fn">querySelector</span>(<span class="str">"#productos"</span>);
+<span class="kw">for</span> (<span class="kw">const</span> p <span class="kw">of</span> productos) {
+  <span class="kw">const</span> div = document.<span class="fn">createElement</span>(<span class="str">"div"</span>);
+  div.className = <span class="str">"card"</span>;
+  div.textContent = <span class="str">`${p.nombre} - $${p.precio}`</span>;
+  cont.<span class="fn">appendChild</span>(div);
+}</code></pre>
+        </section>
+
+    </main>
 
     <footer>
-        &copy; 2026 Entorno Académico de Ingeniería Informática. Uso exclusivo didáctico y demostrativo.
+        <p>📘 Guía Didáctica del DOM · Creada con ❤️ para aprender JavaScript</p>
+        <p style="margin-top:0.5rem; font-size:0.9rem;">Martes, 23 de junio de 2026</p>
     </footer>
 
     <script>
-        const btnCargar = document.getElementById('btnCargar');
-        const contenedorCards = document.getElementById('contenedorCards');
-
-        // Paso 3: Obtención asíncrona
-        async function obtenerPersonajes() {
-            try {
-                contenedorCards.innerHTML = '<div class="status-message">Consultando al servidor de la API... Por favor espere.</div>';
-                const respuesta = await fetch('https://dragonball-api.com/api/characters');
-                if (!respuesta.ok) throw new Error(`Error HTTP! Estado: ${respuesta.status}`);
-                const datos = await respuesta.json();
-                return datos.items;
-            } catch (error) {
-                contenedorCards.innerHTML = `<div class="status-message" style="color: #16303f;">Ocurrió un error al procesar la Promesa: ${error.message}</div>`;
-                return null;
-            }
+        // === DEMO SELECTORES ===
+        function demoSelectores() {
+            const el = document.querySelector("#demo-selector");
+            document.getElementById("out-selectores").innerHTML =
+                `✅ querySelector("#demo-selector") devolvió: <br><code>${el.textContent}</code>`;
+        }
+        function demoSelectoresAll() {
+            const todos = document.querySelectorAll(".mensaje");
+            let html = `✅ querySelectorAll(".mensaje") encontró <strong>${todos.length}</strong> elementos:<ul>`;
+            todos.forEach((el, i) => html += `<li>${i}: ${el.textContent}</li>`);
+            html += "</ul>";
+            document.getElementById("out-selectores").innerHTML = html;
         }
 
-        // Paso 4: Pintado en el frontend
-        function renderizarPersonajes(personajes) {
-            if (!personajes || personajes.length === 0) return;
-            contenedorCards.innerHTML = '';
+        // === DEMO INNERHTML vs TEXTCONTENT ===
+        function usarTextContent() {
+            document.getElementById("caja-inner").textContent = "<b>Hola</b> con <i>etiquetas</i>";
+        }
+        function usarInnerHTML() {
+            document.getElementById("caja-inner").innerHTML = "<b>Hola</b> con <i>etiquetas</i>";
+        }
+        function limpiarCaja() {
+            document.getElementById("caja-inner").innerHTML = "";
+        }
 
-            personajes.forEach(personaje => {
-                const card = document.createElement('div');
-                card.classList.add('character-card');
-                card.innerHTML = `
-                    <img src="${personaje.image}" alt="${personaje.name}">
-                    <div class="character-info">
-                        <h4>${personaje.name}</h4>
-                        <p>Ki: ${personaje.ki}</p>
-                        <p>Raza: ${personaje.race}</p>
-                    </div>
-                `;
-                contenedorCards.appendChild(card);
+        // === DEMO NODOS ===
+        const frutasDisponibles = ["🍌 Plátano", "🍓 Fresa", "🍊 Naranja", "🥝 Kiwi", "🍇 Uva", "🍑 Durazno"];
+        let indiceFruta = 0;
+        function agregarNodo() {
+            const lista = document.getElementById("lista-demo");
+            const li = document.createElement("li");
+            li.textContent = frutasDisponibles[indiceFruta % frutasDisponibles.length];
+            lista.appendChild(li);
+            indiceFruta++;
+        }
+        function eliminarUltimo() {
+            const lista = document.getElementById("lista-demo");
+            if (lista.lastElementChild) lista.lastElementChild.remove();
+        }
+        function eliminarTodas() {
+            document.getElementById("lista-demo").innerHTML = "";
+        }
+
+        // === DEMO TABLA JSON ===
+        const estudiantes = [
+            { nombre: "Ana", edad: 20, carrera: "Sistemas" },
+            { nombre: "Luis", edad: 22, carrera: "Diseño" },
+            { nombre: "María", edad: 19, carrera: "Medicina" },
+            { nombre: "Carlos", edad: 21, carrera: "Derecho" },
+            { nombre: "Sofía", edad: 23, carrera: "Arquitectura" }
+        ];
+
+        function pintarTabla(lista) {
+            const out = document.getElementById("tabla-output");
+            if (lista.length === 0) {
+                out.innerHTML = "<p style='color:var(--text-muted)'>Sin resultados</p>";
+                return;
+            }
+            let html = `<table><tr><th>Nombre</th><th>Edad</th><th>Carrera</th></tr>`;
+            lista.forEach(e => {
+                html += `<tr><td>${e.nombre}</td><td>${e.edad}</td><td>${e.carrera}</td></tr>`;
             });
+            html += "</table>";
+            out.innerHTML = html;
         }
-
-        // Evento del botón controlador
-        btnCargar.addEventListener('click', async () => {
-            btnCargar.disabled = true;
-            btnCargar.textContent = 'Procesando...';
-
-            const listaPersonajes = await obtenerPersonajes();
-            if (listaPersonajes) {
-                renderizarPersonajes(listaPersonajes);
-            }
-
-            btnCargar.disabled = false;
-            btnCargar.textContent = 'Ejecutar petición (fetch)';
-        });
+        function generarTabla() { pintarTabla(estudiantes); }
+        function filtrarMayores() {
+            const filtrados = estudiantes.filter(e => e.edad > 20);
+            pintarTabla(filtrados);
+        }
+        function limpiarTabla() {
+            document.getElementById("tabla-output").innerHTML = "";
+        }
     </script>
+
 </body>
 
 </html>
