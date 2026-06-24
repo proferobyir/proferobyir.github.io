@@ -35,18 +35,22 @@
             padding: 1.5rem;
         }
 
-        /* ========== LAYOUT PRINCIPAL CON GRID ========== */
+        /* ========== LAYOUT PRINCIPAL CON FLEX (SIEMPRE DOS COLUMNAS) ========== */
         .app-wrapper {
             max-width: 1600px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             gap: 1.8rem;
-            align-items: start;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            /* Evita que se envuelvan en columnas */
         }
 
         /* ========== COLUMNA IZQUIERDA: EDITOR ========== */
         .editor-panel {
+            flex: 1;
+            min-width: 0;
+            /* Permite que el contenido se ajuste */
             background: #0d1f2b;
             border-radius: var(--radius);
             box-shadow: var(--card-shadow);
@@ -114,6 +118,9 @@
 
         /* ========== COLUMNA DERECHA: SALIDA (PREVIEW) ========== */
         .output-panel {
+            flex: 1;
+            min-width: 0;
+            /* Permite que el contenido se ajuste */
             background: white;
             border-radius: var(--radius);
             box-shadow: var(--card-shadow);
@@ -230,11 +237,50 @@
             border: 1px solid #c7dae6;
         }
 
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1024px) {
+        /* ========== RESPONSIVE: SIEMPRE DOS COLUMNAS ========== */
+
+        /* Pantallas grandes (escritorio) */
+        @media (min-width: 1200px) {
             .app-wrapper {
-                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            #htmlEditor,
+            #outputFrame {
+                height: 650px;
+            }
+        }
+
+        /* Pantallas medianas (tablet horizontal) */
+        @media (max-width: 1199px) and (min-width: 769px) {
+            .app-wrapper {
                 gap: 1.5rem;
+            }
+
+            #htmlEditor,
+            #outputFrame {
+                height: 550px;
+            }
+
+            .editor-header h2,
+            .output-header h2 {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Pantallas pequeñas (tablet vertical y móviles grandes) */
+        @media (max-width: 768px) {
+            .app-wrapper {
+                gap: 1.2rem;
+                flex-wrap: wrap;
+                /* Cambiamos a wrap para que se apilen en móviles */
+            }
+
+            .editor-panel,
+            .output-panel {
+                flex: 1 1 100%;
+                /* Cada panel ocupa el 100% del ancho */
+                min-width: 100%;
             }
 
             .editor-panel {
@@ -247,27 +293,52 @@
             }
 
             .info-section {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
+            }
+
+            .editor-header h2,
+            .output-header h2 {
+                font-size: 0.85rem;
             }
         }
 
-        @media (max-width: 650px) {
+        /* Pantallas muy pequeñas (móviles) */
+        @media (max-width: 480px) {
             body {
                 padding: 0.8rem;
             }
 
-            .info-section {
-                grid-template-columns: 1fr;
+            .app-wrapper {
+                gap: 1rem;
             }
 
             #htmlEditor,
             #outputFrame {
-                height: 380px;
+                height: 350px;
+            }
+
+            .editor-header {
+                padding: 0.5rem 0.8rem;
+                flex-wrap: wrap;
             }
 
             .output-header {
+                padding: 0.5rem 0.8rem;
                 flex-wrap: wrap;
                 gap: 0.5rem;
+            }
+
+            .editor-header h2,
+            .output-header h2 {
+                font-size: 0.75rem;
+            }
+
+            .info-card {
+                padding: 1.2rem 1rem;
+            }
+
+            .info-card h3 {
+                font-size: 1.1rem;
             }
         }
 
