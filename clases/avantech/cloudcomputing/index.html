@@ -2,791 +2,468 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="Ing. Robyir Loreto" />
-    <title>Cloud Computing: Conceptos Fundamentales</title>
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentos de Cloud Computing - Entorno Académico</title>
     <style>
-        /* ============================================================
-                   ROOT Y RESET
-                   ============================================================ */
         :root {
-            --color-primario: #0b2b4a;
-            --color-secundario: #1e6f9f;
-            --color-acento: #f39c12;
-            --color-gris-claro: #f0f4f8;
-            --color-gris-borde: #d1d9e6;
-            --color-texto: #1e2b37;
-            --sombra-card: 0 10px 25px -8px rgba(0, 0, 0, 0.1);
-            --radio: 20px;
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #3182ce;
+            --text-color: #2d3748;
+            --bg-light: #f7fafc;
+            --bg-box: #ebf8ff;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--color-gris-claro);
-            color: var(--color-texto);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            padding: 1.5rem;
+            color: var(--text-color);
+            background-color: var(--bg-light);
         }
 
-        /* ============================================================
-                   LAYOUT PRINCIPAL (FLEX + GRID)
-                   ============================================================ */
-        .contenedor {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* ---------- HEADER ---------- */
-        .header {
-            background: linear-gradient(145deg, var(--color-primario), #0a1e30);
-            color: #fff;
-            padding: 2.5rem 2rem;
-            border-radius: var(--radio);
-            box-shadow: var(--sombra-card);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .header h1 i {
-            color: var(--color-acento);
-        }
-
-        .header p {
-            opacity: 0.85;
-            font-size: 1.1rem;
-            max-width: 480px;
-        }
-
-        /* ---------- CARDS (GRID) ---------- */
-        .grid-cards {
+        /* --- ARQUITECTURA GENERAL CON CSS GRID --- */
+        .grid-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.8rem;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto;
+            grid-template-areas:
+                "header"
+                "main"
+                "footer";
+            min-height: 100vh;
         }
 
-        .card {
-            background: #ffffff;
-            border-radius: var(--radio);
-            padding: 1.8rem 1.8rem 2rem;
-            box-shadow: var(--sombra-card);
-            transition: transform 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(2px);
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-        }
-
-        .card h2 {
-            font-size: 1.6rem;
-            color: var(--color-primario);
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            border-bottom: 3px solid var(--color-acento);
-            padding-bottom: 0.4rem;
-        }
-
-        .card h2 i {
-            color: var(--color-acento);
-        }
-
-        .card h3 {
-            color: var(--color-secundario);
-            margin: 1rem 0 0.25rem;
-            font-size: 1.2rem;
-        }
-
-        .card p,
-        .card li {
-            color: #2c3e50;
-        }
-
-        .card ul {
-            margin-left: 1.2rem;
-        }
-
-        .card li {
-            margin-bottom: 0.3rem;
-        }
-
-        /* ---------- TARJETAS INTERNAS (grid anidado) ---------- */
-        .subgrid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin-top: 0.8rem;
-        }
-
-        .item-spi {
-            background: var(--color-gris-claro);
-            padding: 1rem;
-            border-radius: 12px;
-            border-left: 5px solid var(--color-acento);
-        }
-
-        .item-spi h4 {
-            color: var(--color-primario);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        /* ---------- BLOQUES DE CÓDIGO ---------- */
-        .bloque-codigo {
-            background: #1a2533;
-            border-radius: 14px;
-            overflow: hidden;
-            margin: 1rem 0;
-            border: 1px solid #2d3d4f;
-        }
-
-        .bloque-codigo .cabecera {
-            background: #0f1a26;
-            color: #b0c7db;
-            padding: 0.4rem 1rem;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.85rem;
-            border-bottom: 2px solid var(--color-acento);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .bloque-codigo .cabecera span {
-            color: var(--color-acento);
-        }
-
-        .codigo-con-lineas {
-            display: flex;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.78rem;
-            overflow-x: auto;
-        }
-
-        .numeros {
-            background: #0d1722;
-            color: #5a7188;
-            text-align: right;
-            padding: 0.8rem 0.6rem;
-            border-right: 1px solid #2d3d4f;
-            line-height: 1.6;
-            min-width: 2.4rem;
-            user-select: none;
-        }
-
-        .codigo {
-            padding: 0.8rem 1rem;
-            color: #d6e2f0;
-            line-height: 1.6;
-            white-space: pre;
-            background: #1a2533;
-        }
-
-        .codigo .comentario {
-            color: #7c9f6e;
-        }
-
-        .codigo .palabra {
-            color: #7ec8e3;
-        }
-
-        .codigo .cadena {
-            color: #e6b87e;
-        }
-
-        .codigo .funcion {
-            color: #e2c08d;
-        }
-
-        .codigo .numero {
-            color: #b78ddb;
-        }
-
-        /* ---------- CAJAS DE PASOS ---------- */
-        .paso {
-            background: #e7f0fa;
-            border-left: 6px solid var(--color-acento);
-            padding: 0.8rem 1.2rem;
-            margin: 0.8rem 0;
-            border-radius: 0 14px 14px 0;
-        }
-
-        .paso strong {
-            color: var(--color-primario);
-        }
-
-        .paso .badge {
-            background: var(--color-acento);
-            color: #1a1a1a;
-            font-weight: 700;
-            padding: 0.1rem 0.7rem;
-            border-radius: 30px;
-            margin-right: 0.5rem;
-            font-size: 0.8rem;
-        }
-
-        /* ---------- DEMO INTERACTIVA (FLEX) ---------- */
-        .demo-box {
-            background: linear-gradient(145deg, #1a334a, #0f2337);
-            border-radius: var(--radio);
-            padding: 1.8rem;
-            color: #fff;
-            margin: 1rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .demo-box .fila {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: flex-end;
-        }
-
-        .demo-box .campo {
-            flex: 1 0 150px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
-        }
-
-        .demo-box label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .demo-box input {
-            padding: 0.6rem 0.8rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            background: #ecf3fa;
-            color: #0a1a2a;
-        }
-
-        .demo-box button {
-            background: var(--color-acento);
-            border: none;
-            padding: 0.7rem 1.6rem;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 1rem;
-            color: #0a1a2a;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .demo-box button:hover {
-            background: #e08e0b;
-        }
-
-        .log-simulacion {
-            background: #0c1a26;
-            border-radius: 12px;
-            padding: 0.8rem 1.2rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            max-height: 180px;
-            overflow-y: auto;
-            color: #b3d9ff;
-            border: 1px solid #2a4560;
-        }
-
-        .log-simulacion .linea-log {
-            border-left: 3px solid var(--color-acento);
-            padding-left: 0.6rem;
-            margin-bottom: 0.25rem;
-        }
-
-        /* ---------- RESPONSIVE ---------- */
-        @media (max-width: 820px) {
-            .grid-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 0.8rem;
-            }
-
-            .card {
-                padding: 1.2rem;
-            }
-
-            .demo-box .fila {
-                flex-direction: column;
-            }
-        }
-
-        /* utilidades */
-        .mt-1 {
-            margin-top: 1rem;
-        }
-
-        .texto-centrado {
+        /* --- CONTENEDOR PRINCIPAL --- */
+        header {
+            grid-area: header;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2.5rem 1.5rem;
             text-align: center;
+            border-bottom: 4px solid var(--secondary-color);
         }
 
-        .tag {
-            background: var(--color-acento);
-            color: #1a1a1a;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.1rem 0.6rem;
-            border-radius: 30px;
-            display: inline-block;
+        header h1 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        main {
+            grid-area: main;
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
         }
 
         footer {
+            grid-area: footer;
+            background-color: #2d3748;
+            color: var(--white);
             text-align: center;
-            padding: 2rem 0 0.5rem;
-            color: #5a6f82;
-            border-top: 1px solid #d1d9e6;
+            padding: 1.5rem;
             font-size: 0.9rem;
+            margin-top: 2rem;
         }
 
-        footer i {
-            color: var(--color-acento);
+        /* --- ELEMENTOS DE CONTENIDO --- */
+        section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 10px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .text-bold {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* --- COMPONENTES CON FLEXBOX --- */
+
+        /* Lista de características esenciales */
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            background-color: var(--bg-light);
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        /* Bloque de caso práctico / Destacados */
+        .highlight-box {
+            background-color: var(--bg-box);
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 6px;
+        }
+
+        /* Sección de ventajas y desventajas en tarjetas usando Flexbox */
+        .tradeoffs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .tradeoff-card {
+            flex: 1;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1fr solid var(--border-color);
+        }
+
+        .tradeoff-card.advantage {
+            background-color: #f0fff4;
+            border-top: 4px solid #38a169;
+        }
+
+        .tradeoff-card.disadvantage {
+            background-color: #fff5f5;
+            border-top: 4px solid #e53e3e;
+        }
+
+        .tradeoff-card h4 {
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .advantage h4 {
+            color: #276749;
+        }
+
+        .disadvantage h4 {
+            color: #9b2c2c;
+        }
+
+        /* --- TABLA RESPONSIVA (MODELO SPI) --- */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 600px;
+            /* Asegura legibilidad en scroll móvil */
+        }
+
+        th,
+        td {
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--bg-light);
+        }
+
+        /* Código / Scripts */
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #2d3748;
+            color: #f7fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        /* --- RESPONSIVIDAD AVANZADA MEDIANTE MEDIA QUERIES --- */
+        @media (min-width: 768px) {
+
+            /* Transformamos las ventajas y desventajas en columnas paralelas */
+            .tradeoffs-container {
+                flex-direction: row;
+            }
+
+            header h1 {
+                font-size: 2.8rem;
+            }
+
+            main {
+                padding: 0;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="contenedor">
 
-        <!-- ============================================================
-        HEADER
-        ============================================================ -->
-        <header class="header">
-            <h1><i class="fas fa-cloud"></i> Cloud Computing</h1>
-            <p><i class="fas fa-arrow-right" style="color: var(--color-acento);"></i> Conceptos esenciales · Modelos ·
-                Servicios · Arquitectura serverless</p>
+    <div class="grid-container">
+
+        <header>
+            <h1>Computación en la Nube (Cloud Computing)</h1>
+            <p>Análisis Estructural, Arquitectura SPI, Ventajas Estratégicas y Desafíos en Entornos Corporativos</p>
         </header>
 
-        <!-- ============================================================
-        GRID DE CARDS PRINCIPAL
-        ============================================================ -->
-        <div class="grid-cards">
+        <main>
+            <section id="definicion">
+                <h2>1. Definición y Fundamentos Teóricos</h2>
+                <p>De acuerdo con el Instituto Nacional de Estándares y Tecnología (NIST), la <strong>Computación en la
+                        Nube (Cloud Computing)</strong> es un modelo que permite el acceso omnipresente, conveniente y
+                    bajo demanda a un conjunto compartido de recursos de computación configurables (por ejemplo, redes,
+                    servidores, almacenamiento, aplicaciones y servicios) que pueden aprovisionarse y liberarse
+                    rápidamente con un mínimo esfuerzo de gestión o interacción con el proveedor del servicio.</p>
+                <p>Desde una perspectiva arquitectónica, representa el paso de la adquisición de infraestructura física
+                    local (<em>On-Premises</em>) hacia un modelo de <strong>computación por utilidad (Utility
+                        Computing)</strong>, donde los gastos de capital fijos se transforman en costos operativos
+                    variables.</p>
+            </section>
 
-            <!-- -------- CARD 1: ¿QUÉ ES CLOUD COMPUTING? -------- -->
-            <div class="card">
-                <h2><i class="fas fa-brain"></i> ¿Qué es?</h2>
-                <p style="font-size: 1.05rem;"><strong>Cloud Computing</strong> es el modelo de acceso bajo demanda a
-                    recursos informáticos (servidores, almacenamiento, bases de datos, redes, software) a través de
-                    Internet, con facturación por consumo y sin necesidad de inversión inicial en infraestructura
-                    física.</p>
-                <div style="background: #e7f0fa; padding: 0.8rem 1.2rem; border-radius: 12px; margin: 0.8rem 0;">
-                    <i class="fas fa-lightbulb" style="color: var(--color-acento);"></i>
-                    <strong>Características esenciales (NIST):</strong>
-                    <ul style="margin-top: 0.3rem;">
-                        <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> Autoservicio bajo demanda</li>
-                        <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> Acceso ubicuo a la red</li>
-                        <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> Conjunto de recursos compartidos
-                        </li>
-                        <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> Elasticidad rápida (escalar)
-                        </li>
-                        <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> Servicio medido (pago por uso)
-                        </li>
-                    </ul>
-                </div>
-                <p><i class="fas fa-arrow-right" style="color: var(--color-secundario);"></i> <strong>CapEx vs
-                        OpEx:</strong> la nube convierte gastos de capital (comprar servidores) en gastos operativos
-                    (pagar por hora).</p>
-            </div>
+            <section id="caracteristicas">
+                <h2>2. Las 5 Características Esenciales del Modelo</h2>
+                <p>Para que una infraestructura sea clasificada formalmente como nube según el estándar internacional,
+                    debe manifestar de forma simultánea estas cinco propiedades:</p>
 
-            <!-- -------- CARD 2: MODELOS DE SERVICIO (SPI) -------- -->
-            <div class="card">
-                <h2><i class="fas fa-layer-group"></i> Modelos SPI</h2>
-                <p>Los tres modelos fundamentales de servicio en la nube:</p>
-                <div class="subgrid-3">
-                    <div class="item-spi">
-                        <h4><i class="fas fa-server"></i> IaaS</h4>
-                        <p><strong>Infraestructura</strong> como Servicio. Alquilas VMs, almacenamiento, redes. Tú
-                            administras el SO y las aplicaciones.</p>
-                        <span class="tag">Ej: VMs, discos, VPC</span>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="text-bold">Autoservicio bajo demanda:</span> Aprovisionamiento automatizado de
+                        capacidades computacionales sin requerir intervención humana del proveedor.
                     </div>
-                    <div class="item-spi">
-                        <h4><i class="fas fa-code"></i> PaaS</h4>
-                        <p><strong>Plataforma</strong> como Servicio. Alquilas el entorno para desplegar tu código sin
-                            preocuparte por el SO ni parches.</p>
-                        <span class="tag">Ej: App Service, Elastic Beanstalk</span>
+                    <div class="feature-item">
+                        <span class="text-bold">Acceso amplio a la red:</span> Disponibilidad de los recursos a través
+                        de la red mediante mecanismos estándar para plataformas heterogéneas (móviles, laptops, etc.).
                     </div>
-                    <div class="item-spi">
-                        <h4><i class="fas fa-mobile-alt"></i> SaaS</h4>
-                        <p><strong>Software</strong> como Servicio. Usas aplicaciones listas en la nube (Gmail, Office
-                            365, Salesforce).</p>
-                        <span class="tag">Ej: Gmail, Netflix</span>
+                    <div class="feature-item">
+                        <span class="text-bold">Agrupación de recursos multiusuario:</span> Asignación y reasignación
+                        dinámica de recursos físicos y virtuales para servir a múltiples clientes bajo un estricto
+                        aislamiento lógico.
+                    </div>
+                    <div class="feature-item">
+                        <span class="text-bold">Elasticidad rápida:</span> Escalabilidad horizontal o vertical
+                        automática de los recursos en tiempo real según las fluctuaciones de la demanda.
+                    </div>
+                    <div class="feature-item">
+                        <span class="text-bold">Servicio medible:</span> Control, optimización y facturación
+                        transparente basada estrictamente en el consumo real medido.
                     </div>
                 </div>
-                <div class="paso" style="margin-top: 1rem;">
-                    <i class="fas fa-balance-scale"></i> <strong>Modelo de responsabilidad compartida:</strong> El
-                    proveedor protege <em>la nube</em> (hardware, red). Tú proteges lo que pones <em>en la nube</em>
-                    (datos, acceso, SO).
-                </div>
-            </div>
 
-            <!-- -------- CARD 3: ARQUITECTURA Y DESPLIEGUE -------- -->
-            <div class="card">
-                <h2><i class="fas fa-globe-americas"></i> Regiones &amp; AZ</h2>
-                <p><strong>Región:</strong> ubicación geográfica con centros de datos. <strong>Zonas de Disponibilidad
-                        (AZ):</strong> centros de datos independientes dentro de una región.</p>
-                <ul>
-                    <li><i class="fas fa-check-circle" style="color: var(--color-acento);"></i> <strong>Alta
-                            disponibilidad</strong> = desplegar en ≥ 2 AZ</li>
-                    <li><i class="fas fa-check-circle" style="color: var(--color-acento);"></i>
-                        <strong>Resiliencia:</strong> si una AZ falla, las otras siguen funcionando
-                    </li>
-                    <li><i class="fas fa-check-circle" style="color: var(--color-acento);"></i>
-                        <strong>Latencia:</strong> elegir región cercana a los usuarios
-                    </li>
-                </ul>
-                <div class="paso">
-                    <strong><i class="fas fa-network-wired"></i> Redes (VPC):</strong>
-                    <ul>
-                        <li><strong>Subnet</strong> pública (con Internet) y privada (sin salida directa).</li>
-                        <li><strong>Security Groups</strong> (firewall de instancias) vs <strong>ACLs</strong> (firewall
-                            de subred).</li>
-                    </ul>
+                <div class="highlight-box">
+                    <p><strong>Caso de Estudio - Escalabilidad Automática:</strong> Considere una plataforma de
+                        transmisión multimedia (ej. Netflix). Durante las horas de baja demanda se contrae al mínimo
+                        operativo. Ante lanzamientos globales de alto tráfico, los mecanismos automáticos despliegan
+                        miles de instancias de servidores en minutos para absorber la carga, destruyéndolos de igual
+                        manera cuando el tráfico disminuye.</p>
                 </div>
-                <p><i class="fas fa-arrow-right"></i> <strong>Modelos de despliegue:</strong> Público · Privado ·
-                    Híbrido · Multicloud.</p>
-            </div>
+            </section>
 
-            <!-- -------- CARD 4: COMPUTO, ALMACENAMIENTO Y DATOS -------- -->
-            <div class="card">
-                <h2><i class="fas fa-database"></i> Almacenamiento &amp; BD</h2>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
-                    <div style="flex:1; min-width:120px; background:#ecf3fa; padding:0.6rem 1rem; border-radius:12px;">
-                        <strong><i class="fas fa-file"></i> Objetos</strong><br>
-                        <span style="font-size:0.9rem;">S3, Blob → archivos, estático, escalable</span>
-                    </div>
-                    <div style="flex:1; min-width:120px; background:#ecf3fa; padding:0.6rem 1rem; border-radius:12px;">
-                        <strong><i class="fas fa-hdd"></i> Bloques</strong><br>
-                        <span style="font-size:0.9rem;">EBS, discos persistentes para VMs</span>
-                    </div>
-                    <div style="flex:1; min-width:120px; background:#ecf3fa; padding:0.6rem 1rem; border-radius:12px;">
-                        <strong><i class="fas fa-folder-open"></i> Archivos</strong><br>
-                        <span style="font-size:0.9rem;">EFS, NFS → compartido entre VMs</span>
-                    </div>
-                </div>
-                <div style="margin-top: 0.8rem;">
-                    <p><strong>Bases de datos:</strong></p>
-                    <ul>
-                        <li><strong>SQL (relacional)</strong> → ACID, transacciones (RDS, Cloud SQL)</li>
-                        <li><strong>NoSQL</strong> → documental (DynamoDB), clave-valor, en memoria (Redis)</li>
-                        <li><strong>Data Warehouse</strong> → analítica masiva (BigQuery, Redshift)</li>
-                    </ul>
-                </div>
-            </div>
+            <section id="spi">
+                <h2>3. Modelos de Servicio: La Arquitectura SPI</h2>
+                <p>La estructura operativa de la nube se organiza en una pila jerárquica de abstracción donde cada nivel
+                    define el grado de control y responsabilidad asumido por el cliente.</p>
 
-            <!-- -------- CARD 5: SEGURIDAD Y GESTIÓN -------- -->
-            <div class="card">
-                <h2><i class="fas fa-lock"></i> Seguridad &amp; IAM</h2>
-                <p><strong>IAM (Identity and Access Management)</strong> es el pilar de la seguridad. Define
-                    <strong>quién</strong> (usuario/rol) puede hacer <strong>qué</strong> (acción) sobre
-                    <strong>qué</strong> (recurso).
+                <h3>3.1. IaaS (Infrastructure as a Service)</h3>
+                <p>El proveedor ofrece abstracciones de hardware puro (procesamiento, red, almacenamiento). El cliente
+                    tiene control sobre el sistema operativo y el entorno de ejecución. <em>Ejemplo: Amazon EC2.</em>
                 </p>
+
+                <h3>3.2. PaaS (Platform as a Service)</h3>
+                <p>Proporciona un entorno de ejecución y desarrollo optimizado. El cliente se enfoca en el código de la
+                    aplicación, abstrayendo sistemas operativos y servidores. <em>Ejemplo: Heroku / Firebase.</em></p>
+
+                <h3>3.3. SaaS (Software as a Service)</h3>
+                <p>El proveedor entrega una aplicación informática completamente funcional y lista para su uso final,
+                    comúnmente vía navegador web. <em>Ejemplo: Google Workspace / Microsoft 365.</em></p>
+
+                <h3>3.4. Computación sin Servidor (Serverless / FaaS)</h3>
+                <p>Abstracción total donde el desarrollador sube funciones modulares efímeras que se ejecutan en
+                    milisegundos orientadas a eventos específicos.</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente Tecnológico</th>
+                                <th>On-Premises</th>
+                                <th>IaaS</th>
+                                <th>PaaS</th>
+                                <th>SaaS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-bold">Aplicaciones y Datos</td>
+                                <td>Cliente</td>
+                                <td>Cliente</td>
+                                <td>Cliente</td>
+                                <td>Proveedor</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Entornos de Ejecución</td>
+                                <td>Cliente</td>
+                                <td>Cliente</td>
+                                <td>Proveedor</td>
+                                <td>Proveedor</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Sistema Operativo</td>
+                                <td>Cliente</td>
+                                <td>Cliente</td>
+                                <td>Proveedor</td>
+                                <td>Proveedor</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Virtualización / Hardware</td>
+                                <td>Cliente</td>
+                                <td>Proveedor</td>
+                                <td>Proveedor</td>
+                                <td>Proveedor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="despliegue">
+                <h2>4. Modelos de Despliegue</h2>
                 <ul>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>Principio de mínimo
-                            privilegio</strong></li>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>Cifrado</strong> en reposo
-                        (discos) y en tránsito (TLS)</li>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>Auditoría</strong>
-                        (CloudTrail / Activity Logs)</li>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>Cumplimiento</strong> (GDPR,
-                        HIPAA, ISO)</li>
+                    <li><span class="text-bold">Nube Pública:</span> Recursos compartidos multicliente a través de redes
+                        públicas (AWS, Google Cloud).</li>
+                    <li><span class="text-bold">Nube Privada:</span> Infraestructura operada exclusivamente para una
+                        única organización por motivos de estricta seguridad o control.</li>
+                    <li><span class="text-bold">Nube Híbrida:</span> Combinación interconectada de nubes públicas y
+                        privadas que permite la portabilidad de datos y balanceos de carga estacionales.</li>
                 </ul>
-                <div class="paso" style="background:#fef7e0;">
-                    <i class="fas fa-key"></i> <strong>Políticas</strong>: documentos JSON que definen permisos.
-                    Ejemplo: <code
-                        style="background:#1a2533; color:#d6e2f0; padding:0.1rem 0.4rem; border-radius:4px;">{ "Effect": "Allow", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::mi-bucket/*" }</code>
-                </div>
-            </div>
+            </section>
 
-            <!-- -------- CARD 6: ESCALABILIDAD Y PATRONES -------- -->
-            <div class="card">
-                <h2><i class="fas fa-chart-line"></i> Escalabilidad &amp; Resiliencia</h2>
+            <section id="tecnologias">
+                <h2>5. Tecnologías Habilitadoras Críticas</h2>
+                <p>La viabilidad técnica descansa sobre tres pilares de la ingeniería de software:</p>
+                <ol>
+                    <li><span class="text-bold">Virtualización e Hipervisores:</span> Capa de software que particiona
+                        los recursos físicos en múltiples Máquinas Virtuales (VM) aisladas.</li>
+                    <li><span class="text-bold">Contenedores (ej. Docker):</span> Virtualización ligera a nivel de
+                        sistema operativo que empaqueta la aplicación compartiendo el mismo núcleo del anfitrión.</li>
+                    <li><span class="text-bold">Infraestructura como Código (IaC):</span> Configuración de arquitecturas
+                        de TI mediante scripts de software reproducibles en vez de configuraciones manuales.</li>
+                </ol>
+                <div class="code-block">
+                    # Ejemplo conceptual de IaC
+                    resource "cloud_instance" "web_cluster" {
+                    ami = "ubuntu-24.04-lts"
+                    instance_type = "t3.large"
+                    count = 5
+                    }
+                </div>
+            </section>
+
+            <section id="evaluacion">
+                <h2>6. Evaluación Estratégica: Ventajas y Desventajas</h2>
+                <p>La adopción corporativa requiere un balance crítico entre los beneficios técnicos y sus riesgos
+                    operativos:</p>
+
+                <div class="tradeoffs-container">
+                    <div class="tradeoff-card advantage">
+                        <h4>Ventajas Estratégicas</h4>
+                        <ul>
+                            <li><strong>Eficiencia Financiera:</strong> Sustitución de CapEx inicial por OpEx variable,
+                                optimizando la liquidez de la empresa.</li>
+                            <li><strong>Agilidad y Time-to-Market:</strong> Aprovisionamiento global rápido de entornos
+                                de prueba y producción.</li>
+                            <li><strong>Alta Disponibilidad:</strong> Resiliencia geográfica masiva provista por las
+                                economías de escala de los gigantes tecnológicos.</li>
+                        </ul>
+                    </div>
+
+                    <div class="tradeoff-card disadvantage">
+                        <h4>Desventajas y Riesgos</h4>
+                        <ul>
+                            <li><strong>Vendor Lock-in:</strong> Acoplamiento arquitectónico a un solo proveedor que
+                                vuelve las migraciones costosas y prohibitivas.</li>
+                            <li><strong>Gobernanza Financiera (FinOps):</strong> Riesgo de sobrecostos imprevistos por
+                                recursos huérfanos dejados en ejecución por descuido.</li>
+                            <li><strong>Latencia y Soberanía:</strong> Pérdida de rendimiento en aplicaciones de tiempo
+                                real estricto (solucionado parcialmente con <em>Edge Computing</em>) y restricciones
+                                legales geográficas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="seguridad">
+                <h2>7. Modelo de Responsabilidad Compartida</h2>
                 <ul>
-                    <li><strong>Escalado vertical:</strong> cambiar a una VM más grande.</li>
-                    <li><strong>Escalado horizontal:</strong> añadir más VMs (Auto Scaling).</li>
-                    <li><strong>Balanceadores de carga:</strong> distribuyen tráfico entre instancias (capa 7 HTTP o
-                        capa 4 TCP).</li>
-                    <li><strong>Patrones de resiliencia:</strong> alta disponibilidad (≥2 AZ), tolerancia a fallos,
-                        recuperación ante desastres (DR).</li>
+                    <li><span class="text-bold">Seguridad DE la Nube:</span> Responsabilidad del proveedor. Protege la
+                        infraestructura física, los centros de datos, redes troncales e hipervisores.</li>
+                    <li><span class="text-bold">Seguridad EN la Nube:</span> Responsabilidad del cliente. Implica la
+                        gestión de identidades (IAM), firewalls lógicos, cifrado de datos y el endurecimiento del
+                        sistema operativo huésped.</li>
                 </ul>
-                <div class="paso" style="background:#e0f2fe;">
-                    <strong><i class="fas fa-envelope"></i> Mensajería asíncrona:</strong> Colas (SQS, Pub/Sub) para
-                    desacoplar servicios. Un servicio produce mensajes, otro los consume cuando puede.
-                </div>
-                <p><i class="fas fa-arrow-right"></i> <strong>FinOps:</strong> gestión financiera de la nube. Usar
-                    instancias spot (sobrante barato), reservadas (1-3 años) y Savings Plans para optimizar costos.</p>
-            </div>
+            </section>
+        </main>
 
-            <!-- -------- CARD 7: AUTOMATIZACIÓN Y DEVOPS -------- -->
-            <div class="card">
-                <h2><i class="fas fa-cogs"></i> Automatización (IaC)</h2>
-                <p><strong>Infraestructura como Código (IaC):</strong> definir toda la infraestructura en archivos de
-                    configuración (Terraform, CloudFormation).</p>
-                <ul>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>CI/CD:</strong> pipelines de
-                        integración y despliegue continuo.</li>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>Configuración como
-                            Código:</strong> Ansible, Chef, Puppet.</li>
-                    <li><i class="fas fa-check-circle" style="color: #2e7d32;"></i> <strong>Observabilidad:</strong>
-                        métricas + logs + trazas (seguir una petición entre microservicios).</li>
-                </ul>
-                <p><span class="tag"><i class="fas fa-code-branch"></i> Serverless</span> <span class="tag"><i
-                            class="fas fa-cube"></i> Contenedores (Docker)</span> <span class="tag"><i
-                            class="fas fa-cubes"></i> Kubernetes</span></p>
-            </div>
-
-            <!-- -------- CARD 8: CASO PRÁCTICO SERVERLESS -------- -->
-            <div class="card" style="grid-column: 1 / -1;">
-                <h2><i class="fas fa-project-diagram"></i> Caso práctico: Aplicación serverless</h2>
-                <p>Flujo típico de una aplicación web que usa servicios en la nube sin administrar servidores:</p>
-
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0;">
-                    <span class="tag" style="background: var(--color-secundario); color:#fff;">API Gateway</span>
-                    <span class="tag" style="background: var(--color-secundario); color:#fff;">Lambda</span>
-                    <span class="tag" style="background: var(--color-secundario); color:#fff;">DynamoDB</span>
-                    <span class="tag" style="background: var(--color-secundario); color:#fff;">S3</span>
-                </div>
-
-                <div
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 0.5rem; margin:0.5rem 0;">
-                    <div style="background:#eaf2fa; padding:0.6rem; border-radius:10px; text-align:center;"><span
-                            class="badge" style="background:var(--color-acento);">1</span> Usuario llena formulario
-                    </div>
-                    <div style="background:#eaf2fa; padding:0.6rem; border-radius:10px; text-align:center;"><span
-                            class="badge" style="background:var(--color-acento);">2</span> fetch() → API Gateway</div>
-                    <div style="background:#eaf2fa; padding:0.6rem; border-radius:10px; text-align:center;"><span
-                            class="badge" style="background:var(--color-acento);">3</span> API Gateway activa Lambda
-                    </div>
-                    <div style="background:#eaf2fa; padding:0.6rem; border-radius:10px; text-align:center;"><span
-                            class="badge" style="background:var(--color-acento);">4</span> Lambda guarda en DynamoDB
-                    </div>
-                    <div style="background:#eaf2fa; padding:0.6rem; border-radius:10px; text-align:center;"><span
-                            class="badge" style="background:var(--color-acento);">5</span> Respuesta de éxito</div>
-                </div>
-
-                <!-- Código del frontend -->
-                <div class="bloque-codigo">
-                    <div class="cabecera"><span><i class="fas fa-code"></i> formulario.html</span> <span>JavaScript +
-                            HTML</span></div>
-                    <div class="codigo-con-lineas">
-                        <div class="numeros">
-                            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24
-                        </div>
-                        <div class="codigo"><span class="comentario">&lt;!-- Formulario --&gt;</span>
-                            &lt;form id=<span class="cadena">"form"</span>&gt;
-                            &lt;input type=<span class="cadena">"text"</span> id=<span class="cadena">"cedula"</span>
-                            /&gt;
-                            &lt;input type=<span class="cadena">"text"</span> id=<span class="cadena">"nombre"</span>
-                            /&gt;
-                            &lt;input type=<span class="cadena">"email"</span> id=<span class="cadena">"email"</span>
-                            /&gt;
-                            &lt;button type=<span class="cadena">"submit"</span>&gt;Enviar&lt;/button&gt;
-                            &lt;/form&gt;
-
-                            <span class="comentario">// JavaScript</span>
-                            <span class="palabra">const</span> API_URL = <span
-                                class="cadena">"https://xxxxx.execute-api.region.amazonaws.com/prod/registrar"</span>;
-
-                            document.getElementById(<span class="cadena">"form"</span>).onsubmit = <span
-                                class="palabra">async</span> (e) =&gt; {
-                            e.preventDefault();
-                            <span class="palabra">const</span> data = {
-                            cedula: document.getElementById(<span class="cadena">"cedula"</span>).value,
-                            nombre: document.getElementById(<span class="cadena">"nombre"</span>).value,
-                            email: document.getElementById(<span class="cadena">"email"</span>).value
-                            };
-                            <span class="palabra">const</span> res = <span class="palabra">await</span> <span
-                                class="funcion">fetch</span>(API_URL, {
-                            method: <span class="cadena">'POST'</span>,
-                            body: JSON.stringify(data)
-                            });
-                            <span class="palabra">const</span> json = <span class="palabra">await</span> res.json();
-                            alert(json.mensaje);
-                            };
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Código Lambda -->
-                <div class="bloque-codigo">
-                    <div class="cabecera"><span><i class="fas fa-bolt"></i> lambda.js</span> <span>Node.js en AWS
-                            Lambda</span></div>
-                    <div class="codigo-con-lineas">
-                        <div class="numeros">
-                            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22
-                        </div>
-                        <div class="codigo"><span class="comentario">// Importar SDK</span>
-                            <span class="palabra">const</span> { DynamoDBClient, PutItemCommand } = <span
-                                class="palabra">require</span>(<span class="cadena">"@aws-sdk/client-dynamodb"</span>);
-                            <span class="palabra">const</span> db = <span class="palabra">new</span> DynamoDBClient({
-                            region: <span class="cadena">"us-east-1"</span> });
-
-                            <span class="palabra">exports</span>.handler = <span class="palabra">async</span> (event)
-                            =&gt; {
-                            <span class="palabra">const</span> { cedula, nombre, email } = JSON.parse(event.body);
-
-                            <span class="palabra">const</span> params = {
-                            TableName: <span class="cadena">"Usuarios"</span>,
-                            Item: {
-                            <span class="cadena">"Cedula"</span>: { S: cedula },
-                            <span class="cadena">"Nombre"</span>: { S: nombre },
-                            <span class="cadena">"Email"</span>: { S: email },
-                            <span class="cadena">"Fecha"</span>: { N: Date.now().toString() }
-                            }
-                            };
-
-                            <span class="palabra">await</span> db.send(<span class="palabra">new</span>
-                            PutItemCommand(params));
-
-                            <span class="palabra">return</span> {
-                            statusCode: <span class="numero">200</span>,
-                            body: JSON.stringify({ mensaje: <span class="cadena">"✅ Registrado"</span> })
-                            };
-                            };
-                        </div>
-                    </div>
-                </div>
-
-                <div class="paso" style="background:#def0d8;">
-                    <i class="fas fa-check-circle" style="color:#1f7a2b;"></i> <strong>Ventajas clave:</strong> Sin
-                    servidores 24/7, pago por ejecución, escalado automático, integración con otros servicios.
-                </div>
-            </div>
-
-            <!-- -------- CARD 9: DEMO INTERACTIVA (SIMULACIÓN) -------- -->
-            <div class="card" style="grid-column: 1 / -1;">
-                <h2><i class="fas fa-play-circle"></i> Simulación: flujo completo</h2>
-                <p>Completa los campos y observa cómo se procesa la petición en la nube (simulación paso a paso).</p>
-
-                <div class="demo-box">
-                    <div class="fila">
-                        <div class="campo">
-                            <label><i class="fas fa-id-card"></i> Cédula</label>
-                            <input type="text" id="demoCedula" value="12345678" />
-                        </div>
-                        <div class="campo">
-                            <label><i class="fas fa-user"></i> Nombre</label>
-                            <input type="text" id="demoNombre" value="Ana García" />
-                        </div>
-                        <div class="campo">
-                            <label><i class="fas fa-envelope"></i> Email</label>
-                            <input type="email" id="demoEmail" value="ana@ejemplo.com" />
-                        </div>
-                        <button id="demoBoton"><i class="fas fa-rocket"></i> Enviar</button>
-                    </div>
-                    <div id="demoLog" class="log-simulacion">
-                        <div class="linea-log">💡 Haz clic en "Enviar" para ver el proceso</div>
-                    </div>
-                </div>
-
-                <div
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap:0.5rem; margin-top:0.8rem;">
-                    <div style="background:#eaf2fa; padding:0.5rem; border-radius:8px; text-align:center;"><i
-                            class="fas fa-check-circle" style="color:#2e7d32;"></i> Frontend</div>
-                    <div style="background:#eaf2fa; padding:0.5rem; border-radius:8px; text-align:center;"><i
-                            class="fas fa-check-circle" style="color:#2e7d32;"></i> API Gateway</div>
-                    <div style="background:#eaf2fa; padding:0.5rem; border-radius:8px; text-align:center;"><i
-                            class="fas fa-check-circle" style="color:#2e7d32;"></i> Lambda</div>
-                    <div style="background:#eaf2fa; padding:0.5rem; border-radius:8px; text-align:center;"><i
-                            class="fas fa-check-circle" style="color:#2e7d32;"></i> DynamoDB</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================================
-        FOOTER
-        ============================================================ -->
         <footer>
-            <i class="fas fa-cloud" style="color: var(--color-acento);"></i> Cloud Computing · Conceptos fundamentales ·
-            <i class="fas fa-robot"></i> Serverless · IaC · Escalabilidad
-            <br><span style="font-size:0.8rem;">Material educativo · Enfoque en principios y arquitectura</span>
+            <p>&copy; 2026 - Fundamentos de Cloud Computing. Departamento de Ciencias de la Computación.</p>
         </footer>
+
     </div>
 
-    <!-- ============================================================
-    SCRIPT DE LA DEMO
-    ============================================================ -->
-    <script>
-        document.getElementById('demoBoton').addEventListener('click', function () {
-            const cedula = document.getElementById('demoCedula').value.trim();
-            const nombre = document.getElementById('demoNombre').value.trim();
-            const email = document.getElementById('demoEmail').value.trim();
-            const log = document.getElementById('demoLog');
-
-            if (!cedula || !nombre || !email) {
-                log.innerHTML = '<div class="linea-log" style="color:#f8b4b4;">❌ Completa todos los campos.</div>';
-                return;
-            }
-
-            log.innerHTML = '';
-
-            const pasos = [
-                { tiempo: 400, texto: `📋 1. Usuario escribe: Cédula=${cedula}, Nombre=${nombre}, Email=${email}` },
-                { tiempo: 1000, texto: `🌐 2. JavaScript ejecuta fetch() hacia API Gateway` },
-                { tiempo: 1700, texto: `🚪 3. API Gateway recibe la petición y activa Lambda` },
-                { tiempo: 2300, texto: `⚡ 4. Lambda procesa los datos (verifica permisos IAM)` },
-                { tiempo: 2900, texto: `💾 5. Lambda guarda en DynamoDB: Tabla "Usuarios"` },
-                { tiempo: 3500, texto: `✅ 6. Lambda responde con éxito → "Usuario ${nombre} registrado"` },
-                { tiempo: 4000, texto: `🎉 ¡Flujo completo! Todo ocurrió en milisegundos.` }
-            ];
-
-            pasos.forEach((p) => {
-                setTimeout(() => {
-                    const div = document.createElement('div');
-                    div.className = 'linea-log';
-                    div.textContent = p.texto;
-                    log.appendChild(div);
-                    log.scrollTop = log.scrollHeight;
-                }, p.tiempo);
-            });
-        });
-    </script>
 </body>
 
 </html>
