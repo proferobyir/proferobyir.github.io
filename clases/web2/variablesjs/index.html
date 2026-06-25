@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Laboratorio JS: Fundamentos y Funciones</title>
+    <title>⚡ Laboratorio JS: Estructuras y Alcances</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -17,6 +17,8 @@
             --code-bg: #0b1120;
             --border: #334155;
             --danger: #ef4444;
+            --success: #10b981;
+            --cyan: #06b6d4;
         }
 
         * {
@@ -130,8 +132,8 @@
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
         }
 
-        /* --- INTERFAZ DE SCOPE BASADA EN BORDES (TÚ IDEA) --- */
-        .scope-container {
+        /* --- CONTENEDOR BASE DE CÓDIGO --- */
+        .visual-container {
             background: var(--code-bg);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -141,28 +143,52 @@
             font-size: 0.95rem;
         }
 
-        /* El bloque global tiene un borde izquierdo azul grueso */
+        /* --- EFECTO DE PARÉNTESIS ABIERTO (TU IDEA DE BORDER-RADIUS) --- */
+        .parentesis-bloque {
+            border: 2px solid transparent;
+            /* Oculta los bordes arriba, derecha y abajo */
+            border-left: 6px solid var(--color-del-borde, var(--primary));
+            /* Borde izquierdo grueso */
+            border-radius: 24px 0 0 24px;
+            /* Curva solo las esquinas izquierdas para hacer el "(" */
+            padding: 0.8rem 1.2rem;
+            margin: 0.6rem 0;
+        }
+
+        /* Colores asignados a cada tipo de bloque */
         .scope-global {
-            border-left: 4px solid var(--primary);
-            padding-left: 1rem;
-            margin-bottom: 0.5rem;
+            --color-del-borde: var(--primary);
         }
 
-        /* El bloque local anidado cambia a un borde rosa */
         .scope-local {
-            border-left: 4px solid var(--secondary);
-            background: rgba(236, 72, 153, 0.03);
-            padding: 0.8rem 1rem;
-            margin: 0.8rem 0;
-            border-radius: 0 6px 6px 0;
+            --color-del-borde: var(--secondary);
+            background: rgba(236, 72, 153, 0.02);
         }
 
-        /* Zona donde la variable ya no existe */
         .scope-dead {
-            border-left: 4px dashed var(--danger);
-            padding-left: 1rem;
+            --color-del-borde: var(--danger);
+            border-left-style: dashed;
             color: var(--danger);
-            margin-top: 0.5rem;
+        }
+
+        .condicional-if {
+            --color-del-borde: var(--success);
+            background: rgba(16, 185, 129, 0.02);
+        }
+
+        .condicional-elseif {
+            --color-del-borde: var(--accent);
+            background: rgba(245, 158, 11, 0.02);
+        }
+
+        .condicional-else {
+            --color-del-borde: var(--danger);
+            background: rgba(239, 68, 68, 0.02);
+        }
+
+        .ciclo-loop {
+            --color-del-borde: var(--cyan);
+            background: rgba(6, 182, 212, 0.02);
         }
     </style>
 </head>
@@ -172,75 +198,90 @@
     <main>
         <header>
             <h1>⚡ Laboratorio Práctico de JavaScript</h1>
-            <p>Haz clic en los botones de cada sección para interactuar directamente con la lógica del código.</p>
+            <p>Estructura de aprendizaje desde las bases. Haz clic en los botones para ejecutar la lógica.</p>
         </header>
 
         <section>
-            <h2>🔌 1. Inclusión de Scripts: Defer vs Async</h2>
-            <p>Controla cómo se descargan los archivos externos de JavaScript sin congelar la carga de la página:</p>
-            <pre><code><span class="com">&lt;!-- Se ejecuta en segundo plano y espera a que el HTML esté listo --&gt;</span>
-&lt;<span class="kw">script</span> <span class="str">src</span>=<span class="str">"script.js"</span> <span class="kw">defer</span>&gt;&lt;/<span class="kw">script</span>&gt;
-
-<span class="com">&lt;!-- Se ejecuta inmediatamente en cuanto termina de descargarse --&gt;</span>
-&lt;<span class="kw">script</span> <span class="str">src</span>=<span class="str">"script.js"</span> <span class="kw">async</span>&gt;&lt;/<span class="kw">script</span>&gt;</code></pre>
-        </section>
-
-        <section>
-            <h2>📦 2. Variables y Tipos de Datos</h2>
-            <p>Usamos <code>let</code> para valores modificables y <code>const</code> para valores fijos protegidos.</p>
-            <pre><code><span class="kw">let</span> nombre = <span class="str">"Carlos"</span>;
-<span class="kw">const</span> edad = <span class="num">28</span>;</code></pre>
+            <h2>📦 1. Variables y Tipos de Datos</h2>
+            <p>Los programas necesitan guardar datos. Usamos <code>let</code> para cajas reutilizables cuyo valor puede
+                variar, y <code>const</code> para valores que deben quedar fijos y protegidos.</p>
+            <pre><code><span class="kw">let</span> nombre = <span class="str">"Juan"</span>; <span class="com">// Tipo: String (Texto)</span>
+<span class="kw">const</span> edad = <span class="num">28</span>;     <span class="com">// Tipo: Number (Número) - Inmutable</span></code></pre>
             <button class="btn-interactivo" onclick="probarVariables()">🧪 Probar Variables</button>
         </section>
 
         <section>
-            <h2>🔍 3. Scope de Bloque (Visualización por Bordes)</h2>
-            <p>Mira cómo los bordes de color delimitan de forma perfecta el ciclo de vida de cada variable. Lo que nace
-                dentro del borde rosa, muere al cerrarse ese borde:</p>
+            <h2>🔍 2. Scope de Bloque (Alcance)</h2>
+            <p>El scope define los límites donde vive una variable. Observa cómo los "paréntesis" de color delimitan
+                dónde empieza y dónde termina cada entorno:</p>
 
-            <div class="scope-container">
-                <div class="scope-global">
-                    <span class="kw">let</span> global = <span class="str">"Vivo en todo el archivo"</span>; <span
-                        class="com">// ← Nace la global</span>
+            <div class="visual-container">
+                <div class="parentesis-bloque scope-global">
+                    <span class="kw">let</span> global = <span class="str">"Disponible en todo el archivo"</span>;
                     <br><br>
                     <span class="kw">if</span> (<span class="kw">true</span>) {
-                    <div class="scope-local">
-                        <span class="kw">let</span> local = <span class="str">"Solo vivo dentro de estas llaves"</span>;
-                        <span class="com">// ← Nace la local</span>
+                    <div class="parentesis-bloque scope-local">
+                        <span class="kw">let</span> local = <span class="str">"Solo existo aquí adentro"</span>;
                         <br>
-                        console.log(local); <span class="com">// ✅ Funciona perfectamente aquí dentro</span>
+                        console.log(local); <span class="com">// ✅ Éxito</span>
                     </div>
-                    } <span class="com">// ← Aquí se cierra el bloque local</span>
-                    <br>
-                    console.log(global); <span class="com">// ✅ Funciona (seguimos dentro del borde azul)</span>
+                    }
                 </div>
-
-                <div class="scope-dead">
-                    console.log(local); <span class="com" style="color: var(--danger);">// ❌ ¡ERROR! Fuera del borde
-                        rosa, la variable 'local' ya no existe.</span>
+                <div class="parentesis-bloque scope-dead">
+                    console.log(local); <span class="com" style="color: var(--danger);">// ❌ ¡ERROR! Fuera del
+                        paréntesis rosa la variable local ha muerto.</span>
                 </div>
             </div>
-
             <button class="btn-interactivo" onclick="probarScope()">🔍 Ejecutar Prueba de Scope</button>
         </section>
 
         <section>
-            <h2>🔀 4. Operadores Lógicos y Condicionales</h2>
-            <p>Usamos <code>&&</code> (AND) para obligar a que se cumplan múltiples criterios antes de tomar una
-                decisión.</p>
-            <button class="btn-interactivo" onclick="probarCondicionales()">🚦 Control de Acceso</button>
+            <h2>🚦 3. Sentencias Condicionales (Flujos Excluyentes)</h2>
+            <p>Las condicionales dividen los caminos de tu código. Al ejecutarse, el navegador **solo entrará a un único
+                paréntesis de color** (el primero que se cumpla):</p>
+
+            <div class="visual-container">
+                <span class="kw">let</span> semaforo = <span class="str">"Amarillo"</span>;
+                <br><br>
+
+                <span class="kw">if</span> (semaforo === <span class="str">"Rojo"</span>) {
+                <div class="parentesis-bloque condicional-if">
+                    console.log(<span class="str">"🛑 ¡Detenerse por completo!"</span>);
+                </div>
+                } <span class="kw">else if</span> (semaforo === <span class="str">"Amarillo"</span>) {
+                <div class="parentesis-bloque condicional-elseif">
+                    console.log(<span class="str">"⚠️ ¡Precaución! El paréntesis del medio se activa."</span>);
+                </div>
+                } <span class="kw">else {</span>
+                <div class="parentesis-bloque condicional-else">
+                    console.log(<span class="str">"🍏 ¡Avanzar de forma segura!"</span>);
+                </div>
+                }
+            </div>
+            <button class="btn-interactivo" onclick="probarCondicionales()">🚦 Probar Control de Flujo</button>
         </section>
 
         <section>
-            <h2>🔁 5. Ciclos (Loops)</h2>
-            <p>El bucle <code>for</code> repite instrucciones incrementando un contador interno automáticamente.</p>
+            <h2>🔁 4. Ciclos (Loops)</h2>
+            <p>El bucle <code>for</code> repite todo el código que se encuentra atrapado dentro de su paréntesis cian
+                tantas veces como lo dicte su condición de parada:</p>
+
+            <div class="visual-container">
+                <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i &lt;= <span
+                    class="num">3</span>; i++) {
+                <div class="parentesis-bloque ciclo-loop">
+                    <span class="com">// Todo lo que está dentro de este paréntesis curvo se repetirá 3 veces</span>
+                    <br>
+                    console.log(<span class="str">"Vuelta número: "</span> + i);
+                </div>
+                }
+            </div>
             <button class="btn-interactivo" onclick="probarCiclos()">🔁 Iniciar Bucle</button>
         </section>
 
         <section>
-            <h2>🛠️ 6. Creación de Funciones Tradicionales y Flecha</h2>
-            <p>Compara la estructura clásica con la palabra reservada <code>function</code> frente a la sintaxis limpia
-                de flecha:</p>
+            <h2>🛠️ 5. Funciones Tradicionales y Funciones Flecha</h2>
+            <p>Bloques de código reutilizables estructurados de forma clásica o mediante la sintaxis moderna:</p>
 
             <h3>Sintaxis Tradicional:</h3>
             <pre><code><span class="kw">function</span> <span class="fn">calcularDoble</span>(numero) {
@@ -251,35 +292,65 @@
             <pre><code><span class="kw">const</span> <span class="fn">calcularDobleFlecha</span> = (numero) =&gt; {
     <span class="kw">return</span> numero * <span class="num">2</span>;
 };</code></pre>
+            <button class="btn-interactivo" onclick="probarFunciones()">🧮 Invocar Funciones</button>
+        </section>
 
-            <button class="btn-interactivo" onclick="probarFunciones()">🧮 Invocar Ambas Funciones</button>
+        <section>
+            <h2>🔌 6. Buenas Prácticas: ¿Dónde incluir JavaScript?</h2>
+            <p>JavaScript se puede incrustar en múltiples partes de tu documento HTML utilizando las etiquetas
+                <code>&lt;script&gt;</code>:</p>
+
+            <h3>A. Scripts Internos (Directamente en el cuerpo del HTML)</h3>
+            <p>La buena práctica dicta agruparlos preferiblemente al final del <code>&lt;body&gt;</code> para asegurar
+                que el contenido visual ya exista.</p>
+            <pre><code>&lt;<span class="kw">body</span>&gt;
+    &lt;<span class="kw">h1</span>&gt;Mi Sitio&lt;/<span class="kw">h1</span>&gt;
+
+    &lt;<span class="kw">script</span>&gt;
+        <span class="kw">let</span> nombre = <span class="str">"Juan"</span>; <span class="com">// Código embebido directamente</span>
+        console.log(nombre);
+    &lt;/<span class="kw">script</span>&gt;
+&lt;/<span class="kw">body</span>&gt;</code></pre>
+
+            <h3>B. Scripts Externos (En el Head mediante Defer y Async)</h3>
+            <p>Para proyectos reales, separamos el código en archivos `.js` externos optimizando el rendimiento desde el
+                head:</p>
+            <pre><code><span class="com">&lt;!-- RECOMENDADO: Descarga asíncrona y ejecución automática al final de la carga del HTML --&gt;</span>
+&lt;<span class="kw">script</span> <span class="str">src</span>=<span class="str">"app.js"</span> <span class="kw">defer</span>&gt;&lt;/<span class="kw">script</span>&gt;
+
+<span class="com">&lt;!-- Descarga asíncrona pero interrumpe al HTML para ejecutarse de inmediato --&gt;</span>
+&lt;<span class="kw">script</span> <span class="str">src</span>=<span class="str">"analiticas.js"</span> <span class="kw">async</span>&gt;&lt;/<span class="kw">script</span>&gt;</code></pre>
         </section>
     </main>
 
     <script>
         function probarVariables() {
-            let nombre = prompt("Ingresa un nuevo nombre para la variable 'let':", "Estudiante");
-            alert("La variable 'let nombre' ahora vale: \"" + nombre + "\"");
+            let nombre = prompt("Ingresa un nuevo nombre para reasignar la variable 'let':", "Juan");
+            alert("Operación en memoria:\n\nLa variable 'let nombre' ahora guarda: \"" + nombre + "\"");
         }
 
         function probarScope() {
-            alert("Revisa el bloque de la Sección 3:\n\nComo puedes ver, el código que intenta llamar a 'local' quedó en la zona del borde rojo discontinuo, completamente fuera del contenedor rosa de su bloque de origen. ¡Por eso da error!");
+            alert("Mira el bloque de la Sección 2:\n\nLa variable local intentó llamarse en el paréntesis rojo discontinuo inferior. Como está fuera del paréntesis rosa original de su bloque, el navegador arroja un error.");
         }
 
         function probarCondicionales() {
-            let edadInput = prompt("Ingresa la edad del usuario:", "17");
-            let edad = Number(edadInput);
-            if (edad >= 18) {
-                alert("🍏 ¡Acceso aprobado! Eres mayor de edad.");
+            let estado = prompt("Prueba el flujo del semáforo. Escribe una opción (Rojo / Amarillo / Verde):", "Amarillo");
+
+            if (estado === "Rojo" || estado === "rojo") {
+                alert("Flujo dirigido 🛑\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis verde (if).");
+            } else if (estado === "Amarillo" || estado === "amarillo") {
+                alert("Flujo dirigido ⚠️\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis naranja (else if).");
+            } else if (estado === "Verde" || estado === "verde") {
+                alert("Flujo dirigido 🍏\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis rojo (else).");
             } else {
-                alert("🛑 ¡Acceso denegado! Redirigido al bloque ELSE.");
+                alert("Opción no registrada. Ningún paréntesis condicional se activó.");
             }
         }
 
         function probarCiclos() {
-            alert("El bucle FOR va a ejecutarse 3 veces automáticamente.");
+            alert("Iniciando iteración automática. Verás cómo se repite el código atrapado por el paréntesis cian.");
             for (let i = 1; i <= 3; i++) {
-                alert("Vuelta número: " + i);
+                alert("Repitiendo código dentro del paréntesis 🔁\n\nContador 'i' = " + i);
             }
         }
 
@@ -287,11 +358,11 @@
             function calcularDoble(numero) { return numero * 2; }
             const calcularDobleFlecha = (numero) => { return numero * 2; };
 
-            let valor = Number(prompt("Introduce un número base:", "8"));
+            let valor = Number(prompt("Introduce un número base:", "5"));
             let resNormal = calcularDoble(valor);
             let resFlecha = calcularDobleFlecha(valor);
 
-            alert("Resultados:\n• Función Tradicional: " + resNormal + "\n• Función Flecha: " + resFlecha);
+            alert("Valores calculados:\n• Función Tradicional: " + resNormal + "\n• Función Flecha: " + resFlecha);
         }
     </script>
 </body>
