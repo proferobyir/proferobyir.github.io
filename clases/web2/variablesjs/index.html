@@ -16,7 +16,7 @@
             --text: #e2e8f0;
             --code-bg: #0b1120;
             --border: #334155;
-            --success: #10b981;
+            --danger: #ef4444;
         }
 
         * {
@@ -54,11 +54,6 @@
             margin-bottom: 0.5rem;
         }
 
-        header p {
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-
         section {
             background: var(--card);
             border: 1px solid var(--border);
@@ -72,9 +67,6 @@
             color: var(--accent);
             font-size: 1.6rem;
             margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         h3 {
@@ -88,7 +80,6 @@
             margin-bottom: 1rem;
         }
 
-        /* --- BLOQUES DE CÓDIGO --- */
         pre {
             background: var(--code-bg);
             border: 1px solid var(--border);
@@ -104,30 +95,23 @@
             color: #c084fc;
         }
 
-        /* Palabra clave */
         .str {
             color: #86efac;
         }
 
-        /* Texto / String */
         .num {
             color: #fbbf24;
         }
 
-        /* Número */
         .com {
             color: #64748b;
             font-style: italic;
         }
 
-        /* Comentario */
         .fn {
             color: #60a5fa;
         }
 
-        /* Función */
-
-        /* --- BOTONES DE LA INTERFAZ --- */
         .btn-interactivo {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -138,9 +122,6 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
             margin-top: 0.5rem;
         }
 
@@ -149,24 +130,39 @@
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
         }
 
-        .btn-interactivo:active {
-            transform: translateY(0);
-        }
-
-        /* --- CONTENEDOR PARA EL MAPA VECTORIAL --- */
-        .vector-container {
+        /* --- INTERFAZ DE SCOPE BASADA EN BORDES (TÚ IDEA) --- */
+        .scope-container {
             background: var(--code-bg);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 1.5rem;
-            display: flex;
-            justify-content: center;
             margin: 1.5rem 0;
+            font-family: 'Consolas', monospace;
+            font-size: 0.95rem;
         }
 
-        svg {
-            max-width: 100%;
-            height: auto;
+        /* El bloque global tiene un borde izquierdo azul grueso */
+        .scope-global {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* El bloque local anidado cambia a un borde rosa */
+        .scope-local {
+            border-left: 4px solid var(--secondary);
+            background: rgba(236, 72, 153, 0.03);
+            padding: 0.8rem 1rem;
+            margin: 0.8rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Zona donde la variable ya no existe */
+        .scope-dead {
+            border-left: 4px dashed var(--danger);
+            padding-left: 1rem;
+            color: var(--danger);
+            margin-top: 0.5rem;
         }
     </style>
 </head>
@@ -191,70 +187,60 @@
 
         <section>
             <h2>📦 2. Variables y Tipos de Datos</h2>
-            <p>Usamos <code>let</code> para valores que pueden cambiar en el tiempo y <code>const</code> para valores
-                fijos protegidos con un candado de lectura.</p>
-            <pre><code><span class="kw">let</span> nombre = <span class="str">"Carlos"</span>; <span class="com">// Puede cambiar</span>
-<span class="kw">const</span> edad = <span class="num">28</span>;      <span class="com">// Estático. No se puede modificar</span></code></pre>
-            <button class="btn-interactivo" onclick="probarVariables()">🧪 Probar Modificación de Variables</button>
+            <p>Usamos <code>let</code> para valores modificables y <code>const</code> para valores fijos protegidos.</p>
+            <pre><code><span class="kw">let</span> nombre = <span class="str">"Carlos"</span>;
+<span class="kw">const</span> edad = <span class="num">28</span>;</code></pre>
+            <button class="btn-interactivo" onclick="probarVariables()">🧪 Probar Variables</button>
         </section>
 
         <section>
-            <h2>🔍 3. Scope de Bloque (Vectores de Alcance)</h2>
-            <p>El alcance (Scope) define los límites de vida de tus variables. Observa en el diagrama SVG cómo la
-                variable local queda atrapada dentro de las llaves del bloque:</p>
+            <h2>🔍 3. Scope de Bloque (Visualización por Bordes)</h2>
+            <p>Mira cómo los bordes de color delimitan de forma perfecta el ciclo de vida de cada variable. Lo que nace
+                dentro del borde rosa, muere al cerrarse ese borde:</p>
 
-            <div class="vector-container">
-                <svg width="600" height="190" viewBox="0 0 600 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="600" height="190" rx="8" fill="#0b1120" />
-                    <rect x="20" y="50" width="340" height="75" rx="6" fill="#1e293b" stroke="#334155"
-                        stroke-width="1.5" />
-                    <text x="30" y="70" fill="#c084fc" font-family="monospace" font-size="13" font-weight="bold">if
-                        (true) {</text>
-                    <text x="50" y="95" fill="#cbd5e1" font-family="monospace" font-size="13">let local = "Solo vivo
-                        aquí";</text>
-                    <text x="30" y="117" fill="#c084fc" font-family="monospace" font-size="13"
-                        font-weight="bold">}</text>
+            <div class="scope-container">
+                <div class="scope-global">
+                    <span class="kw">let</span> global = <span class="str">"Vivo en todo el archivo"</span>; <span
+                        class="com">// ← Nace la global</span>
+                    <br><br>
+                    <span class="kw">if</span> (<span class="kw">true</span>) {
+                    <div class="scope-local">
+                        <span class="kw">let</span> local = <span class="str">"Solo vivo dentro de estas llaves"</span>;
+                        <span class="com">// ← Nace la local</span>
+                        <br>
+                        console.log(local); <span class="com">// ✅ Funciona perfectamente aquí dentro</span>
+                    </div>
+                    } <span class="com">// ← Aquí se cierra el bloque local</span>
+                    <br>
+                    console.log(global); <span class="com">// ✅ Funciona (seguimos dentro del borde azul)</span>
+                </div>
 
-                    <text x="20" y="30" fill="#cbd5e1" font-family="monospace" font-size="13">let global = "Vivo en todo
-                        el archivo";</text>
-                    <text x="20" y="155" fill="#64748b" font-family="monospace" font-size="13">// console.log(local); ❌
-                        Fuera del bloque dará Error</text>
-
-                    <line x1="450" y1="25" x2="450" y2="155" stroke="#6366f1" stroke-width="3" stroke-dasharray="4 2" />
-                    <circle cx="450" y="25" r="4" fill="#6366f1" />
-                    <circle cx="450" y="155" r="4" fill="#6366f1" />
-                    <text x="465" y="95" fill="#6366f1" font-family="sans-serif" font-size="12"
-                        font-weight="bold">ALCANCE GLOBAL</text>
-
-                    <line x1="410" y1="60" x2="410" y2="110" stroke="#ec4899" stroke-width="3" />
-                    <line x1="405" y1="60" x2="415" y2="60" stroke="#ec4899" stroke-width="3" />
-                    <line x1="405" y1="110" x2="415" y2="110" stroke="#ec4899" stroke-width="3" />
-                    <path d="M410 110 L410 150 L220 150" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 3"
-                        fill="none" />
-                    <polygon points="220,147 212,150 220,153" fill="#ef4444" />
-                </svg>
+                <div class="scope-dead">
+                    console.log(local); <span class="com" style="color: var(--danger);">// ❌ ¡ERROR! Fuera del borde
+                        rosa, la variable 'local' ya no existe.</span>
+                </div>
             </div>
+
             <button class="btn-interactivo" onclick="probarScope()">🔍 Ejecutar Prueba de Scope</button>
         </section>
 
         <section>
             <h2>🔀 4. Operadores Lógicos y Condicionales</h2>
             <p>Usamos <code>&&</code> (AND) para obligar a que se cumplan múltiples criterios antes de tomar una
-                decisión con la sentencia <code>if</code>.</p>
-            <button class="btn-interactivo" onclick="probarCondicionales()">🚦 Pasar por el Control de Acceso</button>
+                decisión.</p>
+            <button class="btn-interactivo" onclick="probarCondicionales()">🚦 Control de Acceso</button>
         </section>
 
         <section>
             <h2>🔁 5. Ciclos (Loops)</h2>
-            <p>El bucle <code>for</code> repite un bloque de instrucciones de manera automatizada incrementando un
-                contador interno.</p>
-            <button class="btn-interactivo" onclick="probarCiclos()">🔁 Iniciar Bucle Automatizado</button>
+            <p>El bucle <code>for</code> repite instrucciones incrementando un contador interno automáticamente.</p>
+            <button class="btn-interactivo" onclick="probarCiclos()">🔁 Iniciar Bucle</button>
         </section>
 
         <section>
             <h2>🛠️ 6. Creación de Funciones Tradicionales y Flecha</h2>
-            <p>Una función es un bloque de código reutilizable. Compara la sintaxis clásica frente a la estructura
-                moderna de flecha:</p>
+            <p>Compara la estructura clásica con la palabra reservada <code>function</code> frente a la sintaxis limpia
+                de flecha:</p>
 
             <h3>Sintaxis Tradicional:</h3>
             <pre><code><span class="kw">function</span> <span class="fn">calcularDoble</span>(numero) {
@@ -271,57 +257,41 @@
     </main>
 
     <script>
-        // Función asociada a la Sección 2 (Variables)
         function probarVariables() {
             let nombre = prompt("Ingresa un nuevo nombre para la variable 'let':", "Estudiante");
-            alert("¡Cambio exitoso!\n\nLa variable 'let nombre' ahora vale: \"" + nombre + "\"\n\nNota: Si intentáramos cambiar la constante 'const edad', el programa fallaría inmediatamente con un error.");
+            alert("La variable 'let nombre' ahora vale: \"" + nombre + "\"");
         }
 
-        // Función asociada a la Sección 3 (Scope)
         function probarScope() {
-            let global = "Estoy afuera en el entorno global";
-            alert("Accediendo a variables:\n\n1. Variable global: ¡Leída con éxito!\n2. Intentando leer 'local' desde afuera...\n\n❌ Error: ReferenceError: local is not defined.\n\nTal como muestra el mapa de vectores SVG, la variable local no existe fuera de sus llaves.");
+            alert("Revisa el bloque de la Sección 3:\n\nComo puedes ver, el código que intenta llamar a 'local' quedó en la zona del borde rojo discontinuo, completamente fuera del contenedor rosa de su bloque de origen. ¡Por eso da error!");
         }
 
-        // Función asociada a la Sección 4 (Condicionales)
         function probarCondicionales() {
-            let edadInput = prompt("Control de acceso. Ingresa la edad del usuario:", "17");
+            let edadInput = prompt("Ingresa la edad del usuario:", "17");
             let edad = Number(edadInput);
-
             if (edad >= 18) {
-                alert("Resultado del IF:\n🍏 ¡Acceso aprobado! Eres mayor de edad.");
+                alert("🍏 ¡Acceso aprobado! Eres mayor de edad.");
             } else {
-                alert("Resultado del ELSE:\n🛑 ¡Acceso denegado! Redirigido por ser menor de edad.");
+                alert("🛑 ¡Acceso denegado! Redirigido al bloque ELSE.");
             }
         }
 
-        // Función asociada a la Sección 5 (Ciclos)
         function probarCiclos() {
-            alert("El bucle FOR va a ejecutarse 3 veces seguidas de forma automática.");
+            alert("El bucle FOR va a ejecutarse 3 veces automáticamente.");
             for (let i = 1; i <= 3; i++) {
-                alert("Vuelta del bucle en ejecución 🔁\n\nEl contador 'i' vale actualmente: " + i);
+                alert("Vuelta número: " + i);
             }
-            alert("Fin del ciclo. El contador llegó a su límite.");
         }
 
-        // Función asociada a la Sección 6 (Funciones)
         function probarFunciones() {
-            // Definición interna de los dos tipos de funciones para el cálculo
-            function calcularDoble(numero) {
-                return numero * 2;
-            }
+            function calcularDoble(numero) { return numero * 2; }
+            const calcularDobleFlecha = (numero) => { return numero * 2; };
 
-            const calcularDobleFlecha = (numero) => {
-                return numero * 2;
-            };
-
-            let valor = Number(prompt("Introduce un número para procesarlo en ambas funciones:", "7"));
-
-            // Llamamos a las funciones pasando el parámetro
+            let valor = Number(prompt("Introduce un número base:", "8"));
             let resNormal = calcularDoble(valor);
             let resFlecha = calcularDobleFlecha(valor);
 
-            alert("Procesando datos...\n\nResultados obtenidos:\n• Desde Función Tradicional: " + resNormal + "\n• Desde Función Flecha: " + resFlecha + "\n\n¡Ambas hicieron el mismo cálculo pero estructuradas de forma distinta!");
+            alert("Resultados:\n• Función Tradicional: " + resNormal + "\n• Función Flecha: " + resFlecha);
         }
     </script>
 </body>
