@@ -93,26 +93,38 @@
             margin: 1rem 0;
         }
 
+        .tag {
+            color: #f43f5e;
+            font-weight: bold;
+        }
+
+        /* Etiquetas HTML */
         .kw {
             color: #c084fc;
         }
 
+        /* Palabra clave JS */
         .str {
             color: #86efac;
         }
 
+        /* Strings / Texto */
         .num {
             color: #fbbf24;
         }
 
+        /* Números */
         .com {
             color: #64748b;
             font-style: italic;
         }
 
+        /* Comentarios */
         .fn {
             color: #60a5fa;
         }
+
+        /* Funciones */
 
         .btn-interactivo {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -143,19 +155,16 @@
             font-size: 0.95rem;
         }
 
-        /* --- EFECTO DE PARÉNTESIS ABIERTO (TU IDEA DE BORDER-RADIUS) --- */
+        /* --- EFECTO DE PARÉNTESIS ABIERTO (BORDER-LEFT + RADIUS) --- */
         .parentesis-bloque {
             border: 2px solid transparent;
-            /* Oculta los bordes arriba, derecha y abajo */
             border-left: 6px solid var(--color-del-borde, var(--primary));
-            /* Borde izquierdo grueso */
             border-radius: 24px 0 0 24px;
-            /* Curva solo las esquinas izquierdas para hacer el "(" */
             padding: 0.8rem 1.2rem;
             margin: 0.6rem 0;
         }
 
-        /* Colores asignados a cada tipo de bloque */
+        /* Asignación de colores por tipo de bloque */
         .scope-global {
             --color-del-borde: var(--primary);
         }
@@ -198,127 +207,143 @@
     <main>
         <header>
             <h1>⚡ Laboratorio Práctico de JavaScript</h1>
-            <p>Estructura de aprendizaje desde las bases. Haz clic en los botones para ejecutar la lógica.</p>
+            <p>Estructura de aprendizaje interactiva. Explora los contenedores de código y presiona los botones.</p>
         </header>
 
         <section>
             <h2>📦 1. Variables y Tipos de Datos</h2>
-            <p>Los programas necesitan guardar datos. Usamos <code>let</code> para cajas reutilizables cuyo valor puede
-                variar, y <code>const</code> para valores que deben quedar fijos y protegidos.</p>
-            <pre><code><span class="kw">let</span> nombre = <span class="str">"Juan"</span>; <span class="com">// Tipo: String (Texto)</span>
-<span class="kw">const</span> edad = <span class="num">28</span>;     <span class="com">// Tipo: Number (Número) - Inmutable</span></code></pre>
+            <p>Todo bloque de instrucciones en JavaScript que conviva dentro de un archivo HTML debe estar encapsulado
+                en sus etiquetas correspondientes:</p>
+            <pre><code><span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
+    <span class="kw">let</span> nombre = <span class="str">"Juan"</span>; <span class="com">// Variable modificable (String)</span>
+    <span class="kw">const</span> edad = <span class="num">28</span>;     <span class="com">// Variable fija con candado (Number)</span>
+<span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span></code></pre>
             <button class="btn-interactivo" onclick="probarVariables()">🧪 Probar Variables</button>
         </section>
 
         <section>
             <h2>🔍 2. Scope de Bloque (Alcance)</h2>
-            <p>El scope define los límites donde vive una variable. Observa cómo los "paréntesis" de color delimitan
-                dónde empieza y dónde termina cada entorno:</p>
+            <p>El "paréntesis" de color delimita con total precisión las fronteras de aislamiento en memoria donde tus
+                datos permanecen con vida:</p>
 
             <div class="visual-container">
+                <span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
                 <div class="parentesis-bloque scope-global">
-                    <span class="kw">let</span> global = <span class="str">"Disponible en todo el archivo"</span>;
+                    <span class="kw">let</span> global = <span class="str">"Disponible en todo el script"</span>;
                     <br><br>
                     <span class="kw">if</span> (<span class="kw">true</span>) {
                     <div class="parentesis-bloque scope-local">
                         <span class="kw">let</span> local = <span class="str">"Solo existo aquí adentro"</span>;
                         <br>
-                        console.log(local); <span class="com">// ✅ Éxito</span>
+                        console.log(local); <span class="com">// ✅ Éxito de lectura</span>
                     </div>
                     }
                 </div>
                 <div class="parentesis-bloque scope-dead">
                     console.log(local); <span class="com" style="color: var(--danger);">// ❌ ¡ERROR! Fuera del
-                        paréntesis rosa la variable local ha muerto.</span>
+                        paréntesis rosa, la variable local ha muerto.</span>
                 </div>
+                <span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span>
             </div>
             <button class="btn-interactivo" onclick="probarScope()">🔍 Ejecutar Prueba de Scope</button>
         </section>
 
         <section>
             <h2>🚦 3. Sentencias Condicionales (Flujos Excluyentes)</h2>
-            <p>Las condicionales dividen los caminos de tu código. Al ejecutarse, el navegador **solo entrará a un único
-                paréntesis de color** (el primero que se cumpla):</p>
+            <p>Las bifurcaciones lógicas crean rutas aisladas. El motor del navegador solo se adentrará en un único
+                paréntesis curvo a la vez:</p>
 
             <div class="visual-container">
+                <span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
+                <br><br>
                 <span class="kw">let</span> semaforo = <span class="str">"Amarillo"</span>;
                 <br><br>
-
                 <span class="kw">if</span> (semaforo === <span class="str">"Rojo"</span>) {
                 <div class="parentesis-bloque condicional-if">
                     console.log(<span class="str">"🛑 ¡Detenerse por completo!"</span>);
                 </div>
                 } <span class="kw">else if</span> (semaforo === <span class="str">"Amarillo"</span>) {
                 <div class="parentesis-bloque condicional-elseif">
-                    console.log(<span class="str">"⚠️ ¡Precaución! El paréntesis del medio se activa."</span>);
+                    console.log(<span class="str">"⚠️ ¡Precaución! Fase intermedia."</span>);
                 </div>
-                } <span class="kw">else {</span>
+                } <span class="kw">else</span> {
                 <div class="parentesis-bloque condicional-else">
-                    console.log(<span class="str">"🍏 ¡Avanzar de forma segura!"</span>);
+                    console.log(<span class="str">"🍏 ¡Avanzar libremente!"</span>);
                 </div>
                 }
+                <br>
+                <span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span>
             </div>
             <button class="btn-interactivo" onclick="probarCondicionales()">🚦 Probar Control de Flujo</button>
         </section>
 
         <section>
             <h2>🔁 4. Ciclos (Loops)</h2>
-            <p>El bucle <code>for</code> repite todo el código que se encuentra atrapado dentro de su paréntesis cian
-                tantas veces como lo dicte su condición de parada:</p>
+            <p>El bucle repite de manera sucesiva e idéntica la zona de instrucciones protegida por el paréntesis de
+                repetición:</p>
 
             <div class="visual-container">
+                <span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
+                <br><br>
                 <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i &lt;= <span
                     class="num">3</span>; i++) {
                 <div class="parentesis-bloque ciclo-loop">
-                    <span class="com">// Todo lo que está dentro de este paréntesis curvo se repetirá 3 veces</span>
-                    <br>
-                    console.log(<span class="str">"Vuelta número: "</span> + i);
+                    console.log(<span class="str">"Vuelta número: "</span> + i); <span class="com">// Se procesa 3 veces
+                        continuas</span>
                 </div>
                 }
+                <br>
+                <span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span>
             </div>
             <button class="btn-interactivo" onclick="probarCiclos()">🔁 Iniciar Bucle</button>
         </section>
 
         <section>
             <h2>🛠️ 5. Funciones Tradicionales y Funciones Flecha</h2>
-            <p>Bloques de código reutilizables estructurados de forma clásica o mediante la sintaxis moderna:</p>
+            <p>Estructuras completas de empaquetado funcional reutilizable, protegidas bajo el marco de entorno de
+                ejecución script:</p>
 
             <h3>Sintaxis Tradicional:</h3>
-            <pre><code><span class="kw">function</span> <span class="fn">calcularDoble</span>(numero) {
-    <span class="kw">return</span> numero * <span class="num">2</span>;
-}</code></pre>
+            <pre><code><span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
+    <span class="kw">function</span> <span class="fn">calcularDoble</span>(numero) {
+        <span class="kw">return</span> numero * <span class="num">2</span>;
+    }
+<span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span></code></pre>
 
             <h3>Sintaxis Flecha (Arrow Function):</h3>
-            <pre><code><span class="kw">const</span> <span class="fn">calcularDobleFlecha</span> = (numero) =&gt; {
-    <span class="kw">return</span> numero * <span class="num">2</span>;
-};</code></pre>
+            <pre><code><span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
+    <span class="kw">const</span> <span class="fn">calcularDobleFlecha</span> = (numero) =&gt; {
+        <span class="kw">return</span> numero * <span class="num">2</span>;
+    };
+<span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span></code></pre>
+
             <button class="btn-interactivo" onclick="probarFunciones()">🧮 Invocar Funciones</button>
         </section>
 
         <section>
             <h2>🔌 6. Buenas Prácticas: ¿Dónde incluir JavaScript?</h2>
-            <p>JavaScript se puede incrustar en múltiples partes de tu documento HTML utilizando las etiquetas
-                <code>&lt;script&gt;</code>:</p>
+            <p>Se puede enlazar código dinámico en múltiples sectores de la estructura. Analiza sus vertientes de
+                inyección directa u optimizada:</p>
 
-            <h3>A. Scripts Internos (Directamente en el cuerpo del HTML)</h3>
-            <p>La buena práctica dicta agruparlos preferiblemente al final del <code>&lt;body&gt;</code> para asegurar
-                que el contenido visual ya exista.</p>
+            <h3>A. Scripts Internos (Distribución Embebida en el Body)</h3>
+            <p>Metodología ágil que añade scripts directamente dentro del cuerpo del archivo. Lo ideal es ubicarlos
+                abajo de todos los elementos visuales.</p>
             <pre><code>&lt;<span class="kw">body</span>&gt;
-    &lt;<span class="kw">h1</span>&gt;Mi Sitio&lt;/<span class="kw">h1</span>&gt;
+    &lt;<span class="kw">h1</span>&gt;Mi Portal Web&lt;/<span class="kw">h1</span>&gt;
 
-    &lt;<span class="kw">script</span>&gt;
-        <span class="kw">let</span> nombre = <span class="str">"Juan"</span>; <span class="com">// Código embebido directamente</span>
-        console.log(nombre);
-    &lt;/<span class="kw">script</span>&gt;
+    <span class="tag">&lt;script&gt;</span> <span class="com">// ← Etiqueta de apertura de JavaScript</span>
+        <span class="kw">let</span> usuario = <span class="str">"Juan"</span>;
+        console.log(usuario);
+    <span class="tag">&lt;/script&gt;</span> <span class="com">// ← Etiqueta de cierre de JavaScript</span>
 &lt;/<span class="kw">body</span>&gt;</code></pre>
 
-            <h3>B. Scripts Externos (En el Head mediante Defer y Async)</h3>
-            <p>Para proyectos reales, separamos el código en archivos `.js` externos optimizando el rendimiento desde el
-                head:</p>
-            <pre><code><span class="com">&lt;!-- RECOMENDADO: Descarga asíncrona y ejecución automática al final de la carga del HTML --&gt;</span>
+            <h3>B. Scripts Externos (Vinculados de forma eficiente en el Head)</h3>
+            <p>Para arquitecturas reales, delegamos la lógica en ficheros independientes aislados `.js` e implementamos
+                modificadores de rendimiento:</p>
+            <pre><code><span class="com">&lt;!-- Se descarga paralelamente y se ejecuta estrictamente al completarse el árbol HTML --&gt;</span>
 &lt;<span class="kw">script</span> <span class="str">src</span>=<span class="str">"app.js"</span> <span class="kw">defer</span>&gt;&lt;/<span class="kw">script</span>&gt;
 
-<span class="com">&lt;!-- Descarga asíncrona pero interrumpe al HTML para ejecutarse de inmediato --&gt;</span>
+<span class="com">&lt;!-- Descarga asíncrona inmediata que congela el renderizado HTML para procesarse --&gt;</span>
 &lt;<span class="kw">script</span> <span class="str">src</span>=<span class="str">"analiticas.js"</span> <span class="kw">async</span>&gt;&lt;/<span class="kw">script</span>&gt;</code></pre>
         </section>
     </main>
@@ -330,18 +355,18 @@
         }
 
         function probarScope() {
-            alert("Mira el bloque de la Sección 2:\n\nLa variable local intentó llamarse en el paréntesis rojo discontinuo inferior. Como está fuera del paréntesis rosa original de su bloque, el navegador arroja un error.");
+            alert("Mira el bloque de la Sección 2:\n\nLa variable local se invocó de manera errónea en la zona roja externa. Al estar fuera de su contenedor original (paréntesis rosa), el script rompe el flujo.");
         }
 
         function probarCondicionales() {
             let estado = prompt("Prueba el flujo del semáforo. Escribe una opción (Rojo / Amarillo / Verde):", "Amarillo");
 
             if (estado === "Rojo" || estado === "rojo") {
-                alert("Flujo dirigido 🛑\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis verde (if).");
+                alert("Flujo dirigido 🛑\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis curvo verde (if).");
             } else if (estado === "Amarillo" || estado === "amarillo") {
-                alert("Flujo dirigido ⚠️\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis naranja (else if).");
+                alert("Flujo dirigido ⚠️\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis curvo naranja (else if).");
             } else if (estado === "Verde" || estado === "verde") {
-                alert("Flujo dirigido 🍏\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis rojo (else).");
+                alert("Flujo dirigido 🍏\n\nEl navegador ejecutó ÚNICAMENTE las instrucciones dentro del paréntesis curvo rojo (else).");
             } else {
                 alert("Opción no registrada. Ningún paréntesis condicional se activó.");
             }
