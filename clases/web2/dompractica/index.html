@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio del DOM Avanzado - Inspección de Atributos</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --border: #cbd5e1;
+            --accent: #ef4444;
+            --code-bg: #1e293b;
+            --comment-color: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin-bottom: -1rem;
+        }
+
+        h2.seccion-titulo {
+            color: var(--primary);
+            font-size: 1.3rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 0.5rem;
+            margin-bottom: -1rem;
+        }
+
+        /* --- ARQUITECTURA DE 3 COLUMNAS --- */
+        .herramienta-container {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr 0.8fr;
+            min-height: 380px;
+            overflow: hidden;
+        }
+
+        .columna {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .columna:not(:last-child) {
+            border-right: 2px solid var(--border);
+        }
+
+        .col-titulo {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #475569;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        /* --- EDITOR DE CÓDIGO --- */
+        .editor-codigo {
+            background-color: var(--code-bg);
+            color: #f8fafc;
+            padding: 1.2rem;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: inset 0 4px 6px rgb(0 0 0 / 0.2);
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+
+        .linea {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .kw {
+            color: #f472b6;
+        }
+
+        .meth {
+            color: #38bdf8;
+        }
+
+        .str {
+            color: #4ade80;
+        }
+
+        .input-reactivo {
+            background: #0f172a;
+            border: 1px solid #3b82f6;
+            border-radius: 4px;
+            color: #4ade80;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 0.15rem 0.4rem;
+            outline: none;
+        }
+
+        .input-id {
+            width: 95px;
+            text-align: center;
+        }
+
+        .input-index {
+            width: 45px;
+            text-align: center;
+            color: #fb923c;
+        }
+
+        .input-prop {
+            width: 120px;
+        }
+
+        .input-reactivo:focus {
+            border-color: #60a5fa;
+        }
+
+        /* Guía de comentarios */
+        .bloque-ayuda-comentario {
+            color: var(--comment-color);
+            font-style: italic;
+            white-space: pre-line;
+            padding-left: 0.8rem;
+            border-left: 2px solid #334155;
+            margin: 0.2rem 0;
+        }
+
+        /* --- NODOS HTML REALES --- */
+        .contenedor-nodos {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .nodo-wrapper {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.6rem;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+
+        .nodo-tag {
+            font-family: monospace;
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: #475569;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .tag-html-str {
+            color: #0284c7;
+        }
+
+        /* Color azul para destacar los atributos HTML */
+
+        .nodo-real-div {
+            font-size: 0.8rem;
+            color: #334155;
+            font-weight: 500;
+            padding: 0.2rem;
+        }
+
+        .nodo-real-input {
+            width: 90%;
+            padding: 0.3rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-align: center;
+            background: #fff;
+            color: #334155;
+        }
+
+        .nodo-wrapper.seleccionado {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        }
+
+        /* --- CONSOLA OUTPUT --- */
+        .consola-output {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 1rem;
+            flex-grow: 1;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .out-string {
+            color: #4ade80;
+        }
+
+        .out-error {
+            color: #f87171;
+        }
+
+        .out-undefined {
+            color: #94a3b8;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Playground del DOM: Inspección de Contenedores y Elementos de Formulario</h1>
+
+    <h2 class="seccion-titulo">1. Método: document.getElementById()</h2>
+    <div class="herramienta-container">
+        <div class="columna">
+            <div class="col-titulo">1. Código JavaScript</div>
+            <div class="editor-codigo">
+                <div class="linea">
+                    <span class="kw">let</span> elemento = document.<span class="meth">getElementById</span>(<span
+                        class="str">"</span><input type="text" id="id-input" class="input-reactivo input-id"
+                        value="entrada1" oninput="runId()"><span class="str">"</span>);
+                </div>
+                <div id="id-comentario" class="bloque-ayuda-comentario"></div>
+                <div class="linea" style="color: var(--comment-color); font-style: italic;">// imprimir propiedad</div>
+                <div class="linea">
+                    console.<span class="meth">log</span>(elemento.<input type="text" id="id-prop"
+                        class="input-reactivo input-prop" value="value" oninput="runId()">);
+                </div>
+            </div>
+        </div>
+        <div class="columna">
+            <div class="col-titulo">2. Nodos HTML</div>
+            <div class="contenedor-nodos" id="id-nodos">
+                <div id="wrapper-card1" class="nodo-wrapper"><span class="nodo-tag">&lt;div <span
+                            class="tag-html-str">id="card1"</span>&gt;</span>
+                    <div id="card1" class="nodo-real-div">Texto del contenedor</div>
+                </div>
+                <div id="wrapper-entrada1" class="nodo-wrapper"><span class="nodo-tag">&lt;input <span
+                            class="tag-html-str">type="text" id="entrada1"</span>&gt;</span><input type="text"
+                        id="entrada1" class="nodo-real-input" value="Hola Mundo" placeholder="Escribe algo aquí..."
+                        oninput="runId()"></div>
+            </div>
+        </div>
+        <div class="columna">
+            <div class="col-titulo">3. Consola Output</div>
+            <div class="consola-output" id="id-out"></div>
+        </div>
+    </div>
+
+
+    <h2 class="seccion-titulo">2. Método: document.getElementsByClassName() (Arreglos/Colecciones)</h2>
+    <div class="herramienta-container">
+        <div class="columna">
+            <div class="col-titulo">1. Código JavaScript</div>
+            <div class="editor-codigo">
+                <div class="linea">
+                    <span class="kw">let</span> lista = document.<span class="meth">getElementsByClassName</span>(<span
+                        class="str">"</span><input type="text" id="class-input" class="input-reactivo input-id"
+                        value="campo" oninput="runClass()" placeholder="clase"><span class="str">"</span>)[<input
+                        type="number" id="class-index" class="input-reactivo input-index" value="1" min="0" max="5"
+                        oninput="runClass()">];
+                </div>
+                <div id="class-comentario" class="bloque-ayuda-comentario"></div>
+                <div class="linea" style="color: var(--comment-color); font-style: italic;">// imprimir propiedad del
+                    nodo seleccionado</div>
+                <div class="linea">
+                    console.<span class="meth">log</span>(lista.<input type="text" id="class-prop"
+                        class="input-reactivo input-prop" value="placeholder" oninput="runClass()">);
+                </div>
+            </div>
+        </div>
+        <div class="columna">
+            <div class="col-titulo">2. Nodos HTML</div>
+            <div class="contenedor-nodos" id="class-nodos">
+                <div id="wrapper-b1" class="nodo-wrapper"><span class="nodo-tag">&lt;div <span
+                            class="tag-html-str">class="campo"</span>&gt; (Índice 0)</span>
+                    <div id="b1" class="campo nodo-real-div">Bloque de datos</div>
+                </div>
+                <div id="wrapper-b2" class="nodo-wrapper"><span class="nodo-tag">&lt;input <span
+                            class="tag-html-str">type="text" class="campo"</span>&gt; (Índice 1)</span><input
+                        type="text" id="b2" class="campo nodo-real-input" value="" placeholder="Ingrese su cédula..."
+                        oninput="runClass()"></div>
+            </div>
+        </div>
+        <div class="columna">
+            <div class="col-titulo">3. Consola Output</div>
+            <div class="consola-output" id="class-out"></div>
+        </div>
+    </div>
+
+
+    <h2 class="seccion-titulo">3. Método: document.querySelector() (Selectores CSS)</h2>
+    <div class="herramienta-container">
+        <div class="columna">
+            <div class="col-titulo">1. Código JavaScript</div>
+            <div class="editor-codigo">
+                <div class="linea">
+                    <span class="kw">let</span> elemento = document.<span class="meth">querySelector</span>(<span
+                        class="str">"</span><input type="text" id="query-input" class="input-reactivo"
+                        style="width:110px;" value="input" oninput="runQuery()"><span class="str">"</span>);
+                </div>
+                <div id="query-comentario" class="bloque-ayuda-comentario"></div>
+                <div class="linea" style="color: var(--comment-color); font-style: italic;">// imprimir propiedad</div>
+                <div class="linea">
+                    console.<span class="meth">log</span>(elemento.<input type="text" id="query-prop"
+                        class="input-reactivo input-prop" value="type" oninput="runQuery()">);
+                </div>
+            </div>
+        </div>
+        <div class="columna">
+            <div class="col-titulo">2. Nodos HTML</div>
+            <div class="contenedor-nodos" id="query-nodos">
+                <div id="wrapper-item-unico" class="nodo-wrapper"><span class="nodo-tag">&lt;div <span
+                            class="tag-html-str">id="item-unico"</span>&gt;</span>
+                    <div id="item-unico" class="nodo-real-div">Caja Informativa</div>
+                </div>
+                <div id="wrapper-q-input" class="nodo-wrapper"><span class="nodo-tag">&lt;input <span
+                            class="tag-html-str">type="text"</span>&gt;</span><input type="text" id="q-input"
+                        class="nodo-real-input" value="Clave123" placeholder="Contraseña..." oninput="runQuery()"></div>
+            </div>
+        </div>
+        <div class="columna">
+            <div class="col-titulo">3. Consola Output</div>
+            <div class="consola-output" id="query-out"></div>
+        </div>
+    </div>
+
+    <script>
+        function evaluarSeccion(nodosContainerId, inputSearchId, inputPropId, comentarioId, outputId, variableName, type, inputIndexId = null) {
+            const container = document.getElementById(nodosContainerId);
+            const searchValue = document.getElementById(inputSearchId).value.trim();
+            const propValue = document.getElementById(inputPropId).value.trim();
+            const comentario = document.getElementById(comentarioId);
+            const output = document.getElementById(outputId);
+
+            container.querySelectorAll('.nodo-wrapper').forEach(el => el.classList.remove('seleccionado'));
+            comentario.innerHTML = `/* ❌ Elemento no encontrado o fuera de rango. */`;
+            output.innerHTML = `<div class="out-undefined">> undefined</div>`;
+
+            if (!searchValue) return;
+
+            let elTarget = null;
+            let wrapperObj = null;
+
+            try {
+                if (type === 'id') {
+                    elTarget = container.querySelector(`#${searchValue}`);
+                } else if (type === 'class') {
+                    const idx = parseInt(document.getElementById(inputIndexId).value, 10) || 0;
+                    elTarget = container.getElementsByClassName(searchValue)[idx];
+                } else if (type === 'query') {
+                    elTarget = container.querySelector(searchValue);
+                }
+
+                if (!elTarget || !container.contains(elTarget) || elTarget === container) throw new Error();
+
+                wrapperObj = elTarget.closest('.nodo-wrapper');
+                if (wrapperObj) wrapperObj.classList.add('seleccionado');
+
+                const esInput = (elTarget.tagName === 'INPUT');
+                let idAtributo = elTarget.id || '';
+                let claseAtributo = elTarget.className.replace('nodo-real-input', '').replace('nodo-real-div', '').trim();
+                let nombreTag = elTarget.tagName;
+
+                let subPropiedades = `  • id = "${idAtributo}"\n  • className = "${claseAtributo}"\n  • tagName = "${nombreTag}"`;
+
+                if (esInput) {
+                    subPropiedades += `\n  • value = "${elTarget.value}"\n  • placeholder = "${elTarget.placeholder || ''}"\n  • type = "${elTarget.type}"`;
+                } else {
+                    subPropiedades += `\n  • innerText = "${elTarget.innerText}"`;
+                }
+
+                let propiedadSugerida = esInput ? 'value' : 'innerText';
+                comentario.innerHTML = `/* Propiedades del elemento:\n${subPropiedades}\n  Ej: ${variableName}.${propValue || propiedadSugerida}\n*/`;
+
+                if (!propValue) {
+                    output.innerHTML = `<div class="out-undefined">> undefined (Ingresa propiedad)</div>`;
+                    return;
+                }
+
+                let resultado = undefined;
+                if (propValue === 'className') {
+                    resultado = claseAtributo;
+                } else {
+                    resultado = elTarget[propValue];
+                }
+
+                if (resultado === undefined) {
+                    output.innerHTML = `<div class="out-undefined">> undefined</div>`;
+                } else if (typeof resultado === 'string') {
+                    output.innerHTML = `> <span class="out-string">"${resultado}"</span>`;
+                } else {
+                    output.innerHTML = `> ${resultado}`;
+                }
+
+            } catch (err) {
+                output.innerHTML = `<div class="out-error">❌ ReferenceError: ${variableName} o índice no válido.</div>`;
+            }
+        }
+
+        function runId() { evaluarSeccion('id-nodos', 'id-input', 'id-prop', 'id-comentario', 'id-out', 'elemento', 'id'); }
+        function runClass() { evaluarSeccion('class-nodos', 'class-input', 'class-prop', 'class-comentario', 'class-out', 'lista', 'class', 'class-index'); }
+        function runQuery() { evaluarSeccion('query-nodos', 'query-input', 'query-prop', 'query-comentario', 'query-out', 'elemento', 'query'); }
+
+        window.onload = function () { runId(); runClass(); runQuery(); };
+    </script>
+</body>
+
+</html>
