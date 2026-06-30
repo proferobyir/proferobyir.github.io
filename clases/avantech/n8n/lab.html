@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Laboratorio: Automatización Local con n8n</title>
+    <style>
+        /* --- PALETA DE COLORES: WEDNESDAY ADDAMS --- */
+        :root {
+            --bg-main: #0a0a0c;          /* Negro gótico profundo */
+            --bg-card: #121216;          /* Gris oscuro para contenedores */
+            --border-color: #232329;     /* Gris medio para sutiles divisiones */
+            --text-primary: #f3f4f6;     /* Blanco hueso para alta legibilidad */
+            --text-secondary: #9ca3af;   /* Gris ceniza para textos secundarios */
+            --accent-purple: #5b21b6;    /* Morado Nevermore (Acento principal) */
+            --accent-purple-light: #7c3aed; /* Violeta vibrante para estados hover */
+            --code-bg: #050507;          /* Fondo negro absoluto para terminales */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace, system-ui;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 25px;
+        }
+
+        /* --- LAYOUT RESPONSIVO CON CSS GRID --- */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 850px) {
+            .dashboard-container {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
+        /* --- ENTORNO FLEXBOX (ENCABEZADO DE LA ACADEMIA) --- */
+        .gothic-header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 6px solid var(--accent-purple);
+            padding: 30px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        @media (min-width: 650px) {
+            .gothic-header {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .gothic-header h1 {
+            font-size: 1.8rem;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .gothic-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--accent-purple);
+            padding: 6px 16px;
+            border-radius: 0px; /* Estilo sobrio y angular */
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 8px rgba(91, 33, 182, 0.3);
+        }
+
+        /* --- MENÚ LATERAL INTERACTIVO --- */
+        .sidebar-nav {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 4px;
+            align-self: start;
+        }
+
+        .sidebar-nav h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 12px;
+        }
+
+        .sidebar-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 6px 10px;
+            border-left: 2px solid transparent;
+            /* --- TRANSICIÓN --- */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .sidebar-nav a:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-main);
+            border-left-color: var(--accent-purple-light);
+            padding-left: 18px; /* Animación de desplazamiento sutil */
+        }
+
+        /* --- CONTENEDOR PRINCIPAL Y ANIMACIONES DE ENTRADA --- */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .gothic-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 4px;
+            position: relative;
+            /* --- ANIMACIÓN SÓMBRIA AL CARGAR --- */
+            animation: faderFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        /* Escalonamiento del delay de animación */
+        .gothic-card:nth-child(1) { animation-delay: 0.1s; }
+        .gothic-card:nth-child(2) { animation-delay: 0.2s; }
+        .gothic-card:nth-child(3) { animation-delay: 0.3s; }
+        .gothic-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .gothic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background-color: var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Efecto de transición en el borde de la tarjeta al pasar el cursor */
+        .gothic-card:hover::before {
+            background-color: var(--accent-purple);
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        /* --- BLOQUES DE CÓDIGO (TERMINAL OSCURA) --- */
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        code {
+            color: #d1d5db;
+        }
+
+        .comment {
+            color: #4b5563; /* Gris muy oscuro para comentarios góticos */
+            font-style: italic;
+        }
+
+        .keyword {
+            color: #a78bfa; /* Violeta pálido para palabras clave de JS */
+        }
+
+        ol, ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        /* --- KEYFRAMES --- */
+        @keyframes faderFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+                filter: blur(2px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado Estilo Addams -->
+    <header class="gothic-header">
+        <div>
+            <h1>Laboratorio n8n: Automatización en la Oscuridad</h1>
+            <p>Entorno Local Estricto, Control Definitivo del Servidor (Sin Internet)</p>
+        </div>
+        <span class="status-badge">Offline Mode[span_2](start_span)[span_2](end_span)</span>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Navegación Lateral (Grid) -->
+        <nav class="sidebar-nav">
+            <h2>Estructura</h2>
+            <ul>
+                <li><a href="#entorno">I. Despliegue Crudo</a></li>
+                <li><a href="#estudio1">II. Transacciones SQL</a></li>
+                <li><a href="#estudio2">III. Webhooks Locales</a></li>
+                <li><a href="#estudio3">IV. Rotación de Backups</a></li>
+            </ul>
+        </nav>
+
+        <!-- Bloque Principal (Flexbox Interno) -->
+        <main class="main-content">
+            
+            <section id="entorno" class="gothic-card">
+                <h2>01 // Preparación del Servidor Local</h2>
+                <p>Para anular las restricciones del proxy y blindar la ejecución frente a pérdidas de conectividad externa, inicializamos n8n directamente en los sockets locales de la máquina[span_3](start_span)[span_3](end_span):</p>
+                <pre><code><span class="comment"># Instalar el core globalmente usando Node.js</span>
+npm install n8n -g
+
+<span class="comment"># Forzar arranque aislado sin telemetría ni llamadas externas</span>
+set N8N_DIAGNOSTICS_ENABLED=false
+set N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+
+<span class="comment"># Despertar la instancia local</span>
+n8n start</code></pre>
+            </section>
+
+            <section id="estudio1" class="gothic-card">
+                <h2>02 // Migración y Limpieza Interna (MySQL a SQL Server)</h2>
+                <p>Caso de estudio en el que los datos son extraídos desde una tabla temporal en MySQL, procesados rigurosamente por el motor V8 de JavaScript y consolidados en SQL Server corporativo[span_4](start_span)[span_4](end_span).</p>
+                <h3>Componentes del Flujo:</h3>
+                <ol>
+                    <li><strong>Schedule Trigger (Cron):</strong> Configurado para lanzar ciclos de verificación atómicos en intervalos fijos del laboratorio[span_5](start_span)[span_5](end_span).</li>
+                    <li><strong>MySQL Node:</strong> Absorbe las filas no procesadas del entorno de desarrollo local[span_6](start_span)[span_6](end_span).</li>
+                    <li><strong>Code Node:</strong> Inyección de código para limpieza de cadenas en memoria interna[span_7](start_span)[span_7](end_span).</li>
+                </ol>
+                <pre><code><span class="keyword">for</span> (<span>let</span> item <span class="keyword">of</span> $input.all()) {
+    <span class="comment">// Formatear strings y computar el impuesto local</span>
+    item.json.cliente = item.json.cliente.trim().toUpperCase();
+    item.json.iva_calculado = item.json.monto * 0.16;[span_8](start_span)[span_8](end_span)
+}
+<span class="keyword">return</span> $input.all();</code></pre>
+            </section>
+
+            <section id="estudio2" class="gothic-card">
+                <h2>03 // Bus de Eventos y Captura de Errores por Red Interna</h2>
+                <p>Simulación de una arquitectura orientada a eventos. Aplicaciones locales del laboratorio notifican logs críticos directo a la API expuesta por n8n en el localhost[span_9](start_span)[span_9](end_span).</p>
+                <ul>
+                    <li><strong>Webhook Local:</strong> Expone el endpoint pasivo en <code>http://localhost:5678/webhook-test/logs-criticos</code>[span_10](start_span)[span_10](end_span).</li>
+                    <li><strong>If / Switch Node:</strong> Separa el flujo normal de las excepciones críticas basadas en el payload JSON entrante[span_11](start_span)[span_11](end_span).</li>
+                    <li><strong>Execute Command:</strong> Ejecuta subprocesos del sistema operativo (alertas nativas del sistema, scripts en Bash o CMD) ante contingencias de seguridad[span_12](start_span)[span_12](end_span).</li>
+                </ul>
+            </section>
+
+            <section id="estudio3" class="gothic-card">
+                <h2>04 // Tareas Programadas y Volcado de Bases de Datos</h2>
+                <p>Automatización de mantenimiento del sistema de archivos. Ejecuta dumps y rotación de logs pesados de la base de datos sin interacción humana[span_13](start_span)[span_13](end_span).</p>
+                <pre><code><span class="comment"># Comando de consola nativo disparado desde n8n para compresión segura</span>
+mysqldump -u root -pPasswordLocalbd inventario_db > C:\Backups\respaldo.sql[span_14](start_span)[span_14](end_span)</code></pre>
+                <p>Posteriormente, el nodo <strong>Read Binary File</strong> captura el flujo de bytes del disco local y lo duplica en las unidades asignadas al almacenamiento frío o de contingencia del laboratorio[span_15](start_span)[span_15](end_span).</p>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
