@@ -4,22 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Didáctica: Introducción a Docker</title>
+    <title>Guía rápida o Cheatsheet Docker para n8n</title>
     <style>
+        /* Variables de Diseño */
         :root {
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
-            --surface-accent: #334155;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #0b0f19;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --docker-blue: #1d63ed;
-            --docker-cyan: #0db7ed;
-            --accent-green: #10b981;
-            --accent-purple: #8b5cf6;
-            --border-color: #334155;
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --accent: #38bdf8;
+            --accent-warning: #f43f5e;
+            --comment: #64748b;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
+        /* Estilos Globales */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -27,616 +27,243 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            font-family: var(--font-stack);
+            background-color: var(--bg-main);
             color: var(--text-main);
-            font-family: var(--font-family);
-            line-height: 1.6;
-            padding-bottom: 60px;
-            overflow-x: hidden;
+            padding: 2rem 1rem;
+            line-height: 1.5;
         }
 
-        header {
-            background: linear-gradient(135deg, #090e1a 0%, #1d63ed 150%);
-            padding: 60px 20px;
-            text-align: center;
-            position: relative;
-            border-bottom: 4px solid var(--docker-cyan);
-            overflow: hidden;
-        }
-
-        /* Animación de contenedores flotando en el header */
-        .banner-bg-animation {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.15;
-            pointer-events: none;
-        }
-
-        header * {
-            position: relative;
-            z-index: 2;
-        }
-
-        header h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            letter-spacing: -0.5px;
-            color: #ffffff;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        header p {
-            font-size: 1.2rem;
-            color: #e2e8f0;
-            max-width: 700px;
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .badge-materia {
-            display: inline-block;
-            background-color: rgba(13, 183, 237, 0.2);
-            border: 1px solid var(--docker-cyan);
-            color: var(--docker-cyan);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
 
-        main {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        @media (min-width: 992px) {
-            main {
-                grid-template-columns: 3fr 1fr;
-                align-items: start;
-            }
-
-            .sidebar {
-                position: sticky;
-                top: 40px;
-            }
-        }
-
-        .card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            color: var(--docker-cyan);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 2px solid var(--surface-accent);
-            padding-bottom: 10px;
-        }
-
-        p {
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            font-size: 1.05rem;
-        }
-
-        strong {
+        header h1 {
+            font-size: 2.2rem;
             color: var(--text-main);
+            margin-bottom: 0.5rem;
         }
 
-        /* Estructura Flexbox para Filas de Conceptos */
-        .flex-conceptos {
+        header h1 span {
+            color: var(--accent);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Contenedor Grid Principal (Se adapta a las pantallas) */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Tarjetas de Categorías usando Flexbox */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #334155;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            margin-top: 25px;
+            gap: 1.2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        @media (min-width: 768px) {
-            .flex-conceptos {
-                flex-direction: row;
-            }
-
-            .flex-conceptos>div {
-                flex: 1;
-            }
-        }
-
-        .concepto-box {
-            background-color: var(--surface-accent);
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid var(--docker-blue);
-            transition: background-color 0.2s ease;
-        }
-
-        .concepto-box:hover {
-            background-color: #3d4f68;
-        }
-
-        .concepto-box h3 {
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Grid para Arquitectura VM vs Contenedor */
-        .grid-arquitectura {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 25px;
-            margin: 30px 0;
-        }
-
-        @media (min-width: 768px) {
-            .grid-arquitectura {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .arq-col {
-            background-color: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .arq-col h3 {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .arq-title-vm {
-            color: var(--accent-purple);
-        }
-
-        .arq-title-docker {
-            color: var(--accent-green);
-        }
-
-        .layer-stack {
-            display: flex;
-            flex-direction: column-reverse;
-            gap: 8px;
-        }
-
-        .layer {
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #fff;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s ease;
-        }
-
-        .layer:hover {
-            transform: scale(1.02);
-        }
-
-        .layer.hw {
-            background-color: #475569;
-        }
-
-        .layer.host-os {
-            background-color: #334155;
-        }
-
-        .layer.hypervisor {
-            background-color: #6d28d9;
-        }
-
-        .layer.guest-os {
-            background-color: #5b21b6;
-        }
-
-        .layer.docker-engine {
-            background-color: #059669;
-        }
-
-        .layer.app-libs {
-            background-color: #1e3a8a;
-            border: 1px solid var(--docker-cyan);
-        }
-
-        /* Tabla Interactiva */
-        .table-responsive {
-            overflow-x: auto;
-            margin-top: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        th,
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--surface-accent);
-            color: var(--docker-cyan);
-            font-weight: 600;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background-color: rgba(51, 65, 85, 0.4);
-        }
-
-        /* Sección de Asignación / Evaluación */
-        .evaluacion-box {
-            border: 2px dashed var(--docker-cyan);
-            background-color: rgba(13, 183, 237, 0.04);
-            position: relative;
-        }
-
-        .valor-tag {
-            position: absolute;
-            top: -15px;
-            right: 20px;
-            background-color: var(--docker-cyan);
-            color: var(--bg-color);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(13, 183, 237, 0.4);
-        }
-
-        ol {
-            padding-left: 20px;
-            margin: 20px 0;
-        }
-
-        li {
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            font-size: 1.05rem;
-        }
-
-        li strong {
-            color: #ffffff;
-        }
-
-        /* Sidebar - Instrucciones Interactiva */
-        .sidebar-card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .sidebar-card h3 {
-            color: #ffffff;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--accent);
+            border-bottom: 2px solid #334155;
+            padding-bottom: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
 
-        .status-widget {
-            background-color: var(--bg-color);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            border-left: 3px solid var(--accent-green);
+        /* Bloques de Comando con Flexbox interno */
+        .command-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
         }
 
-        .btn-interact {
-            display: block;
-            width: 100%;
-            background-color: var(--docker-blue);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            margin-top: 15px;
-            text-align: center;
-            text-decoration: none;
-        }
-
-        .btn-interact:hover {
-            background-color: #2563eb;
-            transform: translateY(-1px);
-        }
-
-        .btn-interact:active {
-            transform: translateY(1px);
-        }
-
-        /* SVG Decorativo para simular cubos de contenedores */
-        .cube-svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-            vertical-align: middle;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-muted);
+        .comment {
+            color: var(--comment);
             font-size: 0.9rem;
-            border-top: 1px solid var(--border-color);
-            margin-top: 60px;
+            font-style: italic;
+        }
+
+        .comment.warning {
+            color: var(--accent-warning);
+            font-weight: 500;
+        }
+
+        /* Estilos de la Consola de Código */
+        code-box {
+            background-color: var(--bg-code);
+            border-radius: 6px;
+            padding: 0.8rem 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            color: #34d399;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-left: 4px solid var(--accent);
+            display: block;
+        }
+
+        /* Ajustes específicos para móviles muy pequeños */
+        @media (max-width: 360px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <div class="banner-bg-animation">
-            <!-- Representación simplificada de grillas flotantes de contenedores -->
-            <svg width="100%" height="100%">
-                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0db7ed" stroke-width="0.5" />
-                </pattern>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-            </svg>
-        </div>
-        <div class="badge-materia">Avances Tecnológicos</div>
-        <h1>Introducción a la Contenedorización con Docker</h1>
-        <p>Una guía interactiva diseñada para comprender el salto de la virtualización tradicional hacia los entornos
-            basados en contenedores.</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Comandos de <span>Docker</span></h1>
+            <p>Guía rápida de referencia para la administración de n8n</p>
+        </header>
 
-    <main>
-        <div class="content-area">
+        <!-- GRID PRINCIPAL -->
+        <main class="grid-layout">
 
-            <!-- SECCIÓN 1: EL PROBLEMA -->
+            <!-- BLOQUE 1: INICIO Y DESCARGA -->
             <section class="card">
-                <h2>
-                    <svg class="cube-svg" viewBox="0 0 24 24">
-                        <path
-                            d="M12,2L1,7L12,12L23,7L12,2M1,9L12,14L23,9M1,11L12,16L23,11M1,13L12,18L23,13M1,15L12,20L23,15V17L12,22L1,17V15Z" />
-                    </svg>
-                    1. El Dilema del Despliegue Histórico
-                </h2>
-                <p>Durante años, el mayor dolor de cabeza en el ciclo de vida del software ha sido la disparidad de
-                    entornos. El clásico argumento <strong>"En mi máquina sí funciona"</strong> representaba costosas
-                    horas de depuración al pasar código de desarrollo a los servidores de producción.</p>
-                <p>Las diferencias en las versiones del sistema operativo, paquetes de dependencias, variables de
-                    entorno o configuraciones de red bloqueaban los despliegues. La industria requería una solución
-                    estandarizada, similar a los contenedores de carga que unificaron el transporte marítimo mundial.
-                </p>
-            </section>
+                <h2 class="card-title">📥 Preparación e Inicio</h2>
 
-            <!-- SECCIÓN 2: DEFINICIONES -->
-            <section class="card">
-                <h2>
-                    <svg class="cube-svg" viewBox="0 0 24 24">
-                        <path
-                            d="M3,3V21H21V3H3M5,5H19V19H5V5M7,7V11H11V7H7M13,7V11H17V7H13M7,13V17H11V13H7M13,13V17H17V13H13Z" />
-                    </svg>
-                    2. ¿Qué es Docker y qué es un Contenedor?
-                </h2>
-                <p><strong>Docker</strong> es una plataforma de código abierto que automatiza el despliegue de
-                    aplicaciones dentro de contenedores de software, proporcionando una capa adicional de abstracción y
-                    automatización de virtualización a nivel de sistema operativo.</p>
+                <div class="command-block">
+                    <p class="comment"># Descarga por adelantado las imágenes del archivo docker-compose</p>
+                    <code-box>docker-compose pull</code-box>
+                </div>
 
-                <div class="flex-conceptos">
-                    <div class="concepto-box">
-                        <h3>La Imagen (El Plano)</h3>
-                        <p>Es un paquete estático, de solo lectura, que contiene las instrucciones para crear un
-                            contenedor. Incluye código, librerías y configuraciones básicas.</p>
-                    </div>
-                    <div class="concepto-box" style="border-left-color: var(--docker-cyan);">
-                        <h3>El Contenedor (La Instancia)</h3>
-                        <p>Es la instancia viva y ejecutable de una imagen. Es un entorno aislado, ligero y autónomo que
-                            ejecuta exclusivamente la aplicación requerida.</p>
-                    </div>
+                <div class="command-block">
+                    <p class="comment"># Levanta n8n y Postgres en segundo plano (crea si no existen)</p>
+                    <code-box>docker-compose up -d</code-box>
+                </div>
+
+                <div class="command-block">
+                    <p class="comment"># Fuerza la recreación de contenedores si cambiaste variables de entorno</p>
+                    <code-box>docker-compose up -d --force-recreate</code-box>
                 </div>
             </section>
 
-            <!-- SECCIÓN 3: ARQUITECTURA -->
+            <!-- BLOQUE 2: CICLO DE VIDA -->
             <section class="card">
-                <h2>
-                    <svg class="cube-svg" viewBox="0 0 24 24">
-                        <path
-                            d="M12,16A3,3 0 0,1 9,13A3,3 0 0,1 12,10A3,3 0 0,1 15,13A3,3 0 0,1 12,16M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" />
-                    </svg>
-                    3. Arquitectura: Contenedores vs. Máquinas Virtuales
-                </h2>
-                <p>La diferencia medular radica en dónde se realiza la abstracción. Mientras las Máquinas Virtuales
-                    aíslan el Hardware acarreando sistemas operativos completos, los Contenedores aíslan procesos
-                    compartiendo el Núcleo (Kernel) del Sistema Operativo Anfitrión.</p>
+                <h2 class="card-title">🚀 Ciclo de Vida habitual</h2>
 
-                <div class="grid-arquitectura">
-                    <div class="arq-col">
-                        <h3 class="arq-title-vm">Máquina Virtual (VM)</h3>
-                        <div class="layer-stack">
-                            <div class="layer hw">Infraestructura Física</div>
-                            <div class="layer host-os">S.O. Anfitrión (Host)</div>
-                            <div class="layer hypervisor">Hipervisor (Type 2 / 1)</div>
-                            <div class="layer guest-os">S.O. Invitado (Guest OS)</div>
-                            <div class="layer app-libs">App A + Librerías (GBs)</div>
-                        </div>
-                    </div>
-                    <div class="arq-col">
-                        <h3 class="arq-title-docker">Contenedor (Docker)</h3>
-                        <div class="layer-stack">
-                            <div class="layer hw">Infraestructura Física</div>
-                            <div class="layer host-os">S.O. Anfitrión (Kernel Linux)</div>
-                            <div class="layer docker-engine">Docker Engine (Aislamiento)</div>
-                            <div class="layer app-libs">App A + Dependencias (MBs)</div>
-                        </div>
-                    </div>
+                <div class="command-block">
+                    <p class="comment"># Reinicia ambos servicios rápidamente (útil ante bloqueos leves)</p>
+                    <code-box>docker-compose restart</code-box>
+                </div>
+
+                <div class="command-block">
+                    <p class="comment"># Apaga los contenedores liberando RAM sin borrar tus datos</p>
+                    <code-box>docker-compose down</code-box>
+                </div>
+
+                <div class="command-block">
+                    <p class="comment warning"># Apaga BORRANDO volúmenes (¡Resetea la BD por completo!)</p>
+                    <code-box>docker-compose down -v</code-box>
                 </div>
             </section>
 
-            <!-- SECCIÓN 4: COMPARATIVA -->
+            <!-- BLOQUE 3: ACTUALIZACIONES -->
             <section class="card">
-                <h2>
-                    <svg class="cube-svg" viewBox="0 0 24 24">
-                        <path d="M10,17L5,12L6.41,10.59L10,14.17L17.59,6.58L19,8L10,17Z" />
-                    </svg>
-                    4. Matriz de Diferencias Técnicas
-                </h2>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Métrica / Atributo</th>
-                                <th>Máquinas Virtuales (VM)</th>
-                                <th>Contenedores (Docker)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Peso promedio</strong></td>
-                                <td>Gigabytes (Contiene un S.O completo)</td>
-                                <td>Megabytes (Solo App y dependencias)</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tiempo de Arranque</strong></td>
-                                <td>Minutos (Requiere inicializar el Kernel del Guest OS)</td>
-                                <td>Segundos (Inicio inmediato como proceso nativo)</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Rendimiento de E/S</strong></td>
-                                <td>Degradado por la traducción del Hipervisor</td>
-                                <td>Nativo, ejecuta directo sobre el Host OS</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Aislamiento</strong></td>
-                                <td>Completo (Aislamiento físico por Hardware)</td>
-                                <td>Lógico (Usa Namespaces y Cgroups del Kernel)</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <h2 class="card-title">🔄 Actualización de Versiones</h2>
+
+                <div class="command-block">
+                    <p class="comment"># Paso 1: Descarga la última versión de la imagen (ej. n8nio/n8n:latest)</p>
+                    <code-box>docker-compose pull n8n</code-box>
+                </div>
+
+                <div class="command-block">
+                    <p class="comment"># Paso 2: Aplica los cambios bajando el contenedor viejo y subiendo el nuevo</p>
+                    <code-box>docker-compose up -d n8n</code-box>
                 </div>
             </section>
 
-            <!-- SECCIÓN 5: LA EVALUACIÓN -->
-            <section class="card evaluacion-box" id="evaluacion">
-                <div class="valor-tag">Ponderación: 5%</div>
-                <h2>
-                    <svg class="cube-svg" viewBox="0 0 24 24">
-                        <path
-                            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                    </svg>
-                    Asignación Evaluada: Investigación y Análisis Crítico
-                </h2>
-                <p>Estimados estudiantes de <strong>Avances Tecnológicos</strong>, basándose en la lectura detallada de
-                    esta sección y la documentación oficial de Docker, resuelvan de forma individual el siguiente
-                    entregable:</p>
+            <!-- BLOQUE 4: DIAGNÓSTICO -->
+            <section class="card">
+                <h2 class="card-title">🔍 Diagnóstico y Estado</h2>
 
-                <ol>
-                    <li><strong>Análisis Comparativo Caso Real (2 pts):</strong> Suponga que debe desplegar una
-                        infraestructura microservicios que consta de un Frontend en React, un Backend en Node.js, y una
-                        base de datos PostgreSQL. Explique razonadamente por qué la arquitectura de contenedores Docker
-                        es superior a montar tres Máquinas Virtuales en este escenario particular.</li>
-                    <li><strong>Conceptos del Kernel (1.5 pts):</strong> Investigue y redacte con sus propias palabras
-                        qué funciones cumplen los mecanismos del Kernel de Linux denominados <code>Namespaces</code> y
-                        <code>Control Groups (cgroups)</code> en el aislamiento de un contenedor.
-                    </li>
-                    <li><strong>Análisis de Portabilidad (1.5 pts):</strong> Explique por qué una imagen de Docker
-                        construida bajo arquitectura de CPU ARM (por ejemplo, una Mac M1/M2) puede presentar
-                        inconvenientes al ejecutarse de forma directa en arquitecturas tradicionales Intel/AMD (x86_64),
-                        y cómo influye esto en la promesa de "correr en cualquier lugar".</li>
-                </ol>
-
-                <p style="margin-top:20px; font-style: italic; font-size: 0.95rem;">
-                    <strong>Formato de Entrega:</strong> Documento PDF, estructurado formalmente (Portada, Introducción,
-                    Desarrollo de las tres preguntas, Conclusiones y Referencias bajo Normas APA). Debe subirse a la
-                    plataforma académica institucional antes de la fecha límite fijada en la sesión presencial.
-                </p>
-            </section>
-
-        </div>
-
-        <!-- SIDEBAR INTERACTIVO -->
-        <aside class="sidebar">
-            <div class="sidebar-card">
-                <h3>
-                    <svg class="cube-svg" style="color:var(--accent-green);" viewBox="0 0 24 24">
-                        <path
-                            d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,7V13H13V7H11M11,15V17H13V15H11Z" />
-                    </svg>
-                    Panel del Alumno
-                </h3>
-                <p>Utiliza este panel para validar tu lectura de la clase virtual antes de redactar tu asignación de
-                    Avances Tecnológicos.</p>
-
-                <div class="status-widget" id="statusBox">
-                    <span style="font-weight:700; color:var(--text-main); display:block; margin-bottom: 5px;">Estado de
-                        Lectura:</span>
-                    <span id="statusText" style="color:var(--text-muted);">Pendiente por revisar los materiales.</span>
+                <div class="command-block">
+                    <p class="comment"># Muestra el estado actual de tus contenedores y puertos activos</p>
+                    <code-box>docker-compose ps</code-box>
                 </div>
 
-                <button class="btn-interact" id="btnMarcar">Marcar clase como leída</button>
-            </div>
-        </aside>
-    </main>
+                <div class="command-block">
+                    <p class="comment"># Ver qué está haciendo n8n en tiempo real (mira errores de ejecución)</p>
+                    <code-box>docker-compose logs -f n8n</code-box>
+                </div>
 
-    <footer>
-        <p>&copy; 2026 - Asignatura: Avances Tecnológicos. Desarrollado con propósitos puramente didácticos.</p>
-    </footer>
+                <div class="command-block">
+                    <p class="comment"># Ver los logs de la base de datos Postgres (errores de conexión)</p>
+                    <code-box>docker-compose logs -f postgres</code-box>
+                </div>
 
-    <script>
-        // Lógica de manipulación del DOM simple para dar interactividad a la lectura
-        const btnMarcar = document.getElementById('btnMarcar');
-        const statusBox = document.getElementById('statusBox');
-        const statusText = document.getElementById('statusText');
+                <div class="command-block">
+                    <p class="comment"># Muestra el consumo de CPU, Memoria y red en vivo</p>
+                    <code-box>docker stats</code-box>
+                </div>
+            </section>
 
-        btnMarcar.addEventListener('click', () => {
-            // Cambio de estados en tiempo real
-            statusText.innerText = "¡Clase completada! Estás listo para elaborar el informe del 5%.";
-            statusBox.style.borderColor = "var(--docker-cyan)";
-            statusBox.style.backgroundColor = "rgba(13, 183, 237, 0.05)";
+            <!-- BLOQUE 5: MANTENIMIENTO -->
+            <section class="card">
+                <h2 class="card-title">🧹 Limpieza y Acceso</h2>
 
-            // Animación sutil de feedback
-            btnMarcar.innerText = "✓ Material revisado";
-            btnMarcar.style.backgroundColor = "var(--accent-green)";
-            btnMarcar.disabled = true;
-            btnMarcar.style.cursor = "default";
+                <div class="command-block">
+                    <p class="comment"># Entrar a la consola interna del contenedor de n8n (para revisar archivos)</p>
+                    <code-box>docker-compose exec n8n ash</code-box>
+                </div>
 
-            // Guardado local simulado
-            console.log("Progreso del estudiante guardado en el DOM.");
-        });
-    </script>
+                <div class="command-block">
+                    <p class="comment"># Elimina imágenes intermedias, contenedores apagados y caché (Libera espacio)
+                    </p>
+                    <code-box>docker system prune -a</code-box>
+                </div>
+            </section>
+
+            <!-- BLOQUE 6: RESPALDOS -->
+            <section class="card">
+                <h2 class="card-title">💾 Respaldos Rápidos</h2>
+
+                <div class="command-block">
+                    <p class="comment"># Crea una copia de seguridad de la BD en un archivo .sql fuera del contenedor
+                    </p>
+                    <code-box>docker-compose exec -t postgres pg_dumpall -U n8n_user &gt; respaldo_n8n.sql</code-box>
+                </div>
+
+                <div class="command-block">
+                    <p class="comment"># Restaura el respaldo .sql (El contenedor debe estar activo)</p>
+                    <code-box>cat respaldo_n8n.sql | docker-compose exec -T postgres psql -U n8n_user -d
+                        n8n_db</code-box>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
 </body>
 
 </html>
