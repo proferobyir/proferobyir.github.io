@@ -88,6 +88,14 @@
             margin-bottom: 5px;
         }
 
+        .destaque-caja {
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
         .btn-cargar {
             background: var(--primary);
             color: white;
@@ -208,12 +216,11 @@
     <div class="sidebar">
         <header>
             <h1>Guía Interactiva: ECMAScript</h1>
-            <p>Preparación clave antes de iniciar con Node.js</p>
+            <p>Preparación clave usando la API de JSONPlaceholder</p>
         </header>
 
         <p>Bienvenido al entorno interactivo de nivelación. Lee los conceptos de cada módulo y haz clic en
-            <strong>"Cargar en el Editor"</strong> para probar y modificar el código directamente en tiempo real.
-        </p>
+            <strong>"Cargar en el Editor"</strong> para probar y modificar el código directamente en tiempo real.</p>
 
         <h2>Módulo 1: Ámbito de variables con Let y Const</h2>
         <p>Para declarar las variables no usaremos <code>var</code>. En Node.js, para evitar mutaciones accidentales en
@@ -230,9 +237,17 @@
         <button class="btn-cargar" onclick="cargarEjemplo('modulo2')">Cargar en el Editor</button>
 
         <h2>Módulo 3: Plantillas Literales e Inmutabilidad</h2>
-        <p>Concatenar cadenas con el operador <code>+</code> es propenso a errores. Usamos las comillas invertidas para
-            interpolar variables (útil para armar consultas SQL estructuradas dinámicamente) y el operador Spread
-            (<code>...</code>) para clonar datos de forma limpia.</p>
+        <p>Concatenar cadenas con el operador <code>+</code> es obsoleto y propenso a errores; en su lugar usamos las
+            comillas invertidas (<code>`</code>) para interpolar de manera legible.</p>
+        <div class="destaque-caja">
+            <strong>⚠️ El peligro de la Referencia en JavaScript:</strong><br>
+            A diferencia de PHP, si en JavaScript haces <code>const copia = objetoOriginal</code>, <strong>no estás
+                duplicando el objeto</strong>. Ambos identificadores apuntan al mismo espacio físico de memoria. Si
+            modificas <code>copia</code>, destruirás el original de forma colateral.
+        </div>
+        <p>Para lograr la <strong>Inmutabilidad</strong> (crear un objeto nuevo basado en uno viejo sin alterar el
+            original), usamos el operador <strong>Spread (<code>...</code>)</strong>. Esto es vital en Node.js para
+            mantener la integridad de los datos entre peticiones HTTP.</p>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo3')">Cargar en el Editor</button>
 
         <h2>Módulo 4: Consumo de Promesas (fetch)</h2>
@@ -242,8 +257,7 @@
 
         <h2>Módulo 5: Async / Await moderno</h2>
         <p>Es la forma estándar de la industria para resolver Promesas de manera lineal. Estructuramos el flujo con
-            <code>await</code> y controlamos los posibles errores de red usando bloques <code>try/catch</code>.
-        </p>
+            <code>await</code> y controlamos los posibles errores de red usando bloques <code>try/catch</code>.</p>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo5')">Cargar en el Editor</button>
     </div>
 
@@ -271,101 +285,117 @@
         const editor = document.getElementById('code-editor');
         const consola = document.getElementById('console-output');
 
-        // Diccionario de códigos precargados para cada módulo
+        // Diccionario de códigos precargados alineados con JSONPlaceholder
         const ejemplos = {
-            modulo1: `// Módulo 1: Ámbito bloque (Let y Const)
-const maxEstudiantes = 35; 
-let estudiantesInscritos = 32;
+            modulo1: `// Módulo 1: Ámbito bloque usando límites de la API
+const totalUsuariosAPI = 10; // JSONPlaceholder solo tiene 10 usuarios fijo
+let idBuscado = 8;
 
-if (estudiantesInscritos < maxEstudiantes) {
-    let mensajeInterno = "Hay cupos disponibles";
-    estudiantesInscritos++;
+if (idBuscado <= totalUsuariosAPI) {
+    let mensajeInterno = "ID válido detectado en la base de datos ficticia.";
     console.log(mensajeInterno);
+    idBuscado++; // Pasamos al siguiente ID
 }
 
-console.log("Total inscritos:", estudiantesInscritos);
-// console.log(mensajeInterno); // ERROR: Si quitas el comentario, fallará porque mensajeInterno no existe fuera del IF`,
+console.log("Siguiente ID a evaluar en el bucle:", idBuscado);
+// console.log(mensajeInterno); // ERROR: dará error porque mensajeInterno no existe fuera del bloque IF`,
 
-            modulo2: `// Módulo 2: Desestructuración
-// Simulemos un objeto enviado desde el Frontend (req.body)
-const req = {
-    body: {
-        cedula: "V-29876543",
-        nombre: "María",
-        apellido: "Mendoza",
-        carrera: "Ingeniería en Informática"
-    }
+            modulo2: `// Módulo 2: Desestructuración con estructura real de la API
+// Este es exactamente el formato de la respuesta del usuario #1 (Leanne Graham)
+const usuarioAPI = {
+    id: 1,
+    name: "Leanne Graham",
+    username: "Bret",
+    email: "Sincere@april.biz",
+    phone: "1-770-736-8031 x56442"
 };
 
-// Sintaxis moderna de ECMAScript
-const { cedula, nombre, carrera } = req.body;
+// Extraemos propiedades de forma limpia y directa
+const { name, username, email } = usuarioAPI;
 
-console.log("Estudiante extraído con éxito:");
-console.log("Nombre:", nombre);
-console.log("Cédula:", cedula);
-console.log("Carrera:", carrera);`,
+console.log("Objeto JSON desestructurado con éxito:");
+console.log("Nombre completo:", name);
+console.log("Nombre de usuario (Login):", username);
+console.log("Correo electrónico:", email);`,
 
-            modulo3: `// Módulo 3: Template Literals y Spread Operator
+            modulo3: `// Módulo 3: Template Literals y Clonación Inmutable
 const seccion = "01S";
 const materia = "Programación Backend";
+console.log(\`Bienvenidos a la sección \${seccion} de la materia \${materia}.\\n\`);
 
-// Uso de backticks o comillas invertidas para interpolar variables limpiamente
-console.log(\`Bienvenidos a la sección \${seccion} de la materia \${materia}.\`);
+// --- DEMOSTRACIÓN DEL PROBLEMA DE REFERENCIA ---
+const usuarioOriginal = { id: 2, name: "Ervin Howell", status: "activo" };
 
-// Clonación inmutable con el operador Spread (...)
-const estudianteOriginal = { id: 1, nombre: "Luis" };
-const estudianteActualizado = { ...estudianteOriginal, seccion: "01S" };
+// Intento incorrecto de clonar (Asignación por Referencia):
+const intentoClon = usuarioOriginal; 
+intentoClon.status = "suspendido"; // Modificamos el clon aparente
 
-console.log("Original:", estudianteOriginal);
-console.log("Actualizado:", estudianteActualizado);`,
+console.log("❌ CASO 1: ASIGNACIÓN POR REFERENCIA DIRECTA");
+console.log("Original afectado colateralmente:", usuarioOriginal.status); // ¡Imprime "suspendido"!
+console.log("Clon aparente:", intentoClon.status);
 
-            modulo4: `// Módulo 4: Promesas Reales con .then()
-console.log("1. Iniciando petición HTTP externa...");
 
-// fetch() devuelve una Promesa. Consumimos con .then()
-fetch("https://jsonplaceholder.typicode.com/users")
-    .then(respuesta => {
-        // Convertimos la respuesta HTTP cruda a un objeto JSON usable
-        return respuesta.json();
-    })
-    .then(usuarios => {
-        console.log("2. ¡Datos recibidos con éxito!");
-        // Mostramos los datos del primer usuario devuelto por la API
-        const primerUsuario = usuarios[0];
-        console.log(\`Usuario ID #\${primerUsuario.id}: \${primerUsuario.name} (\${primerUsuario.email})\`);
+// --- SOLUCIÓN CON OPERADOR SPREAD (...) INMUTABILIDAD ---
+// Restauramos el original para la prueba limpia
+usuarioOriginal.status = "activo"; 
+
+// Clonación correcta: Creamos un espacio de memoria nuevo y "esparcimos" dentro sus datos viejo
+const usuarioClonadoReal = { 
+    ...usuarioOriginal, 
+    username: "Antonette", // Agregamos una nueva propiedad
+    status: "modificado_seguro" // Sobrescribimos una propiedad existente de forma segura
+};
+
+console.log("\\n✔️ CASO 2: CLONACIÓN INMUTABLE (OPERADOR SPREAD)");
+console.log("Original intacto (¡Mantiene su estado original!):", usuarioOriginal.status); 
+console.log("Nuevo objeto modificado de forma segura:", usuarioClonadoReal.status);
+console.log("Objeto clonado completo listo para usar:", usuarioClonadoReal);`,
+
+            modulo4: `// Módulo 4: Promesas Reales con .then() (Datos en vivo)
+console.log("1. Enviando solicitud HTTP GET a JSONPlaceholder...");
+
+// Solicitando de verdad el usuario #1
+fetch("https://jsonplaceholder.typicode.com/users/1")
+    .then(respuesta => respuesta.json()) // Parseamos la respuesta HTTP a JSON
+    .then(usuario => {
+        console.log("2. ¡Estructura de datos recibida desde internet!");
+        // Mostramos las propiedades anidadas reales de este registro específico
+        console.log(\`Nombre: \${usuario.name}\`);
+        console.log(\`Ciudad: \${usuario.address.city}\`);
+        console.log(\`Empresa: \${usuario.company.name}\`);
     })
     .catch(error => {
-        console.error("Fallo en la conexión de red:", error);
+        console.error("Fallo de conexión o error de red:", error);
     });
 
-console.log("3. Código síncrono finalizado (La petición sigue en segundo plano)...");`,
+console.log("3. El hilo principal de ejecución continúa sin bloquearse...");`,
 
-            modulo5: `// Módulo 5: Async / Await y Manejo de Errores con Try/Catch
-async function obtenerUsuariosDeServidor() {
+            modulo5: `// Módulo 5: Async / Await moderno mapeando la API completa
+async function obtenerListadoUsuarios() {
     try {
-        console.log("-> Realizando consulta asíncrona...");
+        console.log("-> Iniciando función asíncrona...");
         
         const respuesta = await fetch("https://jsonplaceholder.typicode.com/users");
         
         if (!respuesta.ok) {
-            throw new Error(\`Error en servidor: \${respuesta.status}\`);
+            throw new Error(\`Error HTTP en el servidor remoto: \${respuesta.status}\`);
         }
         
-        const usuarios = await respuesta.json();
+        const listado = await respuesta.json();
         
-        console.log("-> Mapeando los primeros 3 usuarios de la API:");
-        usuarios.slice(0, 3).forEach(usr => {
-            console.log(\`• [\${usr.username}] - \${usr.company.name}\`);
+        console.log("-> Extrayendo los 3 primeros registros reales de la API:");
+        // Mapeamos los datos idénticos a los del Módulo 2 y 3
+        listado.slice(0, 3).forEach(user => {
+            console.log(\`ID #\${user.id}: @\${user.username} trabaja en "\${user.company.name}"\`);
         });
 
     } catch (error) {
-        // Captura cualquier falla (ej. sin internet, endpoint caído, etc...)
-        console.error("Capturado en el catch:", error.message);
+        console.error("Error capturado en el bloque Try/Catch:", error.message);
     }
 }
 
-// Ejecutamos la función asíncrona
-obtenerUsuariosDeServidor();`
+// Disparamos el proceso asíncrono ordenado
+obtenerListadoUsuarios();`
         };
 
         // Función para inyectar código en el área de texto
@@ -406,7 +436,7 @@ obtenerUsuariosDeServidor();`
             }
 
             // Restaurar funciones originales de consola
-            console.log = antiguoLog;
+            console.log = antiquoLog;
             console.error = antiguoError;
         }
     </script>
