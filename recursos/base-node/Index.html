@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Proyecto: CRUD Universidad (Vanilla Stack)</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --container-bg: #ffffff;
+            --text-color: #334155;
+            --primary-color: #0284c7;
+            --primary-hover: #0369a1;
+            --accent-color: #0f172a;
+            --code-bg: #1e293b;
+            --code-text: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .code-container {
+            position: relative;
+            margin-bottom: 25px;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0f172a;
+            padding: 8px 16px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: #334155;
+            color: #f8fafc;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            color: var(--code-text);
+            font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        code {
+            white-space: pre;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .note {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            color: #14532d;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            pre {
+                font-size: 0.8rem;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Guía de Base: Sistema CRUD de Universidad</h1>
+        <p class="subtitle">Frontend HTML/JS Vanilla, Backend Node.js Express y Base de Datos MySQL</p>
+    </header>
+
+    <div class="note">
+        <strong>Nota pedagógica:</strong> Este código está diseñado con fines educativos utilizando JavaScript estructurado básico y manipulación directa del DOM (Vanilla) para asegurar el entendimiento del flujo de datos sin abstracciones de frameworks.
+    </div>
+
+    <h2>1. Base de Datos (MySQL)</h2>
+    <p>Script inicial para la creación de la base de datos y la estructura de la tabla <code>estudiantes</code>.</p>
+    
+    <div class="code-container">
+        <div class="code-header">
+            <span>database.sql</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+        </div>
+        <pre><code>CREATE DATABASE sistema_universidad;
+USE sistema_universidad;
+
+CREATE TABLE estudiantes (
+    cedula VARCHAR(20) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    seccion VARCHAR(10) NOT NULL,
+    carrera VARCHAR(100) NOT NULL,
+    fecha_ingreso DATE NOT NULL
+);</code></pre>
+    </div>
+
+    <h2>2. Configuración del Proyecto Node.js</h2>
+    <p>Archivo de configuración del proyecto donde se habilitan los módulos de ECMAScript (<code>"type": "module"</code>).</p>
+
+    <div class="code-container">
+        <div class="code-header">
+            <span>package.json</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+        </div>
+        <pre><code>{
+  "name": "crud-universidad",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.9.0"
+  }
+}</code></pre>
+    </div>
+
+    <h2>3. Servidor Backend (Node.js + Express)</h2>
+    <p>Configuración de la API REST con soporte de CORS y parsing de JSON incorporado.</p>
+
+    <div class="code-container">
+        <div class="code-header">
+            <span>server.js</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+        </div>
+        <pre><code>import express from 'express';
+import mysql from 'mysql2/promise';
+import cors from 'cors';
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Configuración de la conexión a MySQL
+const db = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',      // Cambia según tu configuración
+    password: '',      // Cambia según tu configuración
+    database: 'sistema_universidad'
+});
+
+console.log('Conectado exitosamente a MySQL');
+
+// 1. OBTENER TODOS LOS ESTUDIANTES O FILTRAR
+app.get('/api/estudiantes', async (req, res) => {
+    const { seccion, cedula, nombre } = req.query;
+    let query = 'SELECT * FROM estudiantes WHERE 1=1';
+    const params = [];
+
+    if (seccion) {
+        query += ' AND seccion = ?';
+        params.push(seccion);
+    }
+    if (cedula) {
+        query += ' AND cedula = ?';
+        params.push(cedula);
+    }
+    if (nombre) {
+        query += ' AND nombre LIKE ?';
+        params.push(`%${nombre}%`);
+    }
+
+    try {
+        const [rows] = await db.query(query, params);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 2. CREAR UN NUEVO ESTUDIANTE
+app.post('/api/estudiantes', async (req, res) => {
+    const { cedula, nombre, apellido, seccion, carrera, fecha_ingreso } = req.body;
+    const query = 'INSERT INTO estudiantes (cedula, nombre, apellido, seccion, carrera, fecha_ingreso) VALUES (?, ?, ?, ?, ?, ?)';
+    
+    try {
+        await db.query(query, [cedula, nombre, apellido, seccion, carrera, fecha_ingreso]);
+        res.status(201).json({ message: 'Estudiante registrado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 3. ACTUALIZAR UN ESTUDIANTE
+app.put('/api/estudiantes/:cedula', async (req, res) => {
+    const { cedula } = req.params;
+    const { nombre, apellido, seccion, carrera, fecha_ingreso } = req.body;
+    const query = 'UPDATE estudiantes SET nombre = ?, apellido = ?, seccion = ?, carrera = ?, fecha_ingreso = ? WHERE cedula = ?';
+
+    try {
+        await db.query(query, [nombre, apellido, seccion, carrera, fecha_ingreso, cedula]);
+        res.json({ message: 'Estudiante actualizado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 4. ELIMINAR UN ESTUDIANTE
+app.delete('/api/estudiantes/:cedula', async (req, res) => {
+    const { cedula } = req.params;
+    const query = 'DELETE FROM estudiantes WHERE cedula = ?';
+
+    try {
+        await db.query(query, [cedula]);
+        res.json({ message: 'Estudiante eliminado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});</code></pre>
+    </div>
+
+    <h2>4. Interfaz de Usuario (HTML5)</h2>
+    <p>Estructura semántica responsiva con estilos CSS embebidos para facilitar el despliegue directo.</p>
+
+    <div class="code-container">
+        <div class="code-header">
+            <span>index.html</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+        </div>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Gestión de Ingreso de Estudiantes&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #0056b3; padding-bottom: 5px; color: #0056b3; }
+        form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        input, button, select { padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+        form button { grid-column: span 2; background-color: #28a745; color: white; border: none; cursor: pointer; }
+        form button:hover { background-color: #218838; }
+        .filtros { display: flex; gap: 10px; margin-bottom: 20px; background: #e9ecef; padding: 15px; border-radius: 4px; }
+        .filtros input { flex: 1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #0056b3; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .btn-edit { background-color: #ffc107; color: black; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .btn-delete { background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; margin-left: 5px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class="container"&gt;
+    &lt;h2&gt;Registro / Edición de Estudiante&lt;/h2&gt;
+    &lt;form id="student-form"&gt;
+        &lt;input type="text" id="cedula" placeholder="Cédula" required&gt;
+        &lt;input type="text" id="nombre" placeholder="Nombre" required&gt;
+        &lt;input type="text" id="apellido" placeholder="Apellido" required&gt;
+        &lt;input type="text" id="seccion" placeholder="Sección (Ej: 01S)" required&gt;
+        &lt;input type="text" id="carrera" placeholder="Carrera" required&gt;
+        &lt;input type="date" id="fecha_ingreso" required&gt;
+        &lt;button type="submit" id="btn-guardar"&gt;Guardar Estudiante&lt;/button&gt;
+    &lt;/form&gt;
+
+    &lt;h2&gt;Búsqueda y Consultas&lt;/h2&gt;
+    &lt;div class="filtros"&gt;
+        &lt;input type="text" id="search-cedula" placeholder="Buscar por Cédula"&gt;
+        &lt;input type="text" id="search-nombre" placeholder="Buscar por Nombre"&gt;
+        &lt;input type="text" id="search-seccion" placeholder="Buscar por Sección"&gt;
+        &lt;button onclick="cargarEstudiantes()"&gt;Filtrar&lt;/button&gt;
+        &lt;button onclick="limpiarFiltros()" style="background:#6c757d; color:white;"&gt;Limpiar&lt;/button&gt;
+    &lt;/div>
+
+    &lt;h2&gt;Listado de Estudiantes&lt;/h2&gt;
+    &lt;table&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;Cédula&lt;/th&gt;
+                &lt;th&gt;Nombre&lt;/th&gt;
+                &lt;th&gt;Apellido&lt;/th&gt;
+                &lt;th&gt;Sección&lt;/th&gt;
+                &lt;th&gt;Carrera&lt;/th&gt;
+                &lt;th&gt;Fecha Ingreso&lt;/th&gt;
+                &lt;th&gt;Acciones&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody id="tabla-estudiantes"&gt;
+            &lt;!-- Los datos se cargarán dinámicamente aquí --&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+
+&lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+
+    <h2>5. Control de Lógica Frontend (JavaScript Vanilla)</h2>
+    <p>Consumo de la API con Async/Await e inyección interactiva de elementos en el DOM.</p>
+
+    <div class="code-container">
+        <div class="code-header">
+            <span>app.js</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+        </div>
+        <pre><code>const API_URL = 'http://localhost:3000/api/estudiantes';
+
+let editMode = false;
+
+document.getElementById('student-form').addEventListener('submit', guardarEstudiante);
+document.addEventListener('DOMContentLoaded', () => cargarEstudiantes());
+
+async function cargarEstudiantes() {
+    const cedula = document.getElementById('search-cedula').value;
+    const nombre = document.getElementById('search-nombre').value;
+    const seccion = document.getElementById('search-seccion').value;
+
+    let url = new URL(API_URL);
+    if (cedula) url.searchParams.append('cedula', cedula);
+    if (nombre) url.searchParams.append('nombre', nombre);
+    if (seccion) url.searchParams.append('seccion', seccion);
+
+    try {
+        const response = await fetch(url);
+        const estudiantes = await response.json();
+        
+        const tbody = document.getElementById('tabla-estudiantes');
+        tbody.innerHTML = '';
+
+        estudiantes.forEach(est => {
+            const fecha = est.fecha_ingreso.split('T')[0];
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>\${est.cedula}</td>
+                <td>\${est.nombre}</td>
+                <td>\${est.apellido}</td>
+                <td>\${est.seccion}</td>
+                <td>\${est.carrera}</td>
+                <td>\${fecha}</td>
+                <td>
+                    <button class="btn-edit" onclick="prepararEdicion('\${est.cedula}', '\${est.nombre}', '\${est.apellido}', '\${est.seccion}', '\${est.carrera}', '\${fecha}')">Editar</button>
+                    <button class="btn-delete" onclick="eliminarEstudiante('\${est.cedula}')">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (error) {
+        console.error('Error al cargar estudiantes:', error);
+    }
+}
+
+async function guardarEstudiante(e) {
+    e.preventDefault();
+
+    const estudianteData = {
+        cedula: document.getElementById('cedula').value,
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        seccion: document.getElementById('seccion').value,
+        carrera: document.getElementById('carrera').value,
+        fecha_ingreso: document.getElementById('fecha_ingreso').value,
+    };
+
+    let url = API_URL;
+    let method = 'POST';
+
+    if (editMode) {
+        url = `\${API_URL}/\${estudianteData.cedula}`;
+        method = 'PUT';
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(estudianteData)
+        });
+
+        if (response.ok) {
+            alert(editMode ? 'Estudiante actualizado' : 'Estudiante registrado');
+            restablecerFormulario();
+            cargarEstudiantes();
+        } else {
+            const err = await response.json();
+            alert('Error: ' + err.error);
+        }
+    } catch (error) {
+        console.error('Error al guardar:', error);
+    }
+}
+
+function prepararEdicion(cedula, nombre, apellido, seccion, carrera, fecha) {
+    document.getElementById('cedula').value = cedula;
+    document.getElementById('cedula').disabled = true;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('apellido').value = apellido;
+    document.getElementById('seccion').value = seccion;
+    document.getElementById('carrera').value = carrera;
+    document.getElementById('fecha_ingreso').value = fecha;
+
+    document.getElementById('btn-guardar').innerText = 'Actualizar Estudiante';
+    document.getElementById('btn-guardar').style.backgroundColor = '#ffc107';
+    document.getElementById('btn-guardar').style.color = 'black';
+    editMode = true;
+}
+
+async function eliminarEstudiante(cedula) {
+    if (!confirm(`¿Eliminar estudiante \${cedula}?`)) return;
+
+    try {
+        const response = await fetch(`\${API_URL}/\${cedula}`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('Estudiante eliminado');
+            cargarEstudiantes();
+        }
+    } catch (error) {
+        console.error('Error al eliminar:', error);
+    }
+}
+
+function restablecerFormulario() {
+    document.getElementById('student-form').reset();
+    document.getElementById('cedula').disabled = false;
+    document.getElementById('btn-guardar').innerText = 'Guardar Estudiante';
+    document.getElementById('btn-guardar').style.backgroundColor = '#28a745';
+    document.getElementById('btn-guardar').style.color = 'white';
+    editMode = false;
+}
+
+function limpiarFiltros() {
+    document.getElementById('search-cedula').value = '';
+    document.getElementById('search-nombre').value = '';
+    document.getElementById('search-seccion').value = '';
+    cargarEstudiantes();
+}</code></pre>
+    </div>
+</div>
+
+<script>
+    function copyCode(button) {
+        const pre = button.parentElement.nextElementSibling;
+        const code = pre.querySelector('code');
+        navigator.clipboard.writeText(code.innerText).then(() => {
+            button.innerText = '¡Copiado!';
+            button.style.backgroundColor = '#16a34a';
+            setTimeout(() => {
+                button.innerText = 'Copiar';
+                button.style.backgroundColor = '#334155';
+            }, 2000);
+        });
+    }
+</script>
+</body>
+</html>
