@@ -6,18 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playground Interactivo: Nivelación ECMAScript para Node.js</title>
     <style>
+        /* Paleta de colores Wednesday Adams - Tonos oscuros, grises y azules suaves */
         :root {
-            --bg-main: #f1f5f9;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --success: #16a34a;
-            --code-bg: #0f172a;
-            --code-text: #38bdf8;
-            --console-bg: #1e293b;
-            --console-text: #f8fafc;
-            --border: #cbd5e1;
+            --bg-main: #2a2a2a;
+            --bg-card: #3a3a3a;
+            --text-main: #d4d4d4;
+            --text-light: #b0b0b0;
+            --primary: #6b8c9e;
+            --primary-hover: #4a6a7e;
+            --success: #5a7a6a;
+            --success-hover: #4a6a5a;
+            --code-bg: #1a1a1a;
+            --code-text: #a8c8d8;
+            --console-bg: #222222;
+            --console-text: #d4d4d4;
+            --border: #4a4a4a;
+            --highlight: #8a9a8a;
         }
 
         * {
@@ -36,7 +40,6 @@
             overflow: hidden;
         }
 
-        /* Layout Responsivo de dos columnas */
         .sidebar {
             width: 45%;
             height: 100%;
@@ -51,56 +54,70 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: #1e293b;
+            background: var(--code-bg);
         }
 
-        /* Estilos del Contenido Teórico */
         header {
             margin-bottom: 25px;
-            border-bottom: 2px solid var(--bg-main);
+            border-bottom: 2px solid var(--border);
             padding-bottom: 15px;
         }
 
         h1 {
             font-size: 1.8rem;
-            color: #0f172a;
+            color: var(--text-light);
+            font-weight: 300;
+            letter-spacing: 1px;
         }
 
         h2 {
             font-size: 1.3rem;
             color: var(--primary);
-            margin-top: 25px;
+            margin-top: 30px;
             margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
         }
 
         p {
             margin-bottom: 12px;
             font-size: 0.95rem;
+            color: var(--text-light);
         }
 
         ul {
             margin-left: 20px;
             margin-bottom: 15px;
             font-size: 0.95rem;
+            color: var(--text-light);
         }
 
         li {
             margin-bottom: 5px;
         }
 
+        code {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+
         .destaque-caja {
-            background-color: #f0fdf4;
+            background-color: #2a3a2a;
             border-left: 4px solid var(--success);
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
             font-size: 0.9rem;
+            color: var(--text-light);
         }
 
         .btn-cargar {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 16px;
             font-size: 0.85rem;
             border-radius: 4px;
             cursor: pointer;
@@ -113,18 +130,17 @@
             background: var(--primary-hover);
         }
 
-        /* Estilos del Editor y Consola */
         .editor-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             padding: 15px;
             background: var(--code-bg);
-            border-bottom: 2px solid #334155;
+            border-bottom: 2px solid var(--border);
         }
 
         .panel-header {
-            color: #94a3b8;
+            color: var(--text-light);
             font-size: 0.85rem;
             font-family: monospace;
             margin-bottom: 8px;
@@ -136,7 +152,7 @@
         textarea {
             flex: 1;
             background: transparent;
-            color: #e2e8f0;
+            color: var(--code-text);
             font-family: 'Courier New', Courier, monospace;
             font-size: 1rem;
             border: none;
@@ -147,7 +163,7 @@
 
         .actions {
             padding: 10px 15px;
-            background: #0f172a;
+            background: var(--code-bg);
             display: flex;
             justify-content: flex-end;
         }
@@ -161,10 +177,11 @@
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .btn-run:hover {
-            background: #15803d;
+            background: var(--success-hover);
         }
 
         .console-container {
@@ -172,7 +189,7 @@
             background: var(--console-bg);
             padding: 15px;
             overflow-y: auto;
-            border-top: 1px solid #334155;
+            border-top: 1px solid var(--border);
         }
 
         #console-output {
@@ -183,14 +200,13 @@
         }
 
         .log-error {
-            color: #f87171;
+            color: #b07a7a;
         }
 
         .log-info {
-            color: #38bdf8;
+            color: var(--code-text);
         }
 
-        /* Adaptación para pantallas móviles */
         @media (max-width: 900px) {
             body {
                 flex-direction: column;
@@ -215,51 +231,78 @@
 
     <div class="sidebar">
         <header>
-            <h1>Guía Interactiva: ECMAScript</h1>
-            <p>Preparación clave usando la API de JSONPlaceholder</p>
+            <h1>Guia Interactiva: ECMAScript</h1>
+            <p>Preparacion clave usando la API de JSONPlaceholder</p>
         </header>
 
-        <p>Bienvenido al entorno interactivo de nivelación. Lee los conceptos de cada módulo y haz clic en
-            <strong>"Cargar en el Editor"</strong> para probar y modificar el código directamente en tiempo real.
+        <p>Bienvenido al entorno interactivo de nivelacion. Lee los conceptos de cada modulo y haz clic en
+            <strong>"Cargar en el Editor"</strong> para probar y modificar el codigo directamente en tiempo real.
         </p>
 
-        <h2>Módulo 1: Ámbito de variables con Let y Const</h2>
-        <p>Para declarar las variables no usaremos <code>var</code>. En Node.js, para evitar mutaciones accidentales en
-            peticiones concurrentes, usamos un entorno controlado:</p>
+        <h2>Modulo 1: Ambito de variables con Let y Const</h2>
+        <p>En JavaScript moderno, usamos <code>const</code> y <code>let</code> en lugar de <code>var</code> para tener
+            mayor control sobre nuestras variables.</p>
         <ul>
-            <li><code>const</code>: Para valores que no cambiarán de identificador.</li>
-            <li><code>let</code>: Para variables limitadas al bloque de código donde se declaran.</li>
+            <li><strong>const</strong>: Para valores que no van a cambiar. Ejemplo: <code>const PI = 3.1416;</code></li>
+            <li><strong>let</strong>: Para variables que pueden cambiar dentro de un bloque especifico.</li>
         </ul>
+        <p>✅ <strong>Ventaja:</strong> Esto evita errores accidentales cuando trabajamos con peticiones en Node.js.</p>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo1')">Cargar en el Editor</button>
 
-        <h2>Módulo 2: Desestructuración (Destructuring)</h2>
-        <p>Es la herramienta más usada en Node.js para extraer propiedades de un objeto de forma directa. Muy Importante
-            cuando manejamos respuestas HTTP (<code>req.body</code> o <code>req.query</code>).</p>
+        <h2>Modulo 2: Desestructuracion (Destructuring)</h2>
+        <p>Es una forma elegante de extraer datos de objetos y arrays. En Node.js es muy util cuando recibimos datos de
+            una API.</p>
+        <ul>
+            <li><strong>Objetos:</strong> <code>const { nombre, edad } = persona;</code></li>
+            <li><strong>Arrays:</strong> <code>const [primero, segundo] = [1, 2];</code></li>
+        </ul>
+        <p>🔥 <strong>Uso tipico:</strong> Para extraer <code>req.body</code> o <code>req.query</code> en Express.</p>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo2')">Cargar en el Editor</button>
 
-        <h2>Módulo 3: Plantillas Literales e Inmutabilidad</h2>
-        <p>Concatenar cadenas con el operador <code>+</code> funciona pero es propenso a errores; en su lugar usamos las
-            comillas invertidas (<code>`</code>) para interpolar de manera legible.</p>
+        <h2>Modulo 3: Template Literals e Inmutabilidad</h2>
+        <p>Los Template Literals (usando comillas invertidas <code>`</code>) nos permiten insertar variables
+            directamente
+            en strings:</p>
+        <ul>
+            <li><code>`Hola ${nombre}`</code> en lugar de <code>"Hola " + nombre</code></li>
+        </ul>
         <div class="destaque-caja">
-            <strong>⚠️ El peligro de la Referencia en JavaScript:</strong><br>
-            A diferencia de PHP, si en JavaScript haces <code>const copia = objetoOriginal</code>, <strong>no estás
-                duplicando el objeto</strong>. Ambos identificadores apuntan al mismo espacio físico de memoria. Si
-            modificas <code>copia</code>, destruirás el original de forma colateral.
+            <strong>⚠️ Peligro de la referencia en JavaScript:</strong><br>
+            Cuando haces <code>const copia = objetoOriginal</code>, ambas variables apuntan al mismo objeto en memoria.
+            Si modificas <code>copia</code>, tambien cambias <code>objetoOriginal</code>.
         </div>
-        <p>Para lograr la <strong>Inmutabilidad</strong> (crear un objeto nuevo basado en uno viejo sin alterar el
-            original), usamos el operador <strong>Spread (<code>...</code>)</strong>. Esto es vital en Node.js para
-            mantener la integridad de los datos entre peticiones HTTP.</p>
+        <p>Para crear una copia independiente, usamos el <strong>Spread Operator (<code>...</code>)</strong>:</p>
+        <ul>
+            <li><code>const copia = { ...original };</code> - Crea un nuevo objeto con las mismas propiedades.</li>
+        </ul>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo3')">Cargar en el Editor</button>
 
-        <h2>Módulo 4: Consumo de Promesas (fetch)</h2>
-        <p>Una Promesa representa un proceso asíncrono. En lugar de simularlo, usaremos <code>fetch()</code> para
-            consultar usuarios reales en internet y procesar la respuesta usando <code>.then()</code>.</p>
+        <h2>Modulo 4: Promesas con fetch</h2>
+        <p>Una <strong>Promesa</strong> es un objeto que representa un valor que puede estar disponible ahora, en el
+            futuro o nunca. Es la base del codigo asincrono en JavaScript.</p>
+        <p><strong>Estructura de una Promesa:</strong></p>
+        <ul>
+            <li><strong>Pendiente (pending):</strong> Estado inicial.</li>
+            <li><strong>Cumplida (fulfilled):</strong> La operacion fue exitosa.</li>
+            <li><strong>Rechazada (rejected):</strong> La operacion fallo.</li>
+        </ul>
+        <p>Usamos <code>.then()</code> para manejar el exito y <code>.catch()</code> para manejar los errores:</p>
+        <ul>
+            <li><code>fetch(url).then(response => response.json()).then(data => console.log(data))</code></li>
+        </ul>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo4')">Cargar en el Editor</button>
 
-        <h2>Módulo 5: Async / Await moderno</h2>
-        <p>Es la forma estándar de la industria para resolver Promesas de manera lineal. Estructuramos el flujo con
-            <code>await</code> y controlamos los posibles errores de red usando bloques <code>try/catch</code>.
+        <h2>Modulo 5: Async / Await</h2>
+        <p>Async/Await es una forma mas legible de trabajar con Promesas. Hace que el codigo asincrono parezca sincrono.
         </p>
+        <ul>
+            <li><strong>async:</strong> Indica que una funcion devuelve una Promesa.</li>
+            <li><strong>await:</strong> Pausa la ejecucion hasta que la Promesa se resuelva.</li>
+        </ul>
+        <p>Siempre debemos usar <code>try/catch</code> para manejar errores:</p>
+        <ul>
+            <li><code>try { const data = await fetch(url); } catch (error) { console.error(error); }</code></li>
+        </ul>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo5')">Cargar en el Editor</button>
     </div>
 
@@ -270,11 +313,11 @@
                 <span>Usa console.log() para ver salidas</span>
             </div>
             <textarea id="code-editor" spellcheck="false"
-                placeholder="// Selecciona un módulo de la izquierda o escribe tu propio código..."></textarea>
+                placeholder="// Selecciona un modulo de la izquierda o escribe tu propio codigo..."></textarea>
         </div>
 
         <div class="actions">
-            <button class="btn-run" onclick="ejecutarCodigo()">Ejecutar Código ⚡</button>
+            <button class="btn-run" onclick="ejecutarCodigo()">Ejecutar Codigo</button>
         </div>
 
         <div class="console-container">
@@ -287,132 +330,195 @@
         const editor = document.getElementById('code-editor');
         const consola = document.getElementById('console-output');
 
-        // Diccionario extendido y corregido
         const ejemplos = {
-            modulo1: `// Módulo 1: Ámbito bloque usando límites de la API
-const totalUsuariosAPI = 10; 
+            modulo1: `// Modulo 1: Ambito de variables con Let y Const
+// const - No puede ser reasignada
+const totalUsuariosAPI = 10;
+
+// let - Puede cambiar dentro de su bloque
 let idBuscado = 8;
 
 if (idBuscado <= totalUsuariosAPI) {
-    let mensajeInterno = "ID válido detectado.";
+    // Esta variable solo existe dentro de este bloque
+    let mensajeInterno = "ID valido detectado.";
     console.log(mensajeInterno);
-    idBuscado++; 
+    idBuscado++; // Incrementamos el contador
 }
 
 console.log("Siguiente ID a evaluar:", idBuscado);`,
 
-            modulo2: `// Módulo 2: Desestructuración con estructura real de la API
+            modulo2: `// Modulo 2: Desestructuracion (Destructuring)
 const usuarioAPI = {
     id: 1,
     name: "Leanne Graham",
     username: "Bret",
-    email: "Sincere@april.biz"
+    email: "Sincere@april.biz",
+    address: {
+        street: "Kulas Light",
+        suite: "Apt. 556",
+        city: "Gwenborough"
+    }
 };
 
-// Extraemos propiedades de forma limpia y directa
+// Desestructuracion de objeto - extraemos lo que necesitamos
 const { name, username, email } = usuarioAPI;
-
 console.log("Nombre completo:", name);
-console.log("Nombre de usuario:", username);`,
+console.log("Nombre de usuario:", username);
 
-            modulo3: `// Módulo 3: Template Literals y Clonación Inmutable
+// Desestructuracion anidada - extraemos datos de objetos dentro de objetos
+const { address: { city, street } } = usuarioAPI;
+console.log("Ciudad:", city);
+console.log("Calle:", street);`,
+
+            modulo3: `// Modulo 3: Template Literals e Inmutabilidad
 const seccion = "01S";
-const materia = "Programación Backend";
-console.log(\`Bienvenidos a \${materia} (\${seccion})\\n\`);
+const materia = "Programacion Backend";
 
-const usuarioOriginal = { id: 2, name: "Ervin Howell", status: "activo" };
+// Template literals con comillas invertidas
+console.log(\`Bienvenidos a \${materia} (Seccion \${seccion})\\n\`);
 
-// Clonación correcta usando Spread Operator (...)
-const usuarioClonadoReal = { 
-    ...usuarioOriginal, 
-    username: "Antonette", 
-    status: "modificado_seguro" 
+const usuarioOriginal = { 
+    id: 2, 
+    name: "Ervin Howell", 
+    status: "activo" 
 };
 
-console.log("Original intacto:", usuarioOriginal.status); 
-console.log("Nuevo objeto seguro:", usuarioClonadoReal.status);`,
+// Creando una copia real usando Spread Operator
+const usuarioClonadoReal = { 
+    ...usuarioOriginal,  // Copiamos todas las propiedades
+    username: "Antonette", // Agregamos nueva propiedad
+    status: "modificado"   // Cambiamos una propiedad
+};
 
-            modulo4: `// Módulo 4: Consumo e Iteración de Datos (Métodos de Arrays Modernos)
-console.log("-> Solicitando listado para procesar de forma funcional...");
+// Verificamos que el original no fue modificado
+console.log("Original intacto:", usuarioOriginal.status);
+console.log("Nuevo objeto modificado:", usuarioClonadoReal.status);
 
+// El Spread Operator tambien funciona con arrays
+const numeros = [1, 2, 3];
+const masNumeros = [...numeros, 4, 5];
+console.log("Array original:", numeros);
+console.log("Array extendido:", masNumeros);`,
+
+            modulo4: `// Modulo 4: Promesas con fetch - Explicacion detallada
+console.log("Paso 1: Iniciando peticion a la API...");
+
+// fetch() devuelve una Promesa
 fetch("https://jsonplaceholder.typicode.com/users")
+    // .then() se ejecuta cuando la Promesa se cumple exitosamente
     .then(res => {
-        if (!res.ok) throw new Error("Error en el servidor");
+        console.log("Paso 2: Respuesta recibida del servidor");
+        // Verificamos si la respuesta es valida
+        if (!res.ok) {
+            throw new Error("Error en el servidor: " + res.status);
+        }
+        // Convertimos la respuesta a JSON (tambien devuelve una Promesa)
         return res.json();
     })
+    // Este .then() recibe los datos ya convertidos a JSON
     .then(usuarios => {
-        // 1. filter(): Obtenemos solo usuarios cuyo ID sea menor o igual a 3
+        console.log("Paso 3: Datos JSON procesados correctamente");
+        
+        // filter() - Crea un nuevo array con los elementos que cumplen una condicion
         const primerosTres = usuarios.filter(user => user.id <= 3);
+        console.log("Usuarios filtrados (ID <= 3):", primerosTres.length);
         
-        // 2. map(): Transformamos el array para quedarnos solo con lo que nos interesa
-        const nombresEmpresas = primerosTres.map(user => (\`@\${user.username} trabaja en \${user.company.name}\`));
+        // map() - Crea un nuevo array transformando cada elemento
+        const nombresEmpresas = primerosTres.map(user => 
+            \`@\${user.username} trabaja en \${user.company.name}\`
+        );
         
-        console.log("Resultados procesados con filter() y map():");
-        console.log(nombresEmpresas);
+        console.log("Paso 4: Datos procesados:");
+        nombresEmpresas.forEach(texto => console.log(texto));
     })
-    .catch(err => console.error("Error:", err.message));`,
+    // .catch() captura cualquier error en la cadena de Promesas
+    .catch(err => {
+        console.error("Error capturado en la Promesa:", err.message);
+    });`,
 
-            modulo5: `// Módulo 5: Async / Await y Concurrencia Avanzada
+            modulo5: `// Modulo 5: Async / Await - Explicacion detallada
+// La palabra clave async indica que esta funcion devuelve una Promesa
 async function obtenerDatosEnParalelo() {
     try {
-        console.log("-> Solicitando usuario 1 y posts simultáneamente...");
+        console.log("Paso 1: Iniciando peticiones simultaneas...");
         
-        // Ejecución en paralelo con Promise.all para no bloquear el hilo
+        // Promise.all() ejecuta multiples Promesas en paralelo
+        // await pausa la ejecucion hasta que todas se completen
         const [resUser, resPosts] = await Promise.all([
             fetch("https://jsonplaceholder.typicode.com/users/1"),
             fetch("https://jsonplaceholder.typicode.com/posts?userId=1")
         ]);
 
-        if (!resUser.ok || !resPosts.ok) throw new Error("Fallo en las peticiones");
+        console.log("Paso 2: Ambas peticiones finalizadas");
 
+        // Verificamos que las respuestas sean correctas
+        if (!resUser.ok || !resPosts.ok) {
+            throw new Error("Fallo en las peticiones al servidor");
+        }
+
+        // Convertimos las respuestas a JSON
         const usuario = await resUser.json();
         const posts = await resPosts.json();
 
-        console.log(\`✅ Usuario: \${usuario.name}\`);
-        console.log(\`📚 Cantidad de posts publicados: \${posts.length}\`);
+        console.log("Paso 3: Datos procesados correctamente");
+        console.log(\`Usuario obtenido: \${usuario.name}\`);
+        console.log(\`Cantidad de posts publicados: \${posts.length}\`);
+        console.log("Primer post:", posts[0]?.title || "No hay posts");
 
     } catch (error) {
-        console.error("Error capturado:", error.message);
+        // El bloque catch captura cualquier error en el try
+        console.error("Error capturado en try/catch:", error.message);
+    } finally {
+        // El bloque finally se ejecuta siempre, haya error o no
+        console.log("Paso 4: Operacion completada");
     }
 }
 
-obtenerDatosEnParalelo();`
+// Llamamos a la funcion async
+obtenerDatosEnParalelo();
+console.log("Mientras tanto, el resto del codigo sigue ejecutandose...");`
         };
 
         function cargarEjemplo(modulo) {
             editor.value = ejemplos[modulo];
-            consola.innerHTML = "> Código cargado. Presiona 'Ejecutar Código ⚡'";
+            consola.innerHTML = "> Codigo cargado. Presiona 'Ejecutar Codigo' para ver la salida.";
         }
 
         function ejecutarCodigo() {
             consola.innerHTML = '';
 
-            // Referencias nativas
+            // Guardamos las funciones nativas para restaurarlas despues
             const antiguoLog = console.log;
             const antiguoError = console.error;
 
-            // Redefinición temporal de logs
+            // Redefinimos console.log para capturar la salida
             console.log = function (...args) {
-                const mensaje = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ');
+                const mensaje = args.map(arg =>
+                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+                ).join(' ');
                 consola.innerHTML += `<div>${mensaje}</div>`;
                 antiguoLog.apply(console, args);
             };
 
+            // Redefinimos console.error para capturar errores
             console.error = function (...args) {
-                const mensaje = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ');
-                consola.innerHTML += `<div class="log-error">❌ Error: ${mensaje}</div>`;
+                const mensaje = args.map(arg =>
+                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+                ).join(' ');
+                consola.innerHTML += `<div class="log-error">Error: ${mensaje}</div>`;
                 antiguoError.apply(console, args);
             };
 
             try {
-                const codigoA_Ejecutar = editor.value;
-                const funcionCompilada = new Function(codigoA_Ejecutar);
-                funcionCompilada();
+                const codigo = editor.value;
+                // Usamos Function en lugar de eval por seguridad
+                const funcion = new Function(codigo);
+                funcion();
             } catch (err) {
                 console.error(err.message);
             }
 
-            // 🛠️ ¡CORREGIDO!: Ahora sí se restauran correctamente las funciones nativas
+            // Restauramos las funciones nativas
             console.log = antiguoLog;
             console.error = antiguoError;
         }
