@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground Interactivo: Nivelación ECMAScript para Node.js</title>
+    <style>
+        :root {
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --success: #16a34a;
+            --code-bg: #0f172a;
+            --code-text: #38bdf8;
+            --console-bg: #1e293b;
+            --console-text: #f8fafc;
+            --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Layout Responsivo de dos columnas */
+        .sidebar {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 30px;
+        }
+
+        .playground {
+            width: 55%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #1e293b;
+        }
+
+        /* Estilos del Contenido Teórico */
+        header { margin-bottom: 25px; border-bottom: 2px solid var(--bg-main); padding-bottom: 15px; }
+        h1 { font-size: 1.8rem; color: #0f172a; }
+        h2 { font-size: 1.3rem; color: var(--primary); margin-top: 25px; margin-bottom: 10px; }
+        p { margin-bottom: 12px; font-size: 0.95rem; }
+        ul { margin-left: 20px; margin-bottom: 15px; font-size: 0.95rem; }
+        li { margin-bottom: 5px; }
+        
+        .btn-cargar {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            transition: background 0.2s;
+        }
+        .btn-cargar:hover { background: var(--primary-hover); }
+
+        /* Estilos del Editor y Consola */
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background: var(--code-bg);
+            border-bottom: 2px solid #334155;
+        }
+
+        .panel-header {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-family: monospace;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            border: none;
+            resize: none;
+            outline: none;
+            line-height: 1.4;
+        }
+
+        .actions {
+            padding: 10px 15px;
+            background: #0f172a;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-run {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-run:hover { background: #15803d; }
+
+        .console-container {
+            height: 35%;
+            background: var(--console-bg);
+            padding: 15px;
+            overflow-y: auto;
+            border-top: 1px solid #334155;
+        }
+
+        #console-output {
+            font-family: monospace;
+            color: var(--console-text);
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        .log-error { color: #f87171; }
+        .log-info { color: #38bdf8; }
+
+        /* Adaptación para pantallas móviles */
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar, .playground { width: 100%; height: auto; }
+            .playground { height: 500px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <header>
+            <h1>Guía Interactiva: ECMAScript</h1>
+            <p>Preparación clave antes de iniciar con Node.js</p>
+        </header>
+
+        <p>Bienvenido al entorno interactivo de nivelación. Lee los conceptos de cada módulo y haz clic en <strong>"Cargar en el Editor"</strong> para probar y modificar el código directamente en tiempo real.</p>
+
+        <h2>Módulo 1: Ámbito con Let y Const</h2>
+        <p>Olvídate del viejo <code>var</code>. En Node.js, para evitar mutaciones accidentales en peticiones concurrentes, usamos un entorno controlado:</p>
+        <ul>
+            <li><code>const</code>: Para valores que no cambiarán de identificador.</li>
+            <li><code>let</code>: Para variables limitadas al bloque de código donde se declaran.</li>
+        </ul>
+        <button class="btn-cargar" onclick="cargarEjemplo('modulo1')">Cargar en el Editor</button>
+
+        <h2>Módulo 2: Desestructuración (Destructuring)</h2>
+        <p>Es la herramienta más usada en Node.js para extraer propiedades de un objeto de forma directa. Crucial cuando manejamos respuestas HTTP (<code>req.body</code> o <code>req.query</code>).</p>
+        <button class="btn-cargar" onclick="cargarEjemplo('modulo2')">Cargar en el Editor</button>
+
+        <h2>Módulo 3: Plantillas Literales e Inmutabilidad</h2>
+        <p>Concatenar cadenas con el operador <code>+</code> es propenso a errores. Usamos las comillas invertidas para interpolar variables (útil para armar consultas SQL estructuradas dinámicamente) y el operador Spread (<code>...</code>) para clonar datos de forma limpia.</p>
+        <button class="btn-cargar" onclick="cargarEjemplo('modulo3')">Cargar en el Editor</button>
+
+        <h2>Módulo 4: Promesas Básicas</h2>
+        <p>Una Promesa representa un proceso asíncrono que puede terminar con éxito (<code>resolve</code>) o fallar (<code>reject</code>). Node.js se basa completamente en la asincronía no bloqueante.</p>
+        <button class="btn-cargar" onclick="cargarEjemplo('modulo4')">Cargar en el Editor</button>
+
+        <h2>Módulo 5: Async / Await</h2>
+        <p>Es la forma moderna y estándar de la industria para resolver Promesas. Permite leer código asíncrono como si fuera secuencial de arriba hacia abajo, estructurando errores mediante bloques <code>try/catch</code>.</p>
+        <button class="btn-cargar" onclick="cargarEjemplo('modulo5')">Cargar en el Editor</button>
+    </div>
+
+    <div class="playground">
+        <div class="editor-container">
+            <div class="panel-header">
+                <span>EDITOR JAVASCRIPT (MODERNO)</span>
+                <span>Usa console.log() para ver salidas</span>
+            </div>
+            <textarea id="code-editor" spellcheck="false" placeholder="// Selecciona un módulo de la izquierda o escribe tu propio código..."></textarea>
+        </div>
+        
+        <div class="actions">
+            <button class="btn-run" onclick="ejecutarCodigo()">Ejecutar Código ⚡</button>
+        </div>
+
+        <div class="console-container">
+            <div class="panel-header">CONSOLA DE SALIDA</div>
+            <div id="console-output">> Listo para compilar...</div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('code-editor');
+        const consola = document.getElementById('console-output');
+
+        // Diccionario de códigos precargados para cada módulo
+        const ejemplos = {
+            modulo1: `// Módulo 1: Ámbito bloque (Let y Const)
+const maxEstudiantes = 35; 
+let estudiantesInscritos = 32;
+
+if (estudiantesInscritos < maxEstudiantes) {
+    let mensajeInterno = "Hay cupos disponibles";
+    estudiantesInscritos++;
+    console.log(mensajeInterno);
+}
+
+console.log("Total inscritos:", estudiantesInscritos);
+// console.log(mensajeInterno); // ERROR: Si quitas el comentario, fallará porque mensajeInterno no existe fuera del IF`,
+
+            modulo2: `// Módulo 2: Desestructuración
+// Simulemos un objeto enviado desde el Frontend (req.body)
+const req = {
+    body: {
+        cedula: "V-29876543",
+        nombre: "María",
+        apellido: "Mendoza",
+        carrera: "Ingeniería en Informática"
+    }
+};
+
+// Sintaxis moderna de ECMAScript
+const { cedula, nombre, carrera } = req.body;
+
+console.log("Estudiante extraído con éxito:");
+console.log("Nombre:", nombre);
+console.log("Cédula:", cedula);
+console.log("Carrera:", carrera);`,
+
+            modulo3: `// Módulo 3: Template Literals y Spread Operator
+const seccion = "01S";
+const materia = "Programación Backend";
+
+// Uso de backticks para interpolar variables limpiamente
+console.log(\`Bienvenidos a la sección \${seccion} de la materia \${materia}.\`);
+
+// Clonación inmutable con el operador Spread (...)
+const estudianteOriginal = { id: 1, nombre: "Luis" };
+const estudianteActualizado = { ...estudianteOriginal, seccion: "01S" };
+
+console.log("Original:", estudianteOriginal);
+console.log("Actualizado:", estudianteActualizado);`,
+
+            modulo4: `// Módulo 4: Promesas
+// Función simulada que busca un registro en una base de datos lenta
+function consultarEstudianteBD(cedula) {
+    return new Promise((resolve, reject) => {
+        console.log("Buscando en la Base de Datos...");
+        setTimeout(() => {
+            if(cedula === "V-123") {
+                resolve({ nombre: "Carlos Ortiz", carrera: "Informática" });
+            } else {
+                reject("Estudiante no registrado en el sistema universitario.");
+            }
+        }, 1500); // Tarda 1.5 segundos
+    });
+}
+
+// Consumo tradicional con .then() y .catch()
+consultarEstudianteBD("V-123")
+    .then(datos => console.log("Resultado exitoso:", datos.nombre))
+    .catch(error => console.error("Error del sistema:", error));`,
+
+            modulo5: `// Módulo 5: Async / Await y Try/Catch
+function consultarBaseDatos(id) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if(id === 10) resolve("Conexión Exitosa con MySQL");
+            else reject("Error 500: Fallo de conexión");
+        }, 1000);
+    });
+}
+
+// Función marcada como asíncrona para habilitar el uso de await
+async function iniciarProceso() {
+    try {
+        console.log("Iniciando petición...");
+        const resultado = await consultarBaseDatos(10); // Espera la resolución de forma lineal
+        console.log("Respuesta:", resultado);
+    } catch (error) {
+        console.error("Capturado en el catch:", error);
+    }
+}
+
+iniciarProceso();`
+        };
+
+        // Función para inyectar código en el área de texto
+        function cargarEjemplo(modulo) {
+            editor.value = ejemplos[modulo];
+            consola.innerHTML = "> Código cargado. Presiona 'Ejecutar Código ⚡'";
+        }
+
+        // Interceptor nativo de la consola para redirigir las salidas al contenedor HTML
+        function ejecutarCodigo() {
+            consola.innerHTML = ''; // Limpiar consola virtual
+            
+            // Guardar referencias nativas
+            const antiguoLog = console.log;
+            const antiguoError = console.error;
+
+            // Redefinir console.log temporalmente
+            console.log = function(...args) {
+                const mensaje = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ');
+                consola.innerHTML += `<div>${mensaje}</div>`;
+                antiguoLog.apply(console, args);
+            };
+
+            // Redefinir console.error temporalmente
+            console.error = function(...args) {
+                const mensaje = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ');
+                consola.innerHTML += `<div class="log-error">❌ Error: ${mensaje}</div>`;
+                antiguoError.apply(console, args);
+            };
+
+            try {
+                const codigoA_Ejecutar = editor.value;
+                // Usar new Function ejecuta el código en un entorno aislado globalmente
+                const funcionCompilada = new Function(codigoA_Ejecutar);
+                funcionCompilada();
+            } catch (err) {
+                console.error(err.message);
+            }
+
+            // Restaurar funciones originales de consola
+            console.log = antiguoLog;
+            console.error = antiguoError;
+        }
+    </script>
+</body>
+</html>
