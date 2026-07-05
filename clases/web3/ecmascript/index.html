@@ -220,7 +220,8 @@
         </header>
 
         <p>Bienvenido al entorno interactivo de nivelación. Lee los conceptos de cada módulo y haz clic en
-            <strong>"Cargar en el Editor"</strong> para probar y modificar el código directamente en tiempo real.</p>
+            <strong>"Cargar en el Editor"</strong> para probar y modificar el código directamente en tiempo real.
+        </p>
 
         <h2>Módulo 1: Ámbito de variables con Let y Const</h2>
         <p>Para declarar las variables no usaremos <code>var</code>. En Node.js, para evitar mutaciones accidentales en
@@ -257,7 +258,8 @@
 
         <h2>Módulo 5: Async / Await moderno</h2>
         <p>Es la forma estándar de la industria para resolver Promesas de manera lineal. Estructuramos el flujo con
-            <code>await</code> y controlamos los posibles errores de red usando bloques <code>try/catch</code>.</p>
+            <code>await</code> y controlamos los posibles errores de red usando bloques <code>try/catch</code>.
+        </p>
         <button class="btn-cargar" onclick="cargarEjemplo('modulo5')">Cargar en el Editor</button>
     </div>
 
@@ -285,141 +287,117 @@
         const editor = document.getElementById('code-editor');
         const consola = document.getElementById('console-output');
 
-        // Diccionario de códigos precargados alineados con JSONPlaceholder
+        // Diccionario extendido y corregido
         const ejemplos = {
             modulo1: `// Módulo 1: Ámbito bloque usando límites de la API
-const totalUsuariosAPI = 10; // JSONPlaceholder solo tiene 10 usuarios fijo
+const totalUsuariosAPI = 10; 
 let idBuscado = 8;
 
 if (idBuscado <= totalUsuariosAPI) {
-    let mensajeInterno = "ID válido detectado en la base de datos ficticia.";
+    let mensajeInterno = "ID válido detectado.";
     console.log(mensajeInterno);
-    idBuscado++; // Pasamos al siguiente ID
+    idBuscado++; 
 }
 
-console.log("Siguiente ID a evaluar en el bucle:", idBuscado);
-// console.log(mensajeInterno); // ERROR: dará error porque mensajeInterno no existe fuera del bloque IF`,
+console.log("Siguiente ID a evaluar:", idBuscado);`,
 
             modulo2: `// Módulo 2: Desestructuración con estructura real de la API
-// Este es exactamente el formato de la respuesta del usuario #1 (Leanne Graham)
 const usuarioAPI = {
     id: 1,
     name: "Leanne Graham",
     username: "Bret",
-    email: "Sincere@april.biz",
-    phone: "1-770-736-8031 x56442"
+    email: "Sincere@april.biz"
 };
 
 // Extraemos propiedades de forma limpia y directa
 const { name, username, email } = usuarioAPI;
 
-console.log("Objeto JSON desestructurado con éxito:");
 console.log("Nombre completo:", name);
-console.log("Nombre de usuario (Login):", username);
-console.log("Correo electrónico:", email);`,
+console.log("Nombre de usuario:", username);`,
 
             modulo3: `// Módulo 3: Template Literals y Clonación Inmutable
 const seccion = "01S";
 const materia = "Programación Backend";
-console.log(\`Bienvenidos a la sección \${seccion} de la materia \${materia}.\\n\`);
+console.log(\`Bienvenidos a \${materia} (\${seccion})\\n\`);
 
-// --- DEMOSTRACIÓN DEL PROBLEMA DE REFERENCIA ---
 const usuarioOriginal = { id: 2, name: "Ervin Howell", status: "activo" };
 
-// Intento incorrecto de clonar (Asignación por Referencia):
-const intentoClon = usuarioOriginal; 
-intentoClon.status = "suspendido"; // Modificamos el clon aparente
-
-console.log("❌ CASO 1: ASIGNACIÓN POR REFERENCIA DIRECTA");
-console.log("Original afectado colateralmente:", usuarioOriginal.status); // ¡Imprime "suspendido"!
-console.log("Clon aparente:", intentoClon.status);
-
-
-// --- SOLUCIÓN CON OPERADOR SPREAD (...) INMUTABILIDAD ---
-// Restauramos el original para la prueba limpia
-usuarioOriginal.status = "activo"; 
-
-// Clonación correcta: Creamos un espacio de memoria nuevo y "esparcimos" dentro sus datos viejo
+// Clonación correcta usando Spread Operator (...)
 const usuarioClonadoReal = { 
     ...usuarioOriginal, 
-    username: "Antonette", // Agregamos una nueva propiedad
-    status: "modificado_seguro" // Sobrescribimos una propiedad existente de forma segura
+    username: "Antonette", 
+    status: "modificado_seguro" 
 };
 
-console.log("\\n✔️ CASO 2: CLONACIÓN INMUTABLE (OPERADOR SPREAD)");
-console.log("Original intacto (¡Mantiene su estado original!):", usuarioOriginal.status); 
-console.log("Nuevo objeto modificado de forma segura:", usuarioClonadoReal.status);
-console.log("Objeto clonado completo listo para usar:", usuarioClonadoReal);`,
+console.log("Original intacto:", usuarioOriginal.status); 
+console.log("Nuevo objeto seguro:", usuarioClonadoReal.status);`,
 
-            modulo4: `// Módulo 4: Promesas Reales con .then() (Datos en vivo)
-console.log("1. Enviando solicitud HTTP GET a JSONPlaceholder...");
+            modulo4: `// Módulo 4: Consumo e Iteración de Datos (Métodos de Arrays Modernos)
+console.log("-> Solicitando listado para procesar de forma funcional...");
 
-// Solicitando de verdad el usuario #1
-fetch("https://jsonplaceholder.typicode.com/users/1")
-    .then(respuesta => respuesta.json()) // Parseamos la respuesta HTTP a JSON
-    .then(usuario => {
-        console.log("2. ¡Estructura de datos recibida desde internet!");
-        // Mostramos las propiedades anidadas reales de este registro específico
-        console.log(\`Nombre: \${usuario.name}\`);
-        console.log(\`Ciudad: \${usuario.address.city}\`);
-        console.log(\`Empresa: \${usuario.company.name}\`);
+fetch("https://jsonplaceholder.typicode.com/users")
+    .then(res => {
+        if (!res.ok) throw new Error("Error en el servidor");
+        return res.json();
     })
-    .catch(error => {
-        console.error("Fallo de conexión o error de red:", error);
-    });
+    .then(usuarios => {
+        // 1. filter(): Obtenemos solo usuarios cuyo ID sea menor o igual a 3
+        const primerosTres = usuarios.filter(user => user.id <= 3);
+        
+        // 2. map(): Transformamos el array para quedarnos solo con lo que nos interesa
+        const nombresEmpresas = primerosTres.map(user => (\`@\${user.username} trabaja en \${user.company.name}\`));
+        
+        console.log("Resultados procesados con filter() y map():");
+        console.log(nombresEmpresas);
+    })
+    .catch(err => console.error("Error:", err.message));`,
 
-console.log("3. El hilo principal de ejecución continúa sin bloquearse...");`,
-
-            modulo5: `// Módulo 5: Async / Await moderno mapeando la API completa
-async function obtenerListadoUsuarios() {
+            modulo5: `// Módulo 5: Async / Await y Concurrencia Avanzada
+async function obtenerDatosEnParalelo() {
     try {
-        console.log("-> Iniciando función asíncrona...");
+        console.log("-> Solicitando usuario 1 y posts simultáneamente...");
         
-        const respuesta = await fetch("https://jsonplaceholder.typicode.com/users");
-        
-        if (!respuesta.ok) {
-            throw new Error(\`Error HTTP en el servidor remoto: \${respuesta.status}\`);
-        }
-        
-        const listado = await respuesta.json();
-        
-        console.log("-> Extrayendo los 3 primeros registros reales de la API:");
-        // Mapeamos los datos idénticos a los del Módulo 2 y 3
-        listado.slice(0, 3).forEach(user => {
-            console.log(\`ID #\${user.id}: @\${user.username} trabaja en "\${user.company.name}"\`);
-        });
+        // Ejecución en paralelo con Promise.all para no bloquear el hilo
+        const [resUser, resPosts] = await Promise.all([
+            fetch("https://jsonplaceholder.typicode.com/users/1"),
+            fetch("https://jsonplaceholder.typicode.com/posts?userId=1")
+        ]);
+
+        if (!resUser.ok || !resPosts.ok) throw new Error("Fallo en las peticiones");
+
+        const usuario = await resUser.json();
+        const posts = await resPosts.json();
+
+        console.log(\`✅ Usuario: \${usuario.name}\`);
+        console.log(\`📚 Cantidad de posts publicados: \${posts.length}\`);
 
     } catch (error) {
-        console.error("Error capturado en el bloque Try/Catch:", error.message);
+        console.error("Error capturado:", error.message);
     }
 }
 
-// Disparamos el proceso asíncrono ordenado
-obtenerListadoUsuarios();`
+obtenerDatosEnParalelo();`
         };
 
-        // Función para inyectar código en el área de texto
         function cargarEjemplo(modulo) {
             editor.value = ejemplos[modulo];
             consola.innerHTML = "> Código cargado. Presiona 'Ejecutar Código ⚡'";
         }
 
-        // Interceptor nativo de la consola para redirigir las salidas al contenedor HTML
         function ejecutarCodigo() {
-            consola.innerHTML = ''; // Limpiar consola virtual
+            consola.innerHTML = '';
 
-            // Guardar referencias nativas
+            // Referencias nativas
             const antiguoLog = console.log;
             const antiguoError = console.error;
 
-            // Redefinir console.log temporalmente
+            // Redefinición temporal de logs
             console.log = function (...args) {
                 const mensaje = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ');
                 consola.innerHTML += `<div>${mensaje}</div>`;
                 antiguoLog.apply(console, args);
             };
 
-            // Redefinir console.error temporalmente
             console.error = function (...args) {
                 const mensaje = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ');
                 consola.innerHTML += `<div class="log-error">❌ Error: ${mensaje}</div>`;
@@ -428,15 +406,14 @@ obtenerListadoUsuarios();`
 
             try {
                 const codigoA_Ejecutar = editor.value;
-                // Usar new Function ejecuta el código en un entorno aislado globalmente
                 const funcionCompilada = new Function(codigoA_Ejecutar);
                 funcionCompilada();
             } catch (err) {
                 console.error(err.message);
             }
 
-            // Restaurar funciones originales de consola
-            console.log = antiquoLog;
+            // 🛠️ ¡CORREGIDO!: Ahora sí se restauran correctamente las funciones nativas
+            console.log = antiguoLog;
             console.error = antiguoError;
         }
     </script>
