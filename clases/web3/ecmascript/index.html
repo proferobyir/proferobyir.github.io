@@ -4,35 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Tutorial de ECMAScript para estudiantes de Informática y Sistemas </title>
+    <title>ECMAScript - Guía Interactiva para Estudiantes</title>
     <style>
-        /* ===== Paleta de colores profesional ===== */
+        /* --- Variables de Diseño y Paleta de Colores --- */
         :root {
-            --color-100: #3d5a80;
-            --color-95: #98c1d9;
-            --color-90: #e0fbfc;
-            --color-85: #ee6c4d;
-            --color-80: #293241;
-            --color-75: #1d2430;
-            --color-70: #4f6f96;
-            --color-65: #222a37;
-            --color-60: #b5d1e3;
-            --bg-main: #293241;
-            --bg-card: #222a37;
-            --bg-code: #1d2430;
-            --bg-console: #1d2430;
-            --text-main: #e0fbfc;
-            --text-light: #98c1d9;
-            --text-pastel: #b5d1e3;
-            --border: #3d5a80;
-            --border-light: #4f6f96;
-            --primary: #3d5a80;
-            --primary-hover: #4f6f96;
-            --success: #ee6c4d;
-            --highlight: #98c1d9;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-js: #f7df1e;
+            --accent-js-dark: #857200;
+            --code-bg: #0f172a;
+            --code-text: #38bdf8;
+            --border-color: #e2e8f0;
+            --radius: 12px;
         }
 
-        /* ===== Reset y estructura base ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -40,1129 +29,539 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-main);
-            color: var(--text-main);
+            color: var(--text-dark);
             line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* --- Contenedor Principal (Layout Grid) --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                grid-template-columns: 1.2fr 0.8fr;
+                align-items: start;
+            }
+        }
+
+        /* --- Panel de Contenido / Teoría --- */
+        .theory-panel {
             display: flex;
-            height: 100vh;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            padding: 30px;
+            border-radius: var(--radius);
+            position: relative;
             overflow: hidden;
         }
 
-        /* ===== SIDEBAR - Izquierda (45%) ===== */
-        .sidebar {
-            width: 45%;
-            height: 100%;
-            overflow-y: auto;
-            background: var(--bg-card);
-            border-right: 3px solid var(--border);
-            padding: 30px;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        /* Barra decorativa lateral con todos los colores */
-        .sidebar::after {
-            content: '';
+        header::after {
+            content: 'JS';
             position: absolute;
-            top: 0;
-            right: -3px;
-            width: 6px;
-            height: 100%;
-            background: linear-gradient(to bottom,
-                    #3d5a80 0%,
-                    #98c1d9 20%,
-                    #e0fbfc 40%,
-                    #ee6c4d 60%,
-                    #b5d1e3 80%,
-                    #4f6f96 100%);
+            right: -10px;
+            bottom: -20px;
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(247, 223, 30, 0.08);
         }
 
-        /* ===== PLAYGROUND - Derecha (55%) ===== */
-        .playground {
-            width: 55%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-code);
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        /* Borde superior decorativo */
-        .playground::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right,
-                    #3d5a80 0%,
-                    #98c1d9 20%,
-                    #e0fbfc 40%,
-                    #ee6c4d 60%,
-                    #b5d1e3 80%,
-                    #4f6f96 100%);
-            z-index: 10;
-        }
-
-        /* ===== ESTILOS DE CONTENIDO ===== */
-        header {
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--border-light);
-            padding-bottom: 15px;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            color: var(--text-main);
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-shadow: 0 0 30px rgba(61, 90, 128, 0.3);
-            background: linear-gradient(to right, var(--text-main), var(--text-pastel));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        h2 {
-            font-size: 1.3rem;
-            color: var(--text-main);
-            margin-top: 30px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 5px;
-        }
-
-        h3 {
-            font-size: 1.1rem;
-            color: var(--text-pastel);
-            margin-top: 15px;
+        header h1 {
+            font-size: 2.2rem;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        p {
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-            color: var(--text-light);
+        header h1::after {
+            content: 'ES6+';
+            font-size: 0.9rem;
+            background-color: var(--accent-js);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
         }
 
-        ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            color: var(--text-light);
+        header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
         }
 
-        li {
-            margin-bottom: 5px;
+        /* --- Tarjetas y Secciones --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        li::marker {
+        .card-title {
+            font-size: 1.4rem;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        h2.card-title {
             color: var(--primary);
         }
 
+        /* --- Formato de Bloques de Código --- */
         code {
-            background: var(--bg-main);
-            color: var(--text-main);
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f1f5f9;
+            color: #ef4444;
             padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.9rem;
-            border: 1px solid var(--border-light);
-        }
-
-        .destaque-caja {
-            background-color: var(--bg-main);
-            border-left: 4px solid var(--success);
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: var(--text-pastel);
-            border-radius: 0 4px 4px 0;
-        }
-
-        .btn-cargar {
-            background: var(--primary);
-            color: var(--text-main);
-            border: 2px solid var(--border);
-            padding: 8px 16px;
-            font-size: 0.85rem;
             border-radius: 4px;
-            cursor: pointer;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-            font-weight: bold;
+            font-size: 0.95em;
         }
 
-        .btn-cargar:hover {
-            background: var(--primary-hover);
-            border-color: var(--text-pastel);
-            transform: scale(1.02);
-            box-shadow: 0 0 25px var(--color-85);
-            color: var(--text-main);
+        pre code {
+            display: block;
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+            border-left: 4px solid var(--primary);
         }
 
-        /* ===== EDITOR Y CONSOLA ===== */
-        .editor-container {
-            flex: 1;
+        /* --- Alertas Pedagógicas --- */
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            background: var(--bg-code);
-            border-bottom: 2px solid var(--border);
+            gap: 6px;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            color: #1e3a8a;
+        }
+
+        .alert-warning {
+            background-color: #fffbec;
+            border-left: 4px solid #f59e0b;
+            color: #78350f;
+        }
+
+        .alert-windows {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            color: #14532d;
+        }
+
+        .analogia {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 14px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-style: italic;
+            color: #475569;
+        }
+
+        /* --- Listas Estilizadas --- */
+        ul {
+            list-style-position: inside;
+            margin-left: 8px;
+            margin-bottom: 12px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* --- Botón para Cargar al Editor --- */
+        .btn-load {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 12px;
+        }
+
+        .btn-load:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* --- Panel Interactivo (Editor y Consola) --- */
+        .interactive-panel {
+            position: sticky;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .editor-container {
+            background-color: var(--code-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
         .panel-header {
-            color: var(--text-pastel);
+            background-color: #1e293b;
+            color: #cbd5e1;
+            padding: 12px 16px;
             font-size: 0.85rem;
-            font-family: monospace;
-            margin-bottom: 8px;
+            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #334155;
         }
 
-        textarea {
-            flex: 1;
-            background: transparent;
-            color: var(--text-main);
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1rem;
+        /* Simulación del área de texto del Editor */
+        .editor-textarea {
+            width: 100%;
+            height: 280px;
+            background-color: #0f172a;
+            color: #f8fafc;
             border: none;
-            resize: none;
+            padding: 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
             outline: none;
-            line-height: 1.4;
         }
 
-        textarea::placeholder {
-            color: var(--text-light);
-            opacity: 0.5;
-        }
-
-        .actions {
-            padding: 10px 15px;
-            background: var(--bg-code);
+        .panel-actions {
+            background-color: #1e293b;
+            padding: 10px 16px;
             display: flex;
             justify-content: flex-end;
-            border-top: 1px solid var(--border-light);
         }
 
         .btn-run {
-            background: var(--primary);
-            color: var(--text-main);
-            border: 2px solid var(--border);
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
+            background-color: #22c55e;
+            color: #052e16;
+            border: none;
+            padding: 8px 16px;
             border-radius: 4px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
         .btn-run:hover {
-            background: var(--primary-hover);
-            border-color: var(--text-pastel);
-            transform: scale(1.02);
-            box-shadow: 0 0 30px var(--color-85);
+            background-color: #16a34a;
         }
 
         .console-container {
-            height: 35%;
-            background: var(--bg-console);
-            padding: 15px;
-            overflow-y: auto;
-            border-top: 2px solid var(--border);
-            position: relative;
+            background-color: #000000;
+            color: #22c55e;
+            border-radius: var(--radius);
+            padding: 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            min-height: 150px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        /* Barra decorativa inferior */
-        .console-container::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right,
-                    #3d5a80 0%,
-                    #98c1d9 20%,
-                    #e0fbfc 40%,
-                    #ee6c4d 60%,
-                    #b5d1e3 80%,
-                    #4f6f96 100%);
-        }
-
-        #console-output {
-            font-family: monospace;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            white-space: pre-wrap;
-        }
-
-        #console-output div {
-            padding: 2px 0;
-            border-bottom: 1px solid rgba(61, 90, 128, 0.2);
-        }
-
-        .log-error {
-            color: #ff6b6b;
-            border-left: 3px solid #ff6b6b;
-            padding-left: 10px;
-        }
-
-        .log-success {
-            color: var(--text-main);
-            border-left: 3px solid var(--primary);
-            padding-left: 10px;
-        }
-
-        .log-info {
-            color: var(--text-pastel);
-            border-left: 3px solid var(--border-light);
-            padding-left: 10px;
-        }
-
-        /* ===== DEMO DE PALETA ===== */
-        .color-palette-demo {
-            display: flex;
-            gap: 4px;
-            padding: 10px 0;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .color-swatch {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
-            border: 1px solid var(--border-light);
-            transition: transform 0.3s ease;
-        }
-
-        .color-swatch:hover {
-            transform: scale(1.2);
-        }
-
-        .color-label {
-            font-size: 0.7rem;
-            color: var(--text-light);
-            text-align: center;
-            margin-top: 2px;
-        }
-
-        .swatch-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /*Yellow Bag*/
-        .yellowbag {
-            background: linear-gradient(to right, #ffd700, #ffa500);
-            padding: 10px;
-            border: 2px solid #000000;
-            border-radius: 25px;
-            margin-bottom: 20px;
-            width: 200px;
-            color: #000000 !important;
-            text-align: center;
+        .console-title {
+            color: #94a3b8;
+            font-size: 0.75rem;
             font-weight: bold;
-        }
-
-
-        /* ===== SCROLLBAR PERSONALIZADA ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-main);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-            border: 1px solid var(--border-light);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-hover);
-        }
-
-
-        .yellowbag h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #000000 !important;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 900px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-                height: auto;
-            }
-
-            .sidebar,
-            .playground {
-                width: 100%;
-                height: auto;
-            }
-
-            .playground {
-                height: 500px;
-            }
-
-            .sidebar::after {
-                display: none;
-            }
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ===== SIDEBAR - Contenido educativo ===== -->
-    <div class="sidebar">
-        <header>
-            <div class="yellowbag">
-                <h1>ECMAScript</h1>
-            </div>
-            <p>Guía completa paso a paso para estudiantes de Informática y Sistemas</p>
-        </header>
+    <div class="container">
 
-        <!-- INSTRUCCIÓN PARA CREAR PROYECTO NODE.JS DESDE CERO -->
-        <div
-            style="background: var(--bg-main); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px solid var(--success);">
-            <h3 style="color: var(--success); margin-top: 0; margin-bottom: 10px;">🚀 ¿Cómo crear un proyecto Node.js
-                desde cero?</h3>
-            <p style="margin-bottom: 8px;"><strong>Paso 1:</strong> Abre tu terminal y crea una carpeta para tu
-                proyecto:</p>
-            <code
-                style="display: block; background: var(--bg-code); padding: 8px; border-radius: 4px; margin: 5px 0;">mkdir mi-proyecto-node</code>
-            <code
-                style="display: block; background: var(--bg-code); padding: 8px; border-radius: 4px; margin: 5px 0;">cd mi-proyecto-node</code>
+        <!-- COLUMNA IZQUIERDA: TEORÍA Y EXPLICACIONES -->
+        <main class="theory-panel">
 
-            <p style="margin-bottom: 8px; margin-top: 12px;"><strong>Paso 2:</strong> Inicializa el proyecto con npm
-                (Node Package Manager):</p>
-            <code
-                style="display: block; background: var(--bg-code); padding: 8px; border-radius: 4px; margin: 5px 0;">npm init -y</code>
-            <p style="font-size: 0.85rem; color: var(--text-pastel);">El flag <code>-y</code> acepta todas las opciones
-                por defecto. Puedes omitirlo para personalizar.</p>
+            <header>
+                <div>
+                    <h1>ECMAScript</h1>
+                </div>
+                <p>Guía paso a paso adaptada para entornos Windows | Informática y Sistemas</p>
+            </header>
 
-            <p style="margin-bottom: 8px; margin-top: 12px;"><strong>Paso 3:</strong> Esto crea un archivo
-                <code>package.json</code> con la configuración de tu proyecto.
-            </p>
-
-            <p style="margin-bottom: 8px; margin-top: 12px;"><strong>Paso 4:</strong> Crea tu archivo principal (por
-                ejemplo, <code>app.js</code>):</p>
-            <code
-                style="display: block; background: var(--bg-code); padding: 8px; border-radius: 4px; margin: 5px 0;">touch app.js</code>
-            <p style="font-size: 0.85rem; color: var(--text-pastel);">En Windows usa: <code>type nul > app.js</code></p>
-
-            <p style="margin-bottom: 8px; margin-top: 12px;"><strong>Paso 5:</strong> Escribe tu código en
-                <code>app.js</code> y ejecútalo:
-            </p>
-            <code
-                style="display: block; background: var(--bg-code); padding: 8px; border-radius: 4px; margin: 5px 0;">node app.js</code>
-
-            <div
-                style="background: var(--bg-code); padding: 10px; border-radius: 4px; margin-top: 10px; border-left: 4px solid var(--success);">
-                <p style="margin: 0; font-size: 0.9rem;">💡 <strong>Tip:</strong> Para usar módulos ES (import/export)
-                    en Node.js, agrega en <code>package.json</code>:</p>
-                <code
-                    style="display: block; background: var(--bg-main); padding: 6px; border-radius: 4px; margin-top: 5px;">"type": "module"</code>
+            <!-- OBJETIVO -->
+            <div class="card">
+                <p><strong>🎯 Objetivo académico:</strong> Dominar la sintaxis moderna de JavaScript (ES6+) que
+                    utilizarás a diario en el desarrollo de aplicaciones backend con Node.js y arquitecturas frontend
+                    profesionales.</p>
             </div>
 
-            <p style="margin-top: 10px; font-size: 0.9rem;">📚 <strong>Recursos:</strong> Los ejemplos de este tutorial
-                usan las características que aprenderás aquí.</p>
-        </div>
+            <!-- PASO A PASO: NODE.JS EN WINDOWS -->
+            <section class="card">
+                <h3 class="card-title">🚀 ¿Cómo crear tu primer proyecto Node.js en Windows?</h3>
 
-        <div
-            style="background: var(--bg-main); padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border);">
-            <p style="margin: 0; color: var(--text-pastel);">
-                <strong>🎯 Objetivo:</strong> Aprender los fundamentos de ECMAScript que usarás
-                <strong style="color: var(--text-main);">todos los días</strong> en Node.js.
-            </p>
-        </div>
+                <p><strong>Paso 1:</strong> Abre la terminal de Windows (puedes presionar <kbd>Win</kbd> + <kbd>X</kbd>
+                    y seleccionar <strong>Terminal</strong> o <strong>PowerShell</strong>). Crea la carpeta de tu
+                    laboratorio y entra en ella:</p>
+                <pre><code>mkdir mi-proyecto-node
+cd mi-proyecto-node</code></pre>
 
-        <p>Bienvenido al entorno interactivo. Lee cada módulo y haz clic en
-            <strong>"Cargar en el Editor"</strong> para ver el código en acción.
-        </p>
+                <p><strong>Paso 2:</strong> Inicializa el gestor de paquetes de Node.js (NPM). Esto preparará tu
+                    entorno:</p>
+                <pre><code>npm init -y</code></pre>
+                <div class="alert alert-info">
+                    💡 <strong>Tip para la clase:</strong> El parámetro <code>-y</code> (yes) le dice a NPM que
+                    configure todo de forma automática con los valores por defecto. Si lo omites, te hará preguntas como
+                    el nombre del proyecto o la versión.
+                </div>
 
-        <!-- ===== MÓDULO 1: LET Y CONST ===== -->
-        <h2>📦 Módulo 1: Let y Const</h2>
-        <p>Reemplazan a <code>var</code> y solucionan sus problemas:</p>
-        <ul>
-            <li><strong>const</strong>: Valor constante que <u>no puede reasignarse</u>.</li>
-            <li><strong>let</strong>: Variable con ámbito de <u>bloque</u> (dentro de <code>{}</code>).</li>
-        </ul>
-        <div class="destaque-caja">
-            💡 <strong>Regla práctica:</strong> Usa <code>const</code> por defecto. Solo usa <code>let</code> si sabes
-            que el valor va a cambiar.
-        </div>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo1')">📂 Cargar en el Editor</button>
+                <p><strong>Paso 3:</strong> El comando anterior generará un archivo clave llamado
+                    <code>package.json</code> en tu directorio. Es la cédula de identidad de tu software.</p>
 
-        <!-- ===== MÓDULO 2: DESESTRUCTURACIÓN ===== -->
-        <h2>🎯 Módulo 2: Destructuring</h2>
-        <p>Extrae datos de objetos y arrays de forma rápida y legible:</p>
-        <ul>
-            <li><strong>Objetos:</strong> <code>const { nombre, edad } = persona;</code></li>
-            <li><strong>Arrays:</strong> <code>const [primero, segundo] = [1, 2];</code></li>
-            <li><strong>Anidado:</strong> <code>const { address: { city } } = user;</code></li>
-        </ul>
-        <p style="color: var(--text-pastel);">🔥 <strong>Uso común:</strong> Extraer datos de APIs como
-            <code>req.body</code> en Express.
-        </p>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo2')">📂 Cargar en el Editor</button>
+                <p><strong>Paso 4:</strong> Crea el script principal desde la consola de Windows. **Nota:** En Linux se
+                    usa <code>touch</code>, pero en Windows utilizaremos comandos nativos de la consola de comandos:</p>
+                <div class="alert alert-windows">
+                    ⚙️ <strong>Comando Nativo de Windows:</strong><br>
+                    Si estás en <strong>PowerShell</strong>, usa:<br>
+                    <code>New-Item app.js</code><br><br>
+                    Si estás en la **Símbolo del Sistema (CMD)** tradicional, usa:<br>
+                    <code>type nul > app.js</code>
+                </div>
 
-        <!-- ===== MÓDULO 3: TEMPLATE LITERALS Y SPREAD ===== -->
-        <h2>🧩 Módulo 3: Template Literals y Spread</h2>
-        <p><strong>Template Literals</strong> (con comillas invertidas <code>`</code>) permiten insertar variables:</p>
-        <ul>
-            <li><code>`Hola ${nombre}`</code> en lugar de <code>"Hola " + nombre</code></li>
-        </ul>
-        <div class="destaque-caja">
-            ⚠️ <strong>¡Cuidado con la referencia!</strong><br>
-            <code>const copia = original</code> no crea una copia nueva. Ambas apuntan al mismo objeto.
-        </div>
-        <h3>Spread Operator <code>...</code></h3>
-        <ul>
-            <li><code>const copiaReal = { ...original };</code> - Copia independiente</li>
-            <li><code>const nuevoArray = [...viejo, 4, 5];</code> - Copia y expande arrays</li>
-        </ul>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo3')">📂 Cargar en el Editor</button>
+                <p><strong>Paso 5:</strong> Abre el archivo en tu editor (como VS Code) escribiendo <code>code .</code>,
+                    escribe tu lógica y ejecútala desde tu terminal mediante el motor runtime de Node:</p>
+                <pre><code>node app.js</code></pre>
 
-        <!-- ===== MÓDULO 4: PROMESAS ===== -->
-        <h2>⚡ Módulo 4: Promesas con fetch</h2>
-        <p>Una <strong>Promesa</strong> representa un valor futuro. Estados:</p>
-        <ul>
-            <li><span style="color: var(--text-pastel);">⏳</span> <strong>Pending:</strong> En proceso</li>
-            <li><span style="color: var(--text-main);">✅</span> <strong>Fulfilled:</strong> Completado con éxito</li>
-            <li><span style="color: #ff6b6b;">❌</span> <strong>Rejected:</strong> Falló</li>
-        </ul>
-        <p>Encadenamos con <code>.then()</code> para éxito y <code>.catch()</code> para errores:</p>
-        <ul>
-            <li><code>fetch(url).then(res => res.json()).then(data => console.log(data))</code></li>
-        </ul>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo4')">📂 Cargar en el Editor</button>
+                <div class="alert alert-warning">
+                    ⚠️ <strong>Configuración Clave para ES Modules:</strong> Para poder usar las instrucciones de este
+                    módulo (como <code>import</code> y <code>export</code>), debes indicarle a Node.js que trabaje con
+                    módulos modernos. Abre tu <code>package.json</code> y agrega la siguiente propiedad:
+                    <pre><code>"type": "module"</code></pre>
+                </div>
+            </section>
 
-        <!-- ===== MÓDULO 5: ASYNC/AWAIT ===== -->
-        <h2>🔄 Módulo 5: Async / Await</h2>
-        <p>Hace el código asíncrono más legible, como si fuera síncrono:</p>
-        <ul>
-            <li><strong>async:</strong> Declara que la función devuelve una Promesa</li>
-            <li><strong>await:</strong> Pausa hasta que la Promesa se resuelva</li>
-        </ul>
-        <div class="destaque-caja">
-            🛡️ <strong>Mejores prácticas:</strong><br>
-            - Usa <code>try/catch</code> para manejar errores<br>
-            - <code>Promise.all()</code> para ejecutar múltiples peticiones en paralelo
-        </div>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo5')">📂 Cargar en el Editor</button>
+            <!-- MÓDULO 1 -->
+            <section class="card">
+                <h2 class="card-title">📦 Módulo 1: Ámbito de Variables (Let vs. Const)</h2>
+                <p>Olvídate del viejo <code>var</code>. El estándar moderno nos obliga a proteger la memoria y el ciclo
+                    de vida de los datos mediante ámbitos de bloque (todo lo que viva dentro de unas llaves
+                    <code>{}</code>).</p>
 
-        <!-- ===== MÓDULO 6: MÉTODOS DE ARRAY ===== -->
-        <h2>🧰 Módulo 6: Métodos de Array (map, filter, reduce)</h2>
-        <p>Los métodos funcionales son esenciales para procesar datos:</p>
-        <ul>
-            <li><strong>map()</strong> - Transforma cada elemento <code>→</code> nuevo array</li>
-            <li><strong>filter()</strong> - Filtra elementos que cumplen condición</li>
-            <li><strong>reduce()</strong> - Acumula todos los elementos en un solo valor</li>
-        </ul>
-        <p style="color: var(--text-pastel);">💡 <strong>Tip:</strong> Estos métodos son <u>inmutables</u>, no modifican
-            el array original.</p>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo6')">📂 Cargar en el Editor</button>
+                <div class="analogia">
+                    <strong>💡 Analogía pedagógica:</strong> Piensa en <code>const</code> como una caja fuerte cerrada
+                    con llave: guardas algo y nadie lo puede cambiar. Piensa en <code>let</code> como una pizarra
+                    escolar: puedes escribir un valor, borrarlo más tarde y anotar uno nuevo.
+                </div>
 
-        <!-- ===== MÓDULO 7: MÓDULOS (import/export) ===== -->
-        <h2>📦 Módulo 7: Módulos (import/export)</h2>
-        <p>ECMAScript 2015 introdujo módulos nativos:</p>
-        <ul>
-            <li><strong>export:</strong> <code>export const PI = 3.1416;</code></li>
-            <li><strong>import:</strong> <code>import { PI } from './math.js';</code></li>
-            <li><strong>export default:</strong> Exporta un valor principal por módulo</li>
-        </ul>
-        <div class="destaque-caja">
-            📌 <strong>En Node.js:</strong> Necesitas <code>"type": "module"</code> en package.json o usar extensión
-            <code>.mjs</code>.
-        </div>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo7')">📂 Cargar en el Editor</button>
+                <ul>
+                    <li><strong>const:</strong> Declara referencias inmutables. Ideal para importar librerías,
+                        conexiones a bases de datos o configuraciones fijas.</li>
+                    <li><strong>let:</strong> Variables limitadas estrictamente al bloque de código donde se declararon
+                        (estructuras <code>if</code>, bucles <code>for</code>, etc.).</li>
+                </ul>
 
-        <!-- ===== MÓDULO 8: OPTIONAL CHAINING ===== -->
-        <h2>🔗 Módulo 8: Optional Chaining (?.)</h2>
-        <p>Accede a propiedades anidadas sin temor a errores:</p>
-        <ul>
-            <li><code>usuario?.direccion?.ciudad</code> - Si algo es null/undefined, devuelve undefined</li>
-            <li><code>array?.[0]</code> - Acceso seguro a arrays</li>
-            <li><code>func?.()</code> - Llama solo si la función existe</li>
-        </ul>
-        <div class="destaque-caja">
-            🚀 <strong>Ventaja:</strong> Elimina la necesidad de <code>&&</code> y <code>if</code> para verificar nulos.
-        </div>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo8')">📂 Cargar en el Editor</button>
+                <pre><code>const PUERTO = 3000; // No cambiará
+let contador = 0;    // Cambiará con cada ciclo
+contador++;</code></pre>
 
-        <!-- ===== MÓDULO 9: NULLISH COALESCING ===== -->
-        <h2>🛡️ Módulo 9: Nullish Coalescing (??)</h2>
-        <p>Provee un valor por defecto solo cuando el valor es <code>null</code> o <code>undefined</code>:</p>
-        <ul>
-            <li><code>const nombre = usuario.nombre ?? "Anónimo";</code></li>
-        </ul>
-        <p style="color: var(--text-pastel);">⚠️ <strong>Diferencia con ||:</strong> <code>??</code> no asigna default a
-            valores falsos como <code>0</code> o <code>''</code>.</p>
-        <button class="btn-cargar" onclick="cargarEjemplo('modulo9')">📂 Cargar en el Editor</button>
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+            <!-- MÓDULO 2 -->
+            <section class="card">
+                <h2 class="card-title">🎯 Módulo 2: Desestructuración (Destructuring)</h2>
+                <p>Es una técnica que permite "desempacar" valores de arreglos o propiedades de objetos directamente en
+                    variables individuales con una sintaxis limpia.</p>
+
+                <div class="analogia">
+                    <strong>💡 Analogía pedagógica:</strong> Imagina que te entregan una caja de herramientas (objeto).
+                    En lugar de escribir cada vez <code>herramientas.martillo</code>, usas destructuring para sacar el
+                    martillo y la pinza y colocarlos directo sobre tu mesa de trabajo para usarlos por su nombre.
+                </div>
+
+                <ul>
+                    <li><strong>Objetos:</strong> Extracción por el nombre exacto de la clave:
+                        <code>const { nombre, rol } = usuario;</code></li>
+                    <li><strong>Arrays:</strong> Extracción secuencial por la posición del índice:
+                        <code>const [primero, segundo] = listaNumeros;</code></li>
+                </ul>
+
+                <div class="alert alert-info">
+                    🔥 <strong>Uso real en backend:</strong> Cuando manejas solicitudes HTTP en arquitecturas como
+                    Express.js, lo usarás constantemente para parsear JSON:
+                    <code>const { username, password } = req.body;</code>
+                </div>
+
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+            <!-- MÓDULO 3 -->
+            <section class="card">
+                <h2 class="card-title">🧩 Módulo 3: Template Literals y Spread Operator</h2>
+
+                <h3>Template Literals (Plantillas de Texto)</h3>
+                <p>Olvídate de concatenar con el molesto operador suma (<code>+</code>). Usando las comillas invertidas
+                    o backticks (<code>`</code>) puedes inyectar expresiones de JavaScript directo en el flujo de texto
+                    usando <code>${expresión}</code>.</p>
+                <pre><code>// Antes: "El estudiante " + nombre + " aprobó."
+// Ahora:
+console.log(`El estudiante ${nombre} aprobó.`);</code></pre>
+
+                <h3>Spread Operator (Operador de Propagación <code>...</code>)</h3>
+                <p>Permite expandir o "esparcir" los elementos de un array o las propiedades de un objeto.</p>
+
+                <div class="alert alert-warning">
+                    ⚠️ <strong>¡Peligro con la asignación por referencia!</strong><br>
+                    En JS, si haces <code>const copia = original;</code> no estás duplicando el objeto, estás creando un
+                    nuevo puntero al mismo espacio de memoria. Si cambias la copia, destruirás el original. El operador
+                    spread soluciona esto clonando el contenido de forma segura:
+                    <pre><code>const copiaReal = { ...original };</code></pre>
+                </div>
+
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+            <!-- MÓDULO 4 -->
+            <section class="card">
+                <h2 class="card-title">⚡ Módulo 4: Asincronía y Promesas (fetch)</h2>
+                <p>JavaScript es asíncrono y corre sobre un solo hilo. Para operaciones pesadas (como consultar una API
+                    pública en internet o una base de datos), utiliza **Promesas**, que representan procesos que se
+                    resolverán en el futuro.</p>
+
+                <div class="analogia">
+                    <strong>💡 Analogía pedagógica:</strong> Cuando pides comida rápida, te dan un "beeper" o vibrador
+                    electrónico. Ese aparato representa una **Promesa**: está en estado **pendiente**. Si la comida está
+                    lista, el aparato vibra (**resuelta con éxito**). Si la cocina se quedó sin ingredientes, se activa
+                    una luz roja (**rechazada**).
+                </div>
+
+                <p>Las promesas manejan tres estados técnicos fundamentales:</p>
+                <ul>
+                    <li>⏳ <strong>Pending (Pendiente):</strong> La operación asíncrona aún se está ejecutando en segundo
+                        plano.</li>
+                    <li>✅ <strong>Fulfilled (Cumplida):</strong> Completada con éxito. Capturamos los datos devueltos
+                        usando el método <code>.then()</code>.</li>
+                    <li>❌ <strong>Rejected (Rechazada):</strong> La operación falló (error de red, caída del servidor).
+                        Capturamos el fallo con <code>.catch()</code>.</li>
+                </ul>
+
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+            <!-- MÓDULO 5 -->
+            <section class="card">
+                <h2 class="card-title">🔄 Módulo 5: Async / Await</h2>
+                <p>Es una envoltura sintáctica ("sugar syntax") construida sobre las promesas. No cambia cómo funcionan
+                    internamente, pero hace que tu código asíncrono se lea de forma secuencial y limpia, simulando el
+                    comportamiento de un bloque síncrono.</p>
+                <ul>
+                    <li><strong>async:</strong> Modificador obligatorio que se coloca antes de declarar la función.
+                        Indica que la función retornará, sí o sí, una promesa.</li>
+                    <li><strong>await:</strong> Pausa la ejecución de la función de manera asíncrona hasta que la
+                        promesa externa se resuelva. **Solo puede usarse dentro de funciones marcadas como async**.</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    🛡️ <strong>Estructura recomendada:</strong> Para interceptar errores en arquitecturas asíncronas
+                    limpias, siempre envuelve tus operaciones con bloques tradicionales de control de excepciones:
+                    <code>try { ... } catch (error) { ... }</code>.
+                </div>
+
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+            <!-- MÓDULO 6 -->
+            <section class="card">
+                <h2 class="card-title">🧰 Módulo 6: Métodos de Arreglos Immutables</h2>
+                <p>Herramientas fundamentales de programación funcional para manipular colecciones de datos sin
+                    modificar el arreglo original en memoria (Inmutabilidad).</p>
+                <ul>
+                    <li><strong>map():</strong> Recorre el array y transforma cada elemento uno a uno, retornando un
+                        **nuevo array** con la misma longitud.</li>
+                    <li><strong>filter():</strong> Evalúa cada elemento bajo una condición lógica. Retorna un nuevo
+                        array que contiene únicamente los elementos que devolvieron <code>true</code>.</li>
+                    <li><strong>reduce():</strong> Procesa la colección completa para acumularla en un único valor final
+                        (como la suma total de precios de un carrito).</li>
+                </ul>
+
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+            <!-- MÓDULO 7 -->
+            <section class="card">
+                <h2 class="card-title">🔗 Módulo 7: Optional Chaining (?.) y Nullish Coalescing (??)</h2>
+                <h3>Optional Chaining (Encadenamiento Opcional)</h3>
+                <p>Permite leer propiedades profundamente anidadas dentro de un árbol de objetos sin peligro de que la
+                    aplicación colapse si una propiedad intermedia es <code>null</code> o <code>undefined</code>.</p>
+                <pre><code>// Si el cliente no tiene dirección configurada, devuelve 'undefined' en vez de romper la app
+const ciudad = cliente?.direccion?.ciudad;</code></pre>
+
+                <h3>Nullish Coalescing (Operador de Fusión de Nulos)</h3>
+                <p>Es un operador lógico que retorna el valor del lado derecho únicamente cuando el valor del lado
+                    izquierdo es estrictamente <code>null</code> o <code>undefined</code>.</p>
+
+                <div class="alert alert-warning">
+                    ⚠️ <strong>Diferencia Crítica en Exámenes (Diferencia con ||):</strong> El operador OR lógico
+                    (<code>||</code>) asignará el valor por defecto si el operando izquierdo es cualquier valor falso
+                    (como el número <code>0</code> o un string vacío <code>""</code>). En cambio, <code>??</code>
+                    respeta al <code>0</code> y a los textos vacíos como valores válidos del usuario.
+                </div>
+
+                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+            </section>
+
+        </main>
+
+        <!-- COLUMNA DERECHA: INTERFAZ INTERACTIVA (SIEMPRE VISIBLE EN ESCRITORIO) -->
+        <aside class="interactive-panel">
+
+            <div class="editor-container">
+                <div class="panel-header">
+                    <span>✏️ EDITOR JAVASCRIPT</span>
+                    <span>Modo Estudiante</span>
+                </div>
+                <textarea class="editor-textarea"
+                    placeholder="// Selecciona un módulo para cargar el código de prueba o escribe aquí..."></textarea>
+                <div class="panel-actions">
+                    <button class="btn-run">▶️ Ejecutar Código</button>
+                </div>
+            </div>
+
+            <div class="console-container">
+                <div class="console-title">📊 Consola de Salida de Node.js</div>
+                <div id="log-output">> 🟢 Sistema listo. Selecciona un módulo o presiona ejecutar para procesar
+                    scripts...</div>
+            </div>
+
+        </aside>
+
     </div>
 
-    <!-- ===== PLAYGROUND - Editor y consola ===== -->
-    <div class="playground">
-        <div class="editor-container">
-            <div class="panel-header">
-                <span style="color: var(--text-main);">✏️ EDITOR JAVASCRIPT</span>
-                <span style="color: var(--text-pastel);">📝 Usa console.log() para ver salidas</span>
-            </div>
-            <textarea id="code-editor" spellcheck="false"
-                placeholder="// Selecciona un módulo o escribe tu propio código..."></textarea>
-        </div>
-
-        <div class="actions">
-            <button class="btn-run" onclick="ejecutarCodigo()">▶️ Ejecutar Código</button>
-        </div>
-
-        <div class="console-container">
-            <div class="panel-header" style="color: var(--text-main);">📊 CONSOLA DE SALIDA</div>
-            <div id="console-output">> 🟢 Listo para ejecutar...</div>
-        </div>
-    </div>
-
-    <!-- ===== JAVASCRIPT ===== -->
-    <script>
-        const editor = document.getElementById('code-editor');
-        const consola = document.getElementById('console-output');
-
-        // ===== EJEMPLOS DE CÓDIGO PARA CADA MÓDULO =====
-        const ejemplos = {
-            // Módulo 1: Let y Const
-            modulo1: `// 📦 MÓDULO 1: Let y Const - Ámbito de variables
-
-// 🔒 CONST - No puede ser reasignada
-const API_URL = "https://jsonplaceholder.typicode.com";
-const MAX_USUARIOS = 10;
-
-// 📌 LET - Puede cambiar dentro de su bloque
-let usuariosCargados = 0;
-let idActual = 1;
-
-console.log(\`🔹 API: \${API_URL}\`);
-console.log(\`🔹 Máximo de usuarios: \${MAX_USUARIOS}\`);
-
-// ⚠️ El ámbito de bloque es importante
-if (idActual <= MAX_USUARIOS) {
-    // Esta variable solo vive dentro de este bloque
-    let mensajeInterno = \`✅ ID \${idActual} válido\`;
-    console.log(mensajeInterno);
-    usuariosCargados++;
-}
-
-// ✅ La variable externa sí se actualizó
-console.log(\`📊 Usuarios cargados: \${usuariosCargados}\`);
-
-// ❌ Esto daría error - const no se puede reasignar
-// API_URL = "otra-url"; // Descomentar para ver el error`,
-
-            // Módulo 2: Destructuring
-            modulo2: `// 🎯 MÓDULO 2: Desestructuración (Destructuring)
-
-// Datos de ejemplo de una API
-const usuarioAPI = {
-    id: 1,
-    name: "Leanne Graham",
-    username: "Bret",
-    email: "Sincere@april.biz",
-    address: {
-        street: "Kulas Light",
-        suite: "Apt. 556",
-        city: "Gwenborough",
-        zipcode: "92998-3874"
-    },
-    phone: "1-770-736-8031 x56442",
-    website: "hildegard.org"
-};
-
-// 🔹 Extracción básica de propiedades
-const { name, username, email } = usuarioAPI;
-console.log(\`👤 Nombre: \${name}\`);
-console.log(\`📛 Username: \${username}\`);
-console.log(\`📧 Email: \${email}\`);
-
-// 🔹 Desestructuración anidada - Extraer datos profundos
-const { address: { city, street, zipcode } } = usuarioAPI;
-console.log(\`🏙️ Ciudad: \${city}\`);
-console.log(\`🏠 Calle: \${street}\`);
-console.log(\`📮 Código postal: \${zipcode}\`);
-
-// 🔹 Desestructuración en parámetros de funciones
-function mostrarContacto({ name, phone, email }) {
-    console.log(\`📞 \${name} - Tel: \${phone}\`);
-    console.log(\`📧 Email: \${email}\`);
-}
-
-mostrarContacto(usuarioAPI);
-
-// 🔹 Desestructuración de arrays
-const colores = ["rojo", "verde", "azul"];
-const [primero, segundo, tercero] = colores;
-console.log(\`🎨 Colores: \${primero}, \${segundo}, \${tercero}\`);`,
-
-            // Módulo 3: Template Literals y Spread
-            modulo3: `// 🧩 MÓDULO 3: Template Literals y Spread Operator
-
-// 🔹 Template Literals - Comillas invertidas (\`)
-const curso = "Backend con Node.js";
-const version = "18.x";
-const mensaje = \`📚 Bienvenido al curso de \${curso}
-🔧 Usaremos Node.js v\${version}
-📅 Fecha: \${new Date().toLocaleDateString()}\`;
-console.log(mensaje);
-
-// 🔹 Spread Operator con objetos - Copia profunda
-const usuarioOriginal = {
-    id: 2,
-    name: "Ervin Howell",
-    status: "activo",
-    preferences: {
-        theme: "dark",
-        notifications: true
-    }
-};
-
-// ✅ Creando una copia independiente
-const usuarioClonado = {
-    ...usuarioOriginal,      // Copiamos todo
-    username: "Antonette",   // Agregamos nuevo campo
-    status: "modificado",    // Modificamos campo existente
-    preferences: {
-        ...usuarioOriginal.preferences,  // Copia profunda del objeto anidado
-        theme: "light"                  // Modificamos solo esta propiedad
-    }
-};
-
-console.log("🔹 Original intacto:");
-console.log(\`  - Status: \${usuarioOriginal.status}\`);
-console.log(\`  - Tema: \${usuarioOriginal.preferences.theme}\`);
-
-console.log("🔹 Nueva copia:");
-console.log(\`  - Status: \${usuarioClonado.status}\`);
-console.log(\`  - Tema: \${usuarioClonado.preferences.theme}\`);
-
-// 🔹 Spread Operator con arrays
-const numeros = [1, 2, 3];
-const masNumeros = [...numeros, 4, 5, 6];
-console.log(\`🔢 Array original: [\${numeros}]\`);
-console.log(\`🔢 Array extendido: [\${masNumeros}]\`);
-
-// 🔹 Combinando arrays
-const pares = [2, 4, 6];
-const impares = [1, 3, 5];
-const todos = [...impares, ...pares].sort();
-console.log(\`🔢 Todos ordenados: [\${todos}]\`);`,
-
-            // Módulo 4: Promesas
-            modulo4: `// ⚡ MÓDULO 4: Promesas con fetch
-
-console.log("🟢 Paso 1: Iniciando petición a la API...");
-
-// fetch() devuelve una Promesa
-fetch("https://jsonplaceholder.typicode.com/users")
-    // .then() - Se ejecuta cuando la Promesa se cumple
-    .then(res => {
-        console.log("🟡 Paso 2: Respuesta recibida del servidor");
-        
-        // Verificamos el código de estado HTTP
-        if (!res.ok) {
-            throw new Error(\`Error HTTP: \${res.status} \${res.statusText}\`);
-        }
-        
-        // Convertimos a JSON (también devuelve una Promesa)
-        return res.json();
-    })
-    // Segundo .then() - Procesamos los datos JSON
-    .then(usuarios => {
-        console.log("🟢 Paso 3: Datos JSON procesados correctamente");
-        console.log(\`📊 Total de usuarios: \${usuarios.length}\`);
-        
-        // 🔹 filter() - Filtra usuarios con ID <= 3
-        const primerosTres = usuarios.filter(user => user.id <= 3);
-        console.log(\`🔹 Usuarios filtrados: \${primerosTres.length}\`);
-        
-        // 🔹 map() - Transforma cada usuario
-        const nombresConEmpresa = primerosTres.map(user => 
-            \`  📛 @\${user.username} trabaja en "\${user.company.name}"\`
-        );
-        
-        console.log("🏢 Empresas de los primeros 3 usuarios:");
-        nombresConEmpresa.forEach(texto => console.log(texto));
-    })
-    // .catch() - Captura cualquier error en la cadena
-    .catch(err => {
-        console.error("❌ Error capturado:", err.message);
-        console.log("💡 Verifica tu conexión a internet");
-    })
-    .finally(() => {
-        console.log("🔄 Operación finalizada");
-    });`,
-
-            // Módulo 5: Async/Await
-            modulo5: `// 🔄 MÓDULO 5: Async / Await
-
-// async - Declara que la función devuelve una Promesa
-async function obtenerDatosUsuarios() {
-    try {
-        console.log("🟢 Paso 1: Iniciando peticiones...");
-        
-        // 🔹 Promise.all() - Ejecuta múltiples peticiones en paralelo
-        const [respUsuarios, respPosts] = await Promise.all([
-            fetch("https://jsonplaceholder.typicode.com/users"),
-            fetch("https://jsonplaceholder.typicode.com/posts")
-        ]);
-
-        console.log("🟡 Paso 2: Todas las peticiones finalizadas");
-
-        // Verificamos las respuestas
-        if (!respUsuarios.ok || !respPosts.ok) {
-            throw new Error("Error en alguna de las peticiones");
-        }
-
-        // Convertimos a JSON
-        const usuarios = await respUsuarios.json();
-        const posts = await respPosts.json();
-
-        console.log("🟢 Paso 3: Datos procesados correctamente");
-        
-        // 🔹 Procesamos los datos
-        console.log(\`📊 Usuarios totales: \${usuarios.length}\`);
-        console.log(\`📝 Posts totales: \${posts.length}\`);
-        
-        // 🔹 Encontramos el usuario con más posts
-        const conteoPosts = {};
-        posts.forEach(post => {
-            conteoPosts[post.userId] = (conteoPosts[post.userId] || 0) + 1;
-        });
-        
-        let userIdMax = 0;
-        let maxPosts = 0;
-        for (const [userId, count] of Object.entries(conteoPosts)) {
-            if (count > maxPosts) {
-                maxPosts = count;
-                userIdMax = parseInt(userId);
-            }
-        }
-        
-        const usuarioTop = usuarios.find(u => u.id === userIdMax);
-        console.log(\`🏆 Usuario con más posts: \${usuarioTop?.name} (\${maxPosts} posts)\`);
-
-    } catch (error) {
-        // catch - Captura cualquier error en el try
-        console.error("❌ Error capturado:", error.message);
-    } finally {
-        // finally - Se ejecuta siempre
-        console.log("🔄 Operación completada");
-    }
-}
-
-// Llamamos a la función async
-obtenerDatosUsuarios();
-console.log("⏳ El resto del código sigue ejecutándose...");`,
-
-            // Módulo 6: Métodos de Array
-            modulo6: `// 🧰 MÓDULO 6: Métodos de Array (map, filter, reduce)
-
-// Datos de ejemplo
-const productos = [
-    { id: 1, nombre: "Laptop", precio: 1200, stock: 5 },
-    { id: 2, nombre: "Mouse", precio: 25, stock: 50 },
-    { id: 3, nombre: "Teclado", precio: 45, stock: 30 },
-    { id: 4, nombre: "Monitor", precio: 300, stock: 8 },
-    { id: 5, nombre: "Audífonos", precio: 60, stock: 0 }
-];
-
-console.log("📦 Lista de productos:");
-console.table(productos);
-
-// 🔹 map() - Transforma cada elemento
-console.log("\n🔹 map() - Nombres en mayúsculas:");
-const nombresMayus = productos.map(p => p.nombre.toUpperCase());
-console.log(nombresMayus);
-
-// 🔹 filter() - Filtra elementos que cumplen condición
-console.log("\n🔹 filter() - Productos en stock:");
-const enStock = productos.filter(p => p.stock > 0);
-console.table(enStock);
-
-// 🔹 filter() + map() - Combinados
-console.log("\n🔹 Productos con precio > 50:");
-const caros = productos
-    .filter(p => p.precio > 50)
-    .map(p => \`\${p.nombre}: \$\${p.precio}\`);
-console.log(caros);
-
-// 🔹 reduce() - Acumula en un solo valor
-console.log("\n🔹 reduce() - Valor total del inventario:");
-const valorTotal = productos.reduce((total, p) => 
-    total + (p.precio * p.stock), 0
-);
-console.log(\`💰 Valor total: \$\${valorTotal}\`);
-
-// 🔹 find() - Encuentra el primer elemento que cumple
-console.log("\n🔹 find() - Producto con ID 3:");
-const producto = productos.find(p => p.id === 3);
-console.log(\`📌 \${producto.nombre} - \$\${producto.precio}\`);
-
-// 🔹 some() y every() - Verifican condiciones
-console.log("\n🔹 some() - ¿Hay productos sin stock?");
-console.log(productos.some(p => p.stock === 0));
-
-console.log("🔹 every() - ¿Todos los productos tienen precio > 10?");
-console.log(productos.every(p => p.precio > 10));`,
-
-            // Módulo 7: Módulos
-            modulo7: `// 📦 MÓDULO 7: Módulos (import/export)
-
-// 🔹 Simulación de módulo con funciones exportadas
-// En un archivo real usaríamos export/import
-
-// Módulo de utilidades matemáticas (math.js)
-const MATH = {
-    PI: 3.1416,
-    sumar: (a, b) => a + b,
-    restar: (a, b) => a - b,
-    multiplicar: (a, b) => a * b,
-    dividir: (a, b) => b !== 0 ? a / b : "Error: División por cero"
-};
-
-// Módulo de utilidades de strings (strings.js)
-const STRINGS = {
-    saludar: (nombre) => \`¡Hola \${nombre}! Bienvenido\`,
-    despedir: (nombre) => \`¡Adiós \${nombre}! Hasta luego\`,
-    formatearFecha: (fecha) => {
-        const d = new Date(fecha);
-        return d.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-};
-
-// Simulamos importación
-console.log("📦 Utilizando módulos:\n");
-
-// Usamos el módulo de matemáticas
-console.log("🔹 Módulo Math:");
-console.log(\`  π = \${MATH.PI}\`);
-console.log(\`  5 + 3 = \${MATH.sumar(5, 3)}\`);
-console.log(\`  10 / 2 = \${MATH.dividir(10, 2)}\`);
-
-// Usamos el módulo de strings
-console.log("🔹 Módulo Strings:");
-console.log(\`  \${STRINGS.saludar("Estudiante")}\`);
-console.log(\`  \${STRINGS.despedir("Estudiante")}\`);
-
-// 🔹 Simulamos export default
-// En un archivo real: export default config;
-const config = {
-    environment: "development",
-    port: 3000,
-    debug: true
-};
-
-console.log("🔹 Configuración (export default):");
-console.log(config);
-
-// 🔹 Nota sobre Node.js con ES Modules
-console.log("\n📌 Para usar módulos en Node.js:");
-console.log("  1. Agregar 'type': 'module' en package.json");
-console.log("  2. O usar extensión .mjs");
-console.log("  3. Ejemplo: import { sumar } from './math.js'");`,
-
-            // Módulo 8: Optional Chaining
-            modulo8: `// 🔗 MÓDULO 8: Optional Chaining (?.)
-
-// Datos con estructuras complejas y posibles nulos
-const dataAPI = {
-    usuario: {
-        id: 1,
-        nombre: "Ana",
-        direccion: {
-            calle: "Av. Principal 123",
-            ciudad: "Santiago",
-            codigoPostal: "8320000"
-        },
-        contacto: {
-            email: "ana@email.com",
-            telefono: null
-        }
-    },
-    preferencias: null
-};
-
-console.log("👤 Datos del usuario:");
-console.log(dataAPI.usuario);
-
-// 🔹 Optional Chaining - Acceso seguro a propiedades anidadas
-console.log("\n🔹 Acceso seguro con ?. :");
-
-// Sin Optional Chaining (código defensivo)
-const calle = dataAPI.usuario?.direccion?.calle ?? "No disponible";
-console.log(\`  Calle: \${calle}\`);
-
-// Accediendo a propiedad que no existe
-const telefono = dataAPI.usuario?.contacto?.telefono ?? "No registrado";
-console.log(\`  Teléfono: \${telefono}\`);
-
-// Accediendo a objeto que es null
-const tema = dataAPI.preferencias?.tema ?? "Claro";
-console.log(\`  Tema preferido: \${tema}\`);
-
-// 🔹 Optional Chaining con arrays
-const posts = [
-    { id: 1, titulo: "Post 1" },
-    { id: 2, titulo: "Post 2" }
-];
-
-console.log("\n🔹 Optional Chaining con arrays:");
-console.log(\`  Primer post: \${posts[0]?.titulo ?? "Sin posts"}\`);
-console.log(\`  Cuarto post: \${posts[3]?.titulo ?? "No existe"}\`);
-
-// 🔹 Optional Chaining con funciones
-const objeto = {
-    saludar: () => "¡Hola mundo!"
-};
-
-console.log("\n🔹 Optional Chaining con funciones:");
-console.log(\`  Saludo: \${objeto.saludar?.() ?? "Función no definida"}\`);
-console.log(\`  Despedir: \${objeto.despedir?.() ?? "Función no definida"}\`);`,
-
-            // Módulo 9: Nullish Coalescing
-            modulo9: `// 🛡️ MÓDULO 9: Nullish Coalescing (??)
-
-// 🔹 Demostración de ?? vs || 
-const valores = [
-    null,
-    undefined,
-    0,
-    "",
-    false,
-    "texto válido",
-    42,
-    NaN
-];
-
-console.log("📊 Comparación entre ?? y ||:");
-console.log("Valor original | ?? (nullish) | || (OR)");
-console.log("----------------------------------------");
-
-valores.forEach(val => {
-    const nullish = val ?? "default (??)";
-    const or = val || "default (||)";
-    console.log(\`\${String(val).padEnd(14)} | \${String(nullish).padEnd(14)} | \${String(or)}\`);
-});
-
-// 🔹 Ejemplo práctico: configuración de usuario
-console.log("\n🔹 Ejemplo práctico: Configuración de usuario");
-
-const configUsuario = {
-    nombre: "",
-    edad: 0,
-    activo: false,
-    tema: null,
-    notificaciones: undefined
-};
-
-// Usando ?? para valores por defecto
-const nombre = configUsuario.nombre ?? "Anónimo";
-const edad = configUsuario.edad ?? 18;
-const activo = configUsuario.activo ?? true;
-const tema = configUsuario.tema ?? "claro";
-const notificaciones = configUsuario.notificaciones ?? true;
-
-console.log("Configuración final:");
-console.log(\`  Nombre: \${nombre}\`);
-console.log(\`  Edad: \${edad}\`);
-console.log(\`  Activo: \${activo}\`);
-console.log(\`  Tema: \${tema}\`);
-console.log(\`  Notificaciones: \${notificaciones}\`);
-
-// 🔹 Combinando con Optional Chaining
-console.log("\n🔹 Combinando ?. y ??:");
-
-const usuarioIncompleto = {
-    perfil: {
-        nombre: "Carlos"
-        // falta la propiedad 'edad'
-    }
-};
-
-const nombreCompleto = usuarioIncompleto?.perfil?.nombre ?? "Sin nombre";
-const edadUsuario = usuarioIncompleto?.perfil?.edad ?? "Edad no especificada";
-
-console.log(\`  Nombre: \${nombreCompleto}\`);
-console.log(\`  Edad: \${edadUsuario}\`);`
-        };
-
-        // ===== FUNCIONES DE CONTROL =====
-        function cargarEjemplo(modulo) {
-            editor.value = ejemplos[modulo];
-            consola.innerHTML = "📂 Código cargado. Presiona '▶️ Ejecutar Código' para ver la salida. ";
-        }
-
-        function ejecutarCodigo() {
-            consola.innerHTML = '';
-
-            // Redirigir console.log y console.error
-            const antiguoLog = console.log;
-            const antiguoError = console.error;
-
-            console.log = function (...args) {
-                const mensaje = args.map(arg =>
-                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' ');
-                consola.innerHTML += `<div class="log-success">${mensaje}</div>`;
-                antiguoLog.apply(console, args);
-            };
-
-            console.error = function (...args) {
-                const mensaje = args.map(arg =>
-                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' ');
-                consola.innerHTML += `<div class="log-error">❌ Error: ${mensaje}</div>`;
-                antiguoError.apply(console, args);
-            };
-
-            try {
-                const codigo = editor.value;
-                // Usamos Function para ejecutar en un contexto aislado
-                const funcion = new Function(codigo);
-                funcion();
-            } catch (err) {
-                console.error(err.message);
-                if (err.stack) {
-                    consola.innerHTML += `<div class="log-error">📍 ${err.stack}</div>`;
-                }
-            }
-
-            // Restaurar console
-            console.log = antiguoLog;
-            console.error = antiguoError;
-        }
-
-        // ===== CARGA INICIAL =====
-        // Cargar el primer módulo por defecto
-        window.addEventListener('DOMContentLoaded', () => {
-            cargarEjemplo('modulo1');
-        });
-    </script>
 </body>
 
 </html>
