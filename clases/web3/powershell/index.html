@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandos PowerShell - Guía Rápida</title>
+    <style>
+        /* ========== PALETA DE COLORES POWERSHELL ========== */
+        :root {
+            --ps-blue: #0078D7;
+            --ps-blue-dark: #005A9E;
+            --ps-blue-light: #E8F0FE;
+            --ps-dark: #1E1E1E;
+            --ps-dark-gray: #2D2D2D;
+            --ps-gray: #3C3C3C;
+            --ps-light-gray: #D4D4D4;
+            --ps-white: #F5F5F5;
+            --ps-green: #6A9955;
+            --ps-cyan: #4EC9B0;
+            --ps-yellow: #D7BA7D;
+            --ps-pink: #C586C0;
+            --ps-orange: #CE9178;
+            --ps-red: #F44747;
+            --ps-code-bg: #1E1E1E;
+            --ps-code-text: #D4D4D4;
+            --ps-border: #3C3C3C;
+            --ps-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        /* ========== RESET Y BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Cascadia Code', Consolas, monospace;
+            background: var(--ps-dark);
+            color: var(--ps-light-gray);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ========== CONTENEDOR PRINCIPAL CON GRID ========== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* ========== HEADER CON FLEXBOX ========== */
+        .header {
+            background: linear-gradient(135deg, var(--ps-blue-dark), var(--ps-blue));
+            padding: 25px 30px;
+            border-radius: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px var(--ps-shadow);
+            border-bottom: 3px solid var(--ps-cyan);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            background: var(--ps-dark);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: var(--ps-cyan);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--ps-white);
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 span {
+            color: var(--ps-cyan);
+        }
+
+        .header-badge {
+            background: var(--ps-dark);
+            color: var(--ps-cyan);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--ps-cyan);
+        }
+
+        .header-subtitle {
+            color: var(--ps-light-gray);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* ========== SECCIÓN INTRO (FLEXBOX) ========== */
+        .intro {
+            background: var(--ps-dark-gray);
+            padding: 20px 25px;
+            border-radius: 10px;
+            border-left: 4px solid var(--ps-cyan);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .intro-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .intro-text {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .intro-text p {
+            font-size: 0.95rem;
+            color: var(--ps-light-gray);
+        }
+
+        .intro-text strong {
+            color: var(--ps-cyan);
+        }
+
+        /* ========== CUADRO DE ADVERTENCIA (FLEX) ========== */
+        .warning-box {
+            background: rgba(244, 71, 71, 0.15);
+            border: 1px solid var(--ps-red);
+            border-radius: 10px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning-box .warn-icon {
+            color: var(--ps-red);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .warning-box .warn-text {
+            font-size: 0.9rem;
+            color: var(--ps-light-gray);
+        }
+
+        .warning-box .warn-text strong {
+            color: var(--ps-red);
+        }
+
+        .warning-box code {
+            background: var(--ps-dark);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--ps-yellow);
+            font-size: 0.85rem;
+        }
+
+        /* ========== GRILLA DE COMANDOS ========== */
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+        }
+
+        /* ========== TARJETA DE COMANDO ========== */
+        .command-card {
+            background: var(--ps-dark-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--ps-border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .command-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--ps-shadow);
+            border-color: var(--ps-blue);
+        }
+
+        /* ========== HEADER DE TARJETA ========== */
+        .card-header {
+            background: var(--ps-gray);
+            padding: 14px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 2px solid var(--ps-blue);
+        }
+
+        .card-header .category {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header .category-icon {
+            font-size: 1.3rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--ps-white);
+        }
+
+        .card-header .badge {
+            background: var(--ps-blue);
+            color: var(--ps-white);
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== CUERPO DE TARJETA ========== */
+        .card-body {
+            padding: 16px 20px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .command-example {
+            background: var(--ps-code-bg);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: var(--ps-code-text);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border-left: 3px solid var(--ps-cyan);
+            position: relative;
+        }
+
+        .command-example .ps-command {
+            color: var(--ps-cyan);
+        }
+
+        .command-example .ps-parameter {
+            color: var(--ps-pink);
+        }
+
+        .command-example .ps-path {
+            color: var(--ps-yellow);
+        }
+
+        .command-example .ps-comment {
+            color: var(--ps-green);
+            font-style: italic;
+        }
+
+        .command-example .ps-string {
+            color: var(--ps-orange);
+        }
+
+        .command-description {
+            font-size: 0.88rem;
+            color: var(--ps-light-gray);
+            padding: 4px 0;
+        }
+
+        .command-description code {
+            background: var(--ps-code-bg);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--ps-yellow);
+        }
+
+        /* ========== TARJETA ESPECIAL (COPY) ========== */
+        .card-copy {
+            border-color: var(--ps-green);
+        }
+
+        .card-copy .card-header {
+            border-bottom-color: var(--ps-green);
+        }
+
+        .card-copy .badge {
+            background: var(--ps-green);
+        }
+
+        .card-copy .command-example {
+            border-left-color: var(--ps-green);
+        }
+
+        /* ========== SECCIÓN EJEMPLO PRÁCTICO ========== */
+        .practical-example {
+            background: var(--ps-dark-gray);
+            border-radius: 12px;
+            padding: 20px 25px;
+            border: 1px solid var(--ps-border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .practical-example .example-title {
+            color: var(--ps-cyan);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .practical-example .example-code {
+            background: var(--ps-code-bg);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: var(--ps-code-text);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            border-left: 4px solid var(--ps-yellow);
+        }
+
+        .practical-example .example-code .comment {
+            color: var(--ps-green);
+        }
+
+        .practical-example .example-code .cmd {
+            color: var(--ps-cyan);
+        }
+
+        .practical-example .example-code .param {
+            color: var(--ps-pink);
+        }
+
+        .practical-example .example-code .path {
+            color: var(--ps-yellow);
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--ps-border);
+            color: var(--ps-light-gray);
+            font-size: 0.85rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer a {
+            color: var(--ps-cyan);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .power-shell {
+            color: var(--ps-blue);
+            font-weight: 700;
+        }
+
+        /* ========== RESPONSIVE ========== */
+
+        /* Tablets */
+        @media (max-width: 900px) {
+            .commands-grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .header-icon {
+                font-size: 2rem;
+                padding: 8px 12px;
+            }
+        }
+
+        /* Móviles grandes */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 18px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .header-left {
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .header-badge {
+                align-self: flex-start;
+                font-size: 0.6rem;
+            }
+
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .command-card {
+                border-radius: 10px;
+            }
+
+            .card-header {
+                padding: 12px 14px;
+            }
+
+            .card-body {
+                padding: 12px 14px 16px;
+            }
+
+            .command-example {
+                font-size: 0.75rem;
+                padding: 10px 12px;
+            }
+
+            .practical-example {
+                padding: 14px 16px;
+            }
+
+            .practical-example .example-code {
+                font-size: 0.75rem;
+                padding: 12px 14px;
+            }
+
+            .intro {
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .warning-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 8px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Móviles muy pequeños */
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1rem;
+            }
+
+            .header-icon {
+                font-size: 1.5rem;
+                padding: 6px 10px;
+            }
+
+            .command-example {
+                font-size: 0.7rem;
+                padding: 8px 10px;
+            }
+
+            .card-header h3 {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- ========== HEADER ========== -->
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon">⚡</div>
+                <div>
+                    <h1>PowerShell <span>Commands</span></h1>
+                    <div class="header-subtitle">Guía rápida para archivos y carpetas</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                <span class="header-badge">📁 Files &amp; Folders</span>
+                <span class="header-badge" style="border-color: var(--ps-green); color: var(--ps-green);">✔️ PowerShell
+                    7+</span>
+            </div>
+        </header>
+
+        <!-- ========== INTRO ========== -->
+        <div class="intro">
+            <div class="intro-icon">📋</div>
+            <div class="intro-text">
+                <p>
+                    <strong>Comandos esenciales</strong> para gestionar archivos y carpetas en PowerShell.
+                    Organizados por categoría con ejemplos prácticos.
+                </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span
+                    style="background: var(--ps-code-bg); padding: 4px 12px; border-radius: 16px; font-size: 0.75rem; color: var(--ps-cyan);">New-Item</span>
+                <span
+                    style="background: var(--ps-code-bg); padding: 4px 12px; border-radius: 16px; font-size: 0.75rem; color: var(--ps-pink);">Remove-Item</span>
+                <span
+                    style="background: var(--ps-code-bg); padding: 4px 12px; border-radius: 16px; font-size: 0.75rem; color: var(--ps-yellow);">Copy-Item</span>
+            </div>
+        </div>
+
+        <!-- ========== ADVERTENCIA ========== -->
+        <div class="warning-box">
+            <div class="warn-icon">⚠️</div>
+            <div class="warn-text">
+                <strong>¡Cuidado con Remove-Item -Recurse -Force!</strong>
+                Elimina carpetas con todo su contenido <strong>sin confirmación</strong>.
+                Siempre prueba con <code>-WhatIf</code> primero.
+            </div>
+        </div>
+
+        <!-- ========== GRID DE COMANDOS ========== -->
+        <div class="commands-grid">
+
+            <!-- ===== CARD: ARCHIVOS ===== -->
+            <div class="command-card">
+                <div class="card-header">
+                    <div class="category">
+                        <span class="category-icon">📄</span>
+                        <h3>Archivos</h3>
+                    </div>
+                    <span class="badge">Files</span>
+                </div>
+                <div class="card-body">
+                    <div class="command-example">
+                        <span class="ps-comment"># Crear archivo vacío</span>
+                        New-Item -Path <span class="ps-path">"archivo.txt"</span> -ItemType File
+                    </div>
+                    <div class="command-description">
+                        Crea un archivo vacío en la ruta especificada.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Crear con contenido</span>
+                        <span class="ps-string">"Hola mundo"</span> | Out-File <span class="ps-path">archivo.txt</span>
+                    </div>
+                    <div class="command-description">
+                        Escribe contenido directamente en el archivo.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Borrar archivo</span>
+                        Remove-Item -Path <span class="ps-path">"archivo.txt"</span>
+                    </div>
+                    <div class="command-description">
+                        Elimina el archivo de forma permanente.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Renombrar</span>
+                        Rename-Item -Path <span class="ps-path">"viejo.txt"</span> -NewName <span
+                            class="ps-string">"nuevo.txt"</span>
+                    </div>
+                    <div class="command-description">
+                        Cambia el nombre del archivo.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Listar archivos</span>
+                        Get-ChildItem -Path <span class="ps-path">"C:\ruta"</span> -File
+                    </div>
+                    <div class="command-description">
+                        Muestra solo los archivos de la carpeta.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Listar con filtro</span>
+                        Get-ChildItem -Path <span class="ps-path">"C:\ruta"</span> -Filter <span
+                            class="ps-string">"*.txt"</span> -File
+                    </div>
+                    <div class="command-description">
+                        Filtra archivos por extensión.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CARD: CARPETAS ===== -->
+            <div class="command-card">
+                <div class="card-header">
+                    <div class="category">
+                        <span class="category-icon">📂</span>
+                        <h3>Carpetas</h3>
+                    </div>
+                    <span class="badge">Folders</span>
+                </div>
+                <div class="card-body">
+                    <div class="command-example">
+                        <span class="ps-comment"># Crear carpeta</span>
+                        New-Item -Path <span class="ps-path">"C:\nueva_carpeta"</span> -ItemType Directory
+                    </div>
+                    <div class="command-description">
+                        Crea una nueva carpeta (también funciona <code>mkdir</code>).
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Borrar carpeta vacía</span>
+                        Remove-Item -Path <span class="ps-path">"C:\carpeta"</span> -ItemType Directory
+                    </div>
+                    <div class="command-description">
+                        Elimina solo si la carpeta está vacía.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Borrar carpeta con contenido</span>
+                        Remove-Item -Path <span class="ps-path">"C:\carpeta"</span> -Recurse -Force
+                    </div>
+                    <div class="command-description">
+                        ⚠️ Elimina todo <strong>sin preguntar</strong>.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Borrar con confirmación</span>
+                        Remove-Item -Path <span class="ps-path">"C:\carpeta"</span> -Recurse -Confirm
+                    </div>
+                    <div class="command-description">
+                        Pide confirmación antes de cada eliminación.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Renombrar carpeta</span>
+                        Rename-Item -Path <span class="ps-path">"C:\vieja"</span> -NewName <span
+                            class="ps-string">"nueva"</span>
+                    </div>
+                    <div class="command-description">
+                        Cambia el nombre de la carpeta.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Listar carpetas</span>
+                        Get-ChildItem -Path <span class="ps-path">"C:\ruta"</span> -Directory
+                    </div>
+                    <div class="command-description">
+                        Muestra solo los directorios.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Listar recursivo</span>
+                        Get-ChildItem -Path <span class="ps-path">"C:\ruta"</span> -Directory -Recurse
+                    </div>
+                    <div class="command-description">
+                        Muestra todas las subcarpetas.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CARD: COPIAR CARPETAS ===== -->
+            <div class="command-card card-copy">
+                <div class="card-header">
+                    <div class="category">
+                        <span class="category-icon">📋</span>
+                        <h3>Copiar Carpetas</h3>
+                    </div>
+                    <span class="badge">Copy</span>
+                </div>
+                <div class="card-body">
+                    <div class="command-example">
+                        <span class="ps-comment"># Copiar carpeta completa</span>
+                        Copy-Item -Path <span class="ps-path">"C:\origen\carpeta"</span> -Destination <span
+                            class="ps-path">"C:\destino\"</span> -Recurse
+                    </div>
+                    <div class="command-description">
+                        Copia la carpeta y todo su contenido.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Copiar y sobrescribir</span>
+                        Copy-Item -Path <span class="ps-path">"C:\origen\carpeta"</span> -Destination <span
+                            class="ps-path">"C:\destino\"</span> -Recurse -Force
+                    </div>
+                    <div class="command-description">
+                        Sobrescribe archivos existentes.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Copiar solo el contenido</span>
+                        Copy-Item -Path <span class="ps-path">"C:\origen\carpeta\*"</span> -Destination <span
+                            class="ps-path">"C:\destino\"</span> -Recurse
+                    </div>
+                    <div class="command-description">
+                        Copia los archivos <strong>dentro</strong> de la carpeta, no la carpeta en sí.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Copiar con estructura</span>
+                        Copy-Item -Path <span class="ps-path">"C:\origen\carpeta"</span> -Destination <span
+                            class="ps-path">"C:\destino\carpeta"</span> -Recurse
+                    </div>
+                    <div class="command-description">
+                        Mantiene la misma estructura de carpetas.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CARD: EXTRAS ===== -->
+            <div class="command-card">
+                <div class="card-header">
+                    <div class="category">
+                        <span class="category-icon">🔧</span>
+                        <h3>Comandos Útiles</h3>
+                    </div>
+                    <span class="badge">Extras</span>
+                </div>
+                <div class="card-body">
+                    <div class="command-example">
+                        <span class="ps-comment"># Mover archivo/carpeta</span>
+                        Move-Item -Path <span class="ps-path">"origen"</span> -Destination <span
+                            class="ps-path">"destino"</span>
+                    </div>
+                    <div class="command-description">
+                        Mueve (corta y pega) el elemento.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Ver contenido de archivo</span>
+                        Get-Content <span class="ps-path">archivo.txt</span>
+                    </div>
+                    <div class="command-description">
+                        Muestra el contenido del archivo en consola.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Ver propiedades</span>
+                        Get-Item <span class="ps-path">archivo.txt</span> | Format-List *
+                    </div>
+                    <div class="command-description">
+                        Muestra todas las propiedades del elemento.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Buscar archivos</span>
+                        Get-ChildItem -Recurse -Filter <span class="ps-string">"*.pdf"</span>
+                    </div>
+                    <div class="command-description">
+                        Busca archivos PDF en toda la estructura.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Contar archivos</span>
+                        (Get-ChildItem -File).Count
+                    </div>
+                    <div class="command-description">
+                        Cuenta cuántos archivos hay en la carpeta actual.
+                    </div>
+
+                    <div class="command-example">
+                        <span class="ps-comment"># Simular antes de ejecutar</span>
+                        Remove-Item -Path <span class="ps-path">"carpeta"</span> -Recurse -WhatIf
+                    </div>
+                    <div class="command-description">
+                        <strong>¡Seguridad!</strong> Muestra qué se eliminaría sin hacerlo.
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end commands-grid -->
+
+        <!-- ========== EJEMPLO PRÁCTICO ========== -->
+        <div class="practical-example">
+            <div class="example-title">
+                <span>💻</span> Ejemplo práctico completo
+            </div>
+            <div class="example-code">
+                <span class="comment"># 1. Crear estructura de proyecto</span>
+                <span class="cmd">mkdir</span> <span class="path">C:\Proyecto\Docs</span>
+                <span class="cmd">New-Item</span> <span class="path">C:\Proyecto\Docs\README.md</span> -Value <span
+                    class="string">"# Proyecto"</span>
+
+                <span class="comment"># 2. Listar todo recursivamente</span>
+                <span class="cmd">Get-ChildItem</span> <span class="path">C:\Proyecto</span> -Recurse
+
+                <span class="comment"># 3. Copiar carpeta Docs a Backup</span>
+                <span class="cmd">Copy-Item</span> <span class="path">C:\Proyecto\Docs</span> <span
+                    class="path">D:\Backup\</span> -Recurse -Force
+
+                <span class="comment"># 4. Renombrar archivo</span>
+                <span class="cmd">Rename-Item</span> <span class="path">C:\Proyecto\Docs\README.md</span> -NewName <span
+                    class="string">"INICIO.md"</span>
+
+                <span class="comment"># 5. Simular eliminación del proyecto</span>
+                <span class="cmd">Remove-Item</span> <span class="path">C:\Proyecto</span> -Recurse -WhatIf
+
+                <span class="comment"># 6. Eliminar definitivamente (¡cuidado!)</span>
+                <span class="cmd">Remove-Item</span> <span class="path">C:\Proyecto</span> -Recurse -Force
+            </div>
+        </div>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="footer">
+            <span>⚡ <span class="power-shell">PowerShell</span> · Guía de comandos para archivos y carpetas</span>
+            <span>📅 Actualizado: <span id="fecha"></span></span>
+            <span>
+                🔗 <a href="#" onclick="alert('¡Comandos listos para usar!'); return false;">Ver documentación
+                    oficial</a>
+            </span>
+            <span style="color: var(--ps-gray);">|</span>
+            <span style="font-size: 0.75rem; color: var(--ps-gray);">
+                🛡️ Usa <code
+                    style="background: var(--ps-dark); padding: 0 6px; border-radius: 3px; color: var(--ps-yellow);">-WhatIf</code>
+                para pruebas seguras
+            </span>
+        </footer>
+
+    </div><!-- end container -->
+
+    <script>
+        // Fecha automática en el footer
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = new Date();
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('fecha').textContent = now.toLocaleDateString('es-ES', opciones);
+        });
+    </script>
+
+</body>
+
+</html>
