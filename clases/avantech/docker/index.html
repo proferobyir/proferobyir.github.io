@@ -4,134 +4,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía rápida o Cheatsheet Docker para n8n</title>
+    <title>Manual Académico: Fundamentos de Docker</title>
     <style>
-        /* Variables de Diseño */
+        /* Paleta de Colores Oficial Docker */
         :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-code: #0b0f19;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-warning: #f43f5e;
-            --comment: #64748b;
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --docker-blue: #1d63ed;
+            --docker-dark-blue: #092540;
+            --docker-light-blue: #e8f0fe;
+            --text-dark: #24292e;
+            --text-muted: #586069;
+            --bg-light: #f6f8fa;
+            --bg-code: #1e1e1e;
+            --border-color: #d1d5da;
+            --success: #28a745;
         }
 
-        /* Estilos Globales */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: var(--font-stack);
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            padding: 2rem 1rem;
-            line-height: 1.5;
+            color: var(--text-dark);
+            background-color: #ffffff;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 1200px;
+        /* Encabezado Principal */
+        header {
+            background-color: var(--docker-blue);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .logo-area svg {
+            fill: white;
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-bottom: 3px solid white;
+        }
+
+        /* Contenedor de la Estructura */
+        .wrapper {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Menú Lateral (Sidebar) */
+        nav.sidebar {
+            width: 280px;
+            background-color: var(--bg-light);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            height: calc(100vh - 64px);
+            position: sticky;
+            top: 64px;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 1.5rem 0 0.5rem 0;
+            padding-bottom: 0.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 0.4rem 0.75rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: var(--docker-light-blue);
+            color: var(--docker-blue);
+        }
+
+        .sidebar ul li a.active {
+            background-color: var(--docker-light-blue);
+            color: var(--docker-blue);
+            font-weight: bold;
+        }
+
+        .sidebar ul li ul {
+            padding-left: 1rem;
+            margin: 0.2rem 0;
+        }
+
+        .sidebar ul li ul li a {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        /* Área de Contenido Principal */
+        main.content {
+            flex: 1;
+            padding: 2.5rem;
+            max-width: 850px;
             margin: 0 auto;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
+        h1 {
+            font-size: 2.2rem;
+            color: var(--docker-dark-blue);
+            margin-bottom: 1rem;
         }
 
-        header h1 {
-            font-size: 2.2rem;
-            color: var(--text-main);
+        h2 {
+            font-size: 1.6rem;
+            color: var(--docker-dark-blue);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 0.3rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--docker-blue);
+            margin-top: 1.5rem;
             margin-bottom: 0.5rem;
         }
 
-        header h1 span {
-            color: var(--accent);
+        p {
+            margin-bottom: 1.2rem;
+            color: #3f4448;
         }
 
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+        /* Componentes Didácticos */
+        .badge {
+            background-color: var(--docker-blue);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
         }
 
-        /* Contenedor Grid Principal (Se adapta a las pantallas) */
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
+        .callout-box {
+            background-color: var(--docker-light-blue);
+            border-left: 4px solid var(--docker-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
         }
 
-        /* Tarjetas de Categorías usando Flexbox */
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            color: var(--accent);
-            border-bottom: 2px solid #334155;
-            padding-bottom: 0.5rem;
+        .callout-box h4 {
+            color: var(--docker-dark-blue);
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
-        /* Bloques de Comando con Flexbox interno */
-        .command-block {
+        /* Bloques de Código */
+        .code-container {
+            background-color: var(--bg-code);
+            color: #f8f8f2;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .code-header {
             display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2d2d2d;
+            margin: -1rem -1rem 1rem -1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: #aaa;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: white;
+            border-color: white;
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .comment {
-            color: var(--comment);
-            font-size: 0.9rem;
-            font-style: italic;
+            color: #75715e;
         }
 
-        .comment.warning {
-            color: var(--accent-warning);
-            font-weight: 500;
+        .keyword {
+            color: #f92672;
         }
 
-        /* Estilos de la Consola de Código */
-        code-box {
-            background-color: var(--bg-code);
-            border-radius: 6px;
-            padding: 0.8rem 1rem;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.95rem;
-            color: #34d399;
-            overflow-x: auto;
-            white-space: nowrap;
-            border-left: 4px solid var(--accent);
-            display: block;
+        .string {
+            color: #e6db74;
         }
 
-        /* Ajustes específicos para móviles muy pequeños */
-        @media (max-width: 360px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
+        /* Botón Flotante para Menú Móvil */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--docker-blue);
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Responsividad (Media Queries) */
+        @media (max-width: 992px) {
+            nav.sidebar {
+                position: fixed;
+                left: -280px;
+                top: 64px;
+                height: calc(100vh - 64px);
+                transition: left 0.3s ease;
+                z-index: 1500;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             }
 
-            body {
-                padding: 1rem 0.5rem;
+            nav.sidebar.open {
+                left: 0;
             }
 
-            header h1 {
-                font-size: 1.8rem;
+            main.content {
+                padding: 1.5rem;
+            }
+
+            .menu-toggle {
+                display: flex;
             }
         }
     </style>
@@ -139,99 +306,194 @@
 
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Comandos de <span>Docker</span></h1>
-            <p>Guía rápida de referencia para la administración de n8n</p>
-        </header>
+    <!-- Encabezado Estilo DockerDocs -->
+    <header>
+        <div class="logo-area">
+            <!-- Icono Ballena SVG Dedicado -->
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M2,15.11C2,17.11 4.54,18.78 7.7,19.12C8.12,19.83 8.89,20.3 9.77,20.3C11,20.3 12.06,19.4 12.24,18.22C16.85,17.78 20.44,15 20.62,11.5C21,11.5 21.36,11.41 21.7,11.27C22.11,11.1 22.42,10.77 22.5,10.36L22.59,9.88C22.68,9.39 22.38,8.91 21.9,8.79C21.43,8.68 20.93,8.93 20.76,9.39L20.69,9.59C19.78,9.75 18.89,9.47 18.25,8.87C18.14,7.11 16.79,5.7 15.08,5.5L14.88,5.47C14.39,5.4 13.91,5.7 13.82,6.19C13.73,6.68 14.04,7.16 14.53,7.25L14.73,7.28C15.6,7.38 16.29,8.11 16.32,9C15.04,9.1 13.75,9.45 12.55,10C12.31,9.83 12,9.74 11.72,9.74C10.93,9.74 10.25,10.25 10,11C8.21,11 6.47,11.41 5,12.18C3.17,13.11 2,14.12 2,15.11Z" />
+            </svg>
+            <span>docker</span><span style="font-weight: 300;">docs</span>
+        </div>
+        <div class="nav-links">
+            <a href="#inicio">Comience</a>
+        </div>
+    </header>
 
-        <!-- GRID PRINCIPAL -->
-        <main class="grid-layout">
+    <div class="wrapper">
+        <!-- Menú Lateral Basado en tu Captura -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-title">Introducción</div>
+            <ul>
+                <li><a href="#obtener">Obtén Docker Desktop</a></li>
+                <li><a href="#desarrollar">Desarrollar con contenedores</a></li>
+                <li><a href="#primera-imagen">Crea y publica tu primera imagen</a></li>
+            </ul>
 
-            <!-- BLOQUE: CICLO DE VIDA -->
-            <section class="card">
-                <h2 class="card-title">🚀 Ciclo de Vida</h2>
+            <div class="sidebar-title">Conceptos de Docker</div>
+            <ul>
+                <li><a href="#basico" class="active">Lo básico</a></li>
+                <li><a href="#imagenes">Imágenes de edificios</a></li>
+                <li><a href="#contenedores">Contenedores en funcionamiento</a></li>
+            </ul>
 
-                <div class="command-block">
-                    <p class="comment"># Levanta n8n y Postgres en segundo plano</p>
-                    <code-box>docker-compose up -d</code-box>
+            <div class="sidebar-title">Taller de Docker</div>
+            <ul>
+                <li><a href="#parte1">Parte 1: Contenerizar una aplicación</a></li>
+                <li><a href="#parte2">Parte 2: Actualizar la aplicación</a></li>
+                <li><a href="#parte3">Parte 3: Comparte la aplicación</a></li>
+                <li><a href="#parte4">Parte 4: Persistir en la base de datos</a></li>
+                <li><a href="#parte5">Parte 5: Usar montajes de enlace</a></li>
+            </ul>
+        </nav>
+
+        <!-- Contenido Académico -->
+        <main class="content">
+            <span class="badge">ENTORNO DE APRENDIZAJE</span>
+            <h1 id="inicio">Conceptos Esenciales de Docker</h1>
+            <p>Bienvenidos al laboratorio práctico de Docker. En este entorno estudiaremos cómo empaquetar, distribuir y
+                ejecutar aplicaciones de forma aislada y eficiente utilizando contenedores independientes de la
+                infraestructura física subyacente.</p>
+
+            <h2 id="basico">1. ¿Qué es un Contenedor?</h2>
+            <p>Un contenedor es un proceso aislado en el espacio de usuario que ejecuta código sobre el kernel del
+                sistema operativo anfitrión. A diferencia de las máquinas virtuales tradicionales, no requiere cargar un
+                sistema operativo completo, lo que minimiza drásticamente el consumo de recursos de cómputo.</p>
+
+            <div class="callout-box">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                    </svg>
+                    Nota Pedagógica
+                </h4>
+                <p>Las imágenes son las plantillas de lectura (los planos de construcción), mientras que los
+                    contenedores son la instancia en ejecución (el edificio ya construido y operativo).</p>
+            </div>
+
+            <h2 id="parte1">2. Contenerizar una Aplicación (Paso a Paso)</h2>
+            <p>Para encapsular un proyecto web o de backend, primero necesitamos declarar los pasos de construcción en
+                un documento de texto plano llamado obligatoriamente <code
+                    style="background: var(--bg-light); padding: 0.2rem 0.4rem; border-radius: 4px;">Dockerfile</code>.
+            </p>
+
+            <h3>Paso A: Crear el archivo Dockerfile</h3>
+            <p>Define el entorno base, las dependencias y el comando de arranque de tu servicio:</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Dockerfile</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
                 </div>
+                <pre><span class="comment"># 1. Definir la imagen base del ecosistema oficial</span>
+<span class="keyword">FROM</span> node:20-alpine
 
-                <div class="command-block">
-                    <p class="comment"># Apaga los contenedores sin borrar tus datos</p>
-                    <code-box>docker-compose down</code-box>
+<span class="comment"># 2. Configurar el directorio de trabajo del contenedor</span>
+<span class="keyword">WORKDIR</span> /app
+
+<span class="comment"># 3. Copiar manifiestos e instalar dependencias de producción</span>
+<span class="keyword">COPY</span> package*.json ./
+<span class="keyword">RUN</span> npm install --production
+
+<span class="comment"># 4. Traspasar el resto del código fuente del proyecto</span>
+<span class="keyword">COPY</span> . .
+
+<span class="comment"># 5. Declarar el puerto de escucha lógica</span>
+<span class="keyword">EXPOSE</span> 3000
+
+<span class="comment"># 6. Comando ejecutor por defecto</span>
+<span class="keyword">CMD</span> ["npm", "start"]</pre>
+            </div>
+
+            <h3>Paso B: Compilar la Imagen</h3>
+            <p>Ejecuta la construcción en tu terminal local (asegúrate de incluir el punto al final, que indica el
+                contexto del directorio actual):</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Terminal / Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
                 </div>
+                <pre>docker build -t <span class="string">mi-app-web:v1</span> .</pre>
+            </div>
 
-                <div class="command-block">
-                    <p class="comment warning"># Apaga BORRANDO volúmenes (¡Resetea la BD!)</p>
-                    <code-box>docker-compose down -v</code-box>
+            <h3>Paso C: Desplegar el Contenedor</h3>
+            <p>Inicializa la instancia en segundo plano asignando los puertos mapeados del host hacia el contenedor:</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Terminal / Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
                 </div>
+                <pre>docker run -d -p <span class="string">8080:3000</span> --name <span class="string">contenedor-web</span> mi-app-web:v1</pre>
+            </div>
 
-                <div class="command-block">
-                    <p class="comment"># Reinicia ambos servicios rápidamente</p>
-                    <code-box>docker-compose restart</code-box>
-                </div>
-            </section>
-
-            <!-- BLOQUE: DIAGNÓSTICO -->
-            <section class="card">
-                <h2 class="card-title">🔍 Diagnóstico</h2>
-
-                <div class="command-block">
-                    <p class="comment"># Muestra el estado actual de tus contenedores</p>
-                    <code-box>docker-compose ps</code-box>
-                </div>
-
-                <div class="command-block">
-                    <p class="comment"># Ver qué está haciendo n8n en tiempo real</p>
-                    <code-box>docker-compose logs -f n8n</code-box>
-                </div>
-
-                <div class="command-block">
-                    <p class="comment"># Ver los logs de la base de datos Postgres</p>
-                    <code-box>docker-compose logs -f postgres</code-box>
-                </div>
-
-                <div class="command-block">
-                    <p class="comment"># Muestra el consumo de CPU y Memoria en vivo</p>
-                    <code-box>docker stats</code-box>
-                </div>
-            </section>
-
-            <!-- BLOQUE: MANTENIMIENTO -->
-            <section class="card">
-                <h2 class="card-title">🧹 Limpieza y Acceso</h2>
-
-                <div class="command-block">
-                    <p class="comment"># Elimina imágenes y contenedores sin usar (Libera espacio)</p>
-                    <code-box>docker system prune -a</code-box>
-                </div>
-
-                <div class="command-block">
-                    <p class="comment"># Entrar a la consola interna del contenedor de n8n</p>
-                    <code-box>docker-compose exec n8n ash</code-box>
-                </div>
-            </section>
-
-            <!-- BLOQUE: RESPALDOS -->
-            <section class="card">
-                <h2 class="card-title">💾 Respaldos Rápidos</h2>
-
-                <div class="command-block">
-                    <p class="comment"># Crea una copia de seguridad de la BD en un archivo .sql</p>
-                    <code-box>docker-compose exec -t postgres pg_dumpall -U n8n_user > respaldo_n8n.sql</code-box>
-                </div>
-
-                <div class="command-block">
-                    <p class="comment"># Restaura el respaldo .sql (El contenedor debe estar activo)</p>
-                    <code-box>cat respaldo_n8n.sql | docker-compose exec -T postgres psql -U n8n_user -d
-                        n8n_db</code-box>
-                </div>
-            </section>
-
+            <div class="callout-box" style="border-left-color: var(--success); background-color: #f4faf6;">
+                <h4 style="color: #155724;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                    Verificación de Éxito
+                </h4>
+                <p>A partir de este momento, tu entorno está sirviendo la aplicación. Abre tu navegador web en la
+                    dirección <code style="font-weight: bold;">http://localhost:8080</code> para comprobar la
+                    conectividad.</p>
+            </div>
         </main>
     </div>
 
+    <!-- Botón Menú Flotante para Pantallas Pequeñas -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+        ☰
+    </button>
+
+    <!-- Lógica de Interacción JavaScript -->
+    <script>
+        // Control de Apertura/Cierre del Menú Lateral en Móviles
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            menuToggle.innerText = sidebar.classList.contains('open') ? '✕' : '☰';
+        });
+
+        // Cerrar menú automáticamente al presionar un enlace (móviles)
+        const menuLinks = document.querySelectorAll('.sidebar ul li a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('open');
+                    menuToggle.innerText = '☰';
+                }
+
+                // Efecto visual activo de selección
+                menuLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Función del Botón Portapapeles (Copy to Clipboard)
+        function copyCode(button) {
+            const preElement = button.parentElement.nextElementSibling;
+            const textToCopy = preElement.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '¡Copiado!';
+                button.style.color = '#28a745';
+
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.color = '#aaa';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al intentar copiar el código: ', err);
+            });
+        }
+    </script>
 </body>
 
 </html>
