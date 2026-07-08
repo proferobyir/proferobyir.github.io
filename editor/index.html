@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Editor en vivo · VS Code palette</title>
+    <!-- Favicon (emoji como icono) -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <style>
+        /* ----- Paleta de colores Visual Studio Code (oscuro) ----- */
+        :root {
+            --vsc-bg: #1e1e1e;
+            --vsc-sidebar: #252526;
+            --vsc-activityBar: #333333;
+            --vsc-editorBg: #1e1e1e;
+            --vsc-editorLine: #2d2d30;
+            --vsc-editorWidget: #2d2d30;
+            --vsc-foreground: #d4d4d4;
+            --vsc-comment: #6a9955;
+            --vsc-string: #ce9178;
+            --vsc-number: #b5cea8;
+            --vsc-keyword: #569cd6;
+            --vsc-function: #dcdcaa;
+            --vsc-variable: #9cdcfe;
+            --vsc-operator: #d4d4d4;
+            --vsc-border: #3c3c3c;
+            --vsc-panelBg: #1e1e1e;
+            --vsc-inputBg: #3c3c3c;
+            --vsc-inputFg: #cccccc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--vsc-bg);
+            color: var(--vsc-foreground);
+            font-family: 'Segoe UI', 'Consolas', 'Monaco', 'Menlo', monospace;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+        }
+
+        /* Contenedor padre con grid 2 columnas (1fr cada una) */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+            /* evita desborde */
+            background-color: var(--vsc-bg);
+            border: 1px solid var(--vsc-border);
+            border-radius: 6px;
+            overflow: hidden;
+            padding: 4px;
+        }
+
+        /* Panel editor (izquierda) */
+        .editor-panel {
+            background-color: var(--vsc-editorBg);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--vsc-border);
+            position: relative;
+        }
+
+        .editor-panel .toolbar {
+            background-color: var(--vsc-activityBar);
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #bbbbbb;
+            border-bottom: 1px solid var(--vsc-border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .editor-panel .toolbar span {
+            background-color: var(--vsc-inputBg);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #aaa;
+            letter-spacing: 0.3px;
+        }
+
+        .editor-panel textarea {
+            flex: 1;
+            width: 100%;
+            background-color: var(--vsc-editorBg);
+            color: var(--vsc-foreground);
+            border: none;
+            outline: none;
+            resize: none;
+            padding: 16px 14px;
+            font-family: 'Consolas', 'Monaco', 'Menlo', 'Cascadia Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            tab-size: 2;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            scrollbar-width: thin;
+            scrollbar-color: var(--vsc-border) var(--vsc-editorBg);
+        }
+
+        .editor-panel textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .editor-panel textarea::-webkit-scrollbar-track {
+            background: var(--vsc-editorBg);
+        }
+
+        .editor-panel textarea::-webkit-scrollbar-thumb {
+            background-color: var(--vsc-border);
+            border-radius: 4px;
+        }
+
+        /* Panel salida (derecha) */
+        .output-panel {
+            background-color: #ffffff;
+            /* fondo blanco para simular navegador */
+            border-radius: 4px;
+            border: 1px solid var(--vsc-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #fcfcfc;
+        }
+
+        .output-panel .toolbar {
+            background-color: var(--vsc-activityBar);
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #bbbbbb;
+            border-bottom: 1px solid var(--vsc-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .output-panel .toolbar .badge {
+            background-color: var(--vsc-inputBg);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .output-panel iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* Ajustes para móviles: grid en columna */
+        @media (max-width: 720px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+                gap: 8px;
+            }
+
+            body {
+                padding: 4px;
+            }
+        }
+
+        /* Estilo extra para el código de ejemplo (dentro del textarea) */
+        .editor-panel textarea::selection {
+            background: #264f78;
+            color: #ffffff;
+        }
+
+        /* Footer minimal */
+        .footer-note {
+            color: #555;
+            font-size: 11px;
+            text-align: center;
+            padding: 6px 0 2px;
+            letter-spacing: 0.3px;
+            border-top: 1px solid var(--vsc-border);
+            margin-top: 8px;
+        }
+
+        .footer-note a {
+            color: var(--vsc-keyword);
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="editor-grid">
+        <!-- COLUMNA IZQUIERDA: EDITOR -->
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span>📝 editor</span>
+                <span style="margin-left: auto;">HTML + CSS + JS</span>
+            </div>
+            <textarea id="codeEditor" spellcheck="false" autofocus><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorem Ipsum · Demo</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Segoe UI', Roboto, sans-serif; background: #fafafa; color: #1e1e1e; padding: 20px; line-height: 1.6; }
+    nav { background: #2c3e50; padding: 14px 24px; border-radius: 30px; margin-bottom: 28px; display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+    nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; letter-spacing: 0.3px; padding: 6px 10px; border-radius: 20px; transition: 0.2s; }
+    nav a:hover { background: #34495e; color: white; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 24px 30px; border-radius: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
+    h1 { font-size: 2.2rem; color: #1e2b37; margin-bottom: 12px; border-left: 6px solid #3498db; padding-left: 18px; }
+    h2 { color: #2c3e50; margin: 24px 0 12px; font-weight: 500; }
+    h3 { color: #34495e; margin: 18px 0 8px; font-weight: 400; }
+    p { margin-bottom: 16px; color: #2c3e50; }
+    img { max-width: 100%; height: auto; border-radius: 18px; margin: 16px 0; box-shadow: 0 6px 16px rgba(0,0,0,0.06); display: block; }
+    .flex-img { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .flex-img img { width: 100%; max-width: 260px; }
+    hr { margin: 24px 0; border: 1px dashed #d0d7de; }
+    footer { margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 0.9rem; border-top: 1px solid #ecf0f1; padding-top: 20px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#">Inicio</a>
+    <a href="#">Artículos</a>
+    <a href="#">Proyectos</a>
+    <a href="#">Contacto</a>
+  </nav>
+  <div class="container">
+    <h1>Lorem ipsum dolor sit amet</h1>
+    <p><strong>Consectetur adipiscing elit</strong> — sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    
+    <h2>Duis aute irure dolor</h2>
+    <p>In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    
+    <div class="flex-img">
+      <img src="https://picsum.photos/seed/1/300/200" alt="Imagen aleatoria 1" loading="lazy">
+      <img src="https://picsum.photos/seed/2/300/200" alt="Imagen aleatoria 2" loading="lazy">
+    </div>
+    
+    <h3>Sed ut perspiciatis unde omnis</h3>
+    <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+    
+    <h2>Neque porro quisquam est</h2>
+    <p>Qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+    <img src="https://picsum.photos/seed/3/800/300" alt="Imagen amplia" loading="lazy" style="max-width:100%;">
+    <hr>
+    <footer>© 2026 · Lorem ipsum demo · hecho con ⚡</footer>
+  </div>
+  <script>
+    // pequeño script de ejemplo
+    console.log('¡Hola desde el editor!');
+    document.querySelector('h1')?.addEventListener('click', () => {
+        alert('Has hecho clic en el título 👋');
+    });
+</script>
+</body>
+</html></textarea>
+        </div>
+
+        <!-- COLUMNA DERECHA: SALIDA HTML -->
+        <div class="output-panel">
+            <div class="toolbar">
+                <span>▶ salida</span>
+                <span class="badge">actualización automática</span>
+            </div>
+            <iframe id="outputFrame" sandbox="allow-scripts allow-modals allow-same-origin"></iframe>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ⚡ editor en vivo · cambios automáticos · paleta VS Code
+    </div>
+
+    <script>
+        (function () {
+            const editor = document.getElementById('codeEditor');
+            const iframe = document.getElementById('outputFrame');
+
+            // Función para actualizar el iframe con el contenido del editor
+            function updatePreview() {
+                const code = editor.value;
+                // Escribimos el contenido completo en el iframe
+                const doc = iframe.contentDocument || iframe.contentWindow?.document;
+                if (doc) {
+                    doc.open();
+                    doc.write(code);
+                    doc.close();
+                }
+            }
+
+            // Escuchar cambios en el textarea (input, keyup, paste, etc.)
+            editor.addEventListener('input', updatePreview);
+            editor.addEventListener('change', updatePreview); // por si acaso
+
+            // Inicializar la vista previa al cargar
+            // (pequeño retraso para asegurar que el iframe esté listo)
+            setTimeout(updatePreview, 100);
+
+            // También actualizar si el iframe se recarga (por si acaso)
+            iframe.addEventListener('load', function () {
+                // En algunos navegadores, el contenido se pierde, lo reescribimos.
+                // Pero con el 'sandbox' y 'allow-same-origin' podemos escribir desde el padre.
+                updatePreview();
+            });
+
+            // Sincronizar con el foco: al perder el foco, actualizar (por si acaso)
+            editor.addEventListener('blur', updatePreview);
+
+            // Ajuste para móviles: si el textarea cambia de tamaño, no afecta.
+            console.log('No hay excusas, ¡edita y prueba tu HTML en vivo! 👍');
+        })();
+    </script>
+
+</body>
+
+</html>
