@@ -297,6 +297,35 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+
+        /* Animación de carga de ejemplo */
+        .btn-load.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .btn-load.loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0% {
+                content: '';
+            }
+
+            25% {
+                content: '.';
+            }
+
+            50% {
+                content: '..';
+            }
+
+            75% {
+                content: '...';
+            }
+        }
     </style>
 </head>
 
@@ -341,7 +370,8 @@ cd mi-proyecto-node</code></pre>
                 </div>
 
                 <p><strong>Paso 3:</strong> El comando anterior generará un archivo clave llamado
-                    <code>package.json</code> en tu directorio. Es la cédula de identidad de tu software.</p>
+                    <code>package.json</code> en tu directorio. Es la cédula de identidad de tu software.
+                </p>
 
                 <p><strong>Paso 4:</strong> Crea el script principal desde la consola de Windows. **Nota:** En Linux se
                     usa <code>touch</code>, pero en Windows utilizaremos comandos nativos de la consola de comandos:</p>
@@ -366,11 +396,12 @@ cd mi-proyecto-node</code></pre>
             </section>
 
             <!-- MÓDULO 1 -->
-            <section class="card">
+            <section class="card" data-module="modulo1">
                 <h2 class="card-title">📦 Módulo 1: Ámbito de Variables (Let vs. Const)</h2>
                 <p>Olvídate del viejo <code>var</code>. El estándar moderno nos obliga a proteger la memoria y el ciclo
                     de vida de los datos mediante ámbitos de bloque (todo lo que viva dentro de unas llaves
-                    <code>{}</code>).</p>
+                    <code>{}</code>).
+                </p>
 
                 <div class="analogia">
                     <strong>💡 Analogía pedagógica:</strong> Piensa en <code>const</code> como una caja fuerte cerrada
@@ -385,15 +416,27 @@ cd mi-proyecto-node</code></pre>
                         (estructuras <code>if</code>, bucles <code>for</code>, etc.).</li>
                 </ul>
 
-                <pre><code>const PUERTO = 3000; // No cambiará
+                <pre><code class="example-code">const PUERTO = 3000; // No cambiará
 let contador = 0;    // Cambiará con cada ciclo
-contador++;</code></pre>
+contador++;
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+console.log(`Puerto: ${PUERTO}`);
+console.log(`Contador: ${contador}`);
+
+// Demostración de ámbito de bloque
+if (true) {
+    let mensaje = "Solo visible dentro del if";
+    const PI = 3.1416;
+    console.log(mensaje);
+    console.log(`PI: ${PI}`);
+}
+// console.log(mensaje); // Error: mensaje no está definido fuera del bloque</code></pre>
+
+                <button class="btn-load" data-target="modulo1">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
             <!-- MÓDULO 2 -->
-            <section class="card">
+            <section class="card" data-module="modulo2">
                 <h2 class="card-title">🎯 Módulo 2: Desestructuración (Destructuring)</h2>
                 <p>Es una técnica que permite "desempacar" valores de arreglos o propiedades de objetos directamente en
                     variables individuales con una sintaxis limpia.</p>
@@ -406,9 +449,11 @@ contador++;</code></pre>
 
                 <ul>
                     <li><strong>Objetos:</strong> Extracción por el nombre exacto de la clave:
-                        <code>const { nombre, rol } = usuario;</code></li>
+                        <code>const { nombre, rol } = usuario;</code>
+                    </li>
                     <li><strong>Arrays:</strong> Extracción secuencial por la posición del índice:
-                        <code>const [primero, segundo] = listaNumeros;</code></li>
+                        <code>const [primero, segundo] = listaNumeros;</code>
+                    </li>
                 </ul>
 
                 <div class="alert alert-info">
@@ -417,20 +462,46 @@ contador++;</code></pre>
                     <code>const { username, password } = req.body;</code>
                 </div>
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+                <pre><code class="example-code">// Desestructuración de objetos
+const usuario = {
+    nombre: 'Ana',
+    edad: 28,
+    rol: 'desarrolladora',
+    direccion: {
+        ciudad: 'Madrid',
+        pais: 'España'
+    }
+};
+
+// Extraemos propiedades específicas
+const { nombre, edad, rol } = usuario;
+console.log(`Nombre: ${nombre}, Edad: ${edad}, Rol: ${rol}`);
+
+// Desestructuración anidada
+const { direccion: { ciudad, pais } } = usuario;
+console.log(`Ciudad: ${ciudad}, País: ${pais}`);
+
+// Desestructuración de arrays
+const numeros = [10, 20, 30, 40, 50];
+const [primero, segundo, ...resto] = numeros;
+console.log(`Primero: ${primero}, Segundo: ${segundo}`);
+console.log(`Resto: ${resto}`);
+
+// Valores por defecto
+const { telefono = 'No disponible' } = usuario;
+console.log(`Teléfono: ${telefono}`);</code></pre>
+
+                <button class="btn-load" data-target="modulo2">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
             <!-- MÓDULO 3 -->
-            <section class="card">
+            <section class="card" data-module="modulo3">
                 <h2 class="card-title">🧩 Módulo 3: Template Literals y Spread Operator</h2>
 
                 <h3>Template Literals (Plantillas de Texto)</h3>
                 <p>Olvídate de concatenar con el molesto operador suma (<code>+</code>). Usando las comillas invertidas
                     o backticks (<code>`</code>) puedes inyectar expresiones de JavaScript directo en el flujo de texto
                     usando <code>${expresión}</code>.</p>
-                <pre><code>// Antes: "El estudiante " + nombre + " aprobó."
-// Ahora:
-console.log(`El estudiante ${nombre} aprobó.`);</code></pre>
 
                 <h3>Spread Operator (Operador de Propagación <code>...</code>)</h3>
                 <p>Permite expandir o "esparcir" los elementos de un array o las propiedades de un objeto.</p>
@@ -443,11 +514,48 @@ console.log(`El estudiante ${nombre} aprobó.`);</code></pre>
                     <pre><code>const copiaReal = { ...original };</code></pre>
                 </div>
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+                <pre><code class="example-code">// Template Literals
+const nombre = 'Carlos';
+const edad = 25;
+const ciudad = 'Barcelona';
+
+// String tradicional con concatenación
+const mensaje1 = 'Hola, ' + nombre + '. Tienes ' + edad + ' años y vives en ' + ciudad + '.';
+console.log(mensaje1);
+
+// Template Literal
+const mensaje2 = `Hola, ${nombre}. Tienes ${edad} años y vives en ${ciudad}.`;
+console.log(mensaje2);
+
+// Expresiones dentro de template literals
+const precio = 150;
+const iva = 0.21;
+console.log(`Precio total: ${precio * (1 + iva)}€`);
+
+// Spread Operator con arrays
+const paisesEuropeos = ['España', 'Francia', 'Italia'];
+const paisesAmericanos = ['México', 'Brasil', 'Argentina'];
+const todosLosPaises = [...paisesEuropeos, ...paisesAmericanos];
+console.log('Todos los países:', todosLosPaises);
+
+// Spread Operator con objetos
+const datosPersonales = { nombre, edad, ciudad };
+const datosProfesionales = { rol: 'programador', empresa: 'TechCorp' };
+const perfilCompleto = { ...datosPersonales, ...datosProfesionales };
+console.log('Perfil completo:', perfilCompleto);
+
+// Clonación segura de objetos
+const original = { a: 1, b: 2 };
+const copia = { ...original };
+copia.a = 99;
+console.log('Original:', original);  // { a: 1, b: 2 }
+console.log('Copia:', copia);        // { a: 99, b: 2 }</code></pre>
+
+                <button class="btn-load" data-target="modulo3">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
             <!-- MÓDULO 4 -->
-            <section class="card">
+            <section class="card" data-module="modulo4">
                 <h2 class="card-title">⚡ Módulo 4: Asincronía y Promesas (fetch)</h2>
                 <p>JavaScript es asíncrono y corre sobre un solo hilo. Para operaciones pesadas (como consultar una API
                     pública en internet o una base de datos), utiliza **Promesas**, que representan procesos que se
@@ -470,11 +578,60 @@ console.log(`El estudiante ${nombre} aprobó.`);</code></pre>
                         Capturamos el fallo con <code>.catch()</code>.</li>
                 </ul>
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+                <pre><code class="example-code">// Simulación de una promesa que resuelve después de 2 segundos
+const promesaSimulada = new Promise((resolve, reject) => {
+    console.log('⏳ Promesa en estado pendiente...');
+    setTimeout(() => {
+        const exito = true; // Cambiar a false para probar el rechazo
+        if (exito) {
+            resolve('✅ Promesa resuelta con éxito');
+        } else {
+            reject('❌ Promesa rechazada');
+        }
+    }, 2000);
+});
+
+// Consumir la promesa con .then() y .catch()
+promesaSimulada
+    .then(resultado => {
+        console.log(resultado);
+        return 'Procesando resultado...';
+    })
+    .then(mensaje => {
+        console.log(mensaje);
+    })
+    .catch(error => {
+        console.log('Error capturado:', error);
+    })
+    .finally(() => {
+        console.log('🔄 La promesa ha finalizado (éxito o error)');
+    });
+
+// Ejemplo práctico: Simular fetch a una API
+const obtenerUsuarios = () => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                { id: 1, nombre: 'María', email: 'maria@email.com' },
+                { id: 2, nombre: 'Juan', email: 'juan@email.com' }
+            ]);
+        }, 1500);
+    });
+};
+
+obtenerUsuarios()
+    .then(usuarios => {
+        console.log('📋 Usuarios obtenidos:');
+        usuarios.forEach(usuario => {
+            console.log(`- ${usuario.nombre} (${usuario.email})`);
+        });
+    });</code></pre>
+
+                <button class="btn-load" data-target="modulo4">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
             <!-- MÓDULO 5 -->
-            <section class="card">
+            <section class="card" data-module="modulo5">
                 <h2 class="card-title">🔄 Módulo 5: Async / Await</h2>
                 <p>Es una envoltura sintáctica ("sugar syntax") construida sobre las promesas. No cambia cómo funcionan
                     internamente, pero hace que tu código asíncrono se lea de forma secuencial y limpia, simulando el
@@ -492,11 +649,73 @@ console.log(`El estudiante ${nombre} aprobó.`);</code></pre>
                     <code>try { ... } catch (error) { ... }</code>.
                 </div>
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+                <pre><code class="example-code">// Función asíncrona que simula una operación con delay
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Función que simula obtener datos de una API
+const obtenerDatosAPI = async () => {
+    console.log('🔄 Iniciando petición a la API...');
+    await delay(2000); // Simula tiempo de red
+    return {
+        usuarios: ['Ana', 'Luis', 'Marta'],
+        timestamp: new Date().toISOString()
+    };
+};
+
+// Función principal con async/await
+const procesarDatos = async () => {
+    try {
+        console.log('🚀 Iniciando proceso...');
+        
+        // Obtenemos datos con await
+        const datos = await obtenerDatosAPI();
+        console.log('✅ Datos recibidos:', datos);
+        
+        // Procesamos los datos
+        const usuarios = datos.usuarios;
+        console.log('📋 Lista de usuarios:');
+        usuarios.forEach((usuario, index) => {
+            console.log(`${index + 1}. ${usuario}`);
+        });
+        
+        // Simulamos otra operación asíncrona
+        console.log('🔄 Guardando información...');
+        await delay(1000);
+        console.log('💾 Información guardada exitosamente');
+        
+        return 'Proceso completado';
+    } catch (error) {
+        console.error('❌ Error en el proceso:', error);
+        throw error; // Re-lanzamos el error para manejo externo
+    }
+};
+
+// Ejecutamos la función principal
+procesarDatos()
+    .then(resultado => console.log('✨', resultado))
+    .catch(error => console.error('💥 Error fatal:', error));
+
+// Ejemplo con múltiples operaciones en paralelo
+const obtenerMultiplesDatos = async () => {
+    console.log('🔄 Obteniendo datos en paralelo...');
+    
+    // Usamos Promise.all para ejecutar promesas en paralelo
+    const [usuarios, productos] = await Promise.all([
+        delay(1000).then(() => ['Usuario1', 'Usuario2']),
+        delay(1500).then(() => ['ProductoA', 'ProductoB'])
+    ]);
+    
+    console.log('Usuarios:', usuarios);
+    console.log('Productos:', productos);
+};
+
+obtenerMultiplesDatos();</code></pre>
+
+                <button class="btn-load" data-target="modulo5">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
             <!-- MÓDULO 6 -->
-            <section class="card">
+            <section class="card" data-module="modulo6">
                 <h2 class="card-title">🧰 Módulo 6: Métodos de Arreglos Immutables</h2>
                 <p>Herramientas fundamentales de programación funcional para manipular colecciones de datos sin
                     modificar el arreglo original en memoria (Inmutabilidad).</p>
@@ -509,17 +728,76 @@ console.log(`El estudiante ${nombre} aprobó.`);</code></pre>
                         (como la suma total de precios de un carrito).</li>
                 </ul>
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+                <pre><code class="example-code">// Datos de ejemplo: lista de estudiantes
+const estudiantes = [
+    { nombre: 'Carlos', edad: 22, calificacion: 85 },
+    { nombre: 'María', edad: 20, calificacion: 92 },
+    { nombre: 'Luis', edad: 23, calificacion: 78 },
+    { nombre: 'Ana', edad: 21, calificacion: 95 },
+    { nombre: 'Jorge', edad: 22, calificacion: 70 }
+];
+
+console.log('📋 Lista original de estudiantes:');
+console.log(estudiantes);
+
+// 1. map() - Transformar cada elemento
+const nombresMayusculas = estudiantes.map(est => est.nombre.toUpperCase());
+console.log('📝 Nombres en mayúsculas:', nombresMayusculas);
+
+// 2. map() - Crear un nuevo array con información adicional
+const estudiantesConEstado = estudiantes.map(est => ({
+    ...est,
+    estado: est.calificacion >= 80 ? 'Aprobado' : 'Reprobado'
+}));
+console.log('📊 Estudiantes con estado:');
+console.log(estudiantesConEstado);
+
+// 3. filter() - Filtrar por condición
+const aprobados = estudiantes.filter(est => est.calificacion >= 80);
+console.log('✅ Estudiantes aprobados:', aprobados);
+
+const reprobados = estudiantes.filter(est => est.calificacion < 80);
+console.log('❌ Estudiantes reprobados:', reprobados);
+
+// 4. reduce() - Acumular valores
+const sumaCalificaciones = estudiantes.reduce((acumulador, est) => acumulador + est.calificacion, 0);
+const promedioCalificaciones = sumaCalificaciones / estudiantes.length;
+console.log(`📈 Promedio de calificaciones: ${promedioCalificaciones.toFixed(2)}`);
+
+// 5. reduce() - Agrupar por categoría
+const estudiantesPorEdad = estudiantes.reduce((grupos, est) => {
+    const edad = est.edad;
+    if (!grupos[edad]) {
+        grupos[edad] = [];
+    }
+    grupos[edad].push(est);
+    return grupos;
+}, {});
+console.log('👥 Estudiantes agrupados por edad:');
+console.log(estudiantesPorEdad);
+
+// 6. Combinar métodos para análisis complejos
+const analisis = estudiantes
+    .filter(est => est.calificacion >= 80)
+    .map(est => ({
+        nombre: est.nombre,
+        calificacion: est.calificacion,
+        nivel: est.calificacion >= 90 ? 'Excelente' : 'Bueno'
+    }))
+    .sort((a, b) => b.calificacion - a.calificacion);
+
+console.log('🏆 Ranking de aprobados:');
+console.log(analisis);</code></pre>
+
+                <button class="btn-load" data-target="modulo6">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
             <!-- MÓDULO 7 -->
-            <section class="card">
+            <section class="card" data-module="modulo7">
                 <h2 class="card-title">🔗 Módulo 7: Optional Chaining (?.) y Nullish Coalescing (??)</h2>
                 <h3>Optional Chaining (Encadenamiento Opcional)</h3>
                 <p>Permite leer propiedades profundamente anidadas dentro de un árbol de objetos sin peligro de que la
                     aplicación colapse si una propiedad intermedia es <code>null</code> o <code>undefined</code>.</p>
-                <pre><code>// Si el cliente no tiene dirección configurada, devuelve 'undefined' en vez de romper la app
-const ciudad = cliente?.direccion?.ciudad;</code></pre>
 
                 <h3>Nullish Coalescing (Operador de Fusión de Nulos)</h3>
                 <p>Es un operador lógico que retorna el valor del lado derecho únicamente cuando el valor del lado
@@ -532,7 +810,100 @@ const ciudad = cliente?.direccion?.ciudad;</code></pre>
                     respeta al <code>0</code> y a los textos vacíos como valores válidos del usuario.
                 </div>
 
-                <button class="btn-load">📂 Cargar Ejemplo en el Editor</button>
+                <pre><code class="example-code">// Datos de ejemplo con propiedades anidadas y valores nulos
+const cliente1 = {
+    nombre: 'Laura',
+    direccion: {
+        calle: 'Calle Mayor',
+        ciudad: 'Valencia',
+        codigoPostal: '46001'
+    },
+    preferencias: {
+        notificaciones: false,
+        temas: ['oscuro', 'claro']
+    }
+};
+
+const cliente2 = {
+    nombre: 'Pedro',
+    direccion: null,
+    preferencias: null
+};
+
+const cliente3 = {
+    nombre: 'Sofía',
+    direccion: {
+        calle: 'Avenida Central'
+        // ciudad no está definida
+    },
+    preferencias: {
+        notificaciones: true,
+        temas: []
+    }
+};
+
+// 1. Optional Chaining (?.) - Acceso seguro a propiedades anidadas
+console.log('📋 Cliente 1:');
+console.log('Ciudad:', cliente1?.direccion?.ciudad); // 'Valencia'
+console.log('Temas:', cliente1?.preferencias?.temas); // ['oscuro', 'claro']
+
+console.log('📋 Cliente 2:');
+console.log('Ciudad:', cliente2?.direccion?.ciudad); // undefined (no rompe)
+console.log('Temas:', cliente2?.preferencias?.temas); // undefined
+
+console.log('📋 Cliente 3:');
+console.log('Ciudad:', cliente3?.direccion?.ciudad); // undefined
+console.log('Temas:', cliente3?.preferencias?.temas); // []
+
+// 2. Nullish Coalescing (??) - Valores por defecto seguros
+const ciudad1 = cliente1?.direccion?.ciudad ?? 'Ciudad no disponible';
+console.log('Ciudad Cliente 1:', ciudad1);
+
+const ciudad2 = cliente2?.direccion?.ciudad ?? 'Ciudad no disponible';
+console.log('Ciudad Cliente 2:', ciudad2);
+
+// 3. Diferencia entre ?? y || (ejemplo crítico)
+const configuracion = {
+    puerto: 0,
+    nombre: '',
+    debug: false,
+    timeout: null
+};
+
+// Usando || (OR) - considera 0, '', false como falsos
+const puertoOR = configuracion.puerto || 3000;  // 3000 (pierde el 0)
+const nombreOR = configuracion.nombre || 'default';  // 'default' (pierde el string vacío)
+console.log('Con ||:', puertoOR, nombreOR);
+
+// Usando ?? (Nullish) - solo considera null/undefined
+const puertoNullish = configuracion.puerto ?? 3000;  // 0 (preserva el 0)
+const nombreNullish = configuracion.nombre ?? 'default';  // '' (preserva el string vacío)
+const timeoutNullish = configuracion.timeout ?? 5000;  // 5000 (porque timeout es null)
+console.log('Con ??:', puertoNullish, nombreNullish, timeoutNullish);
+
+// 4. Combinación de ?. y ??
+const mensajeBienvenida = cliente1?.nombre ?? 'Usuario invitado';
+console.log('👋 Bienvenido:', mensajeBienvenida);
+
+const mensajeBienvenida2 = cliente2?.nombre ?? 'Usuario invitado';
+console.log('👋 Bienvenido:', mensajeBienvenida2);
+
+// 5. Optional Chaining con métodos
+const clienteConMetodo = {
+    nombre: 'Javier',
+    obtenerEmail() {
+        return 'javier@email.com';
+    }
+};
+
+const clienteSinMetodo = {
+    nombre: 'Elena'
+};
+
+console.log('Email:', clienteConMetodo.obtenerEmail?.());
+console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></pre>
+
+                <button class="btn-load" data-target="modulo7">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
         </main>
@@ -543,12 +914,14 @@ const ciudad = cliente?.direccion?.ciudad;</code></pre>
             <div class="editor-container">
                 <div class="panel-header">
                     <span>✏️ EDITOR JAVASCRIPT</span>
-                    <span>Modo Estudiante</span>
+                    <span id="editor-status">Modo Estudiante</span>
                 </div>
-                <textarea class="editor-textarea"
+                <textarea id="code-editor" class="editor-textarea"
                     placeholder="// Selecciona un módulo para cargar el código de prueba o escribe aquí..."></textarea>
                 <div class="panel-actions">
-                    <button class="btn-run">▶️ Ejecutar Código</button>
+                    <button id="run-btn" class="btn-run">▶️ Ejecutar Código</button>
+                    <button id="clear-btn" class="btn-run"
+                        style="margin-left: 10px; background-color: #64748b; color: white;">🗑️ Limpiar</button>
                 </div>
             </div>
 
@@ -561,6 +934,192 @@ const ciudad = cliente?.direccion?.ciudad;</code></pre>
         </aside>
 
     </div>
+
+    <script>
+        // --- SELECCIÓN DE ELEMENTOS ---
+        const editor = document.getElementById('code-editor');
+        const logOutput = document.getElementById('log-output');
+        const runBtn = document.getElementById('run-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const editorStatus = document.getElementById('editor-status');
+
+        // --- CARGA DE EJEMPLOS ---
+        const loadButtons = document.querySelectorAll('.btn-load');
+
+        loadButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Encontrar el contenedor del módulo
+                const card = this.closest('.card');
+                if (!card) return;
+
+                // Buscar el bloque de código de ejemplo dentro de la misma tarjeta
+                const codeBlock = card.querySelector('.example-code');
+                if (!codeBlock) {
+                    showMessage('⚠️ No se encontró código de ejemplo para este módulo.', 'warning');
+                    return;
+                }
+
+                // Obtener el código del ejemplo
+                const exampleCode = codeBlock.textContent.trim();
+
+                // Cargar en el editor
+                editor.value = exampleCode;
+
+                // Actualizar estado
+                const moduleTitle = card.querySelector('.card-title')?.textContent?.trim() || 'Módulo';
+                editorStatus.textContent = `📂 ${moduleTitle}`;
+
+                // Feedback visual
+                this.classList.add('loading');
+                setTimeout(() => this.classList.remove('loading'), 500);
+
+                showMessage(`✅ Código del ${moduleTitle} cargado en el editor.`, 'success');
+            });
+        });
+
+        // --- EJECUTAR CÓDIGO ---
+        runBtn.addEventListener('click', function () {
+            const code = editor.value.trim();
+
+            if (!code) {
+                showMessage('⚠️ El editor está vacío. Escribe o carga un ejemplo.', 'warning');
+                return;
+            }
+
+            // Limpiar la consola antes de ejecutar
+            logOutput.innerHTML = '';
+
+            // Redirigir console.log a nuestro panel
+            const originalLog = console.log;
+            const originalError = console.error;
+            const originalWarn = console.warn;
+
+            console.log = function (...args) {
+                const message = args.map(arg => {
+                    if (typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg, null, 2);
+                        } catch {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ');
+
+                appendToConsole(message, 'log');
+                originalLog.apply(console, args);
+            };
+
+            console.error = function (...args) {
+                const message = args.map(arg => String(arg)).join(' ');
+                appendToConsole('❌ ' + message, 'error');
+                originalError.apply(console, args);
+            };
+
+            console.warn = function (...args) {
+                const message = args.map(arg => String(arg)).join(' ');
+                appendToConsole('⚠️ ' + message, 'warn');
+                originalWarn.apply(console, args);
+            };
+
+            try {
+                // Ejecutar el código
+                const result = eval(code);
+
+                // Si la última expresión tiene un valor y no se ha mostrado con console.log
+                if (result !== undefined && !code.includes('console.log')) {
+                    appendToConsole('▶️ ' + String(result), 'log');
+                }
+
+                showMessage('✅ Código ejecutado exitosamente.', 'success');
+            } catch (error) {
+                appendToConsole('❌ Error: ' + error.message, 'error');
+                showMessage('❌ Error al ejecutar el código. Revisa la consola.', 'error');
+            } finally {
+                // Restaurar console.log original
+                console.log = originalLog;
+                console.error = originalError;
+                console.warn = originalWarn;
+            }
+        });
+
+        // --- LIMPIAR EDITOR Y CONSOLA ---
+        clearBtn.addEventListener('click', function () {
+            editor.value = '';
+            logOutput.innerHTML = '';
+            editorStatus.textContent = 'Modo Estudiante';
+            showMessage('🧹 Editor y consola limpiados.', 'info');
+        });
+
+        // --- FUNCIONES DE UTILIDAD ---
+        function appendToConsole(message, type = 'log') {
+            const entry = document.createElement('div');
+            entry.style.marginBottom = '4px';
+
+            // Colores según tipo
+            const colors = {
+                log: '#22c55e',
+                error: '#ef4444',
+                warn: '#f59e0b',
+                info: '#3b82f6',
+                success: '#22c55e',
+                warning: '#f59e0b'
+            };
+
+            entry.style.color = colors[type] || colors.log;
+            entry.textContent = message;
+            logOutput.appendChild(entry);
+
+            // Auto-scroll al último mensaje
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function showMessage(message, type = 'info') {
+            // Mostrar mensaje temporal en la consola
+            const tempMessage = document.createElement('div');
+            tempMessage.style.color = '#94a3b8';
+            tempMessage.style.fontSize = '0.8rem';
+            tempMessage.style.borderTop = '1px solid #1e293b';
+            tempMessage.style.paddingTop = '8px';
+            tempMessage.style.marginTop = '8px';
+            tempMessage.textContent = message;
+
+            // Limpiar mensajes temporales anteriores
+            const existingTemp = logOutput.querySelector('.temp-message');
+            if (existingTemp) existingTemp.remove();
+
+            tempMessage.className = 'temp-message';
+            logOutput.appendChild(tempMessage);
+            logOutput.scrollTop = logOutput.scrollHeight;
+
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (tempMessage.parentNode) {
+                    tempMessage.remove();
+                }
+            }, 5000);
+        }
+
+        // --- KEYBOARD SHORTCUTS ---
+        editor.addEventListener('keydown', function (e) {
+            // Ctrl+Enter para ejecutar
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                runBtn.click();
+            }
+        });
+
+        // --- CARGAR EJEMPLO AL PRESIONAR ENTER EN EL EDITOR (con Ctrl) ---
+        console.log('💡 Tips:');
+        console.log('  - Haz clic en "📂 Cargar Ejemplo" en cualquier módulo para cargar el código.');
+        console.log('  - Presiona Ctrl+Enter para ejecutar el código.');
+        console.log('  - Usa "🗑️ Limpiar" para resetear el editor y la consola.');
+
+        // --- INICIALIZACIÓN ---
+        showMessage('🟢 Sistema listo. Haz clic en "📂 Cargar Ejemplo" para cargar código de prueba.', 'info');
+    </script>
 
 </body>
 
