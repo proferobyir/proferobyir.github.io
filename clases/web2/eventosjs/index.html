@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://w3.org viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖱️</text></svg>">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos en Formularios</title>
+    <style>
+        /* ===== RESET Y BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .playground {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .subtitle span {
+            background: #667eea;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* ===== GRID DE DEMOSTRACIÓN ===== */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .demo-card {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e5ff;
+            transition: all 0.3s ease;
+        }
+
+        .demo-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .demo-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-card .badge {
+            background: #667eea;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: auto;
+        }
+
+        /* ===== FORMULARIO PRINCIPAL ===== */
+        .form-main {
+            background: #f0f2ff;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== CONSOLA DE EVENTOS ===== */
+        .console {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            color: #cdd6f4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #89b4fa;
+            font-weight: bold;
+            border-bottom: 1px solid #313244;
+            padding-bottom: 8px;
+        }
+
+        .console-header button {
+            background: #313244;
+            color: #cdd6f4;
+            border: none;
+            padding: 4px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .console-header button:hover {
+            background: #45475a;
+        }
+
+        .console-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid #313244;
+            animation: consoleIn 0.3s ease-out;
+        }
+
+        @keyframes consoleIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .console-entry .time {
+            color: #6c7086;
+            margin-right: 10px;
+        }
+
+        .console-entry .event-type {
+            color: #f9e2af;
+            font-weight: bold;
+        }
+
+        .console-entry .event-detail {
+            color: #a6e3a1;
+        }
+
+        .console-entry .event-data {
+            color: #89b4fa;
+        }
+
+        /* ===== RESULTADO EN VIVO ===== */
+        .live-result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 2px solid #d1d5db;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .live-result .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .live-result .value {
+            background: #667eea;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .playground {
+                padding: 15px;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                min-width: 100%;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .playground {
+                padding: 12px;
+                border-radius: 12px;
+            }
+
+            .demo-card {
+                padding: 15px;
+            }
+        }
+
+        /* ===== UTILIDADES ===== */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="playground" id="app">
+        <!-- TÍTULO -->
+        <h1>🎮 Eventos en Formularios</h1>
+        <p class="subtitle">
+            <span>📖 Playground Interactivo</span> — Prueba cada evento y observa la consola
+        </p>
+
+        <!-- DEMOSTRACIONES RÁPIDAS -->
+        <div class="demo-grid">
+            <div class="demo-card">
+                <h3>📝 Evento: <code>input</code> <span class="badge">en vivo</span></h3>
+                <input type="text" id="demoInput" placeholder="Escribe algo..."
+                    style="width:100%; padding:8px; border:2px solid #d1d5db; border-radius:6px;">
+                <div class="live-result" id="demoInputResult">
+                    <span class="label">Texto en tiempo real:</span>
+                    <span class="value" id="demoInputDisplay">(esperando)</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>🔄 Evento: <code>change</code> <span class="badge">al cambiar</span></h3>
+                <select id="demoSelect" style="width:100%; padding:8px; border:2px solid #d1d5db; border-radius:6px;">
+                    <option value="opcion1">Opción 1</option>
+                    <option value="opcion2">Opción 2</option>
+                    <option value="opcion3">Opción 3</option>
+                </select>
+                <div class="live-result" id="demoSelectResult">
+                    <span class="label">Opción seleccionada:</span>
+                    <span class="value" id="demoSelectDisplay">opcion1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO PRINCIPAL -->
+        <div class="form-main">
+            <h3 style="color:#333; margin-bottom:15px;">📋 Formulario de Prueba</h3>
+
+            <form id="mainForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">👤 Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">📧 Email:</label>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mensaje">💬 Mensaje:</label>
+                    <textarea id="mensaje" name="mensaje" placeholder="Escribe un mensaje..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>⚡ Eventos activos:</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" id="btnClick">🔘 Click</button>
+                        <button type="button" class="btn btn-success" id="btnDblClick">🔄 Doble Click</button>
+                        <button type="button" class="btn btn-warning" id="btnMouseOver">🐭 Mouse Over</button>
+                        <button type="button" class="btn btn-danger" id="btnMouseOut">🐭 Mouse Out</button>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top:15px;">
+                    <button type="submit" class="btn btn-primary" style="flex:2;">📤 Enviar (submit)</button>
+                    <button type="reset" class="btn btn-warning" id="btnReset">🔄 Reset</button>
+                    <button type="button" class="btn btn-danger" id="btnFocus">🎯 Focus</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- CONSOLA DE EVENTOS -->
+        <div class="console" id="console">
+            <div class="console-header">
+                <span>📟 CONSOLA DE EVENTOS</span>
+                <button onclick="clearConsole()">🗑️ Limpiar</button>
+            </div>
+            <div id="consoleContent">
+                <div class="console-entry">
+                    <span class="time">[00:00:00]</span>
+                    <span class="event-type">ℹ️ Sistema:</span>
+                    <span class="event-detail">Playground listo. ¡Interactúa con los elementos!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFORMACIÓN ADICIONAL -->
+        <div
+            style="margin-top:20px; padding:15px; background:#f0f2ff; border-radius:8px; font-size:0.9rem; color:#333;">
+            <strong>💡 Tip:</strong>
+            <span id="tipDisplay">Cada interacción genera un evento. Observa la consola para ver qué evento se dispara y
+                qué datos contiene.</span>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // 1. FUNCIONES AUXILIARES
+        // =====================================================
+
+        function getTime() {
+            const now = new Date();
+            return now.toTimeString().split(' ')[0];
+        }
+
+        function logEvent(eventType, detail = '', data = '') {
+            const consoleContent = document.getElementById('consoleContent');
+            const entry = document.createElement('div');
+            entry.className = 'console-entry';
+            entry.innerHTML = `
+                <span class="time">[${getTime()}]</span>
+                <span class="event-type">${eventType}</span>
+                <span class="event-detail">${detail}</span>
+                ${data ? `<span class="event-data">${data}</span>` : ''}
+            `;
+            consoleContent.appendChild(entry);
+            // Auto-scroll
+            const console = document.getElementById('console');
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function clearConsole() {
+            const consoleContent = document.getElementById('consoleContent');
+            consoleContent.innerHTML = `
+                <div class="console-entry">
+                    <span class="time">[${getTime()}]</span>
+                    <span class="event-type">🗑️ Sistema:</span>
+                    <span class="event-detail">Consola limpiada</span>
+                </div>
+            `;
+        }
+
+        function updateTip(message) {
+            document.getElementById('tipDisplay').textContent = message;
+        }
+
+        // =====================================================
+        // 2. EVENTOS DE DEMOSTRACIÓN (Cards)
+        // =====================================================
+
+        // Evento 'input' - en tiempo real
+        const demoInput = document.getElementById('demoInput');
+        const demoInputDisplay = document.getElementById('demoInputDisplay');
+
+        demoInput.addEventListener('input', function (e) {
+            const value = this.value || '(vacío)';
+            demoInputDisplay.textContent = value;
+            logEvent('⌨️ input', 'Input cambiado:', `"${value}"`);
+            updateTip('El evento "input" se dispara en CADA tecla que presionas');
+        });
+
+        // Evento 'change' - al cambiar
+        const demoSelect = document.getElementById('demoSelect');
+        const demoSelectDisplay = document.getElementById('demoSelectDisplay');
+
+        demoSelect.addEventListener('change', function (e) {
+            const value = this.value;
+            demoSelectDisplay.textContent = value;
+            logEvent('🔄 change', 'Select cambiado:', `"${value}"`);
+            updateTip('El evento "change" solo se dispara cuando CONFIRMAS el cambio (al hacer clic fuera)');
+        });
+
+        // =====================================================
+        // 3. EVENTOS DEL FORMULARIO
+        // =====================================================
+
+        const form = document.getElementById('mainForm');
+
+        // 3.1 Evento 'submit'
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // Evita que recargue la página
+
+            const nombre = document.getElementById('nombre').value || '(sin nombre)';
+            const email = document.getElementById('email').value || '(sin email)';
+            const mensaje = document.getElementById('mensaje').value || '(sin mensaje)';
+
+            logEvent('📤 submit', 'Formulario enviado:',
+                `Nombre: ${nombre}, Email: ${email}, Mensaje: "${mensaje}"`);
+            updateTip('El evento "submit" se dispara al enviar el formulario (botón submit o Enter)');
+
+            // Feedback visual
+            alert(`✅ Formulario enviado correctamente!\n\nNombre: ${nombre}\nEmail: ${email}\nMensaje: ${mensaje}`);
+        });
+
+        // 3.2 Evento 'reset'
+        form.addEventListener('reset', function (e) {
+            // El reset nativo ya limpia los campos, pero podemos capturarlo
+            logEvent('🔄 reset', 'Formulario reseteado', 'Todos los campos se limpiaron');
+            updateTip('El evento "reset" se dispara al hacer clic en un botón type="reset"');
+
+            // También actualizamos los displays de las cards
+            document.getElementById('demoInputDisplay').textContent = '(esperando)';
+        });
+
+        // 3.3 Eventos en campos específicos
+        const nombreInput = document.getElementById('nombre');
+        const emailInput = document.getElementById('email');
+        const mensajeInput = document.getElementById('mensaje');
+
+        // Focus
+        nombreInput.addEventListener('focus', function (e) {
+            logEvent('🎯 focus', 'Input "Nombre" recibió foco');
+            updateTip('El evento "focus" se dispara cuando el elemento gana el foco (click o Tab)');
+            this.style.borderColor = '#667eea';
+        });
+
+        nombreInput.addEventListener('blur', function (e) {
+            logEvent('👁️ blur', 'Input "Nombre" perdió el foco');
+            updateTip('El evento "blur" se dispara cuando el elemento pierde el foco');
+            this.style.borderColor = '#d1d5db';
+        });
+
+        // Key events en el mensaje
+        mensajeInput.addEventListener('keydown', function (e) {
+            logEvent('⌨️ keydown', `Tecla presionada: "${e.key}"`, `Código: ${e.keyCode}`);
+            updateTip('El evento "keydown" se dispara al PRESIONAR una tecla (antes de soltarla)');
+        });
+
+        mensajeInput.addEventListener('keyup', function (e) {
+            logEvent('⌨️ keyup', `Tecla soltada: "${e.key}"`);
+            updateTip('El evento "keyup" se dispara al SOLTAR una tecla');
+        });
+
+        // =====================================================
+        // 4. EVENTOS EN BOTONES PERSONALIZADOS
+        // =====================================================
+
+        const btnClick = document.getElementById('btnClick');
+        const btnDblClick = document.getElementById('btnDblClick');
+        const btnMouseOver = document.getElementById('btnMouseOver');
+        const btnMouseOut = document.getElementById('btnMouseOut');
+        const btnReset = document.getElementById('btnReset');
+        const btnFocus = document.getElementById('btnFocus');
+
+        btnClick.addEventListener('click', function (e) {
+            logEvent('🔘 click', 'Botón "Click" presionado',
+                `Coordenadas: (${e.clientX}, ${e.clientY})`);
+            updateTip('El evento "click" es el más común. Se dispara al hacer clic (presionar y soltar)');
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => this.style.transform = 'scale(1)', 200);
+        });
+
+        btnDblClick.addEventListener('dblclick', function (e) {
+            logEvent('🔄 dblclick', 'Doble click detectado');
+            updateTip('El evento "dblclick" se dispara con DOS clics rápidos (¡cuidado con los accidental!)');
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => this.style.transform = 'scale(1)', 200);
+        });
+
+        btnMouseOver.addEventListener('mouseover', function (e) {
+            logEvent('🐭 mouseover', 'Mouse encima del botón');
+            updateTip('El evento "mouseover" se dispara CADA VEZ que el mouse pasa por encima');
+            this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 5px 20px rgba(0,0,0,0.2)';
+        });
+
+        btnMouseOut.addEventListener('mouseout', function (e) {
+            logEvent('🐭 mouseout', 'Mouse salió del botón');
+            updateTip('El evento "mouseout" se dispara cuando el mouse SALE del elemento');
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = 'none';
+        });
+
+        // Reset manual
+        btnReset.addEventListener('click', function (e) {
+            form.reset();
+            logEvent('🔄 reset', 'Reset manual desde botón');
+            updateTip('Puedes disparar eventos manualmente con .reset(), .click(), etc.');
+        });
+
+        // Focus en el primer input
+        btnFocus.addEventListener('click', function (e) {
+            nombreInput.focus();
+            logEvent('🎯 focus', 'Focus programático en el input "Nombre"');
+            updateTip('Puedes dar foco programáticamente con .focus()');
+        });
+
+        // =====================================================
+        // 5. EVENTOS ADICIONALES (para demostración)
+        // =====================================================
+
+        // Evento 'select' - cuando seleccionas texto
+        nombreInput.addEventListener('select', function (e) {
+            const selection = this.value.substring(this.selectionStart, this.selectionEnd);
+            if (selection) {
+                logEvent('📌 select', 'Texto seleccionado:', `"${selection}"`);
+                updateTip('El evento "select" se dispara al SELECCIONAR texto en un input');
+            }
+        });
+
+        // Evento 'paste' - cuando pegas
+        emailInput.addEventListener('paste', function (e) {
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            logEvent('📋 paste', 'Texto pegado:', `"${pastedText}"`);
+            updateTip('El evento "paste" se dispara al PEGAR texto (Ctrl+V)');
+        });
+
+        // =====================================================
+        // 6. INICIALIZACIÓN
+        // =====================================================
+
+        logEvent('✅ Sistema', 'Playground cargado correctamente');
+        logEvent('ℹ️ Info', 'Eventos disponibles: click, dblclick, mouseover, mouseout, focus, blur, keydown, keyup, input, change, submit, reset, select, paste');
+        updateTip('¡Bienvenido! Interactúa con cualquier elemento para ver los eventos en la consola.');
+
+        console.log('🎮 Playground de Eventos cargado');
+        console.log('💡 Los eventos se registran en la consola visual');
+    </script>
+
+</body>
+
+</html>
