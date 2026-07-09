@@ -20,6 +20,9 @@
             --code-text: #38bdf8;
             --border-color: #e2e8f0;
             --radius: 12px;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * {
@@ -174,6 +177,12 @@
             color: #14532d;
         }
 
+        .alert-success {
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--success);
+            color: #14532d;
+        }
+
         .analogia {
             background-color: #f8fafc;
             border: 1px dashed #cbd5e1;
@@ -213,6 +222,24 @@
 
         .btn-load:hover {
             background-color: var(--primary-hover);
+        }
+
+        .btn-solution {
+            background-color: var(--success);
+            color: #052e16;
+        }
+
+        .btn-solution:hover {
+            background-color: #16a34a;
+        }
+
+        .btn-hint {
+            background-color: var(--warning);
+            color: #78350f;
+        }
+
+        .btn-hint:hover {
+            background-color: #d97706;
         }
 
         /* --- Panel Interactivo (Editor y Consola) --- */
@@ -262,6 +289,7 @@
             padding: 10px 16px;
             display: flex;
             justify-content: flex-end;
+            gap: 10px;
         }
 
         .btn-run {
@@ -276,6 +304,20 @@
 
         .btn-run:hover {
             background-color: #16a34a;
+        }
+
+        .btn-clear {
+            background-color: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-clear:hover {
+            background-color: #475569;
         }
 
         .console-container {
@@ -298,7 +340,88 @@
             letter-spacing: 0.05em;
         }
 
-        /* Animación de carga de ejemplo */
+        /* --- Estilos para ejercicios --- */
+        .exercise {
+            border-left: 4px solid var(--primary);
+            padding-left: 16px;
+            margin: 20px 0;
+        }
+
+        .exercise-number {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-right: 8px;
+        }
+
+        .exercise-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .exercise-difficulty {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .difficulty-easy {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .difficulty-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .difficulty-hard {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .exercise-solution {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background-color: #f0fdf4;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .exercise-solution.show {
+            display: block;
+        }
+
+        .exercise-hint {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background-color: #fffbeb;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+        }
+
+        .exercise-hint.show {
+            display: block;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        /* --- Animaciones --- */
         .btn-load.loading {
             opacity: 0.7;
             pointer-events: none;
@@ -325,6 +448,30 @@
             75% {
                 content: '...';
             }
+        }
+
+        /* --- Progreso --- */
+        .progress-container {
+            background-color: #e2e8f0;
+            border-radius: 12px;
+            padding: 4px;
+            margin: 16px 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            height: 8px;
+            border-radius: 8px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -906,6 +1053,627 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
                 <button class="btn-load" data-target="modulo7">📂 Cargar Ejemplo en el Editor</button>
             </section>
 
+            <!-- ============================================================ -->
+            <!-- SECCIÓN DE EJERCICIOS PRÁCTICOS                              -->
+            <!-- ============================================================ -->
+            <section class="card" id="ejercicios">
+                <h2 class="card-title">💪 10 Ejercicios Prácticos</h2>
+                <p>Pon a prueba todo lo que has aprendido. Resuelve cada ejercicio en el editor de la derecha y
+                    verifica tu solución con las pistas y soluciones proporcionadas.</p>
+
+                <div class="alert alert-info">
+                    🎯 <strong>Instrucciones:</strong>
+                    <ol style="margin-left: 20px; margin-top: 8px;">
+                        <li>Cada ejercicio tiene un enunciado y datos de ejemplo</li>
+                        <li>Escribe tu solución en el editor de la derecha</li>
+                        <li>Presiona "Ejecutar Código" para probar tu solución</li>
+                        <li>Si te atascas, usa las pistas</li>
+                        <li>Revisa la solución solo cuando hayas intentado resolverlo</li>
+                    </ol>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-text">
+                        <span>Progreso</span>
+                        <span id="progressText">0/10 ejercicios completados</span>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 1 -->
+                <div class="exercise" data-exercise="1">
+                    <div>
+                        <span class="exercise-number">Ejercicio 1</span>
+                        <span class="exercise-title">Variables y Template Literals</span>
+                        <span class="exercise-difficulty difficulty-easy">⭐ Fácil</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Crea un programa que almacene el nombre, la
+                        edad y la ciudad de una persona en variables usando <code>const</code> y <code>let</code>.
+                        Luego, muestra un mensaje de presentación usando template literals que diga:
+                        <em>"Hola, soy [nombre], tengo [edad] años y vivo en [ciudad]"</em>.
+                    </p>
+                    <div class="alert alert-warning">
+                        💡 <strong>Tip:</strong> Usa <code>const</code> para el nombre y la ciudad (que no cambian),
+                        y <code>let</code> para la edad (que podría cambiar).
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio1">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint1">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution1">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint1">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Declara las variables con <code>const</code> y <code>let</code></li>
+                            <li>Usa backticks (`) para el template literal</li>
+                            <li>Inserta las variables con <code>${variable}</code></li>
+                            <li>Muestra el resultado con <code>console.log()</code></li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution1">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const nombre = 'María';
+let edad = 25;
+const ciudad = 'Madrid';
+
+const mensaje = `Hola, soy ${nombre}, tengo ${edad} años y vivo en ${ciudad}`;
+console.log(mensaje);
+
+// También puedes hacerlo directo:
+console.log(`Hola, soy ${nombre}, tengo ${edad} años y vivo en ${ciudad}`);</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 2 -->
+                <div class="exercise" data-exercise="2">
+                    <div>
+                        <span class="exercise-number">Ejercicio 2</span>
+                        <span class="exercise-title">Desestructuración de Objetos</span>
+                        <span class="exercise-difficulty difficulty-easy">⭐ Fácil</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Dado el siguiente objeto
+                        <code>libro</code>,
+                        usa desestructuración para extraer el <code>titulo</code>, <code>autor</code> y
+                        <code>año</code>. Luego, muestra un mensaje con la información.
+                    </p>
+                    <pre><code>const libro = {
+    titulo: 'El Principito',
+    autor: 'Antoine de Saint-Exupéry',
+    año: 1943,
+    editorial: 'Reynal & Hitchcock'
+};</code></pre>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio2">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint2">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution2">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint2">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Usa <code>const { titulo, autor, año } = libro;</code></li>
+                            <li>Luego muestra los valores con template literals</li>
+                            <li>Puedes ignorar la propiedad <code>editorial</code></li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution2">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const libro = {
+    titulo: 'El Principito',
+    autor: 'Antoine de Saint-Exupéry',
+    año: 1943,
+    editorial: 'Reynal & Hitchcock'
+};
+
+// Desestructuración
+const { titulo, autor, año } = libro;
+
+console.log(`📚 "${titulo}" fue escrito por ${autor} en el año ${año}.`);</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 3 -->
+                <div class="exercise" data-exercise="3">
+                    <div>
+                        <span class="exercise-number">Ejercicio 3</span>
+                        <span class="exercise-title">Spread Operator en Arrays</span>
+                        <span class="exercise-difficulty difficulty-easy">⭐ Fácil</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Tienes dos arrays de números:
+                        <code>pares = [2, 4, 6, 8]</code> y <code>impares = [1, 3, 5, 7]</code>.
+                        Usa el operador spread para combinarlos en un solo array llamado <code>numeros</code>
+                        y muéstralo en consola.
+                    </p>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio3">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint3">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution3">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint3">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Usa <code>[...array1, ...array2]</code></li>
+                            <li>El orden importa: primero pares, luego impares</li>
+                            <li>Muestra el resultado con <code>console.log(numeros)</code></li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution3">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const pares = [2, 4, 6, 8];
+const impares = [1, 3, 5, 7];
+
+// Combinar usando spread
+const numeros = [...pares, ...impares];
+
+console.log('Números ordenados:', numeros);
+// Resultado: [2, 4, 6, 8, 1, 3, 5, 7]
+
+// Si quieres ordenarlos:
+const numerosOrdenados = [...pares, ...impares].sort((a, b) => a - b);
+console.log('Números ordenados:', numerosOrdenados);</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 4 -->
+                <div class="exercise" data-exercise="4">
+                    <div>
+                        <span class="exercise-number">Ejercicio 4</span>
+                        <span class="exercise-title">Clonación de Objetos</span>
+                        <span class="exercise-difficulty difficulty-easy">⭐ Fácil</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Crea una copia del objeto
+                        <code>configuracion</code> usando spread operator, cambia el <code>idioma</code> a 'inglés'
+                        en la copia y muestra ambos objetos para verificar que el original no se modificó.
+                    </p>
+                    <pre><code>const configuracion = {
+    idioma: 'español',
+    tema: 'oscuro',
+    notificaciones: true
+};</code></pre>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio4">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint4">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution4">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint4">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Usa <code>const copia = { ...original };</code></li>
+                            <li>Luego modifica la copia: <code>copia.idioma = 'inglés';</code></li>
+                            <li>Muestra ambos objetos con <code>console.log()</code></li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution4">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const configuracion = {
+    idioma: 'español',
+    tema: 'oscuro',
+    notificaciones: true
+};
+
+// Clonar el objeto
+const nuevaConfiguracion = { ...configuracion };
+
+// Modificar la copia
+nuevaConfiguracion.idioma = 'inglés';
+
+console.log('🔹 Original:', configuracion);
+console.log('🔸 Copia:', nuevaConfiguracion);
+
+// Verificar que son objetos diferentes
+console.log('¿Son el mismo objeto?', configuracion === nuevaConfiguracion); // false</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 5 -->
+                <div class="exercise" data-exercise="5">
+                    <div>
+                        <span class="exercise-number">Ejercicio 5</span>
+                        <span class="exercise-title">Promesas Básicas</span>
+                        <span class="exercise-difficulty difficulty-medium">⭐⭐ Medio</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Crea una función que retorne una promesa
+                        que se resuelva después de 2 segundos con un mensaje de éxito. Usa <code>.then()</code> para
+                        mostrar el mensaje y <code>.catch()</code> para manejar errores.</p>
+                    <div class="alert alert-warning">
+                        💡 <strong>Tip:</strong> Usa <code>new Promise((resolve, reject) => { ... })</code>
+                        y <code>setTimeout()</code> para simular la espera.
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio5">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint5">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution5">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint5">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Crea la función que retorna <code>new Promise()</code></li>
+                            <li>Dentro de <code>setTimeout()</code>, llama a <code>resolve()</code></li>
+                            <li>Usa <code>.then()</code> para capturar el resultado</li>
+                            <li>Incluye un <code>.catch()</code> por si hay error</li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution5">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>function mensajeConRetraso() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const exito = true;
+            if (exito) {
+                resolve('✅ Mensaje entregado después de 2 segundos');
+            } else {
+                reject('❌ Error al entregar el mensaje');
+            }
+        }, 2000);
+    });
+}
+
+// Consumir la promesa
+mensajeConRetraso()
+    .then(mensaje => {
+        console.log(mensaje);
+    })
+    .catch(error => {
+        console.error(error);
+    })
+    .finally(() => {
+        console.log('🔄 Promesa finalizada');
+    });</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 6 -->
+                <div class="exercise" data-exercise="6">
+                    <div>
+                        <span class="exercise-number">Ejercicio 6</span>
+                        <span class="exercise-title">Async/Await con Try/Catch</span>
+                        <span class="exercise-difficulty difficulty-medium">⭐⭐ Medio</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Reescribe el ejercicio anterior usando
+                        <code>async/await</code> con un bloque <code>try/catch</code> para manejar errores.
+                        La función debe esperar el resultado de la promesa y mostrarlo en consola.
+                    </p>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio6">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint6">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution6">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint6">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Crea una función <code>async</code></li>
+                            <li>Usa <code>try { const resultado = await funcionPromesa(); }</code></li>
+                            <li>Captura errores con <code>catch(error)</code></li>
+                            <li>La función <code>async</code> siempre retorna una promesa</li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution6">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>// Función que retorna una promesa (igual que antes)
+function mensajeConRetraso() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const exito = true;
+            if (exito) {
+                resolve('✅ Mensaje entregado después de 2 segundos');
+            } else {
+                reject('❌ Error al entregar el mensaje');
+            }
+        }, 2000);
+    });
+}
+
+// Función async con try/catch
+async function obtenerMensaje() {
+    try {
+        console.log('⏳ Esperando mensaje...');
+        const resultado = await mensajeConRetraso();
+        console.log(resultado);
+        console.log('✨ Proceso completado con éxito');
+    } catch (error) {
+        console.error('💥 Error:', error);
+    } finally {
+        console.log('🔄 Operación finalizada');
+    }
+}
+
+// Ejecutar
+obtenerMensaje();</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 7 -->
+                <div class="exercise" data-exercise="7">
+                    <div>
+                        <span class="exercise-number">Ejercicio 7</span>
+                        <span class="exercise-title">Métodos de Arrays: map() y filter()</span>
+                        <span class="exercise-difficulty difficulty-medium">⭐⭐ Medio</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Dado el array de <code>numeros</code>,
+                        usa <code>filter()</code> para obtener solo los números pares, y luego <code>map()</code> para
+                        duplicar esos números. Muestra el resultado final.</p>
+                    <pre><code>const numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];</code></pre>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio7">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint7">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution7">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint7">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li><code>filter(num => num % 2 === 0)</code> para pares</li>
+                            <li><code>map(num => num * 2)</code> para duplicar</li>
+                            <li>Puedes encadenar ambos métodos: <code>array.filter().map()</code></li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution7">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Filtrar pares y luego duplicarlos
+const resultado = numeros
+    .filter(num => num % 2 === 0)  // [2, 4, 6, 8, 10]
+    .map(num => num * 2);          // [4, 8, 12, 16, 20]
+
+console.log('🔢 Números originales:', numeros);
+console.log('✨ Pares duplicados:', resultado);
+
+// Versión con variables intermedias
+const pares = numeros.filter(num => num % 2 === 0);
+const paresDuplicados = pares.map(num => num * 2);
+console.log('📊 Paso a paso:', pares, '→', paresDuplicados);</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 8 -->
+                <div class="exercise" data-exercise="8">
+                    <div>
+                        <span class="exercise-number">Ejercicio 8</span>
+                        <span class="exercise-title">reduce() - Suma y Promedio</span>
+                        <span class="exercise-difficulty difficulty-medium">⭐⭐ Medio</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Usa el método <code>reduce()</code> para
+                        calcular la suma total y el promedio de las calificaciones del siguiente array de estudiantes.
+                        Muestra ambos resultados.</p>
+                    <pre><code>const estudiantes = [
+    { nombre: 'Ana', calificacion: 85 },
+    { nombre: 'Luis', calificacion: 92 },
+    { nombre: 'Carlos', calificacion: 78 },
+    { nombre: 'María', calificacion: 95 },
+    { nombre: 'Jorge', calificacion: 70 }
+];</code></pre>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio8">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint8">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution8">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint8">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li><code>reduce((acum, estudiante) => acum + estudiante.calificacion, 0)</code></li>
+                            <li>El promedio es <code>suma / estudiantes.length</code></li>
+                            <li>Recuerda que <code>reduce()</code> recibe un valor inicial (0)</li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution8">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const estudiantes = [
+    { nombre: 'Ana', calificacion: 85 },
+    { nombre: 'Luis', calificacion: 92 },
+    { nombre: 'Carlos', calificacion: 78 },
+    { nombre: 'María', calificacion: 95 },
+    { nombre: 'Jorge', calificacion: 70 }
+];
+
+// Calcular la suma total
+const sumaTotal = estudiantes.reduce((total, estudiante) => {
+    return total + estudiante.calificacion;
+}, 0);
+
+// Calcular el promedio
+const promedio = sumaTotal / estudiantes.length;
+
+console.log(`📊 Suma total: ${sumaTotal}`);
+console.log(`📈 Promedio: ${promedio.toFixed(2)}`);
+console.log(`👥 Total de estudiantes: ${estudiantes.length}`);
+
+// Mostrar estudiantes con su estado
+estudiantes.forEach(est => {
+    const estado = est.calificacion >= promedio ? '✅ Sobre promedio' : '📉 Bajo promedio';
+    console.log(`${est.nombre}: ${est.calificacion} - ${estado}`);
+});</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 9 -->
+                <div class="exercise" data-exercise="9">
+                    <div>
+                        <span class="exercise-number">Ejercicio 9</span>
+                        <span class="exercise-title">Optional Chaining y Nullish Coalescing</span>
+                        <span class="exercise-difficulty difficulty-hard">⭐⭐⭐ Difícil</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Dado el siguiente objeto que simula
+                        una respuesta de API, usa optional chaining (<code>?.</code>) para acceder de forma segura a
+                        <code>usuario.direccion.ciudad</code> y <code>usuario.contacto.telefono</code>.
+                        Usa nullish coalescing (<code>??</code>) para proporcionar valores por defecto si no existen.
+                    </p>
+                    <pre><code>const respuestaAPI = {
+    usuario: {
+        nombre: 'Patricia',
+        edad: 30,
+        // direccion no existe
+        contacto: {
+            // telefono no existe
+            email: 'patricia@email.com'
+        }
+    }
+};</code></pre>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio9">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint9">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution9">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint9">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Usa <code>respuestaAPI?.usuario?.direccion?.ciudad ?? 'No especificada'</code></li>
+                            <li>Para el teléfono:
+                                <code>respuestaAPI?.usuario?.contacto?.telefono ?? 'No disponible'</code></li>
+                            <li>El operador <code>??</code> solo actúa cuando el valor es <code>null</code> o
+                                <code>undefined</code></li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution9">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const respuestaAPI = {
+    usuario: {
+        nombre: 'Patricia',
+        edad: 30,
+        // direccion no existe
+        contacto: {
+            // telefono no existe
+            email: 'patricia@email.com'
+        }
+    }
+};
+
+// Acceso seguro usando optional chaining y nullish coalescing
+const ciudad = respuestaAPI?.usuario?.direccion?.ciudad ?? 'No especificada';
+const telefono = respuestaAPI?.usuario?.contacto?.telefono ?? 'No disponible';
+const nombre = respuestaAPI?.usuario?.nombre ?? 'Usuario desconocido';
+
+console.log(`👤 Usuario: ${nombre}`);
+console.log(`📍 Ciudad: ${ciudad}`);
+console.log(`📱 Teléfono: ${telefono}`);
+console.log(`📧 Email: ${respuestaAPI?.usuario?.contacto?.email}`);
+
+// Demo de la diferencia con ||
+const ciudadOR = respuestaAPI?.usuario?.direccion?.ciudad || 'No especificada';
+console.log(`Con ||: ${ciudadOR}`); // Mismo resultado en este caso
+
+// Pero con valores falsos como 0 o "":
+const config = { puerto: 0 };
+console.log(`Puerto con ||: ${config.puerto || 3000}`); // 3000 (pierde el 0)
+console.log(`Puerto con ??: ${config.puerto ?? 3000}`); // 0 (preserva el 0)</code></pre>
+                    </div>
+                </div>
+
+                <!-- EJERCICIO 10 -->
+                <div class="exercise" data-exercise="10">
+                    <div>
+                        <span class="exercise-number">Ejercicio 10</span>
+                        <span class="exercise-title">Proyecto Integrador</span>
+                        <span class="exercise-difficulty difficulty-hard">⭐⭐⭐ Difícil</span>
+                    </div>
+                    <p style="margin-top: 12px;"><strong>Enunciado:</strong> Crea un sistema simple de gestión de
+                        productos que incluya:</p>
+                    <ol style="margin-left: 20px;">
+                        <li>Un array de productos (nombre, precio, categoría)</li>
+                        <li>Una función que filtre productos por categoría usando <code>filter()</code></li>
+                        <li>Una función que calcule el precio total usando <code>reduce()</code></li>
+                        <li>Una función que aplique descuento usando <code>map()</code></li>
+                        <li>Usa <code>async/await</code> para simular una operación asíncrona</li>
+                        <li>Muestra los resultados en consola</li>
+                    </ol>
+                    <div class="alert alert-info">
+                        💡 <strong>Productos base:</strong>
+                        <pre><code>const productos = [
+    { nombre: 'Laptop', precio: 800, categoria: 'electrónicos' },
+    { nombre: 'Zapatos', precio: 120, categoria: 'ropa' },
+    { nombre: 'Tablet', precio: 400, categoria: 'electrónicos' },
+    { nombre: 'Camisa', precio: 45, categoria: 'ropa' },
+    { nombre: 'Auriculares', precio: 100, categoria: 'electrónicos' }
+];</code></pre>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-load" data-target="ejercicio10">📂 Cargar Base</button>
+                        <button class="btn-hint" data-target="hint10">💡 Pista</button>
+                        <button class="btn-solution" data-target="solution10">🔍 Ver Solución</button>
+                    </div>
+                    <div class="exercise-hint" id="hint10">
+                        <strong>💡 Pista:</strong>
+                        <ul>
+                            <li>Usa <code>filter()</code> para filtrar por categoría</li>
+                            <li>Usa <code>reduce()</code> para sumar precios</li>
+                            <li>Usa <code>map()</code> para aplicar descuentos</li>
+                            <li>Envuélvelo todo en una función <code>async</code></li>
+                            <li>Usa <code>await</code> con <code>setTimeout</code> para simular procesamiento</li>
+                        </ul>
+                    </div>
+                    <div class="exercise-solution" id="solution10">
+                        <strong>✅ Solución:</strong>
+                        <pre><code>const productos = [
+    { nombre: 'Laptop', precio: 800, categoria: 'electrónicos' },
+    { nombre: 'Zapatos', precio: 120, categoria: 'ropa' },
+    { nombre: 'Tablet', precio: 400, categoria: 'electrónicos' },
+    { nombre: 'Camisa', precio: 45, categoria: 'ropa' },
+    { nombre: 'Auriculares', precio: 100, categoria: 'electrónicos' }
+];
+
+// Función para simular operación asíncrona
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Función principal
+async function gestionarProductos() {
+    try {
+        console.log('🔄 Procesando productos...');
+        await delay(1000);
+        
+        // 1. Mostrar todos los productos
+        console.log('📋 Todos los productos:');
+        console.table(productos);
+        
+        // 2. Filtrar por categoría
+        const electronicos = productos.filter(p => p.categoria === 'electrónicos');
+        console.log('💻 Electrónicos:');
+        console.table(electronicos);
+        
+        // 3. Calcular precio total
+        const totalElectronicos = electronicos.reduce((total, p) => total + p.precio, 0);
+        console.log(`💰 Total electrónicos: $${totalElectronicos}`);
+        
+        // 4. Aplicar descuento a productos de ropa
+        const ropaConDescuento = productos
+            .filter(p => p.categoria === 'ropa')
+            .map(p => ({
+                ...p,
+                precioConDescuento: p.precio * 0.85 // 15% descuento
+            }));
+        console.log('👕 Ropa con descuento:');
+        console.table(ropaConDescuento);
+        
+        // 5. Calcular precio promedio de todos los productos
+        const totalGeneral = productos.reduce((total, p) => total + p.precio, 0);
+        const promedio = totalGeneral / productos.length;
+        console.log(`📊 Precio promedio: $${promedio.toFixed(2)}`);
+        
+        // 6. Productos caros (mayores al promedio)
+        const productosCaros = productos.filter(p => p.precio > promedio);
+        console.log('💎 Productos caros (sobre el promedio):');
+        console.table(productosCaros);
+        
+        console.log('✅ Procesamiento completado');
+        return {
+            totalGeneral,
+            promedio,
+            electronicos,
+            ropaConDescuento
+        };
+    } catch (error) {
+        console.error('❌ Error en el procesamiento:', error);
+        throw error;
+    }
+}
+
+// Ejecutar
+gestionarProductos().then(resultado => {
+    console.log('🎯 Resultado final:', resultado);
+});</code></pre>
+                    </div>
+                </div>
+
+            </section>
+
         </main>
 
         <!-- COLUMNA DERECHA: INTERFAZ INTERACTIVA (SIEMPRE VISIBLE EN ESCRITORIO) -->
@@ -917,18 +1685,16 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
                     <span id="editor-status">Modo Estudiante</span>
                 </div>
                 <textarea id="code-editor" class="editor-textarea"
-                    placeholder="// Selecciona un módulo para cargar el código de prueba o escribe aquí..."></textarea>
+                    placeholder="// Selecciona un módulo o ejercicio para cargar el código..."></textarea>
                 <div class="panel-actions">
                     <button id="run-btn" class="btn-run">▶️ Ejecutar Código</button>
-                    <button id="clear-btn" class="btn-run"
-                        style="margin-left: 10px; background-color: #64748b; color: white;">🗑️ Limpiar</button>
+                    <button id="clear-btn" class="btn-clear">🗑️ Limpiar</button>
                 </div>
             </div>
 
             <div class="console-container">
-                <div class="console-title">📊 Consola de Salida de Node.js</div>
-                <div id="log-output">> 🟢 Sistema listo. Selecciona un módulo o presiona ejecutar para procesar
-                    scripts...</div>
+                <div class="console-title">📊 Consola de Salida</div>
+                <div id="log-output">> 🟢 Sistema listo. Selecciona un módulo o ejercicio para practicar...</div>
             </div>
 
         </aside>
@@ -942,40 +1708,215 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
         const runBtn = document.getElementById('run-btn');
         const clearBtn = document.getElementById('clear-btn');
         const editorStatus = document.getElementById('editor-status');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
 
-        // --- CARGA DE EJEMPLOS ---
-        const loadButtons = document.querySelectorAll('.btn-load');
+        // --- EJERCICIOS COMPLETADOS ---
+        const ejerciciosCompletados = new Set();
+
+        // --- DATOS DE EJERCICIOS PARA CARGAR ---
+        const ejerciciosData = {
+            'ejercicio1': {
+                code: `// Ejercicio 1: Variables y Template Literals
+const nombre = 'María';
+let edad = 25;
+const ciudad = 'Madrid';
+
+// Escribe tu código aquí
+// Recuerda: usa template literals para mostrar el mensaje
+console.log(\`Hola, soy \${nombre}, tengo \${edad} años y vivo en \${ciudad}\`);`,
+                title: 'Ejercicio 1'
+            },
+            'ejercicio2': {
+                code: `// Ejercicio 2: Desestructuración de Objetos
+const libro = {
+    titulo: 'El Principito',
+    autor: 'Antoine de Saint-Exupéry',
+    año: 1943,
+    editorial: 'Reynal & Hitchcock'
+};
+
+// Extrae titulo, autor y año usando desestructuración
+// Luego muestra un mensaje con la información`,
+                title: 'Ejercicio 2'
+            },
+            'ejercicio3': {
+                code: `// Ejercicio 3: Spread Operator en Arrays
+const pares = [2, 4, 6, 8];
+const impares = [1, 3, 5, 7];
+
+// Combina los arrays usando spread operator
+// Muestra el resultado en consola`,
+                title: 'Ejercicio 3'
+            },
+            'ejercicio4': {
+                code: `// Ejercicio 4: Clonación de Objetos
+const configuracion = {
+    idioma: 'español',
+    tema: 'oscuro',
+    notificaciones: true
+};
+
+// Crea una copia del objeto usando spread
+// Cambia el idioma a 'inglés' en la copia
+// Muestra ambos objetos`,
+                title: 'Ejercicio 4'
+            },
+            'ejercicio5': {
+                code: `// Ejercicio 5: Promesas Básicas
+// Crea una función que retorne una promesa
+// que se resuelva después de 2 segundos
+// Usa .then() y .catch() para manejarla
+
+// Tu código aquí`,
+                title: 'Ejercicio 5'
+            },
+            'ejercicio6': {
+                code: `// Ejercicio 6: Async/Await con Try/Catch
+// Reescribe el ejercicio 5 usando async/await
+// Usa try/catch para manejar errores
+
+// Tu código aquí`,
+                title: 'Ejercicio 6'
+            },
+            'ejercicio7': {
+                code: `// Ejercicio 7: map() y filter()
+const numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Usa filter para obtener los pares
+// Usa map para duplicar esos números
+// Muestra el resultado final`,
+                title: 'Ejercicio 7'
+            },
+            'ejercicio8': {
+                code: `// Ejercicio 8: reduce() - Suma y Promedio
+const estudiantes = [
+    { nombre: 'Ana', calificacion: 85 },
+    { nombre: 'Luis', calificacion: 92 },
+    { nombre: 'Carlos', calificacion: 78 },
+    { nombre: 'María', calificacion: 95 },
+    { nombre: 'Jorge', calificacion: 70 }
+];
+
+// Calcula la suma total y el promedio
+// Muestra ambos resultados`,
+                title: 'Ejercicio 8'
+            },
+            'ejercicio9': {
+                code: `// Ejercicio 9: Optional Chaining y Nullish Coalescing
+const respuestaAPI = {
+    usuario: {
+        nombre: 'Patricia',
+        edad: 30,
+        // direccion no existe
+        contacto: {
+            // telefono no existe
+            email: 'patricia@email.com'
+        }
+    }
+};
+
+// Accede de forma segura a ciudad y teléfono
+// Usa valores por defecto si no existen`,
+                title: 'Ejercicio 9'
+            },
+            'ejercicio10': {
+                code: `// Ejercicio 10: Proyecto Integrador
+const productos = [
+    { nombre: 'Laptop', precio: 800, categoria: 'electrónicos' },
+    { nombre: 'Zapatos', precio: 120, categoria: 'ropa' },
+    { nombre: 'Tablet', precio: 400, categoria: 'electrónicos' },
+    { nombre: 'Camisa', precio: 45, categoria: 'ropa' },
+    { nombre: 'Auriculares', precio: 100, categoria: 'electrónicos' }
+];
+
+// Crea funciones para:
+// 1. Filtrar por categoría (filter)
+// 2. Calcular precio total (reduce)
+// 3. Aplicar descuento (map)
+// 4. Usa async/await para simular procesamiento`,
+                title: 'Ejercicio 10'
+            }
+        };
+
+        // --- CARGA DE EJEMPLOS (Módulos) ---
+        const loadButtons = document.querySelectorAll('.btn-load:not(.btn-solution):not(.btn-hint)');
 
         loadButtons.forEach(button => {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
 
-                // Encontrar el contenedor del módulo
-                const card = this.closest('.card');
-                if (!card) return;
+                const target = this.dataset.target;
 
-                // Buscar el bloque de código de ejemplo dentro de la misma tarjeta
-                const codeBlock = card.querySelector('.example-code');
-                if (!codeBlock) {
-                    showMessage('⚠️ No se encontró código de ejemplo para este módulo.', 'warning');
+                // Si es un ejercicio
+                if (target && target.startsWith('ejercicio')) {
+                    const data = ejerciciosData[target];
+                    if (data) {
+                        editor.value = data.code;
+                        editorStatus.textContent = `📂 ${data.title}`;
+                        this.classList.add('loading');
+                        setTimeout(() => this.classList.remove('loading'), 500);
+                        showMessage(`✅ Código del ${data.title} cargado.`, 'success');
+                    }
                     return;
                 }
 
-                // Obtener el código del ejemplo
-                const exampleCode = codeBlock.textContent.trim();
+                // Si es un módulo (buscamos el código de ejemplo)
+                const card = this.closest('.card');
+                if (!card) return;
 
-                // Cargar en el editor
+                const codeBlock = card.querySelector('.example-code');
+                if (!codeBlock) {
+                    showMessage('⚠️ No se encontró código de ejemplo.', 'warning');
+                    return;
+                }
+
+                const exampleCode = codeBlock.textContent.trim();
                 editor.value = exampleCode;
 
-                // Actualizar estado
                 const moduleTitle = card.querySelector('.card-title')?.textContent?.trim() || 'Módulo';
                 editorStatus.textContent = `📂 ${moduleTitle}`;
 
-                // Feedback visual
                 this.classList.add('loading');
                 setTimeout(() => this.classList.remove('loading'), 500);
 
-                showMessage(`✅ Código del ${moduleTitle} cargado en el editor.`, 'success');
+                showMessage(`✅ ${moduleTitle} cargado en el editor.`, 'success');
+            });
+        });
+
+        // --- BOTONES DE PISTAS ---
+        const hintButtons = document.querySelectorAll('.btn-hint');
+        hintButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const target = this.dataset.target;
+                const hintElement = document.getElementById(target);
+                if (hintElement) {
+                    hintElement.classList.toggle('show');
+                    this.textContent = hintElement.classList.contains('show') ? '🙈 Ocultar Pista' : '💡 Pista';
+                }
+            });
+        });
+
+        // --- BOTONES DE SOLUCIÓN ---
+        const solutionButtons = document.querySelectorAll('.btn-solution');
+        solutionButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const target = this.dataset.target;
+                const solutionElement = document.getElementById(target);
+                if (solutionElement) {
+                    solutionElement.classList.toggle('show');
+                    this.textContent = solutionElement.classList.contains('show') ? '🔍 Ocultar Solución' : '🔍 Ver Solución';
+
+                    // Marcar ejercicio como completado si se ve la solución
+                    if (solutionElement.classList.contains('show')) {
+                        const exerciseDiv = this.closest('.exercise');
+                        if (exerciseDiv) {
+                            const num = exerciseDiv.dataset.exercise;
+                            ejerciciosCompletados.add(num);
+                            actualizarProgreso();
+                        }
+                    }
+                }
             });
         });
 
@@ -995,6 +1936,7 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
             const originalLog = console.log;
             const originalError = console.error;
             const originalWarn = console.warn;
+            const originalTable = console.table;
 
             console.log = function (...args) {
                 const message = args.map(arg => {
@@ -1007,7 +1949,6 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
                     }
                     return String(arg);
                 }).join(' ');
-
                 appendToConsole(message, 'log');
                 originalLog.apply(console, args);
             };
@@ -1024,6 +1965,21 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
                 originalWarn.apply(console, args);
             };
 
+            console.table = function (data) {
+                if (Array.isArray(data) && data.length > 0) {
+                    appendToConsole('📊 Tabla de datos:', 'info');
+                    data.forEach((item, index) => {
+                        appendToConsole(`  ${index + 1}. ${JSON.stringify(item)}`, 'log');
+                    });
+                } else if (typeof data === 'object') {
+                    appendToConsole('📊 Objeto:', 'info');
+                    Object.entries(data).forEach(([key, value]) => {
+                        appendToConsole(`  ${key}: ${JSON.stringify(value)}`, 'log');
+                    });
+                }
+                originalTable.apply(console, [data]);
+            };
+
             try {
                 // Ejecutar el código
                 const result = eval(code);
@@ -1034,6 +1990,14 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
                 }
 
                 showMessage('✅ Código ejecutado exitosamente.', 'success');
+
+                // Marcar el ejercicio como completado si corresponde
+                const currentExercise = editorStatus.textContent.match(/Ejercicio (\d+)/);
+                if (currentExercise) {
+                    ejerciciosCompletados.add(currentExercise[1]);
+                    actualizarProgreso();
+                }
+
             } catch (error) {
                 appendToConsole('❌ Error: ' + error.message, 'error');
                 showMessage('❌ Error al ejecutar el código. Revisa la consola.', 'error');
@@ -1042,6 +2006,7 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
                 console.log = originalLog;
                 console.error = originalError;
                 console.warn = originalWarn;
+                console.table = originalTable;
             }
         });
 
@@ -1057,8 +2022,8 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
         function appendToConsole(message, type = 'log') {
             const entry = document.createElement('div');
             entry.style.marginBottom = '4px';
+            entry.style.whiteSpace = 'pre-wrap';
 
-            // Colores según tipo
             const colors = {
                 log: '#22c55e',
                 error: '#ef4444',
@@ -1077,7 +2042,6 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
         }
 
         function showMessage(message, type = 'info') {
-            // Mostrar mensaje temporal en la consola
             const tempMessage = document.createElement('div');
             tempMessage.style.color = '#94a3b8';
             tempMessage.style.fontSize = '0.8rem';
@@ -1086,7 +2050,6 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
             tempMessage.style.marginTop = '8px';
             tempMessage.textContent = message;
 
-            // Limpiar mensajes temporales anteriores
             const existingTemp = logOutput.querySelector('.temp-message');
             if (existingTemp) existingTemp.remove();
 
@@ -1094,7 +2057,6 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
             logOutput.appendChild(tempMessage);
             logOutput.scrollTop = logOutput.scrollHeight;
 
-            // Auto-remover después de 5 segundos
             setTimeout(() => {
                 if (tempMessage.parentNode) {
                     tempMessage.remove();
@@ -1102,23 +2064,37 @@ console.log('Email:', clienteSinMetodo.obtenerEmail?.()); // undefined</code></p
             }, 5000);
         }
 
+        // --- ACTUALIZAR PROGRESO ---
+        function actualizarProgreso() {
+            const total = 10;
+            const completados = ejerciciosCompletados.size;
+            const porcentaje = (completados / total) * 100;
+
+            progressBar.style.width = `${porcentaje}%`;
+            progressText.textContent = `${completados}/${total} ejercicios completados`;
+
+            if (completados === total) {
+                progressBar.style.background = 'linear-gradient(90deg, #22c55e, #16a34a)';
+                showMessage('🎉 ¡Felicidades! Has completado todos los ejercicios.', 'success');
+            }
+        }
+
         // --- KEYBOARD SHORTCUTS ---
         editor.addEventListener('keydown', function (e) {
-            // Ctrl+Enter para ejecutar
             if (e.ctrlKey && e.key === 'Enter') {
                 e.preventDefault();
                 runBtn.click();
             }
         });
 
-        // --- CARGAR EJEMPLO AL PRESIONAR ENTER EN EL EDITOR (con Ctrl) ---
-        console.log('💡 Tips:');
-        console.log('  - Haz clic en "📂 Cargar Ejemplo" en cualquier módulo para cargar el código.');
-        console.log('  - Presiona Ctrl+Enter para ejecutar el código.');
-        console.log('  - Usa "🗑️ Limpiar" para resetear el editor y la consola.');
-
         // --- INICIALIZACIÓN ---
-        showMessage('🟢 Sistema listo. Haz clic en "📂 Cargar Ejemplo" para cargar código de prueba.', 'info');
+        showMessage('🟢 Sistema listo. ¡Practica con los 10 ejercicios!', 'info');
+
+        console.log('💡 Tips:');
+        console.log('  - Carga ejercicios con los botones 📂');
+        console.log('  - Usa pistas 💡 si te atascas');
+        console.log('  - Revisa soluciones 🔍 para aprender');
+        console.log('  - Ctrl+Enter para ejecutar código');
     </script>
 
 </body>
