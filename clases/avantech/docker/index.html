@@ -5,327 +5,400 @@
     <meta charset="UTF-8">
     <link rel="icon" href="./favicon-32x32.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Inicial de Docker | Avantech</title>
+    <title>Manual Académico: Fundamentos de Docker</title>
     <style>
+        /* Paleta de Colores Oficial Docker */
         :root {
-            --primary: #1d63ed;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --text: #334155;
-            --border: #e2e8f0;
-            --code-bg: #0f172a;
-            --code-text: #38bdf8;
-            --accent: #0ea5e9;
+            --docker-blue: #1d63ed;
+            --docker-dark-blue: #092540;
+            --docker-light-blue: #e8f0fe;
+            --text-dark: #24292e;
+            --text-muted: #586069;
+            --bg-light: #f6f8fa;
+            --bg-code: #1e1e1e;
+            --border-color: #d1d5da;
+            --success: #28a745;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: #ffffff;
             line-height: 1.6;
-            color: var(--text);
-            background-color: var(--light);
-            padding: 20px;
         }
 
-        .container {
+        /* Encabezado Principal */
+        header {
+            background-color: var(--docker-blue);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .logo-area svg {
+            fill: white;
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Área de Contenido Principal Centrada */
+        main.content {
+            padding: 2.5rem 1.5rem;
             max-width: 800px;
             margin: 0 auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        header {
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            text-align: center;
         }
 
         h1 {
-            color: var(--dark);
             font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: var(--accent);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
+            color: var(--docker-dark-blue);
+            margin-bottom: 1rem;
         }
 
         h2 {
-            color: var(--dark);
-            margin-top: 30px;
-            margin-bottom: 15px;
-            border-left: 5px solid var(--accent);
-            padding-left: 10px;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            color: var(--docker-dark-blue);
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 0.3rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--docker-blue);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
         }
 
         p {
-            margin-bottom: 15px;
+            margin-bottom: 1.2rem;
+            color: #3f4448;
+            text-align: justify;
         }
 
-        /* Bloques de código */
-        pre {
-            background-color: var(--code-bg);
-            color: var(--code-text);
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Fira Code', Consolas, Monaco, monospace;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            border: 1px solid #334155;
+        /* Componentes Didácticos */
+        .badge {
+            background-color: var(--docker-blue);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
         }
 
-        code {
-            background-color: #e2e8f0;
-            color: #0f172a;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9rem;
+        .callout-box {
+            background-color: var(--docker-light-blue);
+            border-left: 4px solid var(--docker-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
         }
 
-        pre code {
-            background-color: transparent;
-            color: inherit;
-            padding: 0;
-        }
-
-        /* Analogía Box */
-        .analogy-box {
-            background-color: #f0fdf4;
-            border-left: 5px solid #22c55e;
-            padding: 20px;
-            border-radius: 4px 8px 8px 4px;
-            margin: 25px 0;
-        }
-
-        .analogy-box h3 {
-            color: #14532d;
-            margin-bottom: 10px;
+        .callout-box h4 {
+            color: var(--docker-dark-blue);
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* Diagrama Mermaid */
-        .diagram-container {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
+        /* Bloques de Código */
+        .code-container {
+            background-color: var(--bg-code);
+            color: #f8f8f2;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2d2d2d;
+            margin: -1rem -1rem 1rem -1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: #aaa;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: white;
+            border-color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .comment {
+            color: #75715e;
+        }
+
+        .keyword {
+            color: #f92672;
+        }
+
+        .string {
+            color: #e6db74;
+        }
+
+        /* NUEVO: Contenedor para centrar el formulario dentro del flujo */
+        .form-wrapper {
             display: flex;
             justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
         }
 
-        /* Componente Desplegable (Details) */
-        details {
-            background-color: #f1f5f9;
-            padding: 15px;
+        .form-container {
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 25px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
-        summary {
-            font-weight: 600;
-            color: var(--dark);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        details[open] summary {
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-
-        details ul {
-            padding-left: 20px;
-        }
-
-        details li {
-            margin-bottom: 8px;
-        }
-
-        /* Listas de comandos */
-        .command-list {
-            list-style: none;
-            margin-bottom: 20px;
-        }
-
-        .command-list li {
+        .form-group {
             margin-bottom: 15px;
         }
 
-        .command-desc {
+        .form-group label {
             display: block;
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 2px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--docker-dark-blue);
+            font-size: 0.95rem;
         }
 
-        /* Responsivo */
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--docker-blue);
+            box-shadow: 0 0 0 3px var(--docker-light-blue);
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 11px;
+            background-color: var(--docker-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .form-container button:hover {
+            background-color: var(--docker-dark-blue);
+        }
+
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                padding: 15px;
-            }
-
             h1 {
-                font-size: 1.7rem;
+                font-size: 1.8rem;
             }
 
             h2 {
-                font-size: 1.3rem;
+                font-size: 1.4rem;
+            }
+
+            main.content {
+                padding: 1.5rem 1rem;
             }
         }
     </style>
-
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.js';
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            flowchart: { useMaxWidth: true, htmlLabels: true }
-        });
-    </script>
 </head>
 
 <body>
 
-    <div class="container">
-        <header>
-            <span class="subtitle">Avantech - Electiva</span>
-            <h1>Guía Inicial de Docker</h1>
-            <p>Aprende los conceptos fundamentales y los comandos esenciales para empezar a contenedorizar tus
-                aplicaciones.</p>
-        </header>
+    <header>
+        <div class="logo-area">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M2,15.11C2,17.11 4.54,18.78 7.7,19.12C8.12,19.83 8.89,20.3 9.77,20.3C11,20.3 12.06,19.4 12.24,18.22C16.85,17.78 20.44,15 20.62,11.5C21,11.5 21.36,11.41 21.7,11.27C22.11,11.1 22.42,10.77 22.5,10.36L22.59,9.88C22.68,9.39 22.38,8.91 21.9,8.79C21.43,8.68 20.93,8.93 20.76,9.39L20.69,9.59C19.78,9.75 18.89,9.47 18.25,8.87C18.14,7.11 16.79,5.7 15.08,5.5L14.88,5.47C14.39,5.4 13.91,5.7 13.82,6.19C13.73,6.68 14.04,7.16 14.53,7.25L14.73,7.28C15.6,7.38 16.29,8.11 16.32,9C15.04,9.1 13.75,9.45 12.55,10C12.31,9.83 12,9.74 11.72,9.74C10.93,9.74 10.25,10.25 10,11C8.21,11 6.47,11.41 5,12.18C3.17,13.11 2,14.12 2,15.11Z" />
+            </svg>
+            <span>docker</span><span style="font-weight: 300;">docs</span>
+        </div>
+    </header>
 
-        <h2>1. ¿Qué es Docker? (Concepto Clave)</h2>
-        <p>Docker nos permite empaquetar una aplicación con todas sus dependencias en una unidad estandarizada llamada
-            <strong>contenedor</strong>, garantizando que funcione en cualquier computadora.</p>
+    <main class="content">
+        <span class="badge">GUÍA UNIVERSITARIA</span>
+        <h1>Conceptos Esenciales de Docker</h1>
+        <p>Este recurso académico tiene como objetivo introducir las bases del empaquetamiento, distribución y ejecución
+            de aplicaciones de forma aislada utilizando contenedores, abstrayendo la lógica del software de las
+            configuraciones del sistema operativo físico.</p>
 
-        <div class="analogy-box">
-            <h3>🧱 La Analogía del Plano y la Casa</h3>
-            <p>Para entender Docker fácilmente sin complicarte con tecnicismos:</p>
-            <ul>
-                <li><strong>Imagen:</strong> Es el plano de arquitectura de una casa (o la receta de un pastel). Es
-                    estática, de solo lectura y no la puedes habitar; solo sirve para construir.</li>
-                <li><strong>Contenedor:</strong> Es la casa ya construida en el mundo real utilizando ese plano. Puedes
-                    entrar, usarla, modificar cosas dentro y destruirla cuando quieras. ¡Y puedes levantar 10 casas
-                    idénticas usando el mismo plano!</li>
-            </ul>
+        <h2>1. ¿Qué es un Contenedor?</h2>
+        <p>Un contenedor es un proceso aislado en el espacio de usuario que comparte el kernel del sistema operativo
+            anfitrión. A diferencia de las máquinas virtuales de hipervisor, los contenedores no emulan hardware ni
+            cargan un sistema operativo invitado completo, lo que los hace extremadamente ligeros y veloces en su
+            arranque.</p>
+
+        <div class="callout-box">
+            <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                </svg>
+                Nota de Concepto Básica
+            </h4>
+            <p>Una <strong>Imagen</strong> es un archivo estático, inmutable y de solo lectura que contiene el código y
+                entorno necesario. El <strong>Contenedor</strong> es la instancia viva, portátil y editable en ejecución
+                basada en dicha imagen.</p>
         </div>
 
-        <h2>2. El Flujo de Trabajo</h2>
-        <p>Este es el ciclo de vida básico desde que escribes el código hasta que corre en un contenedor:</p>
+        <h2>2. Contenerizar una Aplicación XAMPP Paso a Paso</h2>
+        <p>Para empaquetar un desarrollo basado en PHP y MySQL (el entorno clásico de XAMPP), creamos un manifiesto
+            declarativo llamado <code
+                style="background: var(--bg-light); padding: 0.2rem 0.4rem; border-radius: 4px;">Dockerfile</code>
+            para levantar Apache con PHP, junto a una base de datos.</p>
 
-        <div class="diagram-container">
-            <pre class="mermaid">
-        graph LR
-            A[Dockerfile <br><i>Fichero de texto</i>] -->|docker build| B(Imagen <br><i>El Plano / Molde</i>)
-            B -->|docker run| C{Contenedor <br><i>Aplicación Viva</i>}
-            style A fill:#f1f5f9,stroke:#64748b
-            style B fill:#e0f2fe,stroke:#0ea5e9
-            style C fill:#dcfce7,stroke:#22c55e
-        </pre>
+        <h3>Paso A: Estructura del Dockerfile (Entorno Apache + PHP)</h3>
+        <p>Configuración típica para simular los servicios web de XAMPP en Docker:</p>
+
+        <div class="code-container">
+            <div class="code-header">
+                <span>Dockerfile</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><span class="comment"># Definir la imagen oficial de PHP con Apache incorporado</span>
+<span class="keyword">FROM</span> php:8.2-apache
+
+<span class="comment"># Instalar extensiones de MySQL requeridas por XAMPP</span>
+<span class="keyword">RUN</span> docker-php-ext-install mysqli pdo pdo_mysql
+
+<span class="comment"># Copiar los archivos locales de tu proyecto al directorio web de Apache</span>
+<span class="keyword">COPY</span> ./src /var/www/html/
+
+<span class="comment"># Habilitar el módulo de reescritura de Apache si es necesario</span>
+<span class="keyword">RUN</span> a2enmod rewrite
+
+<span class="comment"># Exponer el puerto clásico HTTP</span>
+<span class="keyword">EXPOSE</span> 80</pre>
         </div>
 
-        <h2>3. Validación: Tu primer comando</h2>
-        <p>Antes de descargar herramientas complejas, verifica que tu instalación de Docker funciona correctamente
-            corriendo el "Hola Mundo" oficial:</p>
-        <pre><code>docker run hello-world</code></pre>
-        <p>Si la instalación es correcta, verás un mensaje de éxito en tu terminal confirmando que Docker descargó la
-            imagen y levantó el contenedor correctamente.</p>
+        <h3>Paso B: Construcción de la Imagen</h3>
+        <p>Utiliza la terminal de comandos para compilar el plano de tu servidor Apache/PHP simulando XAMPP:</p>
 
-        <h2>4. Comandos Esenciales para Contenedores</h2>
-        <p>A continuación se detallan los comandos fundamentales para gestionar contenedores en tu día a día:</p>
+        <div class="code-container">
+            <div class="code-header">
+                <span>Terminal / Console</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre>docker build -t <span class="string">mi-xampp-servidor:v1.0</span> .</pre>
+        </div>
 
-        <pre><code># Levantar un servidor web Nginx de prueba
-docker run -d -p 8080:80 --name mi-servidor nginx</code></pre>
+        <h3>Paso C: Despliegue en Ejecución</h3>
+        <p>Crea e inicia el contenedor mapeando el puerto web local (8080) hacia el puerto 80 del servidor Apache
+            interno:</p>
 
-        <details>
-            <summary>🔍 ¿Qué significan los modificadores (-d, -p, --name)?</summary>
-            <p style="margin-top: 10px; font-size: 0.95rem;">Cuando ejecutas un comando largo como el de arriba,
-                desglosamos sus partes así:</p>
-            <ul>
-                <li><strong><code>-d</code> (Detached):</strong> Corre el contenedor en segundo plano. Libera tu
-                    terminal para que puedas seguir escribiendo otros comandos.</li>
-                <li><strong><code>-p 8080:80</code> (Port):</strong> Mapea los puertos. Conecta el puerto
-                    <code>8080</code> de tu computadora real con el puerto <code>80</code> interno del contenedor.</li>
-                <li><strong><code>--name mi-servidor</code>:</strong> Le asigna un nombre personalizado y fácil de
-                    recordar para que no tengas que usar IDs largos.</li>
-            </ul>
-        </details>
+        <div class="code-container">
+            <div class="code-header">
+                <span>Terminal / Console</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre>docker run -d -p <span class="string">8080:80</span> --name <span class="string">contenedor-xampp</span> mi-xampp-servidor:v1.0</pre>
+        </div>
 
-        <ul class="command-list">
-            <li>
-                <strong>Listar contenedores activos:</strong>
-                <pre><code>docker ps</code></pre>
-                <span class="command-desc">Muestra los contenedores que se están ejecutando en este momento.</span>
-            </li>
-            <li>
-                <strong>Listar todos los contenedores (activos e inactivos):</strong>
-                <pre><code>docker ps -a</code></pre>
-                <span class="command-desc">Útil para ver contenedores que se detuvieron o dieron algún error.</span>
-            </li>
-            <li>
-                <strong>Detener un contenedor:</strong>
-                <pre><code>docker stop mi-servidor</code></pre>
-                <span class="command-desc">Apaga el contenedor de forma segura sin borrar sus archivos internos.</span>
-            </li>
-            <li>
-                <strong>Iniciar un contenedor ya existente:</strong>
-                <pre><code>docker start mi-servidor</code></pre>
-                <span class="command-desc">Vuelve a encender un contenedor que previamente habías detenido.</span>
-            </li>
-            <li>
-                <strong>Eliminar un contenedor:</strong>
-                <pre><code>docker rm mi-servidor</code></pre>
-                <span class="command-desc">Borra por completo el contenedor de tu sistema (debe estar apagado
-                    primero).</span>
-            </li>
-        </ul>
+        <div class="callout-box" style="border-left-color: var(--success); background-color: #f4faf6;">
+            <h4 style="color: #155724;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+                Verificación de Despliegue
+            </h4>
+            <p>La simulación de XAMPP está lista. Los estudiantes pueden abrir el navegador e ingresar a la URL
+                local <code style="font-weight: bold;">http://localhost:8080</code> para procesar sus scripts PHP.</p>
+        </div>
 
-        <h2>5. Gestión de Imágenes</h2>
-        <p>Comandos para administrar los "moldes" o planos que descargas de Docker Hub:</p>
+        <h2>3. Laboratorio Práctico: Envío de Datos</h2>
+        <p>Pon a prueba tu entorno enviando dos variables a través de este formulario integrado:</p>
 
-        <ul class="command-list">
-            <li>
-                <strong>Listar imágenes locales:</strong>
-                <pre><code>docker images</code></pre>
-                <span class="command-desc">Muestra los planos/imágenes guardados en el disco duro de tu PC.</span>
-            </li>
-            <li>
-                <strong>Descargar una imagen sin ejecutarla:</strong>
-                <pre><code>docker pull ubuntu</code></pre>
-                <span class="command-desc">Trae la imagen oficial desde Docker Hub directo a tu máquina local.</span>
-            </li>
-            <li>
-                <strong>Eliminar una imagen:</strong>
-                <pre><code>docker rmi ubuntu</code></pre>
-                <span class="command-desc">Borra la imagen para liberar espacio en disco (no puede haber contenedores
-                    usándola).</span>
-            </li>
-        </ul>
-    </div>
+        <div class="form-wrapper">
+            <div class="form-container">
+                <form action="#" method="POST">
+                    <div class="form-group">
+                        <label for="valor1">Primer Valor (Ej. Usuario):</label>
+                        <input type="text" id="valor1" name="valor1" placeholder="Ingresa el primer dato" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor2">Segundo Valor (Ej. Token):</label>
+                        <input type="text" id="valor2" name="valor2" placeholder="Ingresa el segundo dato" required>
+                    </div>
+                    <button type="submit">Enviar a Docker</button>
+                </form>
+            </div>
+        </div>
 
+    </main>
+
+    <script>
+        function copyCode(button) {
+            const preElement = button.parentElement.nextElementSibling;
+            const textToCopy = preElement.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '¡Copiado!';
+                button.style.color = '#28a745';
+
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.color = '#aaa';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar al portapapeles: ', err);
+            });
+        }
+    </script>
 </body>
 
 </html>
