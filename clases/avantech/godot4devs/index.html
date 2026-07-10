@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="./favicon.png" sizes="any">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Material Académico: Godot + C# para Desarrolladores Web</title>
+
+    <!-- ======== ESTILOS ======== -->
+    <style>
+        /* ----- reset / base ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #0b1120;
+            color: #e8edf5;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #141c2b;
+            border-radius: 2rem;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ----- tipografía ----- */
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f0b3ff, #7ec8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitulo {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            border-left: 4px solid #7ec8f0;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem 0;
+            color: #b9d0f0;
+            border-bottom: 2px solid #2d3b52;
+            padding-bottom: 0.4rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.8rem 0 0.8rem 0;
+            color: #d6e4ff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: #b4c9f0;
+            margin: 1.2rem 0 0.3rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #d1dbe9;
+        }
+
+        /* ----- código ----- */
+        pre {
+            background: #0e1625;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            border: 1px solid #2a3850;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+            margin: 1rem 0 1.5rem 0;
+            color: #e0eaff;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: #1f2a3f;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.4rem;
+            font-size: 0.9em;
+            color: #b9d4ff;
+            white-space: nowrap;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+        .string {
+            color: #f1fa8c;
+        }
+        .comment {
+            color: #6d8a9e;
+            font-style: italic;
+        }
+        .function {
+            color: #50fa7b;
+        }
+        .type {
+            color: #8be9fd;
+        }
+        .number {
+            color: #bd93f9;
+        }
+        .class-name {
+            color: #ffb86c;
+        }
+
+        /* ----- tarjetas / grids ----- */
+        .grid-analogias {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0 2rem 0;
+        }
+
+        .tarjeta {
+            background: #1a263b;
+            padding: 1.2rem 1rem;
+            border-radius: 1.2rem;
+            border-left: 4px solid #6fa3e0;
+            transition: background 0.2s;
+        }
+        .tarjeta:hover {
+            background: #212f48;
+        }
+        .tarjeta strong {
+            color: #f0c6ff;
+            display: block;
+            font-size: 1.1rem;
+        }
+        .tarjeta span {
+            color: #b0c9f0;
+        }
+
+        .tarjeta-destacada {
+            background: #1f2d4a;
+            border-left: 4px solid #ffb86c;
+        }
+        .tarjeta-destacada strong {
+            color: #ffb86c;
+        }
+
+        /* ----- tabla comparativa ----- */
+        .tabla-comparativa {
+            overflow-x: auto;
+            margin: 1.5rem 0 2rem 0;
+        }
+        .tabla-comparativa table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #121b2b;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .tabla-comparativa th,
+        .tabla-comparativa td {
+            padding: 0.9rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #253249;
+        }
+        .tabla-comparativa th {
+            background: #1f2d45;
+            color: #b4d0ff;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        .tabla-comparativa tr:last-child td {
+            border-bottom: none;
+        }
+        .tabla-comparativa td:first-child {
+            font-weight: 500;
+            color: #c5daff;
+        }
+        .badge-web {
+            background: #2d3b57;
+            padding: 0.2rem 0.7rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            color: #aac2f0;
+            display: inline-block;
+        }
+
+        .badge-godot {
+            background: #3a4e74;
+            padding: 0.2rem 0.7rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            color: #b9d4ff;
+            display: inline-block;
+        }
+
+        .badge-importante {
+            background: #4a2d3b;
+            padding: 0.2rem 0.7rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            color: #ffb3c6;
+            display: inline-block;
+        }
+
+        /* ----- diagrama flujo ----- */
+        .flujo {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem 1rem;
+            background: #111c2c;
+            padding: 1.5rem 1rem;
+            border-radius: 1.5rem;
+            margin: 1.5rem 0 2rem 0;
+            border: 1px solid #2f405a;
+        }
+        .flujo .paso {
+            background: #1f2d45;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #c7dcff;
+            text-align: center;
+            min-width: 100px;
+        }
+        .flujo .flecha {
+            color: #6a8fc0;
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+        .flujo .paso.destacado {
+            background: #3a4e74;
+            color: #fff;
+            box-shadow: 0 0 12px #3a6eae40;
+        }
+
+        /* ----- extras ----- */
+        .cita {
+            background: #172033;
+            padding: 1.2rem 1.8rem;
+            border-radius: 1.2rem;
+            border-left: 6px solid #8ab4f8;
+            font-style: italic;
+            color: #c6dbf5;
+            margin: 1.8rem 0;
+        }
+
+        .cita-input {
+            border-left-color: #ffb86c;
+            background: #1a263b;
+        }
+
+        .cita-suelo {
+            border-left-color: #50fa7b;
+            background: #1a2a2a;
+        }
+
+        .cita-teclas {
+            border-left-color: #f1fa8c;
+            background: #1a2a1a;
+        }
+
+        .emoji-grande {
+            font-size: 1.6rem;
+            margin-right: 0.3rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #2a3a52;
+            margin: 2.5rem 0 1.5rem 0;
+        }
+
+        .tabla-input {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        .tabla-input table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #121b2b;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .tabla-input th,
+        .tabla-input td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #253249;
+        }
+        .tabla-input th {
+            background: #1f2d45;
+            color: #b4d0ff;
+            font-weight: 600;
+        }
+        .tabla-input tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tecla-ejemplo {
+            background: #1a263b;
+            padding: 0.2rem 0.7rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            color: #b9d4ff;
+            border: 1px solid #3a4e74;
+        }
+
+        .icono {
+            font-size: 1.4rem;
+            margin-right: 0.5rem;
+        }
+
+        .metodo-input {
+            background: #1f2d45;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            color: #50fa7b;
+            border: 1px solid #3a4e74;
+            display: inline-block;
+            margin: 0.2rem 0;
+        }
+
+        .indice {
+            background: #0e1625;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            margin: 1rem 0 2rem 0;
+            border: 1px solid #2a3850;
+        }
+        .indice ul {
+            list-style: none;
+            columns: 2;
+            column-gap: 2rem;
+        }
+        .indice ul li {
+            margin: 0.4rem 0;
+            break-inside: avoid;
+        }
+        .indice ul li a {
+            color: #b9d4ff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .indice ul li a:hover {
+            color: #f0b3ff;
+            text-decoration: underline;
+        }
+
+        .teclas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+        .tecla {
+            background: #1a263b;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 2px solid #3a4e74;
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: #b9d4ff;
+            min-width: 50px;
+            text-align: center;
+            box-shadow: 0 2px 0 #0b1120;
+        }
+        .tecla.destacada {
+            border-color: #f1fa8c;
+            background: #2a2a1a;
+            color: #f1fa8c;
+        }
+
+        /* ----- responsive ----- */
+        @media (max-width: 700px) {
+            .contenedor {
+                padding: 1.2rem 0.8rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+            .flujo {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .flujo .flecha {
+                transform: rotate(90deg);
+                font-size: 1.4rem;
+            }
+            .grid-analogias {
+                grid-template-columns: 1fr;
+            }
+            pre {
+                font-size: 0.8rem;
+                padding: 0.8rem 1rem;
+            }
+            .indice ul {
+                columns: 1;
+            }
+            .teclas-container {
+                gap: 0.5rem;
+            }
+            .tecla {
+                padding: 0.3rem 0.7rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.8rem;
+            }
+            .contenedor {
+                padding: 0.8rem 0.5rem;
+                border-radius: 1.2rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .tabla-comparativa th,
+            .tabla-comparativa td,
+            .tabla-input th,
+            .tabla-input td {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+
+        <!-- ========== ENCABEZADO ========== -->
+        <h1>
+            <span class="emoji-grande">🎮</span> 
+            Godot + C# para Devs Web
+        </h1>
+        <div class="subtitulo">
+            Analogías con HTML, CSS y JavaScript · Material académico completo
+        </div>
+
+        <!-- ========== ÍNDICE ========== -->
+        <div class="indice">
+            <h3 style="margin-top: 0; border-bottom: none; padding-bottom: 0;">📑 Índice de contenidos</h3>
+            <ul>
+                <li><a href="#intro">🎯 Introducción</a></li>
+                <li><a href="#codigo">🧩 El código fuente</a></li>
+                <li><a href="#using">📦 using Godot; using System;</a></li>
+                <li><a href="#clase">🧬 public partial class Jugador : CharacterBody2D</a></li>
+                <li><a href="#export">🎛️ [Export] public float Velocidad</a></li>
+                <li><a href="#physics">🔄 _PhysicsProcess(double delta)</a></li>
+                <li><a href="#vector2">📐 Vector2</a></li>
+                <li><a href="#velocity">⚡ Velocity</a></li>
+                <li><a href="#input">⌨️ Input (objeto global)</a></li>
+                <li><a href="#getvector">🎯 Input.GetVector()</a></li>
+                <li><a href="#teclas-ui">⌨️ Teclas UI vs WASD</a></li>
+                <li><a href="#keypress">⌨️ Input.IsKeyPressed()</a></li>
+                <li><a href="#keyjust">🔄 Input.IsKeyJustPressed()</a></li>
+                <li><a href="#action">⚙️ Input.IsActionPressed()</a></li>
+                <li><a href="#mouse">🖱️ Input.GetMousePosition()</a></li>
+                <li><a href="#mousebutton">🖱️ Input.IsMouseButtonPressed()</a></li>
+                <li><a href="#joy">🎮 Input.GetJoyAxis()</a></li>
+                <li><a href="#moveandslide">✨ MoveAndSlide()</a></li>
+                <li><a href="#movetoward">🛑 Mathf.MoveToward()</a></li>
+                <li><a href="#isonfloor">🌍 IsOnFloor()</a></li>
+                <li><a href="#isonwall">🧱 IsOnWall()</a></li>
+                <li><a href="#isonceiling">⬆️ IsOnCeiling()</a></li>
+                <li><a href="#getlastslide">📐 GetLastSlideCollision()</a></li>
+                <li><a href="#clamp">📏 Mathf.Clamp()</a></li>
+                <li><a href="#analogias">📊 Tabla comparativa</a></li>
+                <li><a href="#ejercicio">🧪 Ejercicio práctico</a></li>
+                <li><a href="#conclusion">🎯 Conclusión</a></li>
+            </ul>
+        </div>
+
+        <!-- ========== INTRO ========== -->
+        <h2 id="intro">🎯 Introducción</h2>
+        <p>
+            Si ya conoces <strong>HTML, CSS y JavaScript</strong>, programar personajes en 
+            <strong>Godot con C#</strong> te resultará familiar. Este material desglosa <strong>cada 
+            palabra clave, cada objeto y cada método</strong> del código usando analogías del mundo web.
+        </p>
+
+        <!-- ========== TABLA ANALOGÍAS RÁPIDAS ========== -->
+        <div class="grid-analogias">
+            <div class="tarjeta">
+                <strong>🏷️ HTML + CSS</strong>
+                <span>Escena + Nodos (estructura visual)</span>
+            </div>
+            <div class="tarjeta">
+                <strong>⚡ JavaScript (eventos)</strong>
+                <span>_PhysicsProcess (bucle de juego)</span>
+            </div>
+            <div class="tarjeta">
+                <strong>📄 DOM / Document</strong>
+                <span>Árbol de escenas (jerarquía)</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>⌨️ addEventListener</strong>
+                <span>Input (objeto global de Godot)</span>
+            </div>
+        </div>
+
+        <!-- ========== EL CÓDIGO ========== -->
+        <h2 id="codigo">🧩 El Código Fuente</h2>
+        <pre>
+<span class="keyword">using</span> Godot;
+<span class="keyword">using</span> System;
+
+<span class="keyword">public partial class</span> <span class="type">Jugador</span> : <span class="type">CharacterBody2D</span>
+{
+    <span class="comment">// [Export] → visible en el Inspector (como las DevTools)</span>
+    [<span class="function">Export</span>]
+    <span class="keyword">public float</span> Velocidad = <span class="number">300.0f</span>;
+
+    <span class="comment">// _PhysicsProcess → el "requestAnimationFrame" de la física</span>
+    <span class="keyword">public override void</span> <span class="function">_PhysicsProcess</span>(<span class="type">double</span> delta)
+    {
+        <span class="type">Vector2</span> velocidadActual = Velocity;
+
+        <span class="type">Vector2</span> direccion = Input.<span class="function">GetVector</span>(
+            <span class="string">"ui_left"</span>, <span class="string">"ui_right"</span>, 
+            <span class="string">"ui_up"</span>, <span class="string">"ui_down"</span>
+        );
+
+        <span class="keyword">if</span> (direccion != <span class="type">Vector2</span>.Zero)
+        {
+            velocidadActual = direccion * Velocidad;
+        }
+        <span class="keyword">else</span>
+        {
+            velocidadActual.X = Mathf.<span class="function">MoveToward</span>(Velocity.X, <span class="number">0</span>, Velocidad);
+            velocidadActual.Y = Mathf.<span class="function">MoveToward</span>(Velocity.Y, <span class="number">0</span>, Velocidad);
+        }
+
+        Velocity = velocidadActual;
+        <span class="function">MoveAndSlide</span>(); <span class="comment">// ¡magia de colisiones!</span>
+    }
+}
+        </pre>
+
+        <!-- ========== DESGLOSE PALABRA CLAVE / OBJETO ========== -->
+        <h2>🔍 Desglose: cada palabra clave y objeto</h2>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="using">📦 1. <code>using Godot; using System;</code> — Bibliotecas</h3>
+        <p>
+            <span class="badge-web">📚 Web →</span> Como <code>&lt;script src="..."&gt;</code> o <code>import</code> en ES6.
+            Traen las herramientas del motor (<strong>Godot</strong>) y del entorno .NET (<strong>System</strong>).
+        </p>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="clase">🧬 2. <code>public partial class Jugador : CharacterBody2D</code> — Clase del personaje</h3>
+        <p>
+            <span class="badge-web">🏗️ Web →</span> Extiende un elemento base, como <code>class MiDiv extends HTMLElement</code>.
+            <br><strong>partial</strong> → el código puede estar en varios archivos (como CSS+JS separados).<br>
+            <strong>CharacterBody2D</strong> → el "div" con superpoderes de movimiento y física.
+        </p>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="export">🎛️ 3. <code>[Export] public float Velocidad = 300.0f;</code> — Propiedad editable</h3>
+        <p>
+            <span class="badge-web">🎨 Web →</span> Como una variable CSS que se puede modificar desde las DevTools.
+            <br><strong>[Export]</strong> → la hace visible en el Inspector de Godot.<br>
+            <strong>float</strong> → número decimal (como <code>number</code> en JS).
+        </p>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="physics">🔄 4. <code>public override void _PhysicsProcess(double delta)</code> — Bucle de física</h3>
+        <p>
+            <span class="badge-web">🔄 Web →</span> Es el <code>requestAnimationFrame</code> pero especializado en física.
+            <br><strong>override</strong> → reemplaza el método del padre.<br>
+            <strong>delta</strong> → tiempo entre frames (como el timestamp de <code>requestAnimationFrame</code>).
+        </p>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="vector2">📐 5. <code>Vector2</code> — El tipo de dato de coordenadas</h3>
+        <p>
+            <span class="badge-web">📐 Web →</span> Como un objeto con propiedades <code>x</code> e <code>y</code> en JavaScript.
+            <br><br>
+            <strong>¿Qué es Vector2?</strong> Es un <strong>tipo de dato estructurado</strong> que Godot proporciona para 
+            representar <strong>pares ordenados</strong> (X, Y). Se usa para:
+        </p>
+        <ul style="color: #d1dbe9; margin-left: 1.8rem; line-height: 1.8;">
+            <li><strong>Posiciones</strong> → <code>new Vector2(100, 200)</code></li>
+            <li><strong>Direcciones</strong> → <code>new Vector2(1, 0)</code> (derecha)</li>
+            <li><strong>Velocidades</strong> → <code>new Vector2(300, 0)</code></li>
+            <li><strong>Escalas</strong> → <code>new Vector2(2, 2)</code> (tamaño doble)</li>
+        </ul>
+        <div class="cita">
+            <strong>💡 Analogía Web:</strong> <code>Vector2</code> es como un objeto JavaScript:
+            <pre style="margin: 0.5rem 0;">const vector = { x: 10, y: 20 };</pre>
+            Pero con <strong>métodos integrados</strong> como <code>Length()</code>, <code>Normalized()</code>, 
+            <code>DistanceTo()</code>, etc.
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="velocity">⚡ 6. <code>Velocity</code> — Propiedad de velocidad</h3>
+        <p>
+            <span class="badge-web">⚡ Web →</span> Como las propiedades <code>style.left</code> y <code>style.top</code> 
+            pero en forma de <code>Vector2</code>.
+            <br><br>
+            <strong>Velocity</strong> es una <strong>propiedad nativa</strong> de <code>CharacterBody2D</code> 
+            que almacena la <strong>velocidad actual</strong> del personaje en píxeles por segundo.
+        </p>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="input">⌨️ 7. <code>Input</code> — El objeto global de entrada</h3>
+        <div class="cita cita-input">
+            <strong>🎯 ¡IMPORTANTE!</strong> <code>Input</code> es un <strong>objeto global</strong> (singleton) 
+            de Godot que actúa como el <strong>puente entre el hardware (teclado, mouse, joystick) y tu juego</strong>.
+            <br><br>
+            <strong>Analogía Web:</strong> <code>Input</code> es como el objeto <code>window</code> en JavaScript, 
+            que contiene todos los eventos y métodos para interactuar con el usuario.
+        </div>
+
+        <h4>📋 Métodos principales de <code>Input</code>:</h4>
+        <div class="tabla-input">
+            <table>
+                <thead>
+                    <tr>
+                        <th>🎮 Método</th>
+                        <th>🎯 Para qué sirve</th>
+                        <th>📤 Retorna</th>
+                        <th>🌐 Analogía Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="getvector">
+                        <td><code>Input.GetVector()</code></td>
+                        <td>Movimiento direccional (WASD/Flechas)</td>
+                        <td><code>Vector2</code> (-1 a 1)</td>
+                        <td>Joystick virtual</td>
+                    </tr>
+                    <tr id="keypress">
+                        <td><code>Input.IsKeyPressed(Key.Shift)</code></td>
+                        <td>Tecla específica (presionada)</td>
+                        <td><code>bool</code></td>
+                        <td><code>window.addEventListener('keydown')</code></td>
+                    </tr>
+                    <tr id="keyjust">
+                        <td><code>Input.IsKeyJustPressed(Key.Space)</code></td>
+                        <td>Tecla presionada en este frame</td>
+                        <td><code>bool</code></td>
+                        <td>Evento <code>keydown</code> (solo una vez)</td>
+                    </tr>
+                    <tr id="action">
+                        <td><code>Input.IsActionPressed("saltar")</code></td>
+                        <td>Acción definida en Project Settings</td>
+                        <td><code>bool</code></td>
+                        <td>Evento personalizado</td>
+                    </tr>
+                    <tr id="mouse">
+                        <td><code>Input.GetMousePosition()</code></td>
+                        <td>Posición del mouse en la pantalla</td>
+                        <td><code>Vector2</code></td>
+                        <td><code>event.clientX/Y</code></td>
+                    </tr>
+                    <tr id="mousebutton">
+                        <td><code>Input.IsMouseButtonPressed(MouseButton.Left)</code></td>
+                        <td>Click del mouse</td>
+                        <td><code>bool</code></td>
+                        <td><code>window.addEventListener('mousedown')</code></td>
+                    </tr>
+                    <tr id="joy">
+                        <td><code>Input.GetJoyAxis(0, JoyAxis.LeftX)</code></td>
+                        <td>Eje del joystick (control)</td>
+                        <td><code>float</code> (-1 a 1)</td>
+                        <td>Gamepad API</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="teclas-ui">⌨️ 8. Teclas UI vs WASD — ¡La confusión más común!</h3>
+        
+        <div class="cita cita-teclas">
+            <strong>🎯 ¡ATENCIÓN!</strong> Por defecto, cuando usamos <code>"ui_left"</code>, <code>"ui_right"</code>, 
+            <code>"ui_up"</code> y <code>"ui_down"</code>, Godot viene <strong>preconfigurado de fábrica</strong> 
+            para escuchar <strong>solo las flechas del teclado</strong> (teclas de la interfaz de usuario).
+            <br><br>
+            <strong>¿El problema?</strong> Los jugadores de PC usamos por instinto las clásicas teclas 
+            <kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd>, <kbd>D</kbd>. ¡Y por defecto NO funcionan con 
+            <code>"ui_left"</code>, etc.!
+        </div>
+
+        <h4>🔧 Solución 1: Usar teclas personalizadas (recomendado)</h4>
+        <div class="cita" style="border-left-color: #50fa7b;">
+            <strong>✅ Configurar en Project Settings:</strong>
+            <br><br>
+            1. Ve a <strong>Project → Project Settings → Input Map</strong>
+            <br>2. Crea nuevas acciones como: <code>"move_left"</code>, <code>"move_right"</code>, 
+            <code>"move_up"</code>, <code>"move_down"</code>
+            <br>3. Asigna <strong>ambas teclas</strong> a cada acción:
+            <br>• <code>"move_left"</code> → Flecha Izquierda <strong>Y</strong> Tecla <kbd>A</kbd>
+            <br>• <code>"move_right"</code> → Flecha Derecha <strong>Y</strong> Tecla <kbd>D</kbd>
+            <br>• <code>"move_up"</code> → Flecha Arriba <strong>Y</strong> Tecla <kbd>W</kbd>
+            <br>• <code>"move_down"</code> → Flecha Abajo <strong>Y</strong> Tecla <kbd>S</kbd>
+            <br><br>
+            <strong>🎯 Código resultante:</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="type">Vector2</span> direccion = Input.<span class="function">GetVector</span>(
+    <span class="string">"move_left"</span>, <span class="string">"move_right"</span>, 
+    <span class="string">"move_up"</span>, <span class="string">"move_down"</span>
+);
+            </pre>
+        </div>
+
+        <h4>🔧 Solución 2: Usar teclas directas con WASD (alternativa)</h4>
+        <div class="cita" style="border-left-color: #f0b3ff;">
+            <strong>✅ Usar Input.IsKeyPressed() para WASD:</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="type">Vector2</span> direccion = <span class="type">Vector2</span>.Zero;
+
+<span class="comment">// Flechas del teclado (UI)</span>
+<span class="type">Vector2</span> direccionUI = Input.<span class="function">GetVector</span>(<span class="string">"ui_left"</span>, <span class="string">"ui_right"</span>, <span class="string">"ui_up"</span>, <span class="string">"ui_down"</span>);
+
+<span class="comment">// WASD manual</span>
+<span class="keyword">if</span> (Input.<span class="function">IsKeyPressed</span>(Key.A)) direccion.X = -<span class="number">1</span>;
+<span class="keyword">if</span> (Input.<span class="function">IsKeyPressed</span>(Key.D)) direccion.X = <span class="number">1</span>;
+<span class="keyword">if</span> (Input.<span class="function">IsKeyPressed</span>(Key.W)) direccion.Y = -<span class="number">1</span>;
+<span class="keyword">if</span> (Input.<span class="function">IsKeyPressed</span>(Key.S)) direccion.Y = <span class="number">1</span>;
+
+<span class="comment">// Combinar ambas (si se usan al mismo tiempo)</span>
+<span class="keyword">if</span> (direccionUI != <span class="type">Vector2</span>.Zero)
+{
+    direccion = direccionUI;
+}
+            </pre>
+        </div>
+
+        <h4>📊 Comparativa visual de teclas:</h4>
+        <div class="teclas-container">
+            <div class="tecla destacada">⬆️ ↑</div>
+            <div class="tecla destacada">⬇️ ↓</div>
+            <div class="tecla destacada">⬅️ ←</div>
+            <div class="tecla destacada">➡️ →</div>
+            <span style="color: #6a8fc0; font-size: 1.5rem;">⇔</span>
+            <div class="tecla">W</div>
+            <div class="tecla">A</div>
+            <div class="tecla">S</div>
+            <div class="tecla">D</div>
+        </div>
+        <p style="text-align: center; color: #94a3b8; font-size: 0.9rem;">
+            ⬅️ <strong>Teclas UI</strong> (por defecto) &nbsp;&nbsp;|&nbsp;&nbsp; 
+            ➡️ <strong>Teclas WASD</strong> (las que esperan los jugadores)
+        </p>
+
+        <div class="cita cita-teclas" style="border-left-color: #ffb86c;">
+            <strong>🎯 Analogía Web:</strong> Es como si en una página web los eventos de teclado 
+            (<code>addEventListener('keydown')</code>) solo funcionaran con las flechas, pero no con las 
+            letras <kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd>, <kbd>D</kbd>. 
+            Tendrías que configurar manualmente ambos conjuntos de teclas para que funcionen.
+            <br><br>
+            <strong>💡 Recomendación:</strong> Siempre usa <strong>acciones personalizadas</strong> en el 
+            Input Map para que los jugadores puedan usar <strong>ambos</strong>: flechas Y WASD.
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="moveandslide">✨ 9. <code>MoveAndSlide()</code> — ¡La función mágica!</h3>
+        <p>
+            <span class="badge-web">✨ Web →</span> Imagina un método que mueve el elemento y además detecta colisiones automáticamente.
+            <br><br>
+            <strong>¿Qué hace exactamente?</strong>
+            <br>1. Calcula la nueva posición basada en <code>Velocity</code>
+            <br>2. Detecta colisiones con otros cuerpos físicos
+            <br>3. "Desliza" al personaje a lo largo de las superficies con las que choca
+            <br>4. Actualiza automáticamente el estado de colisión (suelo, pared, techo)
+        </p>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="movetoward">🛑 10. <code>Mathf.MoveToward(Velocity.X, 0, Velocidad);</code> — Desaceleración suave</h3>
+        <p>
+            <span class="badge-web">🛑 Web →</span> Como una <code>transition: left 0.3s ease-out</code> en CSS.
+            <br><br>
+            <strong>¿Qué hace?</strong> Reduce un valor hacia otro a una velocidad determinada.
+            <br><code>Mathf.MoveToward(desde, hasta, paso)</code>
+            <br>• <code>desde</code> → Valor actual (ej: 150)
+            <br>• <code>hasta</code> → Valor objetivo (ej: 0)
+            <br>• <code>paso</code> → Velocidad de reducción (ej: 300)
+        </p>
+
+        <!-- ========== NUEVA SECCIÓN: MÉTODOS DE COLISIÓN ========== -->
+        <h2>🌍 Métodos de colisión de <code>CharacterBody2D</code></h2>
+        
+        <div class="cita cita-suelo">
+            <strong>🎯 ¡IMPORTANTE!</strong> Después de llamar a <code>MoveAndSlide()</code>, Godot 
+            <strong>actualiza automáticamente</strong> el estado de colisión del personaje. 
+            Puedes consultar este estado con métodos como <code>IsOnFloor()</code>, <code>IsOnWall()</code>, etc.
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="isonfloor">🌍 11. <code>IsOnFloor()</code> — ¿Está en el suelo?</h3>
+        <p>
+            <span class="badge-godot">🎮 Godot →</span> Método de <code>CharacterBody2D</code> que devuelve 
+            <code>true</code> si el personaje está <strong>tocando el suelo</strong>.
+            <br><br>
+            <strong>Analogía Web:</strong> Como preguntar <code>element.getBoundingClientRect().bottom === containerHeight</code> 
+            (si el elemento está en la parte inferior del contenedor).
+        </p>
+        <div class="cita cita-suelo" style="border-left-color: #50fa7b;">
+            <strong>🎯 Uso típico:</strong> <strong>Saltar</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="keyword">if</span> (Input.<span class="function">IsKeyJustPressed</span>(Key.Space) && <span class="function">IsOnFloor</span>())
+{
+    Velocity = <span class="keyword">new</span> <span class="type">Vector2</span>(Velocity.X, -<span class="number">500.0f</span>); <span class="comment">// Salta hacia arriba</span>
+}
+            </pre>
+            <strong>📌 Importante:</strong> Sin <code>IsOnFloor()</code>, el personaje podría saltar <strong>en el aire</strong> 
+            (salto infinito). ¡Esto evita ese problema!
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="isonwall">🧱 12. <code>IsOnWall()</code> — ¿Está contra una pared?</h3>
+        <p>
+            <span class="badge-godot">🎮 Godot →</span> Método de <code>CharacterBody2D</code> que devuelve 
+            <code>true</code> si el personaje está <strong>tocando una pared</strong>.
+            <br><br>
+            <strong>Analogía Web:</strong> Como preguntar si un elemento <code>&lt;div&gt;</code> está tocando el 
+            borde izquierdo o derecho de la pantalla.
+        </p>
+        <div class="cita cita-suelo" style="border-left-color: #ffb86c;">
+            <strong>🎯 Uso típico:</strong> <strong>Rebote / deslizamiento</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="keyword">if</span> (<span class="function">IsOnWall</span>())
+{
+    <span class="comment">// Cambiar dirección o rebotar</span>
+    Velocity = <span class="keyword">new</span> <span class="type">Vector2</span>(-Velocity.X, Velocity.Y);
+}
+            </pre>
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="isonceiling">⬆️ 13. <code>IsOnCeiling()</code> — ¿Está contra el techo?</h3>
+        <p>
+            <span class="badge-godot">🎮 Godot →</span> Método de <code>CharacterBody2D</code> que devuelve 
+            <code>true</code> si el personaje está <strong>tocando el techo</strong>.
+            <br><br>
+            <strong>Analogía Web:</strong> Como preguntar si un elemento está tocando la parte superior de la pantalla.
+        </p>
+        <div class="cita cita-suelo" style="border-left-color: #bd93f9;">
+            <strong>🎯 Uso típico:</strong> <strong>Limitar salto / rebote en techo</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="keyword">if</span> (<span class="function">IsOnCeiling</span>())
+{
+    <span class="comment">// Detener movimiento hacia arriba</span>
+    Velocity = <span class="keyword">new</span> <span class="type">Vector2</span>(Velocity.X, <span class="number">0</span>);
+}
+            </pre>
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="getlastslide">📐 14. <code>GetLastSlideCollision()</code> — Información de la última colisión</h3>
+        <p>
+            <span class="badge-godot">🎮 Godot →</span> Método de <code>CharacterBody2D</code> que devuelve 
+            un objeto <code>KinematicCollision2D</code> con <strong>información detallada</strong> sobre la 
+            última colisión que ocurrió durante <code>MoveAndSlide()</code>.
+        </p>
+        <div class="cita cita-suelo" style="border-left-color: #f1fa8c;">
+            <strong>🎯 Uso típico:</strong> <strong>Obtener el objeto con el que chocamos</strong>
+            <pre style="margin: 0.5rem 0;">
+KinematicCollision2D colision = <span class="function">GetLastSlideCollision</span>();
+<span class="keyword">if</span> (colision != <span class="keyword">null</span>)
+{
+    Node2D objetoChocado = (Node2D)colision.GetCollider();
+    GD.<span class="function">Print</span>(<span class="string">"Choqué contra: "</span> + objetoChocado.Name);
+    
+    <span class="comment">// Obtener la normal de la superficie</span>
+    <span class="type">Vector2</span> normal = colision.GetNormal();
+}
+            </pre>
+            <strong>📌 Propiedades útiles:</strong>
+            <br>• <code>GetCollider()</code> → El objeto con el que chocamos
+            <br>• <code>GetNormal()</code> → Dirección de la superficie (Vector2)
+            <br>• <code>GetPosition()</code> → Punto de colisión
+        </div>
+
+        <!-- ========== MÉTODOS ADICIONALES ========== -->
+        <h2>📏 Métodos matemáticos importantes</h2>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="clamp">📏 15. <code>Mathf.Clamp(valor, minimo, maximo)</code> — Limitar valores</h3>
+        <p>
+            <span class="badge-web">📏 Web →</span> Como <code>Math.min(Math.max(valor, min), max)</code> en JavaScript.
+            <br><br>
+            <strong>¿Qué hace?</strong> Limita un valor entre un mínimo y un máximo.
+        </p>
+        <div class="cita">
+            <strong>🎯 Uso típico:</strong> <strong>Limitar velocidad</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="keyword">float</span> maxVel = <span class="number">600.0f</span>;
+velocidadActual.X = Mathf.<span class="function">Clamp</span>(velocidadActual.X, -maxVel, maxVel);
+velocidadActual.Y = Mathf.<span class="function">Clamp</span>(velocidadActual.Y, -maxVel, maxVel);
+            </pre>
+        </div>
+
+        <!-- ------------------------------------------------------------------ -->
+        <h3 id="lerp">📊 16. <code>Mathf.Lerp(desde, hasta, peso)</code> — Interpolación lineal</h3>
+        <p>
+            <span class="badge-web">📊 Web →</span> Similar a las <strong>animaciones CSS</strong> o 
+            <code>easing</code> en JavaScript.
+            <br><br>
+            <strong>¿Qué hace?</strong> Interpola (mezcla) dos valores usando un peso (0 a 1).
+            <br>• <code>0</code> → devuelve <code>desde</code>
+            <br>• <code>1</code> → devuelve <code>hasta</code>
+            <br>• <code>0.5</code> → punto medio entre ambos
+        </p>
+        <div class="cita">
+            <strong>🎯 Uso típico:</strong> <strong>Movimiento suave de cámara</strong>
+            <pre style="margin: 0.5rem 0;">
+<span class="type">Vector2</span> posicionCamara = <span class="function">GetViewport</span>().<span class="function">GetCamera2D</span>().Position;
+<span class="type">Vector2</span> objetivo = Player.Position;
+posicionCamara = posicionCamara.<span class="function">Lerp</span>(objetivo, <span class="number">0.1f</span>); <span class="comment">// Seguimiento suave</span>
+            </pre>
+        </div>
+
+        <!-- ========== TABLA COMPARATIVA COMPLETA ========== -->
+        <h2 id="analogias">📊 Analogía Web ↔ Godot</h2>
+        <div class="tabla-comparativa">
+            <table>
+                <thead>
+                    <tr>
+                        <th>🌐 Desarrollo Web</th>
+                        <th>🎮 Godot + C#</th>
+                        <th>📝 Explicación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>&lt;body&gt;</code> / escena</td>
+                        <td><strong>Escena / Árbol</strong></td>
+                        <td>El contenedor principal de todo</td>
+                    </tr>
+                    <tr>
+                        <td><code>&lt;div id="jugador"&gt;</code></td>
+                        <td><strong>Nodo Jugador</strong></td>
+                        <td>El personaje visible</td>
+                    </tr>
+                    <tr>
+                        <td><code>position: absolute;</code></td>
+                        <td><strong>CharacterBody2D</strong></td>
+                        <td>Permite movimiento libre en 2D</td>
+                    </tr>
+                    <tr>
+                        <td><code>window</code> + <code>addEventListener</code></td>
+                        <td><strong>Input (objeto global)</strong></td>
+                        <td>Puente entre hardware y juego</td>
+                    </tr>
+                    <tr>
+                        <td><code>addEventListener('keydown')</code> (solo flechas)</td>
+                        <td><strong>"ui_left", "ui_right", etc.</strong></td>
+                        <td>Teclas de interfaz (solo flechas por defecto)</td>
+                    </tr>
+                    <tr>
+                        <td><code>addEventListener('keydown')</code> (todas las teclas)</td>
+                        <td><strong>Input.IsKeyPressed()</strong></td>
+                        <td>Cualquier tecla del teclado</td>
+                    </tr>
+                    <tr>
+                        <td><code>requestAnimationFrame</code></td>
+                        <td><strong>_PhysicsProcess</strong></td>
+                        <td>Bucle de actualización (~60 fps)</td>
+                    </tr>
+                    <tr>
+                        <td><code>element.style.left / top</code></td>
+                        <td><strong>Velocity</strong></td>
+                        <td>Control de posición / velocidad</td>
+                    </tr>
+                    <tr>
+                        <td><code>transition: left 0.3s ease-out</code></td>
+                        <td><strong>Mathf.MoveToward</strong></td>
+                        <td>Animación suave al detenerse</td>
+                    </tr>
+                    <tr>
+                        <td><code>Math.min(Math.max(valor, min), max)</code></td>
+                        <td><strong>Mathf.Clamp</strong></td>
+                        <td>Limitar valores entre un rango</td>
+                    </tr>
+                    <tr>
+                        <td>Detección de colisiones (manual)</td>
+                        <td><strong>MoveAndSlide()</strong></td>
+                        <td>Colisiones automáticas + deslizamiento</td>
+                    </tr>
+                    <tr>
+                        <td><code>element.getBoundingClientRect().bottom === containerHeight</code></td>
+                        <td><strong>IsOnFloor()</strong></td>
+                        <td>Detectar si está en el suelo</td>
+                    </tr>
+                    <tr>
+                        <td>Detectar borde izquierdo/derecho</td>
+                        <td><strong>IsOnWall()</strong></td>
+                        <td>Detectar si está contra una pared</td>
+                    </tr>
+                    <tr>
+                        <td><code>element.getBoundingClientRect().top === 0</code></td>
+                        <td><strong>IsOnCeiling()</strong></td>
+                        <td>Detectar si está contra el techo</td>
+                    </tr>
+                    <tr>
+                        <td>DevTools / Inspector</td>
+                        <td><strong>[Export]</strong></td>
+                        <td>Editar propiedades sin tocar código</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========== EJERCICIO PRÁCTICO ========== -->
+        <h2 id="ejercicio">🧪 Ejercicio práctico</h2>
+        <div class="cita">
+            <strong>🎯 Reto completo:</strong> Implementa un personaje que:
+            <br>• Se mueva con <strong>WASD y Flechas</strong> (usa acciones personalizadas)
+            <br>• Haga <strong>sprint</strong> con Shift (<code>Input.IsKeyPressed</code>)
+            <br>• <strong>Salte</strong> con Espacio (<code>Input.IsKeyJustPressed</code> + <code>IsOnFloor</code>)
+            <br>• <strong>Interactúe</strong> con E (<code>Input.IsActionJustPressed</code>)
+            <br>• <strong>Dispare</strong> con click izquierdo (<code>Input.IsMouseButtonPressed</code>)
+            <br>• Tenga un <strong>límite de velocidad</strong> (<code>Mathf.Clamp</code>)
+            <br>• Muestre la <strong>posición del mouse</strong> (<code>Input.GetMousePosition</code>)
+            <br>• <strong>Rebote</strong> al chocar con paredes (<code>IsOnWall</code>)
+        </div>
+
+        <h4>💡 Solución completa:</h4>
+        <pre>
+<span class="keyword">public override void</span> <span class="function">_PhysicsProcess</span>(<span class="type">double</span> delta)
+{
+    <span class="comment">// 1️⃣ Obtener dirección (WASD + Flechas con acciones personalizadas)</span>
+    <span class="type">Vector2</span> direccion = Input.<span class="function">GetVector</span>(
+        <span class="string">"move_left"</span>, <span class="string">"move_right"</span>, 
+        <span class="string">"move_up"</span>, <span class="string">"move_down"</span>
+    );
+    
+    <span class="comment">// 2️⃣ Sprint con Shift</span>
+    <span class="keyword">float</span> velocidadFinal = Velocidad;
+    <span class="keyword">if</span> (Input.<span class="function">IsKeyPressed</span>(Key.Shift))
+    {
+        velocidadFinal = Velocidad * <span class="number">2.0f</span>;
+    }
+    
+    <span class="comment">// 3️⃣ Calcular velocidad</span>
+    <span class="type">Vector2</span> velocidadActual = Velocity;
+    <span class="keyword">if</span> (direccion != <span class="type">Vector2</span>.Zero)
+    {
+        velocidadActual = direccion * velocidadFinal;
+    }
+    <span class="keyword">else</span>
+    {
+        velocidadActual.X = Mathf.<span class="function">MoveToward</span>(Velocity.X, <span class="number">0</span>, Velocidad);
+        velocidadActual.Y = Mathf.<span class="function">MoveToward</span>(Velocity.Y, <span class="number">0</span>, Velocidad);
+    }
+    
+    <span class="comment">// 4️⃣ Límite de velocidad con Clamp</span>
+    <span class="keyword">float</span> maxVel = <span class="number">600.0f</span>;
+    velocidadActual.X = Mathf.<span class="function">Clamp</span>(velocidadActual.X, -maxVel, maxVel);
+    velocidadActual.Y = Mathf.<span class="function">Clamp</span>(velocidadActual.Y, -maxVel, maxVel);
+    
+    <span class="comment">// 5️⃣ Salto con Espacio (solo si está en el suelo)</span>
+    <span class="keyword">if</span> (Input.<span class="function">IsKeyJustPressed</span>(Key.Space) && <span class="function">IsOnFloor</span>())
+    {
+        velocidadActual.Y = -<span class="number">500.0f</span>;
+    }
+    
+    <span class="comment">// 6️⃣ Interacción con E (acción personalizada)</span>
+    <span class="keyword">if</span> (Input.<span class="function">IsActionJustPressed</span>(<span class="string">"interactuar"</span>))
+    {
+        GD.<span class="function">Print</span>(<span class="string">"¡Interactuando!"</span>);
+    }
+    
+    <span class="comment">// 7️⃣ Disparar con click izquierdo</span>
+    <span class="keyword">if</span> (Input.<span class="function">IsMouseButtonPressed</span>(MouseButton.Left))
+    {
+        GD.<span class="function">Print</span>(<span class="string">"¡Disparando!"</span>);
+    }
+    
+    <span class="comment">// 8️⃣ Mostrar posición del mouse (cada 60 frames)</span>
+    <span class="keyword">if</span> (Engine.<span class="function">GetProcessFrames</span>() % <span class="number">60</span> == <span class="number">0</span>)
+    {
+        <span class="type">Vector2</span> posMouse = Input.<span class="function">GetMousePosition</span>();
+        GD.<span class="function">Print</span>(<span class="string">"Mouse: "</span> + posMouse);
+    }
+    
+    <span class="comment">// 9️⃣ REBOTE: Si choca contra una pared, invierte la velocidad horizontal</span>
+    <span class="keyword">if</span> (<span class="function">IsOnWall</span>())
+    {
+        velocidadActual.X = -velocidadActual.X;
+    }
+    
+    <span class="comment">// 🔟 Aplicar movimiento</span>
+    Velocity = velocidadActual;
+    <span class="function">MoveAndSlide</span>();
+    
+    <span class="comment">// 1️⃣1️⃣ Información de colisión (opcional)</span>
+    KinematicCollision2D colision = <span class="function">GetLastSlideCollision</span>();
+    <span class="keyword">if</span> (colision != <span class="keyword">null</span>)
+    {
+        Node2D objeto = (Node2D)colision.GetCollider();
+        <span class="comment">// GD.Print("Choqué contra: " + objeto.Name); // Descomentar para debug</span>
+    }
+}
+        </pre>
+
+        <!-- ========== CONCEPTO FINAL ========== -->
+        <hr />
+
+        <h2 id="conclusion">🎯 Conclusión</h2>
+        <p>
+            Programar un personaje en Godot con C# es como construir una <strong>aplicación web interactiva</strong>:
+        </p>
+        <ul style="margin-left: 1.8rem; color: #c6d8f0; line-height: 1.8;">
+            <li><strong>Estructura</strong> → Árbol de nodos (como el DOM)</li>
+            <li><strong>Interacción</strong> → Input y señales (como eventos)</li>
+            <li><strong>Actualización</strong> → Game loop (como <code>requestAnimationFrame</code>)</li>
+            <li><strong>Visualización</strong> → Inspector y escena (como HTML/CSS + DevTools)</li>
+            <li><strong>Colisiones</strong> → Detección de bordes y límites (como <code>getBoundingClientRect</code>)</li>
+            <li><strong>Teclas UI</strong> → Solo flechas por defecto, hay que configurar WASD manualmente</li>
+        </ul>
+        <p style="margin-top: 1rem; font-size: 1.1rem; color: #b3ceff;">
+            ✨ ¡Tus alumnos verán que los videojuegos y las aplicaciones web comparten los mismos fundamentos!
+        </p>
+
+        <!-- ========== GLOSARIO RÁPIDO ========== -->
+        <h2>📚 Glosario de términos</h2>
+        <div class="grid-analogias" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="tarjeta tarjeta-destacada">
+                <strong>Vector2</strong>
+                <span>Tipo de dato con X e Y</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>Velocity</strong>
+                <span>Velocidad en píxeles/segundo</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>Input</strong>
+                <span>Objeto global de entrada</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>ui_left / ui_right</strong>
+                <span>Teclas UI (solo flechas por defecto)</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>WASD</strong>
+                <span>Teclas que esperan los jugadores (hay que configurar)</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>IsOnFloor()</strong>
+                <span>¿Está en el suelo?</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>IsOnWall()</strong>
+                <span>¿Está contra una pared?</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>IsOnCeiling()</strong>
+                <span>¿Está contra el techo?</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>MoveAndSlide()</strong>
+                <span>Mueve y maneja colisiones</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>Mathf.Clamp()</strong>
+                <span>Limita valores</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>Mathf.MoveToward()</strong>
+                <span>Desaceleración suave</span>
+            </div>
+            <div class="tarjeta tarjeta-destacada">
+                <strong>GetLastSlideCollision()</strong>
+                <span>Info de la última colisión</span>
+            </div>
+        </div>
+
+        <!-- ========== FOOTER ========== -->
+        <div style="margin-top: 2.5rem; font-size: 0.9rem; color: #5f7399; text-align: center; border-top: 1px solid #253249; padding-top: 1.5rem;">
+            Material académico · Analogías Godot ↔ Web · C# · 2026
+        </div>
+
+    </div>
+    <!-- fin .contenedor -->
+
+</body>
+</html> 
