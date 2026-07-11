@@ -5,17 +5,19 @@
     <meta charset="UTF-8">
     <link rel="icon" href="./favicon.png" sizes="any">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Académica: Introducción a Godot Engine 4 con C# y Físicas</title>
+    <title>Introducción a Godot 4 y GDScript | Mi Primera Clase</title>
     <style>
         :root {
-            --primary: #478cbf;
-            --secondary: #1a233a;
-            --accent: #e57e3a;
-            --text-dark: #2c3e50;
-            --text-light: #f8f9fa;
-            --bg-light: #f4f6f9;
-            --code-bg: #282c34;
-            --border-radius: 8px;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --primary: #478cb5;
+            /* Azul Godot */
+            --accent: #2ecc71;
+            /* Verde Éxito */
+            --warning: #e74c3c;
+            /* Rojo Alerta */
+            --code-bg: #1e1e1e;
         }
 
         * {
@@ -25,66 +27,88 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
+            padding-bottom: 60px;
         }
 
         header {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            color: var(--text-light);
-            padding: 3rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1rem;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         header h1 {
-            font-size: 2.3rem;
+            font-size: 1.8rem;
             margin-bottom: 0.5rem;
         }
 
         header p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
         }
 
+        nav {
+            background: #2c3e50;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0.5rem;
+        }
+
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         .container {
-            max-width: 1040px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+            max-width: 800px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
         }
 
         section {
-            background: white;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         h2 {
-            color: var(--secondary);
-            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            border-bottom: 2px solid #ecf0f1;
             padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-size: 1.7rem;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
         }
 
         h3 {
-            color: var(--primary);
-            margin: 1.5rem 0 0.75rem 0;
-            font-size: 1.25rem;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
         }
 
-        p {
+        p,
+        ul {
             margin-bottom: 1rem;
-            text-align: justify;
+            font-size: 0.95rem;
         }
 
-        ul,
-        ol {
-            margin-bottom: 1rem;
+        ul {
             padding-left: 1.5rem;
         }
 
@@ -92,129 +116,99 @@
             margin-bottom: 0.5rem;
         }
 
-        .table-container {
+        /* Bloques de Código */
+        pre {
+            background-color: var(--code-bg);
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 6px;
             overflow-x: auto;
-            margin: 1.5rem 0;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        code {
+            font-family: monospace;
+            background: #e0e0e0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #c0392b;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Cajas Didácticas */
+        .box {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 0.9rem;
+        }
+
+        .box-tip {
+            background-color: #e8f8f5;
+            border-left-color: var(--accent);
+            color: #1e8449;
+        }
+
+        .box-warn {
+            background-color: #fdf2f2;
+            border-left-color: var(--warning);
+            color: #922b21;
+        }
+
+        .box-title {
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tablas responsivas */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1rem 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 500px;
+            font-size: 0.9rem;
         }
 
         th,
         td {
             padding: 0.75rem;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #e2e8f0;
             text-align: left;
         }
 
         th {
-            background-color: var(--secondary);
-            color: var(--text-light);
+            background-color: #f8fafc;
+            color: var(--text-color);
         }
 
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+        @media (max-width: 600px) {
+            header {
+                padding: 1.5rem 1rem;
+            }
 
-        pre {
-            background-color: var(--code-bg);
-            color: #abb2bf;
-            padding: 1.25rem;
-            border-radius: var(--border-radius);
-            overflow-x: auto;
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            font-size: 0.95rem;
-            margin: 1rem 0;
-            border-left: 5px solid var(--primary);
-        }
-
-        code {
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            background-color: #e0e6ed;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            color: #d14;
-        }
-
-        pre code {
-            background-color: transparent;
-            padding: 0;
-            color: inherit;
-        }
-
-        .svg-container {
-            text-align: center;
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: #fdfdfd;
-            border: 1px dashed #ccc;
-            border-radius: var(--border-radius);
-        }
-
-        .svg-container svg {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .note {
-            background-color: #e8f4fd;
-            border-left: 5px solid #2196f3;
-            padding: 1rem;
-            margin: 1.5rem 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-        }
-
-        .note-important {
-            background-color: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 1rem;
-            margin: 1.5rem 0;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-        }
-
-        .note-title {
-            font-weight: bold;
-            color: #0d47a1;
-            margin-bottom: 0.25rem;
-        }
-
-        .important-title {
-            font-weight: bold;
-            color: #856404;
-            margin-bottom: 0.25rem;
-        }
-
-        .btn-link {
-            display: inline-block;
-            background-color: var(--primary);
-            color: white;
-            padding: 0.6rem 1.2rem;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: background 0.3s ease;
-            margin: 0.5rem 0;
-        }
-
-        .btn-link:hover {
-            background-color: var(--secondary);
-        }
-
-        @media (max-width: 768px) {
             header h1 {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
             }
 
             section {
-                padding: 1.5rem;
-            }
-
-            h2 {
-                font-size: 1.4rem;
+                padding: 1rem;
             }
         }
     </style>
@@ -223,300 +217,154 @@
 <body>
 
     <header>
-        <h1>Guía de Inicio: Godot Engine 4, C# y Sistemas de Colisiones</h1>
-        <p>Manual Auto-Instructivo para Estudiantes de Desarrollo de Software</p>
+        <h1>Mi Primer Videojuego 2D</h1>
+        <p>Guía de Inicio Rápido con Godot 4 y GDScript</p>
     </header>
+
+    <nav>
+        <a href="#coordenadas">1. Coordenadas</a>
+        <a href="#nodos">2. Estructura de Nodos</a>
+        <a href="#inspector">3. Ajustes Esenciales</a>
+        <a href="#script">4. El Código (GDScript)</a>
+        <a href="#trucos">5. Resolución de Problemas</a>
+    </nav>
 
     <div class="container">
 
-        <section id="requerimientos">
-            <h2>1. Requerimientos del Sistema (Windows)</h2>
-            <p>Antes de comenzar, asegúrate de que tu computadora cumple con las especificaciones técnicas
-                indispensables para ejecutar el entorno .NET integrado en Godot Engine 4:</p>
+        <section id="coordenadas">
+            <h2>1. El Plano Cartesiano en los Videojuegos</h2>
+            <p>A diferencia de la matemática tradicional, en la mayoría de los motores de videojuegos y desarrollo web,
+                el origen de coordenadas cambia:</p>
+            <ul>
+                <li>El punto <code>(0, 0)</code> se encuentra en la <strong>esquina superior izquierda</strong> de la
+                    pantalla.</li>
+                <li>El eje <strong>X</strong> aumenta hacia la <strong>derecha</strong>.</li>
+                <li>El eje <strong>Y</strong> aumenta hacia <strong>abajo</strong>.</li>
+            </ul>
+            <div class="box box-tip">
+                <div class="box-title">Truco de Diseño</div>
+                Para que tus objetos aparezcan dentro del recuadro visible del juego, debemos darles valores positivos
+                en el centro del lienzo (por ejemplo, X: 400, Y: 300).
+            </div>
+        </section>
 
-            <div class="table-container">
+        <section id="nodos">
+            <h2>2. Estructura Teatral de Nodos</h2>
+            <p>En Godot, todo se organiza como una obra de teatro: una <strong>Escena</strong> contiene
+                <strong>Nodos</strong> (actores) organizados de forma jerárquica (Padres e Hijos).</p>
+            <p>Para nuestro primer prototipo, tu árbol de nodos debe verse así:</p>
+            <ul>
+                <li><strong>Mundo</strong> (Node2D - La raíz de todo)
+                    <ul>
+                        <li><strong>Suelo</strong> (StaticBody2D - Objeto físico inmóvil)
+                            <ul>
+                                <li><code>ColorRect</code> (La caja visual verde)</li>
+                                <li><code>CollisionShape2D</code> (La zona sólida de colisión)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Jugador</strong> (CharacterBody2D - Objeto con físicas controlables)
+                            <ul>
+                                <li><code>ColorRect</code> (La caja visual roja)</li>
+                                <li><code>CollisionShape2D</code> (La zona sólida de colisión)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="inspector">
+            <h2>3. Ajustes en el Inspector</h2>
+            <p>Para evitar que los objetos se deformen o queden invisibles, asegúrate de configurar las propiedades del
+                panel derecho (Inspector) con las siguientes coordenadas iniciales:</p>
+
+            <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>Componente</th>
-                            <th>Requerimientos Mínimos</th>
-                            <th>Recomendados</th>
+                            <th>Nodo Padre</th>
+                            <th>Transform -> Position</th>
+                            <th>Transform -> Scale</th>
+                            <th>Hijos (ColorRect / Collision)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Sistema Operativo</strong></td>
-                            <td>Windows 7 / 8 / 10 / 11 (64 bits)</td>
-                            <td>Windows 10 / 11 (64 bits)</td>
+                            <strong>
+                                <td>Suelo</td>
+                            </strong>
+                            <td>X: 100, Y: 500</td>
+                            <td>X: 1.0, Y: 1.0</td>
+                            <td>Position en X: 0, Y: 0 <br><em>(Size sugerido: 800 x 60)</em></td>
                         </tr>
                         <tr>
-                            <td><strong>Procesador (CPU)</strong></td>
-                            <td>Intel Core i3 / AMD A8 (Dual-Core)</td>
-                            <td>Intel Core i5 / AMD Ryzen 5 (Quad-Core o superior)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Memoria RAM</strong></td>
-                            <td>4 GB de RAM</td>
-                            <td>8 GB o 16 GB de RAM</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Gráficos (GPU)</strong></td>
-                            <td>Integrada con soporte OpenGL 3.3 / Vulkan 1.0</td>
-                            <td>Dedicada compatible con Vulkan 1.2 o superior</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Entorno .NET</strong></td>
-                            <td>.NET SDK 6.0</td>
-                            <td>.NET SDK 8.0 o superior</td>
+                            <strong>
+                                <td>Jugador</td>
+                            </strong>
+                            <td>X: 400, Y: 300</td>
+                            <td>X: 1.0, Y: 1.0</td>
+                            <td>Position en X: 0, Y: 0 <br><em>(Size sugerido: 40 x 40)</em></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <section id="instalacion">
-            <h2>2. Instalación Paso a Paso (Evitando Errores Comunes)</h2>
-            <p>El error de configuración más habitual entre estudiantes es omitir el Kit de Desarrollo (.NET SDK) o
-                descargar la versión clásica del motor. Sigue estrictamente este orden:</p>
-
-            <h3>Paso 1: Instalar .NET SDK</h3>
-            <p>Godot no compilará código C# sin las herramientas de compilación oficiales de Microsoft. Descarga e
-                instala el SDK correspondiente a tu arquitectura (x64):</p>
-            <a href="https://dotnet.microsoft.com/download" target="_blank" class="btn-link">Descargar .NET SDK
-                Oficial</a>
-
-            <h3>Paso 2: Descargar Godot Engine .NET</h3>
-            <p>Entra a la web oficial y baja obligatoriamente la versión identificada como <strong>Godot Engine -
-                    .NET</strong>. La versión estándar NO soporta scripts de C#.</p>
-            <a href="https://godotengine.org/download/windows/" target="_blank" class="btn-link">Descargar Godot Engine
-                .NET</a>
-
-            <div class="note-important">
-                <p class="important-title">⚠️ Regla de Oro para Estudiantes:</p>
-                <p>Godot es portable (no requiere instalador). Descomprime el archivo ZIP en una ruta raíz limpia de tu
-                    disco duro, por ejemplo: <code>C:\Godot\</code>. <strong>No lo ejecutes directamente desde el
-                        archivo ZIP comprimido</strong> o perderás tus configuraciones.</p>
+            <div class="box box-warn">
+                <div class="box-title">¡Cuidado Estudiantes!</div>
+                Los nodos hijos siempre deben tener su posición local en <code>(0,0)</code>. Si mueves un hijo fuera de
+                su padre, la lógica física del juego se romperá.
             </div>
         </section>
 
-        <section id="interfaz">
-            <h2>3. Reconocimiento de la Interfaz de Godot</h2>
-            <p>Al abrir el editor por primera vez, te encontrarás con cinco zonas de control indispensables. Entender la
-                distribución evitará confusiones al momento de construir tus niveles:</p>
+        <section id="script">
+            <h2>4. Programando el Movimiento con GDScript</h2>
+            <p>GDScript es el lenguaje nativo de Godot. Es un lenguaje limpio, intuitivo (estilo Python o pseudocódigo)
+                y no requiere tiempos lentos de compilación.</p>
+            <p>Haz clic derecho en el nodo <strong>Jugador</strong>, selecciona <strong>Añadir Script</strong>,
+                asegúrate de elegir el lenguaje <strong>GDScript</strong> y pega este código de 15 líneas:</p>
 
-            <div class="svg-container">
-                <h4>Mapa Visual de la Interfaz Gráfica</h4>
-                <svg width="700" height="380" viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="10" width="680" height="360" rx="6" fill="#1e1e24" stroke="#2c3e50"
-                        stroke-width="3" />
+            <pre><code>extends CharacterBody2D
 
-                    <rect x="10" y="10" width="680" height="30" fill="#2d2d34" />
-                    <text x="350" y="30" fill="#888" font-family="Arial" font-size="11" text-anchor="middle">Menú
-                        Principal | [ 2D ] [ 3D ] [ Script ] [ AssetLib ]</text>
+# Expone la variable al Inspector para cambiarla de forma visual
+@export var velocidad: float = 300.0
 
-                    <rect x="20" y="50" width="140" height="140" rx="4" fill="#2a2a30" stroke="#478cbf"
-                        stroke-width="1.5" />
-                    <text x="90" y="70" fill="#478cbf" font-family="Arial" font-size="12" font-weight="bold"
-                        text-anchor="middle">1. Panel Escena</text>
-                    <text x="90" y="95" fill="#aaa" font-family="Arial" font-size="11" text-anchor="middle">Árbol de
-                        Nodos</text>
-                    <text x="90" y="115" fill="#aaa" font-family="Arial" font-size="11"
-                        text-anchor="middle">estructurados.</text>
+# El 'Game Loop' físico. Se ejecuta unas 60 veces por segundo de forma infinita
+func _physics_process(_delta: float) -> void:
+    # Capturamos la dirección usando los mapeos de flechas nativos de Godot
+    var direccion := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+    
+    if direccion != Vector2.ZERO:
+        # Si se presiona una tecla, avanzamos hacia esa dirección
+        velocity = direccion * velocidad
+    else:
+        # Si soltamos las teclas, frenamos suavemente hacia 0
+        velocity.x = move_toward(velocity.x, 0, velocidad)
+        velocity.y = move_toward(velocity.y, 0, velocidad)
 
-                    <rect x="20" y="200" width="140" height="160" rx="4" fill="#2a2a30" stroke="#478cbf"
-                        stroke-width="1.5" />
-                    <text x="90" y="220" fill="#478cbf" font-family="Arial" font-size="12" font-weight="bold"
-                        text-anchor="middle">2. Archivos (FileSystem)</text>
-                    <text x="90" y="245" fill="#aaa" font-family="Arial" font-size="11" text-anchor="middle">Tus
-                        imágenes,</text>
-                    <text x="90" y="265" fill="#aaa" font-family="Arial" font-size="11" text-anchor="middle">scripts y
-                        escenas.</text>
-
-                    <rect x="170" y="50" width="360" height="240" rx="4" fill="#3d3d45" stroke="#478cbf"
-                        stroke-width="2" />
-                    <text x="350" y="160" fill="white" font-family="Arial" font-size="16" font-weight="bold"
-                        text-anchor="middle">3. Visor Central (Viewport)</text>
-                    <text x="350" y="190" fill="#ddd" font-family="Arial" font-size="12" text-anchor="middle">Aquí
-                        diseñas el juego de forma visual</text>
-                    <line x1="200" y1="80" x2="200" y2="260" stroke="#e57e3a" stroke-width="1" stroke-dasharray="4" />
-                    <line x1="190" y1="90" x2="510" y2="90" stroke="#2b9348" stroke-width="1" stroke-dasharray="4" />
-
-                    <rect x="170" y="300" width="360" height="60" rx="4" fill="#2a2a30" stroke="#478cbf"
-                        stroke-width="1.5" />
-                    <text x="350" y="325" fill="#478cbf" font-family="Arial" font-size="12" font-weight="bold"
-                        text-anchor="middle">4. Panel Inferior (Salida / Output)</text>
-                    <text x="350" y="345" fill="#999" font-family="Arial" font-size="11" text-anchor="middle">Mensajes
-                        del sistema y errores de código.</text>
-
-                    <rect x="540" y="50" width="140" height="310" rx="4" fill="#2a2a30" stroke="#478cbf"
-                        stroke-width="1.5" />
-                    <text x="610" y="75" fill="#478cbf" font-family="Arial" font-size="12" font-weight="bold"
-                        text-anchor="middle">5. Inspector</text>
-                    <text x="610" y="105" fill="#aaa" font-family="Arial" font-size="11"
-                        text-anchor="middle">Propiedades del</text>
-                    <text x="610" y="125" fill="#aaa" font-family="Arial" font-size="11" text-anchor="middle">nodo
-                        seleccionado</text>
-                    <text x="610" y="145" fill="#aaa" font-family="Arial" font-size="11" text-anchor="middle">(Posición,
-                        Textura...)</text>
-                </svg>
-            </div>
-
-            <ol>
-                <li><strong>Panel Escena (Arriba Izquierda):</strong> Muestra la estructura de árbol de tu nivel actual.
-                    Todo elemento en pantalla nace aquí.</li>
-                <li><strong>Panel de Sistema de Archivos (Abajo Izquierda):</strong> Tu explorador de archivos interno.
-                    Contiene sprites, escenas (<code>.tscn</code>) y códigos (<code>.cs</code>).</li>
-                <li><strong>Visor Central (Viewport):</strong> El lienzo gráfico donde arrastras, escalas y posicionas
-                    tus componentes visuales.</li>
-                <li><strong>Panel Inferior:</strong> Contiene la consola de **Salida**, vital para ver impresiones de
-                    depuración mediante código.</li>
-                <li><strong>Inspector (Derecha):</strong> Cambia dinámicamente según el nodo seleccionado, exponiendo
-                    campos editables como la posición, rotación o físicas.</li>
-            </ol>
+    # Aplica el movimiento y gestiona automáticamente los choques con el suelo
+    move_and_slide()
+</code></pre>
         </section>
 
-        <section id="programa1">
-            <h2>4. Proyecto 1: "Hola Mundo" desde la Consola del Motor</h2>
-            <p>Diseñado para familiarizarse con el ciclo de vida de inicialización de un script de C#.</p>
+        <section id="trucos">
+            <h2>5. Guía de Supervivencia: Primeros Auxilios</h2>
+            <p>Si las cosas no salen como esperabas al presionar <strong>F5</strong>, usa estos trucos de desarrollador
+                profesional:</p>
 
-            <h3>Flujo de Configuración:</h3>
+            <h3>¿El personaje desapareció del mapa en el editor?</h3>
+            <p>Selecciona el nodo perdido en el árbol izquierdo y presiona la tecla <strong>F</strong>. El editor
+                centrará la cámara sobre él automáticamente.</p>
+
+            <h3>¿El juego arranca pero las teclas no responden?</h3>
             <ol>
-                <li>Crea un nuevo proyecto en la ventana inicial de Godot (activa la casilla de soporte .NET).</li>
-                <li>En el panel **Escena**, pulsa el botón **"Escena 2D"**. Creará un nodo raíz básico llamado
-                    <code>Node2D</code>.</li>
-                <li>Renombra este nodo como <code>Main</code> e introduce la combinación de teclas <code>Ctrl + S</code>
-                    para guardarlo como <code>main.tscn</code>.</li>
-                <li>Con el nodo <code>Main</code> seleccionado, presiona el icono del pergamino con un signo más en la
-                    parte superior del panel Escena (**Añadir Script**).</li>
-                <li>Configura los campos: Lenguaje = **C#**, Hereda de = <code>Node2D</code> y presiona Crear.</li>
+                <li>Asegúrate de haber guardado los cambios del script presionando <code>Ctrl + S</code>.</li>
+                <li>Cuando se abra la ventana gris del juego, <strong>haz un clic izquierdo sobre ella</strong> para que
+                    el sistema operativo sepa que vas a usar el teclado ahí.</li>
             </ol>
 
-            <h3>Código Fuente (Main.cs):</h3>
-            <pre><code>using Godot;
-using System;
-
-public partial class Main : Node2D
-{
-    // Se ejecuta una sola vez cuando el nodo se monta con éxito en el motor
-    public override void _Ready()
-    {
-        // Imprime un mensaje académico en la pestaña de Salida inferior
-        GD.Print("¡Inicialización Exitosa! Hola Mundo desde C# en Godot.");
-    }
-}</code></pre>
-            <p>Prueba el proyecto pulsando **F5**. Verás el mensaje impreso en el panel inferior.</p>
-        </section>
-
-        <section id="programa2">
-            <h2>5. Proyecto 2: Movimiento y Sistema de Colisiones Sólidas</h2>
-            <p>En este bloque aprenderás a capturar las entradas de teclado del alumno y a implementar un sistema de
-                colisiones físicas reales que impida al jugador atravesar muros o salirse de los límites establecidos.
-            </p>
-
-            <h3>Paso A: Mapeado de Controles del Teclado</h3>
-            <ol>
-                <li>Entra en la barra de opciones: <strong>Proyecto -> Configuración del Proyecto</strong>.</li>
-                <li>Ve a la pestaña <strong>Mapa de Entradas (Input Map)</strong>.</li>
-                <li>Escribe <code>mover_derecha</code> en la barra de texto superior y pulsa **Añadir**. Realiza lo
-                    mismo para las acciones: <code>mover_izquierda</code>, <code>mover_arriba</code> y
-                    <code>mover_abajo</code>.</li>
-                <li>Presiona el botón **"+"** al lado de cada acción añadida y pulsa la tecla física que desees vincular
-                    (ej. Flechas del teclado o teclas W, A, S, D).</li>
-            </ol>
-
-            <h3>Paso B: Construcción de la Escena Física del Jugador</h3>
-            <p>Para procesar colisiones en dos dimensiones, requerimos asociar un cuerpo de física con una forma
-                geométrica rígida definida:</p>
-
-            <div class="svg-container">
-                <h4>Estructura de Nodos Obligatoria para Físicas</h4>
-                <svg width="450" height="150" viewBox="0 0 450 150" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="55" width="130" height="40" rx="5" fill="#1a233a" stroke="#478cbf"
-                        stroke-width="2" />
-                    <text x="75" y="80" fill="white" font-family="Arial" font-size="11" font-weight="bold"
-                        text-anchor="middle">Jugador (CharacterBody2D)</text>
-
-                    <line x1="140" y1="75" x2="175" y2="45" stroke="#2c3e50" stroke-width="2" />
-                    <line x1="140" y1="75" x2="175" y2="105" stroke="#2c3e50" stroke-width="2" />
-
-                    <rect x="185" y="25" width="240" height="35" rx="5" fill="#478cbf" />
-                    <text x="305" y="47" fill="white" font-family="Arial" font-size="11" text-anchor="middle">Sprite2D
-                        (Renderiza la imagen / icon.svg)</text>
-
-                    <rect x="185" y="85" width="240" height="35" rx="5" fill="#e57e3a" />
-                    <text x="305" y="107" fill="white" font-family="Arial" font-size="11" font-weight="bold"
-                        text-anchor="middle">CollisionShape2D (Cuerpo de colisión rígido)</text>
-                </svg>
-            </div>
-
-            <ol>
-                <li>Crea una escena nueva limpia. Añade como nodo raíz un **CharacterBody2D** y nombralo
-                    <code>Jugador</code>.</li>
-                <li>Haz clic derecho sobre <code>Jugador</code> -> **Añadir Nodo Hijo**, e incorpora un **Sprite2D**.
-                </li>
-                <li>Arrastra el logotipo <code>icon.svg</code> desde tus archivos hasta el recuadro **Texture** dentro
-                    del Inspector del Sprite2D.</li>
-                <li>Haz clic derecho sobre <code>Jugador</code> -> **Añadir Nodo Hijo**, y añade un
-                    **CollisionShape2D**. *(Verás un triángulo de advertencia amarillo indicando que falta definir la
-                    geometría)*.</li>
-                <li>Selecciona el <code>CollisionShape2D</code>, ve al Inspector de la derecha, localiza el campo
-                    **Shape**, dale clic y elige **`New RectangleShape2D`**.</li>
-                <li>En el visor central verás un cuadro celeste claro sobre la imagen del logotipo. Estíralo desde sus
-                    controladores hasta encuadrar el sprite por completo.</li>
-                <li>Guarda la escena como <code>jugador.tscn</code> y añádele un Script de **C#** al nodo raíz.</li>
-            </ol>
-
-            <h3>Código de Movimiento Cinemático con Colisiones (Jugador.cs):</h3>
-            <pre><code>using Godot;
-using System;
-
-public partial class Jugador : CharacterBody2D
-{
-    // Expone la propiedad en el Inspector para facilitar su calibración sin tocar código
-    [Export]
-    public float Velocidad { get; set; } = 350.0f;
-
-    // Se ejecuta de manera sincronizada con el motor de físicas interno de Godot
-    public override void _PhysicsProcess(double delta)
-    {
-        Vector2 direccionEntrada = Vector2.Zero;
-
-        // Evalúa las pulsaciones físicas del teclado configuradas en el Input Map
-        if (Input.IsActionPressed("mover_derecha"))     direccionEntrada.X += 1.0f;
-        if (Input.IsActionPressed("mover_izquierda"))   direccionEntrada.X -= 1.0f;
-        if (Input.IsActionPressed("mover_abajo"))       direccionEntrada.Y += 1.0f;
-        if (Input.IsActionPressed("mover_arriba"))      direccionEntrada.Y -= 1.0f;
-
-        // Evita que el movimiento diagonal duplique la velocidad normal del objeto
-        if (direccionEntrada != Vector2.Zero)
-        {
-            direccionEntrada = direccionEntrada.Normalized();
-        }
-
-        // Velocity es una palabra clave nativa y reservada de la clase CharacterBody2D
-        Velocity = direccionEntrada * Velocidad;
-
-        // MÉTODO CLAVE: Desplaza el objeto calculando de forma automática fricciones, 
-        // deslizamientos y choques contra otros límites del entorno sólido.
-        MoveAndSlide();
-    }
-}</code></pre>
-
-            <h3>Paso C: Creación de Muros o Obstáculos de Colisión</h3>
-            <p>Para comprobar que el código funciona y frena ante un objeto, necesitamos añadir un cuerpo estático en el
-                entorno:</p>
-            <ol>
-                <li>Regresa a tu escena principal <code>main.tscn</code>.</li>
-                <li>Arrastra el archivo de la escena del personaje (<code>jugador.tscn</code>) desde el Panel de
-                    Archivos directamente hacia el interior del Visor Central.</li>
-                <li>Para crear un obstáculo sólido: Añade un nodo de tipo **StaticBody2D** (ideal para rocas, paredes o
-                    suelos) como hijo de <code>Main</code>.</li>
-                <li>Añádele un **CollisionShape2D** a ese `StaticBody2D` y asígnale un tamaño rectangular grande dentro
-                    del mapa.</li>
-                <li>Presiona **F6** para iniciar la escena. Conduce tu sprite con el teclado hacia la zona del obstáculo
-                    invisible; comprobarás que el motor frena el vector de movimiento impidiendo el traspaso de píxeles.
-                </li>
-            </ol>
+            <h3>¿Escribiste todo bien y aun así sale una línea roja?</h3>
+            <p>Recuerda que en GDScript las constantes van en mayúsculas sostenidas. Escribir <code>Vector2.Zero</code>
+                dará error; la forma correcta es <strong><code>Vector2.ZERO</code></strong>.</p>
         </section>
 
     </div>
