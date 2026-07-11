@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        #panel {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+            border: 3px solid #0f3460;
+        }
+
+        #heroe {
+            font-size: 100px;
+            transition: transform 0.3s;
+        }
+
+        #heroe:hover {
+            transform: scale(1.1);
+        }
+
+        .stats {
+            font-size: 22px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #0f3460;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #c73e54;
+        }
+
+        #logHeroe {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="panel">
+        <h2>⬆️ EVOLUCIÓN DEL HÉROE ⬆️</h2>
+
+        <div id="heroe">🦸</div>
+
+        <div class="stats">
+            Nivel: <span id="nivel">1</span> |
+            XP: <span id="xp">0</span>/100
+        </div>
+
+        <div id="logHeroe">🌟 ¡Comienza tu aventura!</div>
+
+        <button id="btnEntrenar">⚔️ Entrenar (+25 XP)</button>
+        <button id="btnMision">🗡️ Misión (+50 XP)</button>
+        <button id="btnReiniciarHeroe">🔄 Reiniciar</button>
+    </div>
+
+    <script>
+        let nivel = 1;
+        let xp = 0;
+        const xpNecesario = 100;
+        const evoluciones = {
+            1: '🦸',
+            5: '🦸‍♂️',
+            10: '⚡🦸‍♂️',
+            15: '🌟🦸‍♂️',
+            20: '👑🦸‍♂️',
+            30: '⭐🦸‍♂️⭐'
+        };
+
+        const heroeDiv = document.getElementById('heroe');
+        const nivelSpan = document.getElementById('nivel');
+        const xpSpan = document.getElementById('xp');
+        const logDiv = document.getElementById('logHeroe');
+
+        function actualizarHeroe() {
+            let emoji = '🦸';
+            for (let [nivelReq, emojiNuevo] of Object.entries(evoluciones)) {
+                if (nivel >= parseInt(nivelReq)) {
+                    emoji = emojiNuevo;
+                }
+            }
+            heroeDiv.textContent = emoji;
+            nivelSpan.textContent = nivel;
+            xpSpan.textContent = xp;
+        }
+
+        function ganarXP(cantidad, mensaje) {
+            xp += cantidad;
+            logDiv.innerHTML = `${mensaje} (+${cantidad} XP)`;
+
+            while (xp >= xpNecesario) {
+                xp -= xpNecesario;
+                nivel++;
+                logDiv.innerHTML += ` 🎉 ¡SUBISTE DE NIVEL! Ahora nivel ${nivel}`;
+
+                if (nivel in evoluciones) {
+                    logDiv.innerHTML += ` ✨ ¡Evolucionaste! ✨`;
+                }
+            }
+
+            actualizarHeroe();
+        }
+
+        document.getElementById('btnEntrenar').addEventListener('click', () => ganarXP(25, '🏋️ Entrenamiento completado'));
+        document.getElementById('btnMision').addEventListener('click', () => ganarXP(50, '🗡️ Misión completada'));
+        document.getElementById('btnReiniciarHeroe').addEventListener('click', () => {
+            nivel = 1;
+            xp = 0;
+            actualizarHeroe();
+            logDiv.innerHTML = '🔄 ¡Heroe reiniciado!';
+        });
+
+        actualizarHeroe();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            background: #1a0b2e;
+            color: #c8a2d6;
+        }
+
+        #escenario {
+            background: #2d1b4e;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 3px solid #8b5cf6;
+        }
+
+        .mago {
+            display: inline-block;
+            margin: 20px 30px;
+            font-size: 70px;
+        }
+
+        .stats {
+            font-size: 20px;
+        }
+
+        #hechizo {
+            background: #1a0b2e;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 50px;
+            font-size: 22px;
+            color: #fbbf24;
+        }
+
+        .btn-hechizo {
+            padding: 12px 20px;
+            font-size: 18px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .btn-hechizo:hover {
+            background: #6d28d9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="escenario">
+        <h2>🧙 TORNEO DE MAGOS 🧙</h2>
+
+        <div class="mago">
+            🧙‍♂️<br>
+            <span class="stats" id="vidaMago1">❤️ 100</span>
+        </div>
+
+        <div class="mago">
+            🧙‍♀️<br>
+            <span class="stats" id="vidaMago2">❤️ 100</span>
+        </div>
+
+        <div id="hechizo">✨ ¡Lanza un hechizo! ✨</div>
+
+        <button class="btn-hechizo" id="btnFuego">🔥 Bola de Fuego</button>
+        <button class="btn-hechizo" id="btnHielo">❄️ Congelar</button>
+        <button class="btn-hechizo" id="btnRayo">⚡ Rayo</button>
+        <button class="btn-hechizo" id="btnSanar">💚 Sanar</button>
+        <button class="btn-hechizo" id="btnReiniciar">🔄 Reiniciar</button>
+    </div>
+
+    <script>
+        let vida1 = 100, vida2 = 100;
+        const hechizoDiv = document.getElementById('hechizo');
+        const v1 = document.getElementById('vidaMago1');
+        const v2 = document.getElementById('vidaMago2');
+
+        function actualizar() {
+            v1.textContent = `❤️ ${vida1}`;
+            v2.textContent = `❤️ ${vida2}`;
+        }
+
+        function verificarGanador() {
+            if (vida1 <= 0) {
+                hechizoDiv.innerHTML = '🏆 ¡El Mago 2 (🧙‍♀️) ha ganado! 🏆';
+                return true;
+            } else if (vida2 <= 0) {
+                hechizoDiv.innerHTML = '🏆 ¡El Mago 1 (🧙‍♂️) ha ganado! 🏆';
+                return true;
+            }
+            return false;
+        }
+
+        function lanzarHechizo(tipo, dano, sanacion = 0) {
+            if (verificarGanador()) return;
+
+            if (sanacion > 0) {
+                vida1 = Math.min(100, vida1 + sanacion);
+                hechizoDiv.innerHTML = `💚 ¡Mago 1 se ha sanado ${sanacion} puntos!`;
+            } else {
+                vida2 = Math.max(0, vida2 - dano);
+                const emojis = { '🔥': '🔥', '❄️': '❄️', '⚡': '⚡' };
+                hechizoDiv.innerHTML = `${emojis[tipo]} ¡${tipo} golpea al Mago 2 con ${dano} de daño!`;
+            }
+
+            // Contraataque del mago 2
+            if (!verificarGanador() && vida2 > 0 && sanacion === 0) {
+                const contraataque = Math.floor(Math.random() * 15) + 5;
+                vida1 = Math.max(0, vida1 - contraataque);
+                hechizoDiv.innerHTML += ` 💥 Mago 2 contraataca con ${contraataque}`;
+            }
+
+            actualizar();
+            verificarGanador();
+        }
+
+        document.getElementById('btnFuego').addEventListener('click', () => lanzarHechizo('🔥', 25));
+        document.getElementById('btnHielo').addEventListener('click', () => lanzarHechizo('❄️', 18));
+        document.getElementById('btnRayo').addEventListener('click', () => lanzarHechizo('⚡', 30));
+        document.getElementById('btnSanar').addEventListener('click', () => lanzarHechizo('💚', 0, 20));
+        document.getElementById('btnReiniciar').addEventListener('click', () => {
+            vida1 = 100;
+            vida2 = 100;
+            actualizar();
+            hechizoDiv.innerHTML = '✨ ¡Nuevo torneo! ✨';
+        });
+    </script>
+</body>
+
+</html>

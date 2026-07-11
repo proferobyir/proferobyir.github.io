@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            background: #0d7a3e;
+            color: white;
+        }
+
+        #pista {
+            background: #4a8f29;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 700px;
+            margin: 20px auto;
+            border: 4px solid #f5c842;
+        }
+
+        .carril {
+            background: #6b9e3a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            position: relative;
+            height: 70px;
+            overflow: hidden;
+        }
+
+        .corredor {
+            font-size: 50px;
+            position: absolute;
+            left: 0;
+            transition: left 0.3s;
+        }
+
+        .meta {
+            position: absolute;
+            right: 10px;
+            font-size: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background: #f5c842;
+            color: #0d7a3e;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #f7d95c;
+        }
+
+        #mensajeCarrera {
+            font-size: 24px;
+            padding: 15px;
+            background: #0d5a2e;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="pista">
+        <h2>🏁 CARRERA DE ANIMALES 🏁</h2>
+
+        <div class="carril">
+            <span class="corredor" id="animal1">🐇</span>
+            <span class="meta">🏁</span>
+        </div>
+
+        <div class="carril">
+            <span class="corredor" id="animal2">🐢</span>
+            <span class="meta">🏁</span>
+        </div>
+
+        <div class="carril">
+            <span class="corredor" id="animal3">🦊</span>
+            <span class="meta">🏁</span>
+        </div>
+
+        <div id="mensajeCarrera">🐇 ¡Elige tu corredor y avanza!</div>
+
+        <button id="btnAvanzar1">🐇 Avanzar Conejo</button>
+        <button id="btnAvanzar2">🐢 Avanzar Tortuga</button>
+        <button id="btnAvanzar3">🦊 Avanzar Zorro</button>
+        <button id="btnReiniciarCarrera">🔄 Reiniciar</button>
+    </div>
+
+    <script>
+        let pos1 = 0, pos2 = 0, pos3 = 0;
+        const meta = 85; // % de la pista
+        const mensaje = document.getElementById('mensajeCarrera');
+
+        function actualizarPosiciones() {
+            document.getElementById('animal1').style.left = pos1 + '%';
+            document.getElementById('animal2').style.left = pos2 + '%';
+            document.getElementById('animal3').style.left = pos3 + '%';
+        }
+
+        function verificarGanador(animal, pos) {
+            if (pos >= meta) {
+                const nombres = { '🐇': 'Conejo', '🐢': 'Tortuga', '🦊': 'Zorro' };
+                mensaje.innerHTML = `🏆 ¡${nombres[animal]} ha ganado la carrera! 🏆`;
+                return true;
+            }
+            return false;
+        }
+
+        function avanzar(animal, posElement, btnElement) {
+            if (mensaje.innerHTML.includes('ganado')) return;
+
+            const avance = Math.floor(Math.random() * 15) + 5;
+            let pos = posElement;
+            pos = Math.min(100, pos + avance);
+
+            if (animal === '🐇') pos1 = pos;
+            else if (animal === '🐢') pos2 = pos;
+            else if (animal === '🦊') pos3 = pos;
+
+            actualizarPosiciones();
+            mensaje.innerHTML = `${animal} avanza ${avance} pasos 🏃`;
+
+            if (verificarGanador(animal, pos)) {
+                // Detener el juego
+            }
+        }
+
+        document.getElementById('btnAvanzar1').addEventListener('click', () => avanzar('🐇', pos1));
+        document.getElementById('btnAvanzar2').addEventListener('click', () => avanzar('🐢', pos2));
+        document.getElementById('btnAvanzar3').addEventListener('click', () => avanzar('🦊', pos3));
+        document.getElementById('btnReiniciarCarrera').addEventListener('click', () => {
+            pos1 = 0; pos2 = 0; pos3 = 0;
+            actualizarPosiciones();
+            mensaje.innerHTML = '🏁 ¡Nueva carrera! 🏁';
+        });
+    </script>
+</body>
+
+</html>

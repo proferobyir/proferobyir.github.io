@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            background: #2c1810;
+            color: #f0d5b0;
+        }
+
+        #arena {
+            background: #3d2b1f;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 3px solid #b8860b;
+        }
+
+        .guerrero {
+            display: inline-block;
+            margin: 20px 50px;
+            font-size: 60px;
+        }
+
+        .vida {
+            font-size: 24px;
+            color: #ff6b6b;
+        }
+
+        #log {
+            background: #1a0f0a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 60px;
+            font-size: 20px;
+            color: #ffd700;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background: #b8860b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #d4a017;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="arena">
+        <h2>⚔️ DUELO DE ESPADAS ⚔️</h2>
+
+        <div class="guerrero">
+            🦁<br>
+            <span id="vidaJugador" class="vida">❤️ 100</span>
+        </div>
+
+        <div class="guerrero">
+            🐉<br>
+            <span id="vidaEnemigo" class="vida">❤️ 100</span>
+        </div>
+
+        <div id="log">⚔️ ¡Que comience el duelo!</div>
+
+        <button id="btnAtacar">🗡️ Atacar</button>
+        <button id="btnDefender">🛡️ Defender</button>
+        <button id="btnReiniciar">🔄 Reiniciar</button>
+    </div>
+
+    <script>
+        let vidaJugador = 100;
+        let vidaEnemigo = 100;
+        let defendiendo = false;
+
+        const log = document.getElementById('log');
+        const vJugador = document.getElementById('vidaJugador');
+        const vEnemigo = document.getElementById('vidaEnemigo');
+
+        function actualizarVida() {
+            vJugador.textContent = `❤️ ${vidaJugador}`;
+            vEnemigo.textContent = `❤️ ${vidaEnemigo}`;
+        }
+
+        function atacar() {
+            if (vidaJugador <= 0 || vidaEnemigo <= 0) return;
+
+            // Ataque del jugador
+            let dano = Math.floor(Math.random() * 20) + 10;
+            vidaEnemigo = Math.max(0, vidaEnemigo - dano);
+            log.innerHTML = `🗡️ ¡Golpeaste al dragón con ${dano} de daño!`;
+
+            // Ataque del enemigo (si aún vive)
+            if (vidaEnemigo > 0) {
+                let danoEnemigo = Math.floor(Math.random() * 15) + 5;
+                if (defendiendo) {
+                    danoEnemigo = Math.floor(danoEnemigo * 0.3);
+                    log.innerHTML += ` 🛡️ Defendiste, daño reducido a ${danoEnemigo}`;
+                    defendiendo = false;
+                }
+                vidaJugador = Math.max(0, vidaJugador - danoEnemigo);
+            }
+
+            actualizarVida();
+            verificarGanador();
+        }
+
+        function verificarGanador() {
+            if (vidaJugador <= 0) {
+                log.innerHTML = '💀 ¡El dragón te ha derrotado! 💀';
+                document.querySelector('#arena').style.borderColor = '#ff0000';
+            } else if (vidaEnemigo <= 0) {
+                log.innerHTML = '🏆 ¡Has derrotado al dragón! 🏆';
+                document.querySelector('#arena').style.borderColor = '#ffd700';
+            }
+        }
+
+        document.getElementById('btnAtacar').addEventListener('click', atacar);
+        document.getElementById('btnDefender').addEventListener('click', () => {
+            defendiendo = true;
+            log.innerHTML = '🛡️ Preparando defensa...';
+        });
+        document.getElementById('btnReiniciar').addEventListener('click', () => {
+            vidaJugador = 100;
+            vidaEnemigo = 100;
+            defendiendo = false;
+            actualizarVida();
+            log.innerHTML = '⚔️ ¡Nuevo duelo! ⚔️';
+            document.querySelector('#arena').style.borderColor = '#b8860b';
+        });
+    </script>
+</body>
+
+</html>

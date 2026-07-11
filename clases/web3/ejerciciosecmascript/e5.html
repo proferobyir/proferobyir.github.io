@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            background: #0a2463;
+            color: white;
+        }
+
+        #mar {
+            background: #1e3a8a;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        .tablero {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 5px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .celda {
+            width: 60px;
+            height: 60px;
+            background: #2563eb;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .celda:hover {
+            background: #3b82f6;
+        }
+
+        .celda.agua {
+            background: #1e40af;
+        }
+
+        .celda.barco {
+            background: #7c3aed;
+        }
+
+        .celda.tocado {
+            background: #dc2626;
+        }
+
+        .celda.hundido {
+            background: #000000;
+        }
+
+        #infoBatalla {
+            padding: 15px;
+            background: #0a2463;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mar">
+        <h2>⚓ BATALLA NAVAL ⚓</h2>
+        <div id="infoBatalla">🌊 ¡Hunde los barcos enemigos!</div>
+
+        <div class="tablero" id="tablero"></div>
+
+        <div>Barcos restantes: <span id="barcosRestantes">3</span></div>
+        <button id="btnReiniciarBatalla">🔄 Nuevo juego</button>
+    </div>
+
+    <script>
+        let tablero = [];
+        let barcos = 3;
+        const tamaño = 5;
+        const tableroDiv = document.getElementById('tablero');
+        const infoDiv = document.getElementById('infoBatalla');
+        const barcosSpan = document.getElementById('barcosRestantes');
+
+        function inicializarTablero() {
+            tablero = [];
+            for (let i = 0; i < tamaño; i++) {
+                tablero[i] = [];
+                for (let j = 0; j < tamaño; j++) {
+                    tablero[i][j] = { barco: false, tocado: false };
+                }
+            }
+
+            // Colocar barcos
+            barcos = 3;
+            let colocados = 0;
+            while (colocados < barcos) {
+                const x = Math.floor(Math.random() * tamaño);
+                const y = Math.floor(Math.random() * tamaño);
+                if (!tablero[x][y].barco) {
+                    tablero[x][y].barco = true;
+                    colocados++;
+                }
+            }
+            barcosSpan.textContent = barcos;
+        }
+
+        function renderizarTablero() {
+            tableroDiv.innerHTML = '';
+            for (let i = 0; i < tamaño; i++) {
+                for (let j = 0; j < tamaño; j++) {
+                    const celda = document.createElement('div');
+                    celda.className = 'celda';
+                    celda.dataset.x = i;
+                    celda.dataset.y = j;
+
+                    if (tablero[i][j].tocado) {
+                        if (tablero[i][j].barco) {
+                            celda.textContent = '💥';
+                            celda.classList.add('hundido');
+                        } else {
+                            celda.textContent = '🌊';
+                            celda.classList.add('agua');
+                        }
+                    }
+
+                    celda.addEventListener('click', () => disparar(i, j));
+                    tableroDiv.appendChild(celda);
+                }
+            }
+        }
+
+        function disparar(x, y) {
+            if (tablero[x][y].tocado) {
+                infoDiv.innerHTML = '⚠️ Ya disparaste aquí';
+                return;
+            }
+
+            tablero[x][y].tocado = true;
+
+            if (tablero[x][y].barco) {
+                infoDiv.innerHTML = '💥 ¡Tocado! 💥';
+                barcos--;
+                barcosSpan.textContent = barcos;
+
+                if (barcos === 0) {
+                    infoDiv.innerHTML = '🏆 ¡HUNDISTE TODOS LOS BARCOS! 🏆';
+                }
+            } else {
+                infoDiv.innerHTML = '💦 Agua...';
+            }
+
+            renderizarTablero();
+        }
+
+        document.getElementById('btnReiniciarBatalla').addEventListener('click', () => {
+            inicializarTablero();
+            renderizarTablero();
+            infoDiv.innerHTML = '🌊 ¡Nueva batalla!';
+        });
+
+        inicializarTablero();
+        renderizarTablero();
+    </script>
+</body>
+
+</html>
