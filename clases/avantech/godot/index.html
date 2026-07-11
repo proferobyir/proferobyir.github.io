@@ -188,6 +188,20 @@
             margin-bottom: 0.25rem;
         }
 
+        .highlight-box {
+            background-color: #f4ebd9;
+            border-left: 5px solid #e57e3a;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: var(--border-radius);
+        }
+
+        .highlight-title {
+            font-weight: bold;
+            color: #b25314;
+            margin-bottom: 0.5rem;
+        }
+
         .btn-link {
             display: inline-block;
             background-color: var(--primary);
@@ -399,11 +413,81 @@ func _ready() -> void:
                 solicita). Verás el mensaje impreso en el panel inferior de la interfaz.</p>
         </section>
 
+        <section id="analisis-delta">
+            <h2>5. Comprensión Fundamental de la Variable delta</h2>
+            <p>Uno de los mayores desafíos lógicos para un estudiante de programación de software interactivo es
+                comprender la naturaleza temporal de un bucle de juego. Aquí analizamos a fondo el parámetro de físicas:
+            </p>
+
+            <div class="svg-container">
+                <h4>Anatomía del Parámetro de Tiempo en Motores de Juegos</h4>
+                <svg width="600" height="160" viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="160" height="140" rx="6" fill="#1a233a" />
+                    <text x="90" y="55" fill="#478cbf" font-family="Arial" font-size="12" font-weight="bold"
+                        text-anchor="middle">Frame Anterior (1)</text>
+                    <text x="90" y="90" fill="white" font-family="Arial" font-size="11" text-anchor="middle">Renderizado
+                        y listo</text>
+
+                    <line x1="170" y1="80" x2="420" y2="80" stroke="#e57e3a" stroke-width="3"
+                        marker-end="url(#arrow)" />
+                    <text x="295" y="65" fill="#e57e3a" font-family="Consolas" font-size="13" font-weight="bold"
+                        text-anchor="middle">delta (Tiempo Transcurrido)</text>
+                    <text x="295" y="105" fill="#666" font-family="Arial" font-size="11" text-anchor="middle">Ej: 0.0166
+                        segundos (a 60 FPS)</text>
+
+                    <rect x="430" y="10" width="160" height="140" rx="6" fill="#2c3e50" />
+                    <text x="510" y="55" fill="#2b9348" font-family="Arial" font-size="12" font-weight="bold"
+                        text-anchor="middle">Frame Actual (2)</text>
+                    <text x="510" y="90" fill="white" font-family="Arial" font-size="11" text-anchor="middle">Procesando
+                        código...</text>
+                </svg>
+            </div>
+
+            <h3>¿Qué es delta y por qué es crucial?</h3>
+            <p>A diferencia de un entorno web que reacciona de forma pasiva a eventos del usuario (como un clic de
+                ratón), un motor de videojuegos corre en un bucle infinito sumamente rápido. La función
+                <code>_physics_process()</code> se ejecuta de forma constante a una tasa fija (por defecto, <strong>60
+                    veces por segundo</strong>).</p>
+
+            <p>La variable <code>delta</code> es un valor de tipo numérico flotante (<code>float</code>) que almacena
+                exactamente <strong>el tiempo en segundos (o fracciones de segundo) que tomó completar el último ciclo
+                    de procesamiento</strong>. Si el juego corre a unos perfectos 60 fotogramas por segundo, el valor
+                matemático de delta será de aproximadamente <code>0.01666...</code> segundos.</p>
+
+            <div class="highlight-box">
+                <div class="highlight-title">💡 El secreto de la Independencia de Fotogramas (Frame Rate Independence):
+                </div>
+                <p>Si multiplicas un vector de movimiento directamente por la velocidad en cada frame sin considerar el
+                    factor tiempo, un personaje se moverá mucho más rápido en una computadora de alta gama (ej. a 144
+                    FPS) que en una de bajos recursos (ej. a 30 FPS). Multiplicar de forma manual tus operaciones por
+                    <code>delta</code> convierte tus unidades de "píxeles por fotograma" a "píxeles por segundo",
+                    estandarizando la experiencia de juego en cualquier hardware.</p>
+            </div>
+
+            <h3>¿Por qué lleva un guion bajo ( _delta ) en nuestro código base?</h3>
+            <p>En el estándar de codificación de GDScript, un guion bajo al inicio del nombre de un argumento actúa como
+                una directiva explícita para el compilador y el analizador estático de código (Linter):</p>
+            <ul>
+                <li><strong>Regla del Linter:</strong> Si declaras un parámetro en una función y no lo utilizas en el
+                    bloque de instrucciones inferior, Godot arrojará una advertencia amarilla (<em>Warning</em>)
+                    indicando un posible desperdicio de memoria o descuido.</li>
+                <li><strong>El caso de move_and_slide():</strong> Al programar con la clase nativa
+                    <code>CharacterBody2D</code>, el método integrado de físicas <code>move_and_slide()</code> toma la
+                    propiedad reservada <code>velocity</code> y **aplica automáticamente el cálculo de delta de forma
+                    interna**.</li>
+                <li><strong>Conclusión:</strong> Como no necesitamos operar matemáticamente con <code>delta</code> en el
+                    script de movimiento lineal básico, le agregamos el guion bajo convirtiéndolo en
+                    <code>_delta</code>. Esto le avisa a Godot: <em>"Sé que esta variable existe aquí por diseño del
+                        motor, pero no la voy a invocar directamente en esta ocasión"</em>, manteniendo limpia nuestra
+                    consola de advertencias.</li>
+            </ul>
+        </section>
+
         <section id="programa2">
-            <h2>5. Proyecto 2: Movimiento y Sistema de Colisiones Sólidas</h2>
-            <p>En este bloque aprenderás a capturar las entradas de teclado y a implementar un sistema de colisiones
-                físicas reales que impida al jugador atravesar muros u obstáculos dentro del entorno tridimensional o
-                bidimensional.</p>
+            <h2>6. Proyecto 2: Movimiento y Sistema de Colisiones Sólidas</h2>
+            <p>En este bloque aprenderás a capturar las entradas de teclado del alumno y a implementar un sistema de
+                colisiones físicas reales que impida al jugador atravesar muros o salirse de los límites establecidos.
+            </p>
 
             <h3>Paso A: Mapeado de Controles del Teclado</h3>
             <ol>
@@ -465,8 +549,8 @@ func _ready() -> void:
 # Expone la propiedad en el Inspector para facilitar su calibración sin tocar código
 @export var velocidad: float = 350.0
 
-# Se ejecuta de manera sincronizada con el motor de físicas interno de Godot
-func _physics_process(delta: float) -> void:
+# NOTA ACADÉMICA: Usamos _delta con guion bajo porque move_and_slide() maneja el tiempo internamente.
+func _physics_process(_delta: float) -> void:
 	var direccion_entrada : Vector2 = Vector2.ZERO
 
 	# Evalúa las pulsaciones físicas del teclado configuradas en el Input Map
