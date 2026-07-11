@@ -500,69 +500,61 @@ func _ready() -> void:
                 <li>Ve a la pestaña <strong>Mapa de Entradas (Input Map)</strong>.</li>
                 <li>Escribe <code>mover_derecha</code> en la barra de texto superior y pulsa **Añadir**. Realiza lo
                     mismo para las acciones: <code>mover_izquierda</code>, <code>mover_arriba</code> y
-                    <code>mover_abajo</code>.
-                </li>
-                <li>Presiona el botón **"+"** al lado de cada acción añadida y pulsa la tecla física que desees vincular
-                    (ej. Flechas del teclado o teclas W, A, S, D).</li>
+                    <code>mover_abajo</code>.</li>
+                <li>Presiona el botón **"+"** al lado de cada acción añadida y pulsa la tecla física correspondiente (A,
+                    D, W, S).</li>
             </ol>
+
+            <div class="svg-container">
+                <img src="./mapa-entradas.png" alt="Configuración del Mapa de Entrada en Godot"
+                    style="max-width: 100%; height: auto; border-radius: var(--border-radius); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            </div>
 
             <h3>Paso B: Construcción de la Escena Física del Jugador</h3>
             <p>Para procesar colisiones en dos dimensiones, requerimos asociar un cuerpo de física con una forma
                 geométrica rígida definida:</p>
 
             <div class="svg-container">
-                <img src="./estructura_nodos.jpg" alt="Estructura de Nodos Obligatoria para Físicas en Godot"
+                <img src="./estructura-nodos.jpg" alt="Estructura de Nodos Obligatoria para Físicas en Godot"
                     style="max-width: 100%; height: auto; border-radius: var(--border-radius); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
             </div>
 
             <ol>
                 <li>Crea una escena nueva limpia. Añade como nodo raíz un **CharacterBody2D** y nómbralo
-                    <code>Jugador</code>.
-                </li>
+                    <code>Jugador</code>.</li>
                 <li>Haz clic derecho sobre <code>Jugador</code> -> **Añadir Nodo Hijo**, e incorpora un **Sprite2D**.
                 </li>
                 <li>Arrastra el logotipo <code>icon.svg</code> desde tus archivos hasta el recuadro **Texture** dentro
                     del Inspector del Sprite2D.</li>
                 <li>Haz clic derecho sobre <code>Jugador</code> -> **Añadir Nodo Hijo**, y añade un
-                    **CollisionShape2D**. *(Verás un triángulo de advertencia amarillo indicando que falta definir la
-                    geometría)*.</li>
-                <li>Selecciona el <code>CollisionShape2D</code>, ve al Inspector de la derecha, localiza el campo
-                    **Shape**, dale clic y elige **`New RectangleShape2D`**.</li>
-                <li>En el visor central verás un cuadro celeste claro sobre la imagen del logotipo. Estíralo desde sus
-                    controladores hasta encuadrar el sprite por completo.</li>
-                <li>Guarda la escena como <code>jugador.tscn</code> y añádele un Script de **GDScript** al nodo raíz.
-                </li>
+                    **CollisionShape2D**.</li>
+                <li>Selecciona el <code>CollisionShape2D</code>, ve al Inspector, localiza el campo **Shape** y elige
+                    **`New RectangleShape2D`**.</li>
+                <li>Ajusta el cuadro celeste para cubrir el sprite por completo, guarda la escena como
+                    <code>jugador.tscn</code> y añádele un Script.</li>
             </ol>
 
-            <h3>Código de Movimiento Cinemático con Colisiones (jugador.gd):</h3>
+            <h3>Código de Movimiento Optimizado (jugador.gd):</h3>
             <pre><code>extends CharacterBody2D
 
-# Expone la propiedad en el Inspector para facilitar su calibración sin tocar código
 @export var velocidad: float = 350.0
 
-# NOTA ACADÉMICA: Usamos _delta con guion bajo porque move_and_slide() maneja el tiempo internamente.
+# Usamos _delta con guion bajo porque move_and_slide() maneja el tiempo internamente
 func _physics_process(_delta: float) -> void:
-	var direccion_entrada : Vector2 = Vector2.ZERO
+	# MÉTODO OPTIMIZADO: get_vector calcula dirección, diagonales y normalización automáticamente
+	# NOTA: Usamos las acciones que configuramos en nuestro Mapa de Entrada
+	var direccion := Input.get_vector("mover_izquierda", "mover_derecha", "mover_arriba", "mover_abajo")
 
-	# Evalúa las pulsaciones físicas del teclado configuradas en el Input Map
-	if Input.is_action_pressed("mover_derecha"):
-		direccion_entrada.x += 1.0
-	if Input.is_action_pressed("mover_izquierda"):
-		direccion_entrada.x -= 1.0
-	if Input.is_action_pressed("mover_abajo"):
-		direccion_entrada.y += 1.0
-	if Input.is_action_pressed("mover_arriba"):
-		direccion_entrada.y -= 1.0
+	# Si hay movimiento activo, aplicamos la velocidad directa
+	if direccion != Vector2.ZERO:
+		velocity = direccion * velocidad
+	else:
+		# Si se sueltan las teclas, detenemos el cuerpo de forma controlada
+		# Modifica el último parámetro si deseas un frenado con deslizamiento suave (fricción)
+		velocity.x = move_toward(velocity.x, 0, velocidad)
+		velocity.y = move_toward(velocity.y, 0, velocidad)
 
-	# Evita que el movimiento diagonal duplique la velocidad normal del objeto
-	if direccion_entrada != Vector2.ZERO:
-		direccion_entrada = direccion_entrada.normalized()
-
-	# velocity es una propiedad nativa y reservada de la clase CharacterBody2D
-	velocity = direccion_entrada * velocidad
-
-	# MÉTODO CLAVE: Desplaza el objeto calculando de forma automática fricciones, 
-	# deslizamientos y choques contra otros límites del entorno sólido.
+	# Desplaza el objeto calculando de forma automática choques y deslizamientos
 	move_and_slide()
 </code></pre>
 
@@ -572,14 +564,12 @@ func _physics_process(_delta: float) -> void:
             <ol>
                 <li>Regresa a tu escena principal <code>main.tscn</code>.</li>
                 <li>Arrastra el archivo de la escena del personaje (<code>jugador.tscn</code>) desde el Panel de
-                    Archivos directamente hacia el interior del Visor Central.</li>
-                <li>Para crear un obstáculo sólido: Añade un nodo de tipo **StaticBody2D** (ideal para rocas, paredes o
-                    suelos) como hijo de <code>Main</code>.</li>
+                    Archivos hacia el Visor Central.</li>
+                <li>Añade un nodo de tipo **StaticBody2D** (para obstáculos fijos) como hijo de <code>Main</code>.</li>
                 <li>Añádele un **CollisionShape2D** a ese `StaticBody2D` y asígnale un tamaño rectangular grande dentro
                     del mapa.</li>
-                <li>Presiona **F6** para iniciar la escena actual. Conduce tu sprite con el teclado hacia la zona del
-                    obstáculo invisible; comprobarás que el motor frena el vector de movimiento impidiendo el traspaso
-                    de píxeles.</li>
+                <li>Presiona **F6** para iniciar la escena actual y comprueba que el personaje ya no puede atravesar el
+                    obstáculo.</li>
             </ol>
         </section>
 
