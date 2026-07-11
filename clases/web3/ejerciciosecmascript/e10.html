@@ -4,55 +4,64 @@
 <head>
     <style>
         body {
-            text-align: center;
-            font-family: Arial;
-            background: #0f172a;
-            color: #e2e8f0;
-        }
-
-        #torneo {
-            background: #1e293b;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 500px;
-            margin: 20px auto;
-            border: 3px solid #3b82f6;
-        }
-
-        #campoBatalla {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 60px;
+            font-family: 'Segoe UI', Arial;
+            background: #f1f5f9;
             padding: 20px;
-            background: #0f172a;
+        }
+
+        #viajesBox {
+            background: white;
+            padding: 30px;
             border-radius: 15px;
+            max-width: 450px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .campo {
             margin: 15px 0;
         }
 
-        .criatura {
-            text-align: center;
+        .campo label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #334155;
         }
 
-        .criatura .nombre {
-            font-size: 14px;
-            color: #94a3b8;
-        }
-
-        select,
-        input,
-        button {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: none;
+        .campo input,
+        .campo select,
+        .campo textarea {
             width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
             font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .campo textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .campo-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .campo-row .campo {
+            flex: 1;
         }
 
         button {
+            width: 100%;
+            padding: 14px;
             background: #3b82f6;
             color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
         }
 
@@ -60,105 +69,126 @@
             background: #2563eb;
         }
 
-        #logTorneo {
-            background: #0f172a;
+        #resumenViaje {
             padding: 15px;
+            background: #f1f5f9;
             border-radius: 10px;
             margin: 15px 0;
-            min-height: 50px;
-            color: #93c5fd;
-        }
-
-        .vs {
-            font-size: 30px;
-            color: #ef4444;
+            font-size: 14px;
+            color: #334155;
         }
     </style>
 </head>
 
 <body>
-    <div id="torneo">
-        <h2>🏆 TORNEO DE CRIATURAS</h2>
+    <div id="viajesBox">
+        <h2>✈️ Planificador de Viajes</h2>
 
-        <div id="campoBatalla">
-            <div class="criatura">
-                <div id="criatura1">🐉</div>
-                <div class="nombre" id="nombre1">Dragón</div>
+        <div id="resumenViaje">📋 Completa los datos para planificar tu viaje</div>
+
+        <form id="formViaje">
+            <div class="campo">
+                <label>🌍 Destino</label>
+                <input type="text" id="destinoViaje" placeholder="Ej: París, Tokio, etc." required>
             </div>
-            <div class="vs">⚔️</div>
-            <div class="criatura">
-                <div id="criatura2">🦁</div>
-                <div class="nombre" id="nombre2">León</div>
+
+            <div class="campo-row">
+                <div class="campo">
+                    <label>📅 Fecha salida</label>
+                    <input type="date" id="fechaSalida" required>
+                </div>
+                <div class="campo">
+                    <label>📅 Fecha regreso</label>
+                    <input type="date" id="fechaRegreso" required>
+                </div>
             </div>
-        </div>
 
-        <div id="logTorneo">⚔️ Elige tus campeones</div>
+            <div class="campo">
+                <label>👥 Número de viajeros</label>
+                <input type="number" id="viajeros" min="1" max="20" value="2">
+            </div>
 
-        <form id="formTorneo">
-            <select id="criaturaJugador">
-                <option value="🐉">🐉 Dragón</option>
-                <option value="🧛">🧛 Vampiro</option>
-                <option value="🐺">🐺 Hombre Lobo</option>
-                <option value="🦅">🦅 Grifo</option>
-            </select>
+            <div class="campo">
+                <label>💰 Presupuesto estimado</label>
+                <input type="number" id="presupuestoViaje" step="0.01" placeholder="En tu moneda local">
+            </div>
 
-            <input type="text" id="nombreJugador" placeholder="Nombre de tu criatura">
+            <div class="campo">
+                <label>📝 Actividades planeadas</label>
+                <textarea id="actividades" placeholder="¿Qué quieres hacer?"></textarea>
+            </div>
 
-            <select id="criaturaEnemigo">
-                <option value="🦁">🦁 León</option>
-                <option value="🐻">🐻 Oso</option>
-                <option value="🐍">🐍 Serpiente</option>
-                <option value="🦂">🦂 Escorpión</option>
-            </select>
-
-            <input type="text" id="nombreEnemigo" placeholder="Nombre del enemigo">
-
-            <button type="submit">⚔️ Iniciar Batalla</button>
+            <button type="submit">📋 Planificar Viaje</button>
         </form>
     </div>
 
     <script>
-        document.getElementById('formTorneo').addEventListener('submit', (e) => {
+        document.getElementById('formViaje').addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const emoji1 = document.getElementById('criaturaJugador').value;
-            const nombre1 = document.getElementById('nombreJugador').value || 'Campeón';
-            const emoji2 = document.getElementById('criaturaEnemigo').value;
-            const nombre2 = document.getElementById('nombreEnemigo').value || 'Enemigo';
+            const destino = document.getElementById('destinoViaje').value.trim();
+            const fechaSalida = document.getElementById('fechaSalida').value;
+            const fechaRegreso = document.getElementById('fechaRegreso').value;
+            const viajeros = parseInt(document.getElementById('viajeros').value);
+            const presupuesto = parseFloat(document.getElementById('presupuestoViaje').value) || 0;
+            const actividades = document.getElementById('actividades').value.trim() || 'No especificadas';
 
-            document.getElementById('criatura1').textContent = emoji1;
-            document.getElementById('nombre1').textContent = nombre1;
-            document.getElementById('criatura2').textContent = emoji2;
-            document.getElementById('nombre2').textContent = nombre2;
-
-            // Simular batalla
-            const poder1 = Math.floor(Math.random() * 50) + 50;
-            const poder2 = Math.floor(Math.random() * 50) + 50;
-            const ataques = Math.floor(Math.random() * 5) + 3;
-
-            console.log('⚔️ BATALLA INICIADA:');
-            console.log(`${nombre1} ${emoji1} vs ${nombre2} ${emoji2}`);
-            console.log(`Poder de ${nombre1}: ${poder1}`);
-            console.log(`Poder de ${nombre2}: ${poder2}`);
-
-            let ganador;
-            if (poder1 > poder2) {
-                ganador = nombre1;
-                document.getElementById('logTorneo').innerHTML =
-                    `🏆 ¡${nombre1} ${emoji1} ha ganado la batalla! 🏆`;
-            } else if (poder2 > poder1) {
-                ganador = nombre2;
-                document.getElementById('logTorneo').innerHTML =
-                    `🏆 ¡${nombre2} ${emoji2} ha ganado la batalla! 🏆`;
-            } else {
-                ganador = 'Empate';
-                document.getElementById('logTorneo').innerHTML =
-                    `🤝 ¡Empate épico! Ambos caen al mismo tiempo`;
+            // Validaciones
+            if (!destino || destino.length < 3) {
+                document.getElementById('resumenViaje').textContent = '⚠️ Destino inválido (mínimo 3 caracteres)';
+                document.getElementById('resumenViaje').style.color = '#dc2626';
+                return;
             }
 
-            console.log(`Ganador: ${ganador}`);
-            console.log(`Ataques realizados: ${ataques}`);
-            console.log('✅ Batalla finalizada');
+            if (!fechaSalida || !fechaRegreso) {
+                document.getElementById('resumenViaje').textContent = '⚠️ Selecciona fechas válidas';
+                document.getElementById('resumenViaje').style.color = '#dc2626';
+                return;
+            }
+
+            const salida = new Date(fechaSalida);
+            const regreso = new Date(fechaRegreso);
+            if (regreso < salida) {
+                document.getElementById('resumenViaje').textContent = '⚠️ La fecha de regreso debe ser posterior a la salida';
+                document.getElementById('resumenViaje').style.color = '#dc2626';
+                return;
+            }
+
+            // Calcular duración
+            const diffTime = Math.abs(regreso - salida);
+            const diffDias = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Éxito
+            document.getElementById('resumenViaje').innerHTML = `
+      ✅ ¡Viaje planificado exitosamente!<br>
+      <strong>${destino}</strong> · ${diffDias} días · ${viajeros} viajeros
+    `;
+            document.getElementById('resumenViaje').style.color = '#16a34a';
+
+            console.log('✈️ PLAN DE VIAJE:');
+            console.log(`Destino: ${destino}`);
+            console.log(`Fecha salida: ${fechaSalida}`);
+            console.log(`Fecha regreso: ${fechaRegreso}`);
+            console.log(`Duración: ${diffDias} días`);
+            console.log(`Viajeros: ${viajeros}`);
+            console.log(`Presupuesto: $${presupuesto.toFixed(2)} (${viajeros > 1 ? `$${(presupuesto / viajeros).toFixed(2)} por persona` : 'individual'})`);
+            console.log(`Actividades: ${actividades}`);
+            console.log(`Fecha de planificación: ${new Date().toLocaleString()}`);
+            console.log('✅ Viaje registrado');
+
+            // Reset form después de 3 segundos
+            setTimeout(() => {
+                document.getElementById('formViaje').reset();
+                document.getElementById('resumenViaje').innerHTML = '📋 Nuevo viaje listo para planificar';
+                document.getElementById('resumenViaje').style.color = '#334155';
+            }, 4000);
+        });
+
+        // Fecha mínima para hoy
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaSalida').min = today;
+            document.getElementById('fechaRegreso').min = today;
         });
     </script>
 </body>

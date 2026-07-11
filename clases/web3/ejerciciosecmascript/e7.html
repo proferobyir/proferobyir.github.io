@@ -4,121 +4,211 @@
 <head>
     <style>
         body {
-            text-align: center;
-            font-family: Arial;
-            background: #1a0a00;
-            color: #ffd700;
-        }
-
-        #forja {
-            background: #2d1810;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 450px;
-            margin: 20px auto;
-            border: 3px solid #b8860b;
-        }
-
-        #armaResultado {
-            font-size: 100px;
+            font-family: 'Segoe UI', Arial;
+            background: #f1f5f9;
             padding: 20px;
-            background: #1a0a00;
+        }
+
+        #presupuestoBox {
+            background: white;
+            padding: 30px;
             border-radius: 15px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .resumen {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
             margin: 15px 0;
         }
 
-        select,
-        button {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: none;
-            width: 100%;
-            font-size: 16px;
+        .resumen-item {
+            text-align: center;
         }
 
-        button {
-            background: #b8860b;
-            color: white;
-            cursor: pointer;
+        .resumen-item .valor {
+            font-size: 24px;
             font-weight: bold;
         }
 
-        button:hover {
-            background: #d4a017;
+        .resumen-item .label {
+            font-size: 14px;
+            color: #64748b;
         }
 
-        #logForja {
-            background: #1a0a00;
-            padding: 15px;
+        .ingreso {
+            color: #22c55e;
+        }
+
+        .gasto {
+            color: #ef4444;
+        }
+
+        .total {
+            color: #3b82f6;
+        }
+
+        .campo {
+            margin: 12px 0;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .campo-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .campo-row .campo {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
             border-radius: 10px;
-            margin: 15px 0;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .btn-gasto {
+            background: #ef4444;
+        }
+
+        .btn-gasto:hover {
+            background: #dc2626;
         }
     </style>
 </head>
 
 <body>
-    <div id="forja">
-        <h2>⚒️ FORJA DE ARMAS ⚒️</h2>
+    <div id="presupuestoBox">
+        <h2>💰 Presupuesto Mensual</h2>
 
-        <div id="armaResultado">⚔️</div>
-        <div id="logForja">🔥 Elige materiales para forjar</div>
+        <div class="resumen">
+            <div class="resumen-item">
+                <div class="label">Ingresos</div>
+                <div class="valor ingreso" id="totalIngresos">$0</div>
+            </div>
+            <div class="resumen-item">
+                <div class="label">Gastos</div>
+                <div class="valor gasto" id="totalGastos">$0</div>
+            </div>
+            <div class="resumen-item">
+                <div class="label">Balance</div>
+                <div class="valor total" id="totalBalance">$0</div>
+            </div>
+        </div>
 
-        <form id="formArma">
-            <select id="material1">
-                <option value="🪨">🪨 Piedra</option>
-                <option value="🪵">🪵 Madera</option>
-                <option value="🪙">🪙 Metal</option>
-            </select>
+        <form id="formPresupuesto">
+            <div class="campo">
+                <label>📝 Concepto</label>
+                <input type="text" id="concepto" placeholder="Ej: Salario, Comida, etc." required>
+            </div>
 
-            <select id="material2">
-                <option value="🪨">🪨 Piedra</option>
-                <option value="🪵">🪵 Madera</option>
-                <option value="🪙">🪙 Metal</option>
-            </select>
+            <div class="campo-row">
+                <div class="campo">
+                    <label>💵 Monto</label>
+                    <input type="number" id="montoPresupuesto" step="0.01" min="0" required>
+                </div>
+                <div class="campo">
+                    <label>📊 Tipo</label>
+                    <select id="tipoTransaccion">
+                        <option value="ingreso">💚 Ingreso</option>
+                        <option value="gasto">🔴 Gasto</option>
+                    </select>
+                </div>
+            </div>
 
-            <select id="encantamiento">
-                <option value="🔥">🔥 Fuego</option>
-                <option value="❄️">❄️ Hielo</option>
-                <option value="⚡">⚡ Rayo</option>
-                <option value="💚">💚 Naturaleza</option>
-            </select>
-
-            <button type="submit">🔨 Forjar Arma</button>
+            <button type="submit">➕ Agregar transacción</button>
         </form>
+
+        <button id="btnLimpiarPresupuesto" class="btn-gasto">🗑️ Limpiar todo</button>
+
+        <div id="mensajePresupuesto" style="margin-top:15px;font-size:14px;color:#64748b;">
+            Agrega tus transacciones
+        </div>
     </div>
 
     <script>
-        const recetas = {
-            '🪨🪨': { arma: '🪓', nombre: 'Hacha de Piedra' },
-            '🪵🪵': { arma: '🏹', nombre: 'Arco de Madera' },
-            '🪙🪙': { arma: '⚔️', nombre: 'Espada de Metal' },
-            '🪨🪵': { arma: '🛡️', nombre: 'Escudo de Madera y Piedra' },
-            '🪵🪙': { arma: '🗡️', nombre: 'Daga de Metal y Madera' },
-            '🪙🪨': { arma: '🔨', nombre: 'Martillo de Piedra y Metal' }
-        };
+        let transacciones = [];
 
-        document.getElementById('formArma').addEventListener('submit', (e) => {
+        function actualizarResumen() {
+            const ingresos = transacciones.filter(t => t.tipo === 'ingreso').reduce((sum, t) => sum + t.monto, 0);
+            const gastos = transacciones.filter(t => t.tipo === 'gasto').reduce((sum, t) => sum + t.monto, 0);
+            const balance = ingresos - gastos;
+
+            document.getElementById('totalIngresos').textContent = `$${ingresos.toFixed(2)}`;
+            document.getElementById('totalGastos').textContent = `$${gastos.toFixed(2)}`;
+            document.getElementById('totalBalance').textContent = `$${balance.toFixed(2)}`;
+            document.getElementById('totalBalance').style.color = balance >= 0 ? '#22c55e' : '#ef4444';
+
+            console.log('📊 RESUMEN ACTUALIZADO:');
+            console.log(`Ingresos: $${ingresos.toFixed(2)}`);
+            console.log(`Gastos: $${gastos.toFixed(2)}`);
+            console.log(`Balance: $${balance.toFixed(2)}`);
+            console.log(`Total transacciones: ${transacciones.length}`);
+        }
+
+        document.getElementById('formPresupuesto').addEventListener('submit', (e) => {
             e.preventDefault();
-            const m1 = document.getElementById('material1').value;
-            const m2 = document.getElementById('material2').value;
-            const encanto = document.getElementById('encantamiento').value;
 
-            const clave = m1 + m2;
-            const receta = recetas[clave] || { arma: '🔧', nombre: 'Arma Genérica' };
+            const concepto = document.getElementById('concepto').value.trim();
+            const monto = parseFloat(document.getElementById('montoPresupuesto').value);
+            const tipo = document.getElementById('tipoTransaccion').value;
 
-            const armaFinal = receta.arma + encanto;
-            document.getElementById('armaResultado').textContent = armaFinal;
+            if (!concepto) {
+                document.getElementById('mensajePresupuesto').textContent = '⚠️ Ingresa un concepto';
+                return;
+            }
 
-            console.log('⚒️ ARMA FORJADA:');
-            console.log(`Nombre: ${receta.nombre}`);
-            console.log(`Materiales: ${m1} + ${m2}`);
-            console.log(`Encantamiento: ${encanto}`);
-            console.log(`Arma final: ${armaFinal}`);
-            console.log('✅ ¡Arma creada con éxito!');
+            if (isNaN(monto) || monto <= 0) {
+                document.getElementById('mensajePresupuesto').textContent = '⚠️ Monto inválido';
+                return;
+            }
 
-            document.getElementById('logForja').innerHTML = `🔨 ¡Has creado ${receta.nombre}! ${armaFinal}`;
+            transacciones.push({ concepto, monto, tipo });
+            actualizarResumen();
+
+            document.getElementById('mensajePresupuesto').textContent = `✅ ${concepto} registrado: $${monto.toFixed(2)}`;
+            document.getElementById('formPresupuesto').reset();
+
+            console.log(`📝 TRANSACCIÓN REGISTRADA:`);
+            console.log(`Concepto: ${concepto}`);
+            console.log(`Monto: $${monto.toFixed(2)}`);
+            console.log(`Tipo: ${tipo}`);
         });
+
+        document.getElementById('btnLimpiarPresupuesto').addEventListener('click', () => {
+            if (confirm('¿Limpiar todas las transacciones?')) {
+                transacciones = [];
+                actualizarResumen();
+                document.getElementById('mensajePresupuesto').textContent = '🗑️ Presupuesto limpiado';
+            }
+        });
+
+        actualizarResumen();
     </script>
 </body>
 

@@ -43,8 +43,6 @@
             color: var(--gray-800);
             line-height: 1.6;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
         }
 
         /* --- Layout --- */
@@ -123,7 +121,7 @@
         /* --- Grid de ejercicios --- */
         .exercises-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 24px;
             margin-top: 20px;
         }
@@ -134,8 +132,6 @@
             padding: 24px;
             box-shadow: var(--shadow);
             transition: var(--transition);
-            text-decoration: none;
-            color: var(--gray-800);
             border: 2px solid transparent;
             display: flex;
             flex-direction: column;
@@ -222,6 +218,8 @@
             justify-content: space-between;
             padding-top: 16px;
             border-top: 1px solid var(--gray-200);
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .exercise-card .card-footer .btn-card {
@@ -234,10 +232,31 @@
             transition: var(--transition);
             border: none;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .exercise-card .card-footer .btn-card:hover {
             background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .exercise-card .card-footer .btn-code {
+            background: var(--gray-200);
+            color: var(--gray-700);
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .exercise-card .card-footer .btn-code:hover {
+            background: var(--gray-300);
             transform: scale(1.05);
         }
 
@@ -255,6 +274,145 @@
 
         .exercise-card .card-status.completed {
             opacity: 1;
+        }
+
+        /* --- Modal de Código --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--gray-800);
+        }
+
+        .modal-header h2 span {
+            color: var(--gray-500);
+            font-weight: 400;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gray-500);
+            transition: var(--transition);
+            padding: 0 10px;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body .code-preview {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .modal-body .code-preview .html-code {
+            color: #fbbf24;
+        }
+
+        .modal-body .code-preview .css-code {
+            color: #60a5fa;
+        }
+
+        .modal-body .code-preview .js-code {
+            color: #34d399;
+        }
+
+        .modal-body .code-preview .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 2px solid var(--gray-200);
+        }
+
+        .modal-footer .btn-modal {
+            padding: 10px 24px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .modal-footer .btn-modal.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-footer .btn-modal.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .modal-footer .btn-modal.secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .modal-footer .btn-modal.secondary:hover {
+            background: var(--gray-300);
         }
 
         /* --- Footer --- */
@@ -294,6 +452,26 @@
             .exercises-grid {
                 grid-template-columns: 1fr;
             }
+
+            .modal-content {
+                padding: 20px;
+                max-height: 95vh;
+            }
+
+            .modal-body .code-preview {
+                font-size: 12px;
+                padding: 15px;
+            }
+
+            .exercise-card .card-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .exercise-card .card-footer .btn-card,
+            .exercise-card .card-footer .btn-code {
+                text-align: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -312,6 +490,10 @@
 
             .exercise-card {
                 padding: 18px;
+            }
+
+            .modal-content {
+                padding: 15px;
             }
         }
 
@@ -389,6 +571,30 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--gray-400);
         }
+
+        /* --- Loading spinner para el código --- */
+        .loading-code {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-500);
+        }
+
+        .loading-code .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -405,7 +611,7 @@
                 <span>📚 10 Ejercicios</span>
                 <span>⚡ Conceptos ES6+</span>
                 <span>💯 100% Práctico</span>
-                <span>🔗 Cada ejercicio en su propia página</span>
+                <span>🔗 Código fuente incluido</span>
             </div>
         </header>
 
@@ -419,8 +625,30 @@
             <p>📚 Material académico · ECMAScript 6+ · 10 ejercicios resueltos</p>
             <p style="font-size: 0.85rem; margin-top: 8px;">
                 Cada ejercicio está disponible como página independiente: <strong>e1.html</strong> a
-                <strong>e10.html</strong>
+                <strong>e10.html</strong> · Haz clic en "Ver código" para analizar el código fuente
             </p>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar el código -->
+    <div class="modal-overlay" id="codeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Ejercicio <span id="modalNumber">1</span>: <span id="modalName">Título</span></h2>
+                <button class="modal-close" id="modalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="codeContent">
+                    <div class="loading-code">
+                        <div class="spinner"></div>
+                        <p>Cargando código...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn-modal primary" id="modalOpenPage" target="_blank">▶️ Abrir ejercicio</a>
+                <button class="btn-modal secondary" id="modalCloseBtn">Cerrar</button>
+            </div>
         </div>
     </div>
 
@@ -428,74 +656,74 @@
         // --- DATOS DE LOS EJERCICIOS ---
         const ejercicios = [{
             id: 1,
-            titulo: "Variables y Template Literals",
+            titulo: "Simulador de Clima",
             dificultad: "Fácil",
-            concepto: "const, let, template literals",
-            descripcion: "Declarar variables con const y let, y usar template literals para mostrar mensajes.",
-            icono: "📝"
+            concepto: "Eventos, DOM, innerHTML",
+            descripcion: "Cambia el clima con diferentes botones usando eventos y manipulación del DOM.",
+            icono: "🌤️"
         }, {
             id: 2,
-            titulo: "Desestructuración de Objetos",
+            titulo: "Calculadora de IMC",
             dificultad: "Fácil",
-            concepto: "Destructuring",
-            descripcion: "Extraer propiedades de un objeto usando desestructuración.",
-            icono: "📦"
+            concepto: "Eventos, Formularios, console.log",
+            descripcion: "Calcula el índice de masa corporal con entrada de datos y muestra resultados en consola.",
+            icono: "⚖️"
         }, {
             id: 3,
-            titulo: "Spread Operator en Arrays",
+            titulo: "Gestor de Tareas",
             dificultad: "Fácil",
-            concepto: "Spread Operator",
-            descripcion: "Combinar arrays usando el operador spread (...).",
-            icono: "📋"
+            concepto: "Eventos, DOM, innerHTML",
+            descripcion: "Administra tareas con estados completado/pendiente usando eventos de botones.",
+            icono: "✅"
         }, {
             id: 4,
-            titulo: "Clonación de Objetos con Spread",
+            titulo: "Temporizador Pomodoro",
             dificultad: "Fácil",
-            concepto: "Clonación de Objetos",
-            descripcion: "Clonar un objeto y modificar la copia sin afectar el original.",
-            icono: "🔀"
+            concepto: "Eventos, setInterval, innerHTML",
+            descripcion: "Temporizador con inicio/pausa/reinicio usando eventos de botones.",
+            icono: "⏱️"
         }, {
             id: 5,
-            titulo: "Promesas Básicas",
+            titulo: "Conversor de Unidades",
             dificultad: "Medio",
-            concepto: "Promesas",
-            descripcion: "Crear y consumir una promesa simple.",
-            icono: "⚡"
+            concepto: "Eventos, Formularios, console.log",
+            descripcion: "Convierte entre diferentes unidades con eventos en tiempo real.",
+            icono: "📐"
         }, {
             id: 6,
-            titulo: "Async/Await con Try/Catch",
+            titulo: "Registro de Empleados",
             dificultad: "Medio",
-            concepto: "Async/Await",
-            descripcion: "Usar async/await con try/catch para manejar operaciones asíncronas.",
-            icono: "⏳"
+            concepto: "Formularios, Validación, console.log",
+            descripcion: "Registra empleados con validación de datos y muestra en consola.",
+            icono: "👔"
         }, {
             id: 7,
-            titulo: "Métodos de Arrays (filter y map)",
+            titulo: "Presupuesto Mensual",
             dificultad: "Medio",
-            concepto: "filter, map",
-            descripcion: "Filtrar y transformar datos con filter y map.",
-            icono: "🔄"
+            concepto: "Eventos, Formularios, console.log",
+            descripcion: "Registra ingresos y gastos con cálculo automático del balance.",
+            icono: "💰"
         }, {
             id: 8,
-            titulo: "reduce() Suma y Promedio",
+            titulo: "Encuesta de Satisfacción",
             dificultad: "Medio",
-            concepto: "reduce",
-            descripcion: "Calcular suma y promedio con reduce.",
+            concepto: "Eventos, Formularios, console.log",
+            descripcion: "Encuesta con sistema de estrellas y registro en consola.",
             icono: "📊"
         }, {
             id: 9,
-            titulo: "Optional Chaining y Nullish Coalescing",
+            titulo: "Registro de Hábitos",
             dificultad: "Difícil",
-            concepto: "Optional Chaining, Nullish Coalescing",
-            descripcion: "Acceder a propiedades anidadas de forma segura con ?. y usar ?? para valores por defecto.",
-            icono: "🔗"
+            concepto: "Eventos, Formularios, console.log",
+            descripcion: "Seguimiento de hábitos con checkboxes y estadísticas en tiempo real.",
+            icono: "📋"
         }, {
             id: 10,
-            titulo: "Proyecto Integrador",
+            titulo: "Planificador de Viajes",
             dificultad: "Difícil",
-            concepto: "Integración de conceptos",
-            descripcion: "Aplicar múltiples conceptos en un caso práctico: filter, map, reduce, async/await.",
-            icono: "🚀"
+            concepto: "Formularios, Validación, console.log",
+            descripcion: "Planifica viajes con fechas, presupuesto y actividades registradas en consola.",
+            icono: "✈️"
         }];
 
         // --- FUNCIONES ---
@@ -511,7 +739,7 @@
         function renderExercises() {
             const grid = document.getElementById('exercisesGrid');
             grid.innerHTML = ejercicios.map(ej => `
-                <a href="./e${ej.id}.html" class="exercise-card" target="_blank">
+                <div class="exercise-card">
                     <div class="card-status" id="status-${ej.id}">⬜</div>
                     <div class="card-header">
                         <span class="card-number">${ej.id}</span>
@@ -521,13 +749,12 @@
                     <div class="card-concept"><strong>Concepto:</strong> ${ej.concepto}</div>
                     <div class="card-description">${ej.descripcion}</div>
                     <div class="card-footer">
-                        <span class="card-icon">➡️</span>
-                        <span class="btn-card">Ver ejercicio →</span>
+                        <a href="./e${ej.id}.html" class="btn-card" target="_blank">▶️ Abrir ejercicio</a>
+                        <button class="btn-code" onclick="verCodigo(${ej.id})">📄 Ver código</button>
                     </div>
-                </a>
+                </div>
             `).join('');
 
-            // Cargar estado de completados desde localStorage
             cargarEstado();
         }
 
@@ -547,12 +774,106 @@
             }
         }
 
+        // --- FUNCIÓN PARA VER CÓDIGO ---
+        async function verCodigo(id) {
+            const modal = document.getElementById('codeModal');
+            const modalNumber = document.getElementById('modalNumber');
+            const modalName = document.getElementById('modalName');
+            const modalOpenPage = document.getElementById('modalOpenPage');
+            const codeContent = document.getElementById('codeContent');
+
+            // Buscar el ejercicio
+            const ejercicio = ejercicios.find(e => e.id === id);
+            if (!ejercicio) return;
+
+            // Actualizar modal
+            modalNumber.textContent = id;
+            modalName.textContent = ejercicio.titulo;
+            modalOpenPage.href = `./e${id}.html`;
+
+            // Mostrar loading
+            codeContent.innerHTML = `
+                <div class="loading-code">
+                    <div class="spinner"></div>
+                    <p>Cargando código...</p>
+                </div>
+            `;
+
+            // Abrir modal
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            try {
+                // Cargar el archivo HTML
+                const response = await fetch(`./e${id}.html`);
+                if (!response.ok) throw new Error('No se pudo cargar el archivo');
+
+                const html = await response.text();
+
+                // Mostrar el código con resaltado básico
+                const codeHTML = escapeHtml(html);
+                codeContent.innerHTML = `
+                    <div class="code-preview">${codeHTML}</div>
+                `;
+
+                console.log(`📄 Código del ejercicio ${id} cargado correctamente`);
+            } catch (error) {
+                console.error('Error al cargar el código:', error);
+                codeContent.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: var(--danger);">
+                        <p>❌ Error al cargar el código</p>
+                        <p style="font-size: 14px; color: var(--gray-500);">${error.message}</p>
+                        <p style="font-size: 14px; color: var(--gray-500); margin-top: 10px;">
+                            Asegúrate de que el archivo <strong>e${id}.html</strong> exista en el mismo directorio.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // --- FUNCIÓN PARA ESCAPAR HTML ---
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+        }
+
+        // --- CERRAR MODAL ---
+        function cerrarModal() {
+            const modal = document.getElementById('codeModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- EVENTOS DEL MODAL ---
+        document.getElementById('modalClose').addEventListener('click', cerrarModal);
+        document.getElementById('modalCloseBtn').addEventListener('click', cerrarModal);
+
+        // Cerrar al hacer clic fuera del modal
+        document.getElementById('codeModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                cerrarModal();
+            }
+        });
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                cerrarModal();
+            }
+        });
+
         // --- INICIALIZACIÓN ---
         renderExercises();
 
         console.log('📚 Bienvenido al menú de ejercicios ECMAScript 6+');
         console.log('📌 Cada ejercicio está en su propia página: e1.html a e10.html');
-        console.log('💡 Marca los ejercicios como completados desde cada página individual');
+        console.log('💡 Haz clic en "Ver código" para analizar el código fuente');
         console.log('📊 Tu progreso se guarda automáticamente en el navegador');
     </script>
 </body>

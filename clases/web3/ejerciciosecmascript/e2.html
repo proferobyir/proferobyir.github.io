@@ -5,134 +5,158 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial;
-            background: #1a0b2e;
-            color: #c8a2d6;
+            font-family: 'Segoe UI', Arial;
+            background: #f8fafc;
+            padding: 20px;
         }
 
-        #escenario {
-            background: #2d1b4e;
-            padding: 30px;
+        #imcBox {
+            background: white;
+            padding: 35px;
             border-radius: 20px;
-            max-width: 600px;
+            max-width: 450px;
             margin: 20px auto;
-            border: 3px solid #8b5cf6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .mago {
-            display: inline-block;
-            margin: 20px 30px;
-            font-size: 70px;
+        .input-group {
+            margin: 20px 0;
         }
 
-        .stats {
-            font-size: 20px;
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
         }
 
-        #hechizo {
-            background: #1a0b2e;
-            padding: 15px;
+        .input-group input {
+            padding: 12px;
+            width: 80%;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
-            margin: 15px 0;
-            min-height: 50px;
-            font-size: 22px;
-            color: #fbbf24;
+            font-size: 18px;
+            text-align: center;
         }
 
-        .btn-hechizo {
-            padding: 12px 20px;
-            font-size: 18px;
-            background: #7c3aed;
+        #imcResultado {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        #imcCategoria {
+            font-size: 22px;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        #imcDetalle {
+            font-size: 16px;
+            color: #64748b;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 14px 40px;
+            background: #3b82f6;
             color: white;
             border: none;
             border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
-            margin: 5px;
+            transition: background 0.2s;
         }
 
-        .btn-hechizo:hover {
-            background: #6d28d9;
+        button:hover {
+            background: #2563eb;
+        }
+
+        .btn-reiniciar {
+            background: #94a3b8;
+            margin-left: 10px;
+        }
+
+        .btn-reiniciar:hover {
+            background: #64748b;
         }
     </style>
 </head>
 
 <body>
-    <div id="escenario">
-        <h2>🧙 TORNEO DE MAGOS 🧙</h2>
+    <div id="imcBox">
+        <h2>⚖️ Calculadora de IMC</h2>
 
-        <div class="mago">
-            🧙‍♂️<br>
-            <span class="stats" id="vidaMago1">❤️ 100</span>
+        <div class="input-group">
+            <label>📏 Altura (metros)</label>
+            <input type="number" id="altura" value="1.75" step="0.01" min="0.5" max="3">
         </div>
 
-        <div class="mago">
-            🧙‍♀️<br>
-            <span class="stats" id="vidaMago2">❤️ 100</span>
+        <div class="input-group">
+            <label>⚖️ Peso (kilogramos)</label>
+            <input type="number" id="peso" value="70" step="0.5" min="20" max="300">
         </div>
 
-        <div id="hechizo">✨ ¡Lanza un hechizo! ✨</div>
+        <div>
+            <button id="btnCalcularIMC">📊 Calcular IMC</button>
+            <button id="btnResetIMC" class="btn-reiniciar">🔄 Reiniciar</button>
+        </div>
 
-        <button class="btn-hechizo" id="btnFuego">🔥 Bola de Fuego</button>
-        <button class="btn-hechizo" id="btnHielo">❄️ Congelar</button>
-        <button class="btn-hechizo" id="btnRayo">⚡ Rayo</button>
-        <button class="btn-hechizo" id="btnSanar">💚 Sanar</button>
-        <button class="btn-hechizo" id="btnReiniciar">🔄 Reiniciar</button>
+        <div id="imcResultado">--</div>
+        <div id="imcCategoria">Ingresa tus datos</div>
+        <div id="imcDetalle">Presiona "Calcular IMC"</div>
     </div>
 
     <script>
-        let vida1 = 100, vida2 = 100;
-        const hechizoDiv = document.getElementById('hechizo');
-        const v1 = document.getElementById('vidaMago1');
-        const v2 = document.getElementById('vidaMago2');
+        const categorias = [
+            { min: 0, max: 16, emoji: '⚠️', texto: 'Delgadez severa', color: '#ef4444', bg: '#fee2e2' },
+            { min: 16, max: 18.5, emoji: '📉', texto: 'Bajo peso', color: '#f59e0b', bg: '#fef3c7' },
+            { min: 18.5, max: 25, emoji: '✅', texto: 'Peso normal', color: '#22c55e', bg: '#dcfce7' },
+            { min: 25, max: 30, emoji: '📈', texto: 'Sobrepeso', color: '#f59e0b', bg: '#fef3c7' },
+            { min: 30, max: 35, emoji: '⚠️', texto: 'Obesidad I', color: '#ef4444', bg: '#fee2e2' },
+            { min: 35, max: 40, emoji: '🚨', texto: 'Obesidad II', color: '#dc2626', bg: '#fecaca' },
+            { min: 40, max: Infinity, emoji: '🔴', texto: 'Obesidad III', color: '#b91c1c', bg: '#fca5a5' }
+        ];
 
-        function actualizar() {
-            v1.textContent = `❤️ ${vida1}`;
-            v2.textContent = `❤️ ${vida2}`;
-        }
+        function calcularIMC() {
+            const altura = parseFloat(document.getElementById('altura').value);
+            const peso = parseFloat(document.getElementById('peso').value);
 
-        function verificarGanador() {
-            if (vida1 <= 0) {
-                hechizoDiv.innerHTML = '🏆 ¡El Mago 2 (🧙‍♀️) ha ganado! 🏆';
-                return true;
-            } else if (vida2 <= 0) {
-                hechizoDiv.innerHTML = '🏆 ¡El Mago 1 (🧙‍♂️) ha ganado! 🏆';
-                return true;
-            }
-            return false;
-        }
-
-        function lanzarHechizo(tipo, dano, sanacion = 0) {
-            if (verificarGanador()) return;
-
-            if (sanacion > 0) {
-                vida1 = Math.min(100, vida1 + sanacion);
-                hechizoDiv.innerHTML = `💚 ¡Mago 1 se ha sanado ${sanacion} puntos!`;
-            } else {
-                vida2 = Math.max(0, vida2 - dano);
-                const emojis = { '🔥': '🔥', '❄️': '❄️', '⚡': '⚡' };
-                hechizoDiv.innerHTML = `${emojis[tipo]} ¡${tipo} golpea al Mago 2 con ${dano} de daño!`;
+            if (!altura || !peso || altura <= 0 || peso <= 0) {
+                document.getElementById('imcResultado').textContent = '❌';
+                document.getElementById('imcCategoria').textContent = 'Datos inválidos';
+                document.getElementById('imcDetalle').textContent = 'Por favor, ingresa valores válidos';
+                return;
             }
 
-            // Contraataque del mago 2
-            if (!verificarGanador() && vida2 > 0 && sanacion === 0) {
-                const contraataque = Math.floor(Math.random() * 15) + 5;
-                vida1 = Math.max(0, vida1 - contraataque);
-                hechizoDiv.innerHTML += ` 💥 Mago 2 contraataca con ${contraataque}`;
-            }
+            const imc = peso / (altura * altura);
+            const imcRedondeado = Math.round(imc * 10) / 10;
 
-            actualizar();
-            verificarGanador();
+            let categoria = categorias.find(c => imc >= c.min && imc < c.max);
+            if (!categoria) categoria = categorias[categorias.length - 1];
+
+            document.getElementById('imcResultado').textContent = imcRedondeado;
+            document.getElementById('imcCategoria').textContent = `${categoria.emoji} ${categoria.texto}`;
+            document.getElementById('imcCategoria').style.color = categoria.color;
+            document.getElementById('imcCategoria').style.background = categoria.bg;
+            document.getElementById('imcDetalle').textContent = `IMC: ${imcRedondeado} - ${categoria.texto}`;
+
+            console.log('📊 CÁLCULO DE IMC:');
+            console.log(`Altura: ${altura}m`);
+            console.log(`Peso: ${peso}kg`);
+            console.log(`IMC: ${imcRedondeado}`);
+            console.log(`Categoría: ${categoria.texto}`);
         }
 
-        document.getElementById('btnFuego').addEventListener('click', () => lanzarHechizo('🔥', 25));
-        document.getElementById('btnHielo').addEventListener('click', () => lanzarHechizo('❄️', 18));
-        document.getElementById('btnRayo').addEventListener('click', () => lanzarHechizo('⚡', 30));
-        document.getElementById('btnSanar').addEventListener('click', () => lanzarHechizo('💚', 0, 20));
-        document.getElementById('btnReiniciar').addEventListener('click', () => {
-            vida1 = 100;
-            vida2 = 100;
-            actualizar();
-            hechizoDiv.innerHTML = '✨ ¡Nuevo torneo! ✨';
+        document.getElementById('btnCalcularIMC').addEventListener('click', calcularIMC);
+        document.getElementById('btnResetIMC').addEventListener('click', () => {
+            document.getElementById('altura').value = '1.75';
+            document.getElementById('peso').value = '70';
+            document.getElementById('imcResultado').textContent = '--';
+            document.getElementById('imcCategoria').textContent = 'Ingresa tus datos';
+            document.getElementById('imcCategoria').style.background = 'transparent';
+            document.getElementById('imcDetalle').textContent = 'Presiona "Calcular IMC"';
         });
     </script>
 </body>

@@ -5,139 +5,109 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial;
-            background: #2c1810;
-            color: #f0d5b0;
+            font-family: 'Segoe UI', Arial;
+            background: #f0f0f0;
+            transition: background 0.5s;
+            padding: 20px;
         }
 
-        #arena {
-            background: #3d2b1f;
-            padding: 30px;
+        #climaBox {
+            background: white;
+            padding: 40px;
             border-radius: 20px;
-            max-width: 600px;
+            max-width: 500px;
             margin: 20px auto;
-            border: 3px solid #b8860b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .guerrero {
-            display: inline-block;
-            margin: 20px 50px;
-            font-size: 60px;
+        #climaIcon {
+            font-size: 80px;
+            transition: transform 0.3s;
         }
 
-        .vida {
-            font-size: 24px;
-            color: #ff6b6b;
-        }
-
-        #log {
-            background: #1a0f0a;
-            padding: 15px;
-            border-radius: 10px;
+        #climaText {
+            font-size: 28px;
             margin: 15px 0;
-            min-height: 60px;
-            font-size: 20px;
-            color: #ffd700;
+            font-weight: bold;
         }
 
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            background: #b8860b;
-            color: white;
+        #climaDesc {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .btn-clima {
+            padding: 12px 25px;
+            margin: 5px;
             border: none;
             border-radius: 10px;
+            font-size: 16px;
             cursor: pointer;
-            margin: 5px;
+            transition: transform 0.2s;
+            font-weight: 500;
         }
 
-        button:hover {
-            background: #d4a017;
+        .btn-clima:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-clima:active {
+            transform: scale(0.95);
+        }
+
+        #tempDisplay {
+            font-size: 48px;
+            margin: 15px 0;
         }
     </style>
 </head>
 
 <body>
-    <div id="arena">
-        <h2>⚔️ DUELO DE ESPADAS ⚔️</h2>
+    <div id="climaBox">
+        <h2>🌤️ Simulador de Clima</h2>
 
-        <div class="guerrero">
-            🦁<br>
-            <span id="vidaJugador" class="vida">❤️ 100</span>
+        <div id="climaIcon">☀️</div>
+        <div id="climaText">Soleado</div>
+        <div id="tempDisplay">25°C</div>
+        <div id="climaDesc">Día perfecto para salir</div>
+
+        <div>
+            <button class="btn-clima" style="background:#fbbf24;color:#1a1a1a;" id="btnSoleado">☀️ Soleado</button>
+            <button class="btn-clima" style="background:#93c5fd;color:#1a1a1a;" id="btnNublado">☁️ Nublado</button>
+            <button class="btn-clima" style="background:#60a5fa;color:white;" id="btnLluvia">🌧️ Lluvia</button>
+            <button class="btn-clima" style="background:#94a3b8;color:white;" id="btnNieve">❄️ Nieve</button>
+            <button class="btn-clima" style="background:#f87171;color:white;" id="btnTormenta">⛈️ Tormenta</button>
         </div>
-
-        <div class="guerrero">
-            🐉<br>
-            <span id="vidaEnemigo" class="vida">❤️ 100</span>
-        </div>
-
-        <div id="log">⚔️ ¡Que comience el duelo!</div>
-
-        <button id="btnAtacar">🗡️ Atacar</button>
-        <button id="btnDefender">🛡️ Defender</button>
-        <button id="btnReiniciar">🔄 Reiniciar</button>
     </div>
 
     <script>
-        let vidaJugador = 100;
-        let vidaEnemigo = 100;
-        let defendiendo = false;
+        const climas = {
+            soleado: { icon: '☀️', text: 'Soleado', temp: '25°C', desc: 'Día perfecto para salir', bg: '#fef3c7' },
+            nublado: { icon: '☁️', text: 'Nublado', temp: '18°C', desc: 'Cielo cubierto, sin sol', bg: '#e2e8f0' },
+            lluvia: { icon: '🌧️', text: 'Lluvia', temp: '12°C', desc: 'Lleva paraguas', bg: '#bfdbfe' },
+            nieve: { icon: '❄️', text: 'Nieve', temp: '-2°C', desc: 'Abrígate bien', bg: '#e0f2fe' },
+            tormenta: { icon: '⛈️', text: 'Tormenta', temp: '15°C', desc: '⚠️ Precaución afuera', bg: '#cbd5e1' }
+        };
 
-        const log = document.getElementById('log');
-        const vJugador = document.getElementById('vidaJugador');
-        const vEnemigo = document.getElementById('vidaEnemigo');
+        function cambiarClima(tipo) {
+            const clima = climas[tipo];
+            document.getElementById('climaIcon').textContent = clima.icon;
+            document.getElementById('climaText').textContent = clima.text;
+            document.getElementById('tempDisplay').textContent = clima.temp;
+            document.getElementById('climaDesc').textContent = clima.desc;
+            document.body.style.background = clima.bg;
 
-        function actualizarVida() {
-            vJugador.textContent = `❤️ ${vidaJugador}`;
-            vEnemigo.textContent = `❤️ ${vidaEnemigo}`;
+            // Animación
+            const icon = document.getElementById('climaIcon');
+            icon.style.transform = 'scale(1.3)';
+            setTimeout(() => icon.style.transform = 'scale(1)', 300);
         }
 
-        function atacar() {
-            if (vidaJugador <= 0 || vidaEnemigo <= 0) return;
-
-            // Ataque del jugador
-            let dano = Math.floor(Math.random() * 20) + 10;
-            vidaEnemigo = Math.max(0, vidaEnemigo - dano);
-            log.innerHTML = `🗡️ ¡Golpeaste al dragón con ${dano} de daño!`;
-
-            // Ataque del enemigo (si aún vive)
-            if (vidaEnemigo > 0) {
-                let danoEnemigo = Math.floor(Math.random() * 15) + 5;
-                if (defendiendo) {
-                    danoEnemigo = Math.floor(danoEnemigo * 0.3);
-                    log.innerHTML += ` 🛡️ Defendiste, daño reducido a ${danoEnemigo}`;
-                    defendiendo = false;
-                }
-                vidaJugador = Math.max(0, vidaJugador - danoEnemigo);
-            }
-
-            actualizarVida();
-            verificarGanador();
-        }
-
-        function verificarGanador() {
-            if (vidaJugador <= 0) {
-                log.innerHTML = '💀 ¡El dragón te ha derrotado! 💀';
-                document.querySelector('#arena').style.borderColor = '#ff0000';
-            } else if (vidaEnemigo <= 0) {
-                log.innerHTML = '🏆 ¡Has derrotado al dragón! 🏆';
-                document.querySelector('#arena').style.borderColor = '#ffd700';
-            }
-        }
-
-        document.getElementById('btnAtacar').addEventListener('click', atacar);
-        document.getElementById('btnDefender').addEventListener('click', () => {
-            defendiendo = true;
-            log.innerHTML = '🛡️ Preparando defensa...';
-        });
-        document.getElementById('btnReiniciar').addEventListener('click', () => {
-            vidaJugador = 100;
-            vidaEnemigo = 100;
-            defendiendo = false;
-            actualizarVida();
-            log.innerHTML = '⚔️ ¡Nuevo duelo! ⚔️';
-            document.querySelector('#arena').style.borderColor = '#b8860b';
-        });
+        document.getElementById('btnSoleado').addEventListener('click', () => cambiarClima('soleado'));
+        document.getElementById('btnNublado').addEventListener('click', () => cambiarClima('nublado'));
+        document.getElementById('btnLluvia').addEventListener('click', () => cambiarClima('lluvia'));
+        document.getElementById('btnNieve').addEventListener('click', () => cambiarClima('nieve'));
+        document.getElementById('btnTormenta').addEventListener('click', () => cambiarClima('tormenta'));
     </script>
 </body>
 

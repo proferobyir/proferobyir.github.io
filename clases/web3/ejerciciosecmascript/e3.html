@@ -5,143 +5,228 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial;
-            background: #0d7a3e;
+            font-family: 'Segoe UI', Arial;
+            background: #f1f5f9;
+            padding: 20px;
+        }
+
+        #tareasBox {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .tarea {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            margin: 8px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.3s;
+        }
+
+        .tarea.completada {
+            background: #dcfce7;
+            border-left-color: #22c55e;
+            opacity: 0.8;
+        }
+
+        .tarea.completada .texto-tarea {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .texto-tarea {
+            flex: 1;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .btn-accion {
+            padding: 6px 14px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-completar {
+            background: #22c55e;
             color: white;
         }
 
-        #pista {
-            background: #4a8f29;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 700px;
-            margin: 20px auto;
-            border: 4px solid #f5c842;
+        .btn-completar:hover {
+            background: #16a34a;
         }
 
-        .carril {
-            background: #6b9e3a;
-            padding: 15px;
-            margin: 10px 0;
+        .btn-eliminar {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-eliminar:hover {
+            background: #dc2626;
+        }
+
+        #contadorTareas {
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f1f5f9;
             border-radius: 10px;
-            position: relative;
-            height: 70px;
-            overflow: hidden;
         }
 
-        .corredor {
-            font-size: 50px;
-            position: absolute;
-            left: 0;
-            transition: left 0.3s;
+        .input-nueva {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
         }
 
-        .meta {
-            position: absolute;
-            right: 10px;
-            font-size: 30px;
+        .input-nueva input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
         }
 
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            background: #f5c842;
-            color: #0d7a3e;
+        .input-nueva button {
+            padding: 12px 24px;
+            background: #3b82f6;
+            color: white;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin: 5px;
-            font-weight: bold;
+            font-size: 16px;
         }
 
-        button:hover {
-            background: #f7d95c;
-        }
-
-        #mensajeCarrera {
-            font-size: 24px;
-            padding: 15px;
-            background: #0d5a2e;
-            border-radius: 10px;
-            margin: 15px 0;
+        .input-nueva button:hover {
+            background: #2563eb;
         }
     </style>
 </head>
 
 <body>
-    <div id="pista">
-        <h2>🏁 CARRERA DE ANIMALES 🏁</h2>
+    <div id="tareasBox">
+        <h2>✅ Gestor de Tareas</h2>
 
-        <div class="carril">
-            <span class="corredor" id="animal1">🐇</span>
-            <span class="meta">🏁</span>
+        <div id="contadorTareas">
+            📋 Total: <span id="totalTareas">0</span> |
+            ✅ Completadas: <span id="completadasTareas">0</span> |
+            ⏳ Pendientes: <span id="pendientesTareas">0</span>
         </div>
 
-        <div class="carril">
-            <span class="corredor" id="animal2">🐢</span>
-            <span class="meta">🏁</span>
+        <div id="listaTareas"></div>
+
+        <div class="input-nueva">
+            <input type="text" id="nuevaTarea" placeholder="Nueva tarea...">
+            <button id="btnAgregarTarea">➕ Agregar</button>
         </div>
 
-        <div class="carril">
-            <span class="corredor" id="animal3">🦊</span>
-            <span class="meta">🏁</span>
-        </div>
-
-        <div id="mensajeCarrera">🐇 ¡Elige tu corredor y avanza!</div>
-
-        <button id="btnAvanzar1">🐇 Avanzar Conejo</button>
-        <button id="btnAvanzar2">🐢 Avanzar Tortuga</button>
-        <button id="btnAvanzar3">🦊 Avanzar Zorro</button>
-        <button id="btnReiniciarCarrera">🔄 Reiniciar</button>
+        <button id="btnLimpiarTareas"
+            style="background:#ef4444;color:white;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;">
+            🗑️ Limpiar completadas
+        </button>
     </div>
 
     <script>
-        let pos1 = 0, pos2 = 0, pos3 = 0;
-        const meta = 85; // % de la pista
-        const mensaje = document.getElementById('mensajeCarrera');
+        let tareas = [
+            { id: 1, texto: 'Completar informe mensual', completada: false },
+            { id: 2, texto: 'Revisar correos pendientes', completada: false },
+            { id: 3, texto: 'Preparar presentación', completada: true }
+        ];
+        let nextId = 4;
 
-        function actualizarPosiciones() {
-            document.getElementById('animal1').style.left = pos1 + '%';
-            document.getElementById('animal2').style.left = pos2 + '%';
-            document.getElementById('animal3').style.left = pos3 + '%';
-        }
+        function renderizarTareas() {
+            const lista = document.getElementById('listaTareas');
+            lista.innerHTML = '';
 
-        function verificarGanador(animal, pos) {
-            if (pos >= meta) {
-                const nombres = { '🐇': 'Conejo', '🐢': 'Tortuga', '🦊': 'Zorro' };
-                mensaje.innerHTML = `🏆 ¡${nombres[animal]} ha ganado la carrera! 🏆`;
-                return true;
+            if (tareas.length === 0) {
+                lista.innerHTML = '<p style="color:#94a3b8;padding:20px;">🎯 No hay tareas pendientes</p>';
             }
-            return false;
+
+            tareas.forEach(tarea => {
+                const div = document.createElement('div');
+                div.className = `tarea ${tarea.completada ? 'completada' : ''}`;
+
+                div.innerHTML = `
+        <span class="texto-tarea">${tarea.completada ? '✅' : '⬜'} ${tarea.texto}</span>
+        <div>
+          <button class="btn-accion btn-completar" data-id="${tarea.id}">
+            ${tarea.completada ? '↩️' : '✅'}
+          </button>
+          <button class="btn-accion btn-eliminar" data-id="${tarea.id}">🗑️</button>
+        </div>
+      `;
+
+                lista.appendChild(div);
+            });
+
+            // Actualizar contador
+            const total = tareas.length;
+            const completadas = tareas.filter(t => t.completada).length;
+            const pendientes = total - completadas;
+
+            document.getElementById('totalTareas').textContent = total;
+            document.getElementById('completadasTareas').textContent = completadas;
+            document.getElementById('pendientesTareas').textContent = pendientes;
+
+            // Eventos para los botones de las tareas
+            document.querySelectorAll('.btn-completar').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    toggleTarea(id);
+                });
+            });
+
+            document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    eliminarTarea(id);
+                });
+            });
         }
 
-        function avanzar(animal, posElement, btnElement) {
-            if (mensaje.innerHTML.includes('ganado')) return;
+        function toggleTarea(id) {
+            tareas = tareas.map(t =>
+                t.id === id ? { ...t, completada: !t.completada } : t
+            );
+            renderizarTareas();
+        }
 
-            const avance = Math.floor(Math.random() * 15) + 5;
-            let pos = posElement;
-            pos = Math.min(100, pos + avance);
+        function eliminarTarea(id) {
+            tareas = tareas.filter(t => t.id !== id);
+            renderizarTareas();
+        }
 
-            if (animal === '🐇') pos1 = pos;
-            else if (animal === '🐢') pos2 = pos;
-            else if (animal === '🦊') pos3 = pos;
-
-            actualizarPosiciones();
-            mensaje.innerHTML = `${animal} avanza ${avance} pasos 🏃`;
-
-            if (verificarGanador(animal, pos)) {
-                // Detener el juego
+        function agregarTarea() {
+            const input = document.getElementById('nuevaTarea');
+            const texto = input.value.trim();
+            if (texto) {
+                tareas.push({ id: nextId++, texto, completada: false });
+                input.value = '';
+                renderizarTareas();
             }
         }
 
-        document.getElementById('btnAvanzar1').addEventListener('click', () => avanzar('🐇', pos1));
-        document.getElementById('btnAvanzar2').addEventListener('click', () => avanzar('🐢', pos2));
-        document.getElementById('btnAvanzar3').addEventListener('click', () => avanzar('🦊', pos3));
-        document.getElementById('btnReiniciarCarrera').addEventListener('click', () => {
-            pos1 = 0; pos2 = 0; pos3 = 0;
-            actualizarPosiciones();
-            mensaje.innerHTML = '🏁 ¡Nueva carrera! 🏁';
+        document.getElementById('btnAgregarTarea').addEventListener('click', agregarTarea);
+        document.getElementById('nuevaTarea').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') agregarTarea();
         });
+        document.getElementById('btnLimpiarTareas').addEventListener('click', () => {
+            tareas = tareas.filter(t => !t.completada);
+            renderizarTareas();
+        });
+
+        renderizarTareas();
     </script>
 </body>
 

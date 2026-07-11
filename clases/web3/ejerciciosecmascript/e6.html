@@ -4,105 +4,150 @@
 <head>
     <style>
         body {
-            text-align: center;
-            font-family: Arial;
-            background: #2d3436;
-            color: #dfe6e9;
+            font-family: 'Segoe UI', Arial;
+            background: #f1f5f9;
+            padding: 20px;
         }
 
-        #creador {
-            background: #636e72;
+        #formEmpleado {
+            background: white;
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 15px;
             max-width: 450px;
             margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        #personajePreview {
-            font-size: 80px;
-            padding: 20px;
-            background: #2d3436;
-            border-radius: 15px;
+        .campo {
             margin: 15px 0;
         }
 
-        select,
-        input,
-        button {
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: none;
+        .campo label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+        .campo input,
+        .campo select {
             width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         button {
-            background: #00b894;
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
             color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
+            margin-top: 10px;
         }
 
         button:hover {
-            background: #00a381;
+            background: #2563eb;
+        }
+
+        #mensajeEmpleado {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #334155;
         }
     </style>
 </head>
 
 <body>
-    <div id="creador">
-        <h2>🎨 CREADOR DE PERSONAJES</h2>
+    <div id="formEmpleado">
+        <h2>👔 Registro de Empleado</h2>
 
-        <div id="personajePreview">🧙</div>
+        <form id="formRegistroEmpleado">
+            <div class="campo">
+                <label>👤 Nombre completo</label>
+                <input type="text" id="nombreEmpleado" required>
+            </div>
 
-        <form id="formPersonaje">
-            <select id="tipoPersonaje">
-                <option value="🧙">🧙 Mago</option>
-                <option value="⚔️">⚔️ Guerrero</option>
-                <option value="🏹">🏹 Arquero</option>
-                <option value="🛡️">🛡️ Paladín</option>
-                <option value="🧝">🧝 Elfo</option>
-            </select>
+            <div class="campo">
+                <label>📧 Correo electrónico</label>
+                <input type="email" id="emailEmpleado" required>
+            </div>
 
-            <input type="text" id="nombrePersonaje" placeholder="Nombre del personaje">
+            <div class="campo">
+                <label>🏢 Departamento</label>
+                <select id="departamento">
+                    <option value="IT">Tecnología</option>
+                    <option value="RRHH">Recursos Humanos</option>
+                    <option value="Finanzas">Finanzas</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Ventas">Ventas</option>
+                </select>
+            </div>
 
-            <select id="elemento">
-                <option value="🔥">🔥 Fuego</option>
-                <option value="💧">💧 Agua</option>
-                <option value="🌪️">🌪️ Viento</option>
-                <option value="🌍">🌍 Tierra</option>
-            </select>
+            <div class="campo">
+                <label>📅 Años de experiencia</label>
+                <input type="number" id="experiencia" min="0" max="50" value="0">
+            </div>
 
-            <button type="submit">⚡ Crear Personaje</button>
+            <button type="submit">📋 Registrar Empleado</button>
         </form>
+
+        <div id="mensajeEmpleado">Completa el formulario para registrar</div>
     </div>
 
     <script>
-        const preview = document.getElementById('personajePreview');
-        const tipoSelect = document.getElementById('tipoPersonaje');
-        const elementoSelect = document.getElementById('elemento');
-
-        // Actualizar preview en tiempo real
-        tipoSelect.addEventListener('change', () => {
-            preview.textContent = tipoSelect.value;
-        });
-
-        document.getElementById('formPersonaje').addEventListener('submit', (e) => {
+        document.getElementById('formRegistroEmpleado').addEventListener('submit', (e) => {
             e.preventDefault();
-            const tipo = tipoSelect.value;
-            const nombre = document.getElementById('nombrePersonaje').value || 'Anónimo';
-            const elemento = elementoSelect.value;
 
-            console.log('🎮 PERSONAJE CREADO:');
+            const nombre = document.getElementById('nombreEmpleado').value.trim();
+            const email = document.getElementById('emailEmpleado').value.trim();
+            const departamento = document.getElementById('departamento').value;
+            const experiencia = parseInt(document.getElementById('experiencia').value);
+
+            // Validaciones
+            if (!nombre || nombre.length < 3) {
+                document.getElementById('mensajeEmpleado').textContent = '⚠️ Nombre debe tener al menos 3 caracteres';
+                document.getElementById('mensajeEmpleado').style.color = '#dc2626';
+                return;
+            }
+
+            if (!email || !email.includes('@')) {
+                document.getElementById('mensajeEmpleado').textContent = '⚠️ Correo electrónico inválido';
+                document.getElementById('mensajeEmpleado').style.color = '#dc2626';
+                return;
+            }
+
+            if (isNaN(experiencia) || experiencia < 0) {
+                document.getElementById('mensajeEmpleado').textContent = '⚠️ Experiencia debe ser un número válido';
+                document.getElementById('mensajeEmpleado').style.color = '#dc2626';
+                return;
+            }
+
+            // Éxito
+            document.getElementById('mensajeEmpleado').textContent = '✅ ¡Empleado registrado exitosamente!';
+            document.getElementById('mensajeEmpleado').style.color = '#16a34a';
+
+            console.log('👔 REGISTRO DE EMPLEADO:');
             console.log(`Nombre: ${nombre}`);
-            console.log(`Clase: ${tipo}`);
-            console.log(`Elemento: ${elemento}`);
-            console.log(`Emoji: ${tipo} ${elemento}`);
-            console.log('✅ Personaje registrado en la aventura');
+            console.log(`Email: ${email}`);
+            console.log(`Departamento: ${departamento}`);
+            console.log(`Experiencia: ${experiencia} años`);
+            console.log(`Fecha de registro: ${new Date().toLocaleString()}`);
+            console.log('✅ Registro completado');
 
-            preview.textContent = tipo + ' ' + elemento;
-            preview.style.transform = 'scale(1.2)';
-            setTimeout(() => preview.style.transform = 'scale(1)', 300);
+            // Limpiar campos
+            setTimeout(() => {
+                document.getElementById('formRegistroEmpleado').reset();
+                document.getElementById('mensajeEmpleado').textContent = '📋 Formulario listo para nuevo registro';
+                document.getElementById('mensajeEmpleado').style.color = '#334155';
+            }, 3000);
         });
     </script>
 </body>

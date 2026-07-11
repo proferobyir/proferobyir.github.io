@@ -5,137 +5,208 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial;
-            background: #1a1a2e;
-            color: #e0e0e0;
+            font-family: 'Segoe UI', Arial;
+            background: #f8fafc;
+            padding: 20px;
         }
 
-        #panel {
-            background: #16213e;
-            padding: 30px;
+        #pomodoroBox {
+            background: white;
+            padding: 40px;
             border-radius: 20px;
-            max-width: 500px;
+            max-width: 450px;
             margin: 20px auto;
-            border: 3px solid #0f3460;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        #heroe {
-            font-size: 100px;
-            transition: transform 0.3s;
+        #timerDisplay {
+            font-size: 72px;
+            font-weight: bold;
+            font-family: monospace;
+            color: #1e293b;
+            margin: 20px 0;
         }
 
-        #heroe:hover {
-            transform: scale(1.1);
-        }
-
-        .stats {
-            font-size: 22px;
+        #timerEstado {
+            font-size: 20px;
+            color: #64748b;
             margin: 10px 0;
-            padding: 10px;
-            background: #0f3460;
-            border-radius: 10px;
         }
 
-        button {
-            padding: 15px 30px;
-            font-size: 18px;
-            background: #e94560;
-            color: white;
+        .btn-timer {
+            padding: 14px 30px;
+            margin: 5px;
             border: none;
             border-radius: 10px;
+            font-size: 16px;
             cursor: pointer;
-            margin: 5px;
+            transition: all 0.2s;
+            font-weight: 500;
         }
 
-        button:hover {
-            background: #c73e54;
+        .btn-timer:hover {
+            transform: scale(1.05);
         }
 
-        #logHeroe {
-            background: #0f3460;
+        .btn-iniciar {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-iniciar:hover {
+            background: #16a34a;
+        }
+
+        .btn-pausar {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-pausar:hover {
+            background: #d97706;
+        }
+
+        .btn-reiniciar {
+            background: #94a3b8;
+            color: white;
+        }
+
+        .btn-reiniciar:hover {
+            background: #64748b;
+        }
+
+        .btn-ciclo {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-ciclo:hover {
+            background: #2563eb;
+        }
+
+        #ciclosCompletados {
+            font-size: 18px;
+            margin: 20px 0;
             padding: 15px;
+            background: #f1f5f9;
             border-radius: 10px;
-            margin: 15px 0;
-            min-height: 40px;
         }
     </style>
 </head>
 
 <body>
-    <div id="panel">
-        <h2>⬆️ EVOLUCIÓN DEL HÉROE ⬆️</h2>
+    <div id="pomodoroBox">
+        <h2>⏱️ Temporizador Pomodoro</h2>
 
-        <div id="heroe">🦸</div>
+        <div id="timerDisplay">25:00</div>
+        <div id="timerEstado">▶️ Listo para comenzar</div>
 
-        <div class="stats">
-            Nivel: <span id="nivel">1</span> |
-            XP: <span id="xp">0</span>/100
+        <div>
+            <button class="btn-timer btn-iniciar" id="btnIniciarTimer">▶️ Iniciar</button>
+            <button class="btn-timer btn-pausar" id="btnPausarTimer">⏸️ Pausar</button>
+            <button class="btn-timer btn-reiniciar" id="btnReiniciarTimer">🔄 Reiniciar</button>
         </div>
 
-        <div id="logHeroe">🌟 ¡Comienza tu aventura!</div>
+        <div style="margin-top:15px;">
+            <button class="btn-timer btn-ciclo" id="btnCicloCorto">☕ Descanso 5min</button>
+            <button class="btn-timer btn-ciclo" id="btnCicloLargo">🍵 Descanso 15min</button>
+        </div>
 
-        <button id="btnEntrenar">⚔️ Entrenar (+25 XP)</button>
-        <button id="btnMision">🗡️ Misión (+50 XP)</button>
-        <button id="btnReiniciarHeroe">🔄 Reiniciar</button>
+        <div id="ciclosCompletados">🔄 Ciclos completados: 0</div>
     </div>
 
     <script>
-        let nivel = 1;
-        let xp = 0;
-        const xpNecesario = 100;
-        const evoluciones = {
-            1: '🦸',
-            5: '🦸‍♂️',
-            10: '⚡🦸‍♂️',
-            15: '🌟🦸‍♂️',
-            20: '👑🦸‍♂️',
-            30: '⭐🦸‍♂️⭐'
-        };
+        let tiempoRestante = 25 * 60; // 25 minutos en segundos
+        let timerInterval = null;
+        let enCurso = false;
+        let ciclos = 0;
 
-        const heroeDiv = document.getElementById('heroe');
-        const nivelSpan = document.getElementById('nivel');
-        const xpSpan = document.getElementById('xp');
-        const logDiv = document.getElementById('logHeroe');
-
-        function actualizarHeroe() {
-            let emoji = '🦸';
-            for (let [nivelReq, emojiNuevo] of Object.entries(evoluciones)) {
-                if (nivel >= parseInt(nivelReq)) {
-                    emoji = emojiNuevo;
-                }
-            }
-            heroeDiv.textContent = emoji;
-            nivelSpan.textContent = nivel;
-            xpSpan.textContent = xp;
+        function actualizarDisplay() {
+            const minutos = Math.floor(tiempoRestante / 60);
+            const segundos = tiempoRestante % 60;
+            document.getElementById('timerDisplay').textContent =
+                `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
         }
 
-        function ganarXP(cantidad, mensaje) {
-            xp += cantidad;
-            logDiv.innerHTML = `${mensaje} (+${cantidad} XP)`;
-
-            while (xp >= xpNecesario) {
-                xp -= xpNecesario;
-                nivel++;
-                logDiv.innerHTML += ` 🎉 ¡SUBISTE DE NIVEL! Ahora nivel ${nivel}`;
-
-                if (nivel in evoluciones) {
-                    logDiv.innerHTML += ` ✨ ¡Evolucionaste! ✨`;
-                }
+        function cambiarTiempo(segundos) {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
             }
-
-            actualizarHeroe();
+            tiempoRestante = segundos;
+            enCurso = false;
+            document.getElementById('timerEstado').textContent = '⏹️ Preparado';
+            document.getElementById('btnIniciarTimer').textContent = '▶️ Iniciar';
+            actualizarDisplay();
         }
 
-        document.getElementById('btnEntrenar').addEventListener('click', () => ganarXP(25, '🏋️ Entrenamiento completado'));
-        document.getElementById('btnMision').addEventListener('click', () => ganarXP(50, '🗡️ Misión completada'));
-        document.getElementById('btnReiniciarHeroe').addEventListener('click', () => {
-            nivel = 1;
-            xp = 0;
-            actualizarHeroe();
-            logDiv.innerHTML = '🔄 ¡Heroe reiniciado!';
-        });
+        function iniciarTimer() {
+            if (timerInterval) {
+                // Si ya está corriendo, no hacer nada
+                return;
+            }
 
-        actualizarHeroe();
+            if (tiempoRestante <= 0) {
+                cambiarTiempo(25 * 60);
+                return;
+            }
+
+            enCurso = true;
+            document.getElementById('timerEstado').textContent = '⏳ Trabajando...';
+            document.getElementById('btnIniciarTimer').textContent = '▶️ En curso';
+
+            timerInterval = setInterval(() => {
+                tiempoRestante--;
+                actualizarDisplay();
+
+                if (tiempoRestante <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    enCurso = false;
+                    ciclos++;
+                    document.getElementById('ciclosCompletados').textContent = `🔄 Ciclos completados: ${ciclos}`;
+                    document.getElementById('timerEstado').textContent = '🔔 ¡Tiempo completado!';
+                    document.getElementById('btnIniciarTimer').textContent = '▶️ Reiniciar';
+
+                    console.log('✅ CICLO COMPLETADO:');
+                    console.log(`Ciclo #${ciclos}`);
+                    console.log(`Descanso sugerido: 5 minutos`);
+
+                    // Notificación sonora (vibración si está disponible)
+                    if (navigator.vibrate) navigator.vibrate(200);
+                }
+            }, 1000);
+        }
+
+        function pausarTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                enCurso = false;
+                document.getElementById('timerEstado').textContent = '⏸️ Pausado';
+                document.getElementById('btnIniciarTimer').textContent = '▶️ Continuar';
+            }
+        }
+
+        function reiniciarTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            tiempoRestante = 25 * 60;
+            enCurso = false;
+            document.getElementById('timerEstado').textContent = '🔄 Reiniciado';
+            document.getElementById('btnIniciarTimer').textContent = '▶️ Iniciar';
+            actualizarDisplay();
+        }
+
+        document.getElementById('btnIniciarTimer').addEventListener('click', iniciarTimer);
+        document.getElementById('btnPausarTimer').addEventListener('click', pausarTimer);
+        document.getElementById('btnReiniciarTimer').addEventListener('click', reiniciarTimer);
+        document.getElementById('btnCicloCorto').addEventListener('click', () => cambiarTiempo(5 * 60));
+        document.getElementById('btnCicloLargo').addEventListener('click', () => cambiarTiempo(15 * 60));
+
+        actualizarDisplay();
     </script>
 </body>
 

@@ -5,183 +5,166 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial;
-            background: #0a2463;
-            color: white;
+            font-family: 'Segoe UI', Arial;
+            background: #f8fafc;
+            padding: 20px;
         }
 
-        #mar {
-            background: #1e3a8a;
-            padding: 25px;
+        #conversorBox {
+            background: white;
+            padding: 35px;
             border-radius: 20px;
-            max-width: 500px;
+            max-width: 450px;
             margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .tablero {
-            display: grid;
-            grid-template-columns: repeat(5, 60px);
-            gap: 5px;
-            justify-content: center;
+        .input-group {
             margin: 15px 0;
         }
 
-        .celda {
-            width: 60px;
-            height: 60px;
-            background: #2563eb;
-            border: 2px solid #3b82f6;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
         }
 
-        .celda:hover {
-            background: #3b82f6;
-        }
-
-        .celda.agua {
-            background: #1e40af;
-        }
-
-        .celda.barco {
-            background: #7c3aed;
-        }
-
-        .celda.tocado {
-            background: #dc2626;
-        }
-
-        .celda.hundido {
-            background: #000000;
-        }
-
-        #infoBatalla {
-            padding: 15px;
-            background: #0a2463;
+        .input-group input,
+        .input-group select {
+            padding: 12px;
+            width: 80%;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
-            margin: 10px 0;
-            font-size: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        #resultadoConversion {
+            font-size: 32px;
+            font-weight: bold;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 15px;
+            margin: 20px 0;
         }
 
         button {
-            padding: 12px 25px;
-            font-size: 18px;
-            background: #dc2626;
+            padding: 14px 40px;
+            background: #3b82f6;
             color: white;
             border: none;
             border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
-            margin: 5px;
+            transition: background 0.2s;
         }
 
         button:hover {
-            background: #b91c1c;
+            background: #2563eb;
+        }
+
+        .btn-convertir {
+            background: #8b5cf6;
+        }
+
+        .btn-convertir:hover {
+            background: #7c3aed;
         }
     </style>
 </head>
 
 <body>
-    <div id="mar">
-        <h2>⚓ BATALLA NAVAL ⚓</h2>
-        <div id="infoBatalla">🌊 ¡Hunde los barcos enemigos!</div>
+    <div id="conversorBox">
+        <h2>📐 Conversor de Unidades</h2>
 
-        <div class="tablero" id="tablero"></div>
+        <div class="input-group">
+            <label>📏 Valor</label>
+            <input type="number" id="valorConversion" value="1" step="any">
+        </div>
 
-        <div>Barcos restantes: <span id="barcosRestantes">3</span></div>
-        <button id="btnReiniciarBatalla">🔄 Nuevo juego</button>
+        <div class="input-group">
+            <label>🔄 De:</label>
+            <select id="unidadOrigen">
+                <option value="km">Kilómetros (km)</option>
+                <option value="m" selected>Metros (m)</option>
+                <option value="cm">Centímetros (cm)</option>
+                <option value="mm">Milímetros (mm)</option>
+                <option value="mi">Millas (mi)</option>
+                <option value="ft">Pies (ft)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>➡️ A:</label>
+            <select id="unidadDestino">
+                <option value="km">Kilómetros (km)</option>
+                <option value="m">Metros (m)</option>
+                <option value="cm" selected>Centímetros (cm)</option>
+                <option value="mm">Milímetros (mm)</option>
+                <option value="mi">Millas (mi)</option>
+                <option value="ft">Pies (ft)</option>
+            </select>
+        </div>
+
+        <button class="btn-convertir" id="btnConvertir">🔄 Convertir</button>
+
+        <div id="resultadoConversion">1 m = 100 cm</div>
     </div>
 
     <script>
-        let tablero = [];
-        let barcos = 3;
-        const tamaño = 5;
-        const tableroDiv = document.getElementById('tablero');
-        const infoDiv = document.getElementById('infoBatalla');
-        const barcosSpan = document.getElementById('barcosRestantes');
+        // Factores de conversión a metros
+        const conversiones = {
+            km: 1000,
+            m: 1,
+            cm: 0.01,
+            mm: 0.001,
+            mi: 1609.34,
+            ft: 0.3048
+        };
 
-        function inicializarTablero() {
-            tablero = [];
-            for (let i = 0; i < tamaño; i++) {
-                tablero[i] = [];
-                for (let j = 0; j < tamaño; j++) {
-                    tablero[i][j] = { barco: false, tocado: false };
-                }
-            }
+        const nombres = {
+            km: 'Kilómetros',
+            m: 'Metros',
+            cm: 'Centímetros',
+            mm: 'Milímetros',
+            mi: 'Millas',
+            ft: 'Pies'
+        };
 
-            // Colocar barcos
-            barcos = 3;
-            let colocados = 0;
-            while (colocados < barcos) {
-                const x = Math.floor(Math.random() * tamaño);
-                const y = Math.floor(Math.random() * tamaño);
-                if (!tablero[x][y].barco) {
-                    tablero[x][y].barco = true;
-                    colocados++;
-                }
-            }
-            barcosSpan.textContent = barcos;
-        }
+        function convertir() {
+            const valor = parseFloat(document.getElementById('valorConversion').value);
+            const origen = document.getElementById('unidadOrigen').value;
+            const destino = document.getElementById('unidadDestino').value;
 
-        function renderizarTablero() {
-            tableroDiv.innerHTML = '';
-            for (let i = 0; i < tamaño; i++) {
-                for (let j = 0; j < tamaño; j++) {
-                    const celda = document.createElement('div');
-                    celda.className = 'celda';
-                    celda.dataset.x = i;
-                    celda.dataset.y = j;
-
-                    if (tablero[i][j].tocado) {
-                        if (tablero[i][j].barco) {
-                            celda.textContent = '💥';
-                            celda.classList.add('hundido');
-                        } else {
-                            celda.textContent = '🌊';
-                            celda.classList.add('agua');
-                        }
-                    }
-
-                    celda.addEventListener('click', () => disparar(i, j));
-                    tableroDiv.appendChild(celda);
-                }
-            }
-        }
-
-        function disparar(x, y) {
-            if (tablero[x][y].tocado) {
-                infoDiv.innerHTML = '⚠️ Ya disparaste aquí';
+            if (isNaN(valor) || valor <= 0) {
+                document.getElementById('resultadoConversion').textContent = '❌ Valor inválido';
                 return;
             }
 
-            tablero[x][y].tocado = true;
+            // Convertir a metros
+            const enMetros = valor * conversiones[origen];
+            // Convertir a unidad destino
+            const resultado = enMetros / conversiones[destino];
 
-            if (tablero[x][y].barco) {
-                infoDiv.innerHTML = '💥 ¡Tocado! 💥';
-                barcos--;
-                barcosSpan.textContent = barcos;
+            const resultadoFinal = resultado < 0.01 ? resultado.toExponential(4) : resultado.toFixed(4);
 
-                if (barcos === 0) {
-                    infoDiv.innerHTML = '🏆 ¡HUNDISTE TODOS LOS BARCOS! 🏆';
-                }
-            } else {
-                infoDiv.innerHTML = '💦 Agua...';
-            }
+            document.getElementById('resultadoConversion').textContent =
+                `${valor} ${nombres[origen]} = ${resultadoFinal} ${nombres[destino]}`;
 
-            renderizarTablero();
+            console.log('📐 CONVERSIÓN REALIZADA:');
+            console.log(`${valor} ${origen} → ${resultadoFinal} ${destino}`);
+            console.log(`Factor usado: 1 ${origen} = ${(conversiones[origen] / conversiones[destino]).toFixed(6)} ${destino}`);
         }
 
-        document.getElementById('btnReiniciarBatalla').addEventListener('click', () => {
-            inicializarTablero();
-            renderizarTablero();
-            infoDiv.innerHTML = '🌊 ¡Nueva batalla!';
-        });
+        document.getElementById('btnConvertir').addEventListener('click', convertir);
 
-        inicializarTablero();
-        renderizarTablero();
+        // Conversión automática al cambiar valores
+        document.getElementById('valorConversion').addEventListener('input', convertir);
+        document.getElementById('unidadOrigen').addEventListener('change', convertir);
+        document.getElementById('unidadDestino').addEventListener('change', convertir);
+
+        convertir();
     </script>
 </body>
 

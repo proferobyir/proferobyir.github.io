@@ -4,130 +4,196 @@
 <head>
     <style>
         body {
-            text-align: center;
-            font-family: Arial;
-            background: #0d0d2b;
-            color: #a78bfa;
+            font-family: 'Segoe UI', Arial;
+            background: #f1f5f9;
+            padding: 20px;
         }
 
-        #alquimia {
-            background: #1a1a4a;
+        #encuestaBox {
+            background: white;
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 15px;
             max-width: 450px;
             margin: 20px auto;
-            border: 3px solid #7c3aed;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        #pocion {
-            font-size: 100px;
-            padding: 20px;
-            background: #0d0d2b;
-            border-radius: 15px;
+        .campo {
             margin: 15px 0;
         }
 
-        select,
-        button {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: none;
+        .campo label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+        .campo input,
+        .campo select,
+        .campo textarea {
             width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
             font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .campo textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .estrellas {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .estrellas span {
+            cursor: pointer;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+
+        .estrellas span:hover {
+            transform: scale(1.2);
+        }
+
+        .estrellas span.seleccionada {
+            color: #f59e0b;
         }
 
         button {
-            background: #7c3aed;
+            width: 100%;
+            padding: 14px;
+            background: #8b5cf6;
             color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
         }
 
         button:hover {
-            background: #6d28d9;
-        }
-
-        #logPocion {
-            background: #0d0d2b;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            color: #c4b5fd;
+            background: #7c3aed;
         }
     </style>
 </head>
 
 <body>
-    <div id="alquimia">
-        <h2>🧪 ALQUIMIA DE POCIONES</h2>
+    <div id="encuestaBox">
+        <h2>📊 Encuesta de Satisfacción</h2>
 
-        <div id="pocion">🧪</div>
-        <div id="logPocion">🌿 Mezcla ingredientes</div>
+        <form id="formEncuesta">
+            <div class="campo">
+                <label>👤 Tu nombre</label>
+                <input type="text" id="nombreEncuesta" placeholder="Opcional">
+            </div>
 
-        <form id="formPocion">
-            <select id="ingrediente1">
-                <option value="🌿">🌿 Hierba</option>
-                <option value="🍄">🍄 Hongo</option>
-                <option value="🪸">🪸 Coral</option>
-                <option value="💎">💎 Gema</option>
-            </select>
+            <div class="campo">
+                <label>⭐ Califica tu experiencia</label>
+                <div class="estrellas" id="estrellas">
+                    <span data-valor="1">☆</span>
+                    <span data-valor="2">☆</span>
+                    <span data-valor="3">☆</span>
+                    <span data-valor="4">☆</span>
+                    <span data-valor="5">☆</span>
+                </div>
+                <div id="textoEstrella" style="text-align:center;color:#64748b;margin-top:5px;">Selecciona una
+                    calificación</div>
+            </div>
 
-            <select id="ingrediente2">
-                <option value="🌿">🌿 Hierba</option>
-                <option value="🍄">🍄 Hongo</option>
-                <option value="🪸">🪸 Coral</option>
-                <option value="💎">💎 Gema</option>
-            </select>
+            <div class="campo">
+                <label>📝 Comentarios</label>
+                <textarea id="comentariosEncuesta" placeholder="¿Qué podemos mejorar?"></textarea>
+            </div>
 
-            <select id="colorPocion">
-                <option value="🔴">🔴 Rojo</option>
-                <option value="🟣">🟣 Violeta</option>
-                <option value="🟢">🟢 Verde</option>
-                <option value="🔵">🔵 Azul</option>
-            </select>
-
-            <button type="submit">🧙 Preparar Poción</button>
+            <button type="submit">📨 Enviar encuesta</button>
         </form>
+
+        <div id="mensajeEncuesta" style="margin-top:15px;font-size:14px;color:#64748b;">
+            Tu opinión es importante para nosotros
+        </div>
     </div>
 
     <script>
-        const efectos = {
-            '🌿🌿': '💚 Sanación',
-            '🍄🍄': '💀 Veneno',
-            '💎💎': '⭐ Fuerza',
-            '🌿🍄': '💫 Invisibilidad',
-            '🍄💎': '🔥 Fuego',
-            '🌿💎': '💨 Velocidad'
+        let calificacion = 0;
+        const textoCalificacion = {
+            1: '😞 Muy insatisfecho',
+            2: '😟 Insatisfecho',
+            3: '😐 Neutral',
+            4: '😊 Satisfecho',
+            5: '😍 Muy satisfecho'
         };
 
-        document.getElementById('formPocion').addEventListener('submit', (e) => {
+        // Sistema de estrellas
+        document.querySelectorAll('#estrellas span').forEach(star => {
+            star.addEventListener('click', () => {
+                calificacion = parseInt(star.dataset.valor);
+
+                document.querySelectorAll('#estrellas span').forEach(s => {
+                    const valor = parseInt(s.dataset.valor);
+                    s.textContent = valor <= calificacion ? '★' : '☆';
+                    s.classList.toggle('seleccionada', valor <= calificacion);
+                });
+
+                document.getElementById('textoEstrella').textContent = textoCalificacion[calificacion] || '';
+            });
+
+            star.addEventListener('mouseenter', () => {
+                const valor = parseInt(star.dataset.valor);
+                document.querySelectorAll('#estrellas span').forEach(s => {
+                    const v = parseInt(s.dataset.valor);
+                    s.textContent = v <= valor ? '★' : '☆';
+                });
+            });
+
+            star.addEventListener('mouseleave', () => {
+                document.querySelectorAll('#estrellas span').forEach(s => {
+                    const valor = parseInt(s.dataset.valor);
+                    s.textContent = valor <= calificacion ? '★' : '☆';
+                });
+            });
+        });
+
+        document.getElementById('formEncuesta').addEventListener('submit', (e) => {
             e.preventDefault();
-            const i1 = document.getElementById('ingrediente1').value;
-            const i2 = document.getElementById('ingrediente2').value;
-            const color = document.getElementById('colorPocion').value;
 
-            const clave = i1 + i2;
-            const efecto = efectos[clave] || '❓ Desconocido';
+            const nombre = document.getElementById('nombreEncuesta').value.trim() || 'Anónimo';
+            const comentarios = document.getElementById('comentariosEncuesta').value.trim() || 'Sin comentarios';
 
-            const pocionFinal = color + ' ' + i1 + i2;
-            document.getElementById('pocion').textContent = pocionFinal;
+            if (calificacion === 0) {
+                document.getElementById('mensajeEncuesta').textContent = '⚠️ Por favor, selecciona una calificación';
+                document.getElementById('mensajeEncuesta').style.color = '#dc2626';
+                return;
+            }
 
-            console.log('🧪 POCIÓN CREADA:');
-            console.log(`Ingredientes: ${i1} + ${i2}`);
-            console.log(`Color: ${color}`);
-            console.log(`Efecto: ${efecto}`);
-            console.log(`Poción: ${pocionFinal}`);
+            // Enviar encuesta
+            document.getElementById('mensajeEncuesta').textContent = '✅ ¡Encuesta enviada! Gracias por tu opinión';
+            document.getElementById('mensajeEncuesta').style.color = '#16a34a';
 
-            const mensajes = {
-                'Sanación': '💚 ¡Poción curativa preparada!',
-                'Veneno': '💀 ¡Poción venenosa! ¡Cuidado!',
-                'Fuerza': '⭐ ¡Poción de fuerza!',
-                'Invisibilidad': '👻 ¡Te has vuelto invisible!',
-                'Fuego': '🔥 ¡Poción de fuego!',
-                'Velocidad': '💨 ¡Poción de velocidad!'
-            };
+            console.log('📊 ENCUESTA RECIBIDA:');
+            console.log(`Nombre: ${nombre}`);
+            console.log(`Calificación: ${calificacion} estrellas - ${textoCalificacion[calificacion]}`);
+            console.log(`Comentarios: ${comentarios}`);
+            console.log(`Fecha: ${new Date().toLocaleString()}`);
+            console.log('✅ Encuesta completada');
 
-            document.getElementById('logPocion').innerHTML = mensajes[efecto] || '🧪 Poción creada';
+            // Reiniciar formulario
+            setTimeout(() => {
+                document.getElementById('formEncuesta').reset();
+                calificacion = 0;
+                document.querySelectorAll('#estrellas span').forEach(s => {
+                    s.textContent = '☆';
+                    s.classList.remove('seleccionada');
+                });
+                document.getElementById('textoEstrella').textContent = 'Selecciona una calificación';
+                document.getElementById('mensajeEncuesta').textContent = '📋 Nueva encuesta disponible';
+                document.getElementById('mensajeEncuesta').style.color = '#64748b';
+            }, 3000);
         });
     </script>
 </body>
