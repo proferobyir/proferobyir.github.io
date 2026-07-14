@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leyes UX/UI · Libro Interactivo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* Reset y base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2efe8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            font-family: 'Merriweather', serif;
+            color: #1e1e2a;
+            line-height: 1.6;
+        }
+
+        /* Contenedor libro con sombra y efecto de profundidad */
+        .book {
+            max-width: 900px;
+            width: 100%;
+            background: #fffcf7;
+            border-radius: 24px 12px 24px 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem 2.8rem;
+            position: relative;
+            transition: transform 0.2s ease;
+            border: 1px solid #e9e0d4;
+        }
+
+        /* Animación suave al cargar */
+        @keyframes openBook {
+            0% {
+                opacity: 0.6;
+                transform: rotateY(4deg) scale(0.98);
+            }
+
+            100% {
+                opacity: 1;
+                transform: rotateY(0) scale(1);
+            }
+        }
+
+        .book {
+            animation: openBook 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+            transform-origin: left center;
+        }
+
+        /* Tipografía y espaciado */
+        h1,
+        h2,
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-top: 1.8rem;
+            margin-bottom: 0.75rem;
+            color: #1f1a2e;
+        }
+
+        h1 {
+            font-size: 2.1rem;
+            margin-top: 0.2rem;
+            border-bottom: 2px solid #dcd3c6;
+            padding-bottom: 0.6rem;
+            display: inline-block;
+            background: linear-gradient(145deg, #1f1a2e 0%, #3e334a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 2.2rem;
+            border-left: 6px solid #b7a48b;
+            padding-left: 1rem;
+        }
+
+        .subhead {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: #5f5546;
+            margin-top: -0.2rem;
+            margin-bottom: 1.8rem;
+            border-bottom: 1px dashed #d6cdbf;
+            padding-bottom: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .subhead span {
+            background: #ece5db;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #3d3326;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+            font-weight: 400;
+        }
+
+        .quote {
+            font-style: italic;
+            background: #f4efe8;
+            padding: 1.2rem 1.8rem;
+            border-radius: 40px 8px 40px 8px;
+            margin: 1.8rem 0;
+            border-left: 8px solid #b7a48b;
+            font-size: 1.05rem;
+            color: #2d2834;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .quote strong {
+            font-style: normal;
+            font-weight: 600;
+            color: #1f1a2e;
+        }
+
+        /* Bloques de ejemplo */
+        .example-box {
+            background: #f8f4ed;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1.4rem 0;
+            border: 1px solid #e4dbcf;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .formula {
+            font-family: 'Inter', monospace;
+            background: #e9e2d8;
+            padding: 0.5rem 1.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin: 0.3rem 0;
+            font-weight: 500;
+            font-size: 1.1rem;
+            color: #1b1722;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #cdbdb0;
+            color: #1f1a2e;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+            margin-right: 0.4rem;
+        }
+
+        /* ESTILOS PARA EXPERIMENTOS INTERACTIVOS (NUEVOS) */
+        .interactive-playground {
+            margin-top: 1rem;
+            padding: 1.2rem;
+            background: #ffffff;
+            border: 1px dashed #cdbdb0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-action {
+            background: #1f1a2e;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-action:hover {
+            background: #3e334a;
+        }
+
+        .btn-action:active {
+            transform: scale(0.97);
+        }
+
+        /* 1. Jakob Demo Styles */
+        .jakob-interface {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        .jakob-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .jakob-nav.rebelde {
+            flex-direction: column-reverse;
+            gap: 1rem;
+            background: #ffebeb;
+        }
+
+        /* 2. Miller Demo Styles */
+        .miller-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .miller-input {
+            font-family: monospace;
+            font-size: 1.1rem;
+            padding: 0.6rem;
+            border: 1.5px solid #cdbdb0;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* 3. Fitts Demo Styles */
+        .fitts-arena {
+            height: 150px;
+            background: #fcfbf9;
+            border: 1px solid #ebdcd0;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fitts-btn-easy {
+            width: 120px;
+            height: 60px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .fitts-btn-hard {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #c62828;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            top: 15px;
+            right: 15px;
+        }
+
+        /* 4. Hick Demo Styles */
+        .hick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hick-btn {
+            padding: 0.5rem;
+            background: #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .hick-btn.active {
+            background: #b7a48b;
+            color: white;
+            border-color: #1f1a2e;
+        }
+
+        /* Pie de página */
+        .footnote {
+            margin-top: 2.8rem;
+            font-size: 0.8rem;
+            color: #6d6254;
+            border-top: 1px solid #e2d8cc;
+            padding-top: 1.2rem;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 700px) {
+            body {
+                padding: 0.8rem;
+            }
+
+            .book {
+                padding: 1.6rem 1.4rem;
+                border-radius: 16px 8px 16px 8px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+                padding-left: 0.7rem;
+            }
+
+            .quote {
+                padding: 1rem 1.2rem;
+            }
+
+            .example-box {
+                padding: 1rem 1.2rem;
+            }
+
+            .formula {
+                font-size: 0.95rem;
+                padding: 0.3rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="book">
+
+        <h1>🧠 Leyes de UX/UI</h1>
+        <div class="subhead">
+            <span>Psicología detrás de las pantallas</span>
+            <span>📘 Laboratorio Interactivo · Nivel Universitario</span>
+        </div>
+
+        <div>
+            <p><span class="badge">Introducción</span> <strong>El cerebro frente a la interfaz</strong></p>
+            <p>Cuando interactuamos con una aplicación móvil, compramos en línea o llenamos un formulario, solemos
+                pensar que
+                nuestras acciones son completamente conscientes. Sin embargo, detrás de cada botón, color y espaciado
+                existe un
+                profundo estudio de la psicología humana.</p>
+            <p>Diseñar interfaces sin considerar la psicología es como construir un edificio ignorando las leyes de la
+                gravedad: el colapso está asegurado. A continuación, exploraremos cuatro de las leyes de usabilidad más
+                críticas
+                de manera teórica y <strong>práctica</strong> mediante pequeños experimentos interactivos.</p>
+        </div>
+
+        <div>
+            <h2>1. Ley de Jakob</h2>
+            <p><strong>El poder de la familiaridad</strong></p>
+            <div class="quote">
+                <strong>“Los usuarios pasan la mayor parte de su tiempo en otros sitios web. Esto significa que
+                    prefieren que tu
+                    sitio funcione de la misma manera que todos los demás que ya conocen.”</strong>
+                <div style="margin-top:0.4rem; font-style:normal; font-size:0.9rem;">— Jakob Nielsen (2000)</div>
+            </div>
+            <p>El cerebro humano busca ahorrar energía usando <strong>modelos mentales</strong> preexistentes. Si rompes
+                estos
+                patrones de forma brusca, generas una alta <strong>fricción cognitiva</strong>.</p>
+
+            <div class="example-box">
+                <strong>🧪 Experimento 1: El costo de romper las reglas</strong>
+                <p style="font-size:0.9rem; margin-bottom:1rem; color:#5f5546;">Intercambia entre el diseño estándar y
+                    un diseño
+                    "creativo/rebelde" que rompe las reglas. Intenta encontrar el buscador o el carrito de compras en
+                    segundos.
+                </p>
+
+                <div class="interactive-playground">
+                    <button class="btn-action" style="margin-bottom: 1rem;" onclick="toggleJakobDemo()">Alternar
+                        Diseño</button>
+                    <div class="jakob-interface" id="jakobBox">
+                        <div class="jakob-nav" id="jakobNav">
+                            <span style="font-weight: bold; font-size:0.9rem;">LogoTienda</span>
+                            <div id="jakobElements" style="display:flex; gap:15px; align-items:center;">
+                                <input type="text" placeholder="Buscar productos..."
+                                    style="padding:0.3rem; font-size:0.8rem; border-radius:4px; border:1px solid #ccc;">
+                                <span style="cursor:pointer; font-size: 1.1rem;">🛒 (0)</span>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; text-align:center; margin:0;" id="jakobStatus"><strong>Diseño
+                                Común:</strong>
+                            El buscador y el carrito están donde tu cerebro espera verlos (arriba a la derecha).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2>2. Ley de Miller</h2>
+            <p><strong>La capacidad de nuestra memoria de trabajo</strong></p>
+            <div class="quote">
+                <strong>“La persona promedio solo puede mantener alrededor de 7 ± 2 elementos en su memoria de trabajo a
+                    corto
+                    plazo.”</strong>
+                <div style="margin-top:0.4rem; font-style:normal; font-size:0.9rem;">— George Miller (1956)</div>
+            </div>
+            <p>Para mitigar los límites de la memoria, usamos el <strong>Chunking</strong> (Fragmentación): agrupar
+                información extensa en bloques lógicos pequeños (de 3 a 4 elementos).</p>
+
+            <div class="example-box">
+                <strong>🧪 Experimento 2: El poder del Chunking</strong>
+                <p style="font-size:0.9rem; margin-bottom:1rem; color:#5f5546;">Intenta leer de golpe los dos campos.
+                    Uno
+                    formatea la tarjeta automáticamente (con Chunking), el otro no. ¿Cuál memorizarías más rápido para
+                    dictarlo?
+                </p>
+
+                <div class="interactive-playground">
+                    <div class="miller-input-group">
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:bold; display:block; margin-bottom:0.2rem;">Sin
+                                Chunking
+                                (Línea continua difícil de digerir):</label>
+                            <label class="miller-input" type="text" maxlength="16">1234567812345678</label>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:bold; display:block; margin-bottom:0.2rem;">Con
+                                Chunking
+                                (Fragmentado en grupos de 4):</label>
+                            <label class="miller-input" id="millerChunked" maxlength="16">1234 5678 1234 5678</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2>3. Ley de Fitts</h2>
+            <p><strong>Ergonomía y velocidad de interacción</strong></p>
+            <div class="quote">
+                <strong>“El tiempo necesario para alcanzar un objetivo es una función de la distancia y el tamaño del
+                    objetivo.”</strong>
+                <div style="margin-top:0.4rem; font-style:normal; font-size:0.9rem;">— Paul Fitts (1954)</div>
+            </div>
+            <div style="text-align:center; margin:0.8rem 0;">
+                <span class="formula">MT = a + b · log₂(2D / W)</span>
+            </div>
+
+            <div class="example-box">
+                <strong>🧪 Experimento 3: Desafío de velocidad (Fitts' Test)</strong>
+                <p style="font-size:0.9rem; margin-bottom:1rem; color:#5f5546;">Prueba hacer clic en el botón verde
+                    gigante
+                    (Fácil) y luego intenta apuntar al botón rojo diminuto que está lejos (Difícil). ¡Mira cómo cambia
+                    el
+                    esfuerzo!</p>
+
+                <div class="interactive-playground">
+                    <div class="fitts-arena">
+                        <button class="fitts-btn-easy" onclick="recordFitts('Grande y Cercano')">Botón FÁCIL</button>
+                        <button class="fitts-btn-hard" onclick="recordFitts('Pequeño y Lejano')"></button>
+                    </div>
+                    <p style="font-size:0.85rem; margin-top:0.8rem; text-align:center; font-weight:bold; color:#1f1a2e;"
+                        id="fittsScore">Haz clic en cualquiera de los dos botones para medir la usabilidad.</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2>4. Ley de Hick</h2>
+            <p><strong>La paradoja de la elección</strong></p>
+            <div class="quote">
+                <strong>“El tiempo que se tarda en tomar una decisión aumenta logarítmicamente con el número y la
+                    complejidad de
+                    las opciones disponibles.” </strong>
+                <div style="margin-top:0.4rem; font-style:normal; font-size:0.9rem;">— Hick & Hyman (1952)</div>
+            </div>
+
+            <div class="example-box">
+                <strong>🧪 Experimento 4: Parálisis por análisis</strong>
+                <p style="font-size:0.9rem; margin-bottom:1rem; color:#5f5546;">Debes elegir "Pizza Pepperoni 🎯".
+                    Compara
+                    cuánto
+                    tardas en encontrarla con un menú masivo desordenado vs un menú categorizado.</p>
+
+                <div class="interactive-playground">
+                    <div style="display:flex; gap:10px; margin-bottom:1rem;">
+                        <button class="btn-action" onclick="loadHick(false)">Ver menú caótico (18 opciones)</button>
+                        <button class="btn-action" onclick="loadHick(true)" style="background:#b7a48b;">Ver menú
+                            inteligente
+                            (Categorizado)</button>
+                    </div>
+                    <div class="hick-grid" id="hickGrid">
+                    </div>
+                    <p style="font-size:0.85rem; text-align:center; font-weight:bold; color:#b7a48b;" id="hickTimer">Haz
+                        clic en
+                        una opción para iniciar el experimento.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:2.2rem;">
+            <h2 style="border-left-color:#8f7b66;">Conclusión</h2>
+            <p>El diseño de interfaces exitoso no se limita a la estética visual. El diseño es, en esencia,
+                <strong>psicología
+                    aplicada</strong>. Comprender cómo opera el cerebro humano, cómo se fatiga la memoria y de qué
+                manera se
+                mueven nuestros ojos y manos sobre la pantalla nos permite construir productos intuitivos, eficientes y
+                humanizados.
+            </p>
+        </div>
+
+        <div class="footnote">
+            ✦ Material interactivo · Diseño de Interfaz (UI/UX) · Profesor:Ing.Robyir Loreto ✦
+        </div>
+
+    </div>
+
+    <script>
+        // 1. LEY DE JAKOB
+        let isRebel = false;
+        function toggleJakobDemo() {
+            isRebel = !isRebel;
+            const nav = document.getElementById('jakobNav');
+            const elements = document.getElementById('jakobElements');
+            const status = document.getElementById('jakobStatus');
+            const box = document.getElementById('jakobBox');
+
+            if (isRebel) {
+                nav.classList.add('rebelde');
+                elements.style.flexDirection = 'column';
+                box.style.background = '#ffebeb';
+                status.innerHTML = '<strong>Diseño Rebelde:</strong> El buscador se fue al fondo, el carrito está en vertical. El usuario se desorienta porque destruimos su modelo mental.';
+            } else {
+                nav.classList.remove('rebelde');
+                elements.style.flexDirection = 'row';
+                box.style.background = '#f9f9f9';
+                status.innerHTML = '<strong>Diseño Común:</strong> El buscador y el carrito están donde tu cerebro espera verlos (arriba a la derecha).';
+            }
+        }
+
+        // 2. LEY DE MILLER (Autoformateo de Tarjeta)
+        const chunkedInput = document.getElementById('millerChunked');
+        chunkedInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = value.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
+
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
+
+            if (parts.length > 0) {
+                e.target.value = parts.join(' ');
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // 3. LEY DE FITTS
+        let lastClickTime = null;
+        function recordFitts(type) {
+            const now = performance.now();
+            const scoreText = document.getElementById('fittsScore');
+            if (lastClickTime) {
+                const diff = ((now - lastClickTime) / 1000).toFixed(2);
+                scoreText.innerHTML = `Hiciste clic en el botón <strong>${type}</strong>. Tiempo de reacción: <span style="color:#c62828;">${diff}s</span>. ¡Apuntar al pequeño y lejano toma mucho más tiempo físico!`;
+            } else {
+                scoreText.innerHTML = `Hiciste clic en <strong>${type}</strong>. Ahora intenta hacer clic en el otro botón para comparar los tiempos.`;
+            }
+            lastClickTime = now;
+        }
+
+        // 4. LEY DE HICK
+        const itemsDisordered = [
+            "Sopa de Cebolla", "Tacos de Pollo", "Sushi Roll", "Pasta Carbonara",
+            "Ensalada César", "Hamburguesa", "Pizza Pepperoni 🎯", "Helado de Fresa",
+            "Flan casero", "Agua mineral", "Cerveza artesanal", "Café Latte",
+            "Ramen de Cerdo", "Burrito", "Hot Dog", "Tarta de Manzana", "Limonada", "Té Verde"
+        ];
+
+        const itemsOrdered = [
+            "🛒 CATEGORÍA: PIZZAS", "Pizza Margarita", "Pizza Cuatro Quesos", "Pizza Pepperoni",
+            "🛒 CATEGORÍA: ENTRADAS", "Sopa de Cebolla", "Ensalada César", "Tacos de Pollo",
+            "🛒 CATEGORÍA: POSTRES", "Helado de Fresa", "Flan casero", "Tarta de Manzana"
+        ];
+
+        let hickStartTime = null;
+
+        function loadHick(isCategorized) {
+            const grid = document.getElementById('hickGrid');
+            const timer = document.getElementById('hickTimer');
+            grid.innerHTML = '';
+            hickStartTime = performance.now();
+            timer.innerText = "¡Encuentra y presiona la 'Pizza Pepperoni 🎯' lo más rápido posible!";
+
+            const listToUse = isCategorized ? itemsOrdered : itemsDisordered;
+
+            listToUse.forEach(item => {
+                const btn = document.createElement('div');
+                btn.innerText = item;
+                btn.className = 'hick-btn';
+
+                if (item.startsWith("🛒")) {
+                    btn.style.gridColumn = '1 / -1';
+                    btn.style.background = '#1f1a2e';
+                    btn.style.color = '#white';
+                    btn.style.fontWeight = 'bold';
+                    btn.style.cursor = 'default';
+                    btn.style.color = '#fffcf7';
+                } else {
+                    btn.onclick = () => {
+                        if (item.includes("Pizza Pepperoni")) {
+                            const duration = ((performance.now() - hickStartTime) / 1000).toFixed(2);
+                            timer.innerHTML = `🎉 ¡Logrado! Encontraste el objetivo en <span style="color:green; font-size:1.1rem;">${duration}s</span>.`;
+                            btn.classList.add('active');
+                        } else {
+                            timer.innerText = "Ese no es el objetivo... ¡sigue buscando la Pizza Pepperoni! 🎯";
+                        }
+                    };
+                }
+                grid.appendChild(btn);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
