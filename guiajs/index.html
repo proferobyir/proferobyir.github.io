@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Supervivencia: JS de Cero a APIs en 15 Días</title>
+    <style>
+        /* VARIABLES DE COLORES Y FUENTES */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --accent-green: #34d399;
+            --accent-yellow: #fbbf24;
+            --border-color: #334155;
+        }
+
+        /* RESET GENERAL */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* 1. LAYOUT PRINCIPAL CON GRID */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                grid-template-columns: 3fr 1fr; /* Columna principal y barra lateral */
+            }
+        }
+
+        /* HEADER CON FLEXBOX */
+        header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        @media (min-width: 768px) {
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .header-info h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header-info p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .badge {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary);
+            align-self: flex-start;
+        }
+
+        /* SECCIONES Y CONTENEDORES */
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        strong {
+            color: var(--text-main);
+        }
+
+        /* BLOQUES DE CÓDIGO */
+        pre {
+            background-color: #0b0f19;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border-left: 4px solid var(--primary);
+            margin: 15px 0 25px 0;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+        }
+
+        code {
+            color: #e2e8f0;
+        }
+
+        .keyword { color: #f472b6; }
+        .function { color: #60a5fa; }
+        .string { color: #34d399; }
+        .comment { color: #64748b; font-style: italic; }
+        .number { color: #fb923c; }
+
+        /* TABLA RESPONSIVA CON GRID */
+        .methods-table {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .methods-table {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .method-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .method-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
+        .method-title {
+            font-size: 1.2rem;
+            color: var(--accent-yellow);
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        /* RUTA DE SUPERVIVENCIA: CSS GRID */
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        @media (min-width: 640px) {
+            .roadmap-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .roadmap-card {
+            background-color: #1e293b;
+            border-top: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .roadmap-card.active {
+            border-top-color: var(--accent-green);
+        }
+
+        .roadmap-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .roadmap-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .roadmap-card li {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .roadmap-card li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* ASINCRONÍA INFO-CARDS */
+        .asincronia-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .analogy-card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: rgba(56, 189, 248, 0.05);
+            border: 1px dashed var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .analogy-card {
+                flex-direction: row;
+                align-items: center;
+            }
+            .analogy-icon {
+                font-size: 3rem;
+                padding-right: 20px;
+            }
+        }
+
+        /* SIDEBAR / ASIDE */
+        aside {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            height: fit-content;
+        }
+
+        aside h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .sidebar-list {
+            list-style: none;
+        }
+
+        .sidebar-list li {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 10px;
+            border-left: 2px solid var(--primary);
+        }
+
+        /* NOTA DOCENTE */
+        .docente-tip {
+            background-color: rgba(251, 191, 36, 0.1);
+            border-left: 4px solid var(--accent-yellow);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .docente-tip p {
+            color: #fef08a;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- COLUMNA PRINCIPAL -->
+        <main>
+            <!-- HEADER -->
+            <header style="margin-bottom: 25px;">
+                <div class="header-info">
+                    <h1>Guía de Programación Rápida</h1>
+                    <p>Profesor: Robyir Loreto • Javascript Práctico para APIs</p>
+                </div>
+                <div class="badge">Siguiente nivel: Node.js</div>
+            </header>
+
+            <!-- TEMA 1: ARREGLOS -->
+            <section id="arreglos">
+                <h2>⚡ Métodos de Arreglos Imprescindibles</h2>
+                <p>Para trabajar con datos reales que consumimos de servidores o APIs REST, necesitamos manipular arreglos de objetos. Imagina que recibimos este conjunto de datos:</p>
+                
+                <pre><code><span class="comment">// Datos simulados de una API (Base de datos de productos)</span>
+<span class="keyword">const</span> productos = [
+  { id: <span class="number">1</span>, nombre: <span class="string">'Laptop Gamer'</span>, categoria: <span class="string">'Tecnología'</span>, precio: <span class="number">1200</span>, stock: <span class="keyword">true</span> },
+  { id: <span class="number">2</span>, nombre: <span class="string">'Teclado Mecánico'</span>, categoria: <span class="string">'Tecnología'</span>, precio: <span class="number">80</span>, stock: <span class="keyword">false</span> },
+  { id: <span class="number">3</span>, nombre: <span class="string">'Silla Ergonómica'</span>, categoria: <span class="string">'Hogar'</span>, precio: <span class="number">250</span>, stock: <span class="keyword">true</span> },
+  { id: <span class="number">4</span>, nombre: <span class="string">'Monitor 4K'</span>, categoria: <span class="string">'Tecnología'</span>, precio: <span class="number">400</span>, stock: <span class="keyword">true</span> }
+];</code></pre>
+
+                <p>Para manipular estos datos rápidamente sin usar bucles <code>for</code> complejos, usamos los tres métodos fundamentales:</p>
+
+                <div class="methods-table">
+                    <!-- CARD .find() -->
+                    <div class="method-card">
+                        <div class="method-title">.find()</div>
+                        <p><strong>Buscador exacto.</strong> Devuelve solo el <em>primer</em> elemento que cumpla con la condición.</p>
+                        <p style="font-size: 0.85rem; color: var(--accent-yellow);"><em>Retorna: Un objeto o undefined</em></p>
+                    </div>
+                    <!-- CARD .filter() -->
+                    <div class="method-card">
+                        <div class="method-title">.filter()</div>
+                        <p><strong>El colador.</strong> Filtra el arreglo y devuelve <em>todos</em> los elementos que cumplan la condición.</p>
+                        <p style="font-size: 0.85rem; color: var(--accent-yellow);"><em>Retorna: Un nuevo arreglo</em></p>
+                    </div>
+                    <!-- CARD .map() -->
+                    <div class="method-card">
+                        <div class="method-title">.map()</div>
+                        <p><strong>El transformador.</strong> Toma los elementos y crea un nuevo arreglo modificando o extrayendo datos.</p>
+                        <p style="font-size: 0.85rem; color: var(--accent-yellow);"><em>Retorna: Un nuevo arreglo (mismo tamaño)</em></p>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 10px; color: var(--text-main);">Ejemplos de Código Práctico:</h3>
+                <pre><code><span class="comment">// 1. Encontrar el producto con id igual a 3 (.find)</span>
+<span class="keyword">const</span> silla = productos.<span class="function">find</span>(p => p.id === <span class="number">3</span>);
+console.<span class="function">log</span>(silla); <span class="comment">// Resultado: { id: 3, nombre: 'Silla Ergonómica', ... }</span>
+
+<span class="comment">// 2. Filtrar solo los productos que están disponibles en stock (.filter)</span>
+<span class="keyword">const</span> disponibles = productos.<span class="function">filter</span>(p => p.stock === <span class="keyword">true</span>);
+console.<span class="function">log</span>(disponibles); <span class="comment">// Devuelve un arreglo con 3 productos (excluye teclado)</span>
+
+<span class="comment">// 3. Extraer solo los nombres de los productos (.map)</span>
+<span class="keyword">const</span> nombres = productos.<span class="function">map</span>(p => p.nombre);
+console.<span class="function">log</span>(nombres); <span class="comment">// ['Laptop Gamer', 'Teclado Mecánico', 'Silla Ergonómica', 'Monitor 4K']</span></code></pre>
+            </section>
+
+            <!-- TEMA 2: PROXIMA CLASE ASINCRONIA -->
+            <section id="asincronia">
+                <h2>⏳ Próxima Clase: Entendiendo la Asincronía</h2>
+                <p>En la programación tradicional, el código se ejecuta línea por línea (síncrono). Si una línea tarda mucho, bloquea todo. Pero al conectarnos a servidores, la respuesta tarda milisegundos que no podemos predecir. Aquí es donde entra la <strong>asincronía</strong>.</p>
+
+                <div class="asincronia-box">
+                    <div class="analogy-card">
+                        <div class="analogy-icon">☕</div>
+                        <div>
+                            <strong style="color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 5px;">La analogía de la Cafetería:</strong>
+                            <p style="margin: 0;">Si pides un café de forma <strong>síncrona</strong>, toda la fila se detiene hasta que te preparen el café. En cambio, de forma <strong>asíncrona (Promesa)</strong>, pagas, te dan un "beeper" o recibo, la fila avanza, y cuando el café está listo, te avisan para que vayas a buscarlo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 10px; color: var(--text-main);">El estándar moderno: Async / Await</h3>
+                <p>Para no complicarnos con Promesas anidadas, JavaScript usa <code>async/await</code> para escribir código asíncrono que se lee casi como síncrono:</p>
+
+                <pre><code><span class="comment">// Simulamos una llamada a una API real</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="function">obtenerProductos</span>() {
+  <span class="keyword">try</span> {
+    <span class="comment">// Esperamos (await) a que el servidor responda</span>
+    <span class="keyword">const</span> respuesta = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'https://api.ejemplo.com/productos'</span>);
+    <span class="keyword">const</span> datos = <span class="keyword">await</span> respuesta.<span class="function">json</span>(); <span class="comment">// Convertimos la respuesta a JSON</span>
+    
+    console.<span class="function">log</span>(datos);
+  } <span class="keyword">catch</span> (error) {
+    console.<span class="function">error</span>(<span class="string">'¡Algo falló al cargar los datos!'</span>, error);
+  }
+}</code></pre>
+            </section>
+
+            <!-- TEMA 3: PLAN DE SUPERVIVENCIA -->
+            <section id="plan">
+                <h2>📅 Plan de Supervivencia (Sprint de 15 días)</h2>
+                <p>Nuestra ruta intensiva estructurada para que domines el backend y te conectes a bases de datos antes del cierre del curso:</p>
+                
+                <div class="roadmap-grid">
+                    <!-- Semana 1 -->
+                    <div class="roadmap-card active">
+                        <h3>Fase 1: Bloques Esenciales (Días 1-3)</h3>
+                        <ul>
+                            <li>Objetos, arreglos y desestructuración.</li>
+                            <li>Métodos iteradores (find, filter, map).</li>
+                            <li>Introducción sólida a la Asincronía.</li>
+                        </ul>
+                    </div>
+                    <!-- Semana 2 -->
+                    <div class="roadmap-card">
+                        <h3>Fase 2: Consumir el Mundo (Días 4-6)</h3>
+                        <ul>
+                            <li>Uso del método nativo Fetch de JS.</li>
+                            <li>Consumo de APIs públicas (JSONPlaceholder).</li>
+                            <li>Renderizado de datos en el cliente.</li>
+                        </ul>
+                    </div>
+                    <!-- Semana 3 -->
+                    <div class="roadmap-card">
+                        <h3>Fase 3: El Servidor - Node & Express (Días 7-11)</h3>
+                        <ul>
+                            <li>Instalación del entorno de Node.js.</li>
+                            <li>Configuración del servidor con Express.</li>
+                            <li>Creación de rutas REST (GET, POST).</li>
+                        </ul>
+                    </div>
+                    <!-- Integración -->
+                    <div class="roadmap-card">
+                        <h3>Fase 4: Integración Total (Días 12-15)</h3>
+                        <ul>
+                            <li>Crear tu propia API en el Backend.</li>
+                            <li>Consumir tu API desde el Frontend.</li>
+                            <li>Proyecto final en producción.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- COLUMNA LATERAL (BARRA LATERAL DE TIPS) -->
+        <aside>
+            <h3>💡 Tips de Código Limpio</h3>
+            <ul class="sidebar-list">
+                <li>Usa siempre <strong>const</strong> a menos que estés seguro de que reasignarás el valor de la variable (en ese caso usa <strong>let</strong>).</li>
+                <li>Usa las funciones flecha <code>() => {}</code> para tener un código de iteradores más compacto y legible.</li>
+                <li>Al usar <strong>fetch</strong> o <strong>async/await</strong>, nunca olvides envolver el código en bloques <code>try / catch</code> para capturar errores del servidor.</li>
+            </ul>
+
+            <div class="docente-tip">
+                <p><strong>Nota del Prof. Robyir:</strong> En el código CSS de esta guía utilicé <code>display: grid</code> para estructurar las dos columnas principales y la cuadrícula de métodos, y <code>display: flex</code> para alinear el header y la tarjeta de asincronía. ¡La combinación perfecta!</p>
+            </div>
+        </aside>
+
+    </div>
+
+</body>
+</html>
