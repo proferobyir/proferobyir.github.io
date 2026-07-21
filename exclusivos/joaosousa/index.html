@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TKINTER + MySQL · Guía para Windows · Formato Amigable</title>
+    <style>
+        /* ---------- RESET Y BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', system-ui, sans-serif;
+            background: #f0f4ff;
+            color: #1a2639;
+            padding: 1.5rem 1rem;
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* CONTENEDOR PRINCIPAL - MÁS AMPLIO Y CLARO */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            padding: 2rem 2rem 3rem;
+            box-shadow: 0 16px 40px -8px rgba(0, 20, 40, 0.2);
+            transition: box-shadow 0.2s;
+            border: 1px solid #dce3f0;
+        }
+
+        /* ---------- TÍTULOS CON COLOR Y TAMAÑO CLARO ---------- */
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: #0b2b4f;
+            margin-bottom: 0.2rem;
+            border-left: 8px solid #2a7de1;
+            padding-left: 1.2rem;
+            background: linear-gradient(to right, #eaf2ff, transparent);
+            padding: 0.8rem 1.2rem;
+            border-radius: 0 20px 20px 0;
+            display: inline-block;
+        }
+
+        .subtitulo {
+            font-size: 1.2rem;
+            background: #e5edfa;
+            padding: 0.8rem 1.5rem;
+            border-radius: 60px;
+            margin: 0.5rem 0 2rem 0;
+            display: inline-block;
+            font-weight: 500;
+            color: #10355e;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 2.2rem 0 1rem 0;
+            color: #0f2b4f;
+            background: #dce8fe;
+            padding: 0.5rem 1.5rem;
+            border-radius: 60px;
+            display: inline-block;
+            letter-spacing: -0.3px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #1a3f6b;
+            background: #f2f7ff;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        /* ---------- GRID Y FLEX (RESPONSIVE) ---------- */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.8rem;
+            margin: 1.5rem 0;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        /* TARJETAS - COLORES SUAVES Y BORDES AMIGABLES */
+        .card {
+            background: #fafcff;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+            border: 2px solid #e2ebf6;
+            transition: all 0.2s;
+            flex: 1 1 220px;
+            backdrop-filter: blur(2px);
+        }
+
+        .card:hover {
+            border-color: #6d9bf0;
+            box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.18);
+            transform: scale(1.01);
+        }
+
+        .card-header {
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 3px solid #c7d9f5;
+            padding-bottom: 0.4rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #00337a;
+        }
+
+        .badge {
+            background: #1e6cf0;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---------- CÓDIGO - FONDO OSCURO, BUEN CONTRASTE ---------- */
+        pre {
+            background: #0b1a2b;
+            color: #e8edf5;
+            padding: 1.2rem 1.8rem;
+            border-radius: 1.5rem;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            font-family: 'Consolas', 'Fira Code', monospace;
+            margin: 1.2rem 0;
+            border-left: 8px solid #3b82f6;
+            box-shadow: inset 0 0 0 1px #2a3f5a;
+            transition: border-left 0.2s;
+        }
+
+        pre:hover {
+            border-left-width: 14px;
+        }
+
+        .keyword {
+            color: #f472b6;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #86efac;
+        }
+
+        .comment {
+            color: #9bb7d4;
+            font-style: italic;
+        }
+
+        .func {
+            color: #7dd3fc;
+        }
+
+        .var {
+            color: #fcd34d;
+        }
+
+        /* ---------- PASOS (TIPO LISTA) ---------- */
+        .paso {
+            background: #f2f8ff;
+            border-radius: 1.5rem;
+            padding: 1.2rem 2rem;
+            margin: 1rem 0;
+            border-left: 10px solid #2a7de1;
+            transition: all 0.15s;
+            font-size: 1.1rem;
+        }
+
+        .paso:hover {
+            background: #e5efff;
+            border-left-width: 18px;
+        }
+
+        .paso strong {
+            color: #00337a;
+            font-size: 1.2rem;
+        }
+
+        .ul-didactico {
+            list-style: none;
+            padding-left: 0.2rem;
+        }
+
+        .ul-didactico li {
+            padding: 0.7rem 0 0.7rem 2.8rem;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="%232a7de1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>') left center no-repeat;
+            background-size: 1.6rem;
+            transition: all 0.1s;
+            font-size: 1.05rem;
+        }
+
+        .ul-didactico li:hover {
+            background-color: rgba(42, 125, 225, 0.06);
+            border-radius: 12px;
+            padding-left: 3.2rem;
+        }
+
+        /* ---------- VIAJE DE DATOS (DESTACADO) ---------- */
+        .viaje-datos {
+            background: #e3efff;
+            border-radius: 2rem;
+            padding: 1.5rem 2rem;
+            margin: 1.8rem 0;
+            border: 2px solid #99bcf5;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem 1.8rem;
+            transition: background 0.2s;
+            font-weight: 500;
+        }
+
+        .viaje-datos:hover {
+            background: #d2e4fe;
+        }
+
+        .flecha {
+            font-size: 2.4rem;
+            font-weight: 200;
+            color: #1a6be0;
+            animation: pulseFlecha 1.8s infinite;
+        }
+
+        @keyframes pulseFlecha {
+            0% {
+                opacity: 0.5;
+                transform: translateX(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(10px);
+            }
+
+            100% {
+                opacity: 0.5;
+                transform: translateX(0);
+            }
+        }
+
+        .destacar {
+            background: #fee9b0;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #6a3f00;
+        }
+
+        .mysql-badge {
+            background: #00758f;
+            color: white;
+            padding: 0.2rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* ---------- ANIMACIONES (SUAVES) ---------- */
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .anim-card {
+            animation: fadeSlide 0.5s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.05s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.15s;
+        }
+
+        .icono-movil {
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .icono-movil:hover {
+            transform: rotate(10deg) scale(1.15);
+        }
+
+        /* ---------- RESPONSIVE (WINDOWS AMIGABLE) ---------- */
+        @media (max-width: 850px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .container {
+                padding: 1.2rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            pre {
+                font-size: 0.8rem;
+                padding: 0.8rem;
+            }
+
+            .card {
+                padding: 1.2rem;
+            }
+
+            .paso {
+                padding: 1rem 1.2rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* ---------- BOTONES VISUALES Y ETIQUETAS ---------- */
+        .etiqueta-win {
+            background: #0078d4;
+            color: white;
+            border-radius: 40px;
+            padding: 0.15rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .footer-note {
+            margin-top: 2.8rem;
+            text-align: center;
+            font-size: 1rem;
+            color: #3f5577;
+            border-top: 3px solid #dce3f0;
+            padding-top: 1.8rem;
+        }
+
+        /* RESALTE FONDO AMARILLO MUY SUAVE EN SECCIONES CLAVE */
+        .atencion {
+            background: #fef9e0;
+            border-radius: 1.8rem;
+            padding: 1rem 1.8rem;
+            border-left: 8px solid #f5b342;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>🪟 TKINTER + MySQL en WINDOWS</h1>
+        <div class="subtitulo">
+            <span>✅ Preparación · Entorno virtual · CRUD · Viaje de datos</span>
+            <span class="etiqueta-win" style="margin-left: 0.5rem;">Windows 10/11</span>
+        </div>
+
+        <!-- INTRO: directa y con énfasis -->
+        <div class="card" style="background: #e5f0fe; border-color: #7fa9f0; margin-bottom: 2rem;">
+            <p style="font-size: 1.25rem; font-weight: 500;">
+                <span class="icono-movil">🧩</span> <strong>Paso a paso, sin rodeos.</strong>
+                Aprende a crear un CRUD con Tkinter y MySQL en Windows.
+                <span class="destacar">Sigue el flujo</span> de los datos: desde el formulario hasta la base de datos.
+            </p>
+            <p style="margin-top: 0.4rem;">🎯 <strong>Formato claro</strong> — diseñado para mantener la atención.</p>
+        </div>
+
+        <!-- 1. ENTORNO Y VIRTUAL (WINDOWS) -->
+        <h2>1. Preparación en Windows</h2>
+        <div class="grid-2col">
+            <div class="card anim-card delay-1">
+                <div class="card-header">🖥️ Entorno virtual (cmd)</div>
+                <ul class="ul-didactico">
+                    <li><strong>python -m venv entorno_tk</strong> → crea carpeta</li>
+                    <li><strong>entorno_tk\Scripts\activate</strong> → activar</li>
+                    <li>Instala: <code>pip install mysql-connector-python</code></li>
+                    <li>Verifica: <code>pip list</code> → debe aparecer <span class="mysql-badge">mysql-connector</span>
+                    </li>
+                    <li>💡 <em>Si no funciona, prueba con <strong>py -m venv entorno_tk</strong></em></li>
+                </ul>
+                <div class="atencion" style="margin-top: 0.8rem;">
+                    ⚡ <strong>Recuerda:</strong> siempre activa el entorno antes de ejecutar.
+                </div>
+            </div>
+            <div class="card anim-card delay-2">
+                <div class="card-header">📁 Estructura de archivos</div>
+                <pre style="font-size:0.9rem;">
+📁 mi_crud_win/
+ ├── 📄 main.py          # ventana Tkinter
+ ├── 📄 db_config.py     # conexión MySQL
+ ├── 📄 crud_ops.py      # funciones CRUD
+ └── 📄 utils.py         # (opcional)
+            </pre>
+                <p style="margin-top: 0.8rem;">✅ Mantén separada la lógica de la interfaz.</p>
+            </div>
+        </div>
+
+        <!-- 2. CONEXIÓN A MySQL (WINDOWS) -->
+        <h2>2. Conectar a MySQL</h2>
+        <div class="card" style="background: #eff6fe;">
+            <h3 style="margin-top: 0;">🔌 Archivo <code>db_config.py</code></h3>
+            <pre>
+<span class="comment"># db_config.py</span>
+<span class="keyword">import</span> mysql.connector
+
+<span class="keyword">def</span> <span class="func">get_connection</span>():
+    <span class="keyword">return</span> mysql.connector.connect(
+        host=<span class="string">"localhost"</span>,
+        user=<span class="string">"root"</span>,           <span class="comment"># tu usuario de MySQL</span>
+        password=<span class="string">"tu_contraseña"</span>,  <span class="comment"># tu password</span>
+        database=<span class="string">"crud_tkinter"</span>
+    )
+        </pre>
+            <p>🔹 <strong>Viaje de datos:</strong> El formulario envía datos → se llama a <code>get_connection()</code>
+                → se ejecutan las consultas.</p>
+            <div class="viaje-datos">
+                <span>🖥️ Formulario Tkinter</span>
+                <span class="flecha">➡️</span>
+                <span>📄 crud_ops.py (procesa)</span>
+                <span class="flecha">➡️</span>
+                <span>🐬 MySQL (INSERT/UPDATE/DELETE)</span>
+            </div>
+            <div class="atencion" style="margin-top: 0.8rem;">
+                🛠️ <strong>En Windows:</strong> asegúrate que el servicio MySQL esté corriendo (Services → MySQL).
+            </div>
+        </div>
+
+        <!-- 3. CRUD + EJEMPLO PRÁCTICO -->
+        <h2>3. Operaciones CRUD</h2>
+        <div class="grid-2col">
+            <div class="card anim-card delay-1">
+                <div class="card-header">📝 Crear (INSERT)</div>
+                <pre>
+<span class="keyword">def</span> <span class="func">crear_usuario</span>(nombre, email):
+    conn = get_connection()
+    cursor = conn.cursor()
+    sql = <span class="string">"INSERT INTO usuarios (nombre, email) VALUES (%s, %s)"</span>
+    cursor.execute(sql, (nombre, email))
+    conn.commit()
+    conn.close()
+            </pre>
+                <p><span class="badge">📤 viaje</span> nombre/email → cursor.execute → commit → cierra</p>
+            </div>
+            <div class="card anim-card delay-2">
+                <div class="card-header">📖 Leer (SELECT)</div>
+                <pre>
+<span class="keyword">def</span> <span class="func">obtener_usuarios</span>():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(<span class="string">"SELECT * FROM usuarios"</span>)
+    resultados = cursor.fetchall()
+    conn.close()
+    <span class="keyword">return</span> resultados
+            </pre>
+            </div>
+            <div class="card anim-card delay-3">
+                <div class="card-header">✏️ Actualizar (UPDATE)</div>
+                <pre>
+<span class="keyword">def</span> <span class="func">actualizar_usuario</span>(id, nombre, email):
+    conn = get_connection()
+    cursor = conn.cursor()
+    sql = <span class="string">"UPDATE usuarios SET nombre=%s, email=%s WHERE id=%s"</span>
+    cursor.execute(sql, (nombre, email, id))
+    conn.commit()
+    conn.close()
+            </pre>
+            </div>
+            <div class="card anim-card delay-1">
+                <div class="card-header">🗑️ Eliminar (DELETE)</div>
+                <pre>
+<span class="keyword">def</span> <span class="func">eliminar_usuario</span>(id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(<span class="string">"DELETE FROM usuarios WHERE id=%s"</span>, (id,))
+    conn.commit()
+    conn.close()
+            </pre>
+            </div>
+        </div>
+
+        <!-- 4. TKINTER: FORMULARIO Y EVENTOS (WINDOWS) -->
+        <h2>4. Interfaz Tkinter (main.py)</h2>
+        <div class="card" style="margin: 1rem 0;">
+            <h3 style="margin-top: 0;">🧪 Ventana con campos y botones</h3>
+            <pre>
+<span class="keyword">import</span> tkinter <span class="keyword">as</span> tk
+<span class="keyword">from</span> tkinter <span class="keyword">import</span> messagebox
+<span class="keyword">from</span> crud_ops <span class="keyword">import</span> crear_usuario, obtener_usuarios, actualizar_usuario, eliminar_usuario
+
+<span class="keyword">def</span> <span class="func">guardar_datos</span>():
+    nombre = entry_nombre.get()
+    email = entry_email.get()
+    <span class="keyword">if</span> nombre <span class="keyword">and</span> email:
+        crear_usuario(nombre, email)   <span class="comment"># ← viaje de datos aquí</span>
+        messagebox.showinfo("Éxito", "Usuario guardado")
+        limpiar_campos()
+    <span class="keyword">else</span>:
+        messagebox.showerror("Error", "Completa todos los campos")
+
+<span class="comment"># ... widgets: labels, entries, botones ...</span>
+        </pre>
+            <p><strong>🎯 Flujo completo:</strong> El usuario escribe → click en botón → se llama a
+                <code>guardar_datos()</code> → <code>crear_usuario()</code> → conexión MySQL → INSERT → feedback.</p>
+        </div>
+
+        <!-- 5. VIAJE DE DATOS DETALLADO (PASOS) -->
+        <h2>🧭 El viaje de los datos (paso a paso)</h2>
+        <div class="paso">
+            <strong>1. Usuario escribe en Entry</strong> → <code>entry_nombre.get()</code> obtiene el texto.
+        </div>
+        <div class="paso">
+            <strong>2. Botón "Guardar"</strong> → comando asociado <code>guardar_datos()</code>.
+        </div>
+        <div class="paso">
+            <strong>3. Función guardar_datos()</strong> → valida, llama a <code>crear_usuario(nombre, email)</code>
+            (desde crud_ops).
+        </div>
+        <div class="paso">
+            <strong>4. crud_ops.crear_usuario()</strong> → abre conexión con <code>get_connection()</code> (db_config).
+        </div>
+        <div class="paso">
+            <strong>5. Ejecuta SQL</strong> → <code>cursor.execute("INSERT ...", (nombre, email))</code> → la
+            instrucción viaja al servidor MySQL.
+        </div>
+        <div class="paso">
+            <strong>6. commit()</strong> → persiste el cambio en la base de datos.
+        </div>
+        <div class="paso">
+            <strong>7. Cierra conexión</strong> → <code>conn.close()</code> y retorna. El usuario ve el mensaje de
+            éxito.
+        </div>
+
+        <!-- 6. MOSTRAR DATOS EN TKINTER -->
+        <h2>📋 Mostrar datos en Tkinter</h2>
+        <div class="card" style="background: #ecf4fc;">
+            <pre>
+<span class="keyword">def</span> <span class="func">listar_usuarios</span>():
+    <span class="keyword">for</span> widget <span class="keyword">in</span> frame_lista.winfo_children():
+        widget.destroy()
+    usuarios = obtener_usuarios()   <span class="comment"># SELECT *</span>
+    <span class="keyword">for</span> u <span class="keyword">in</span> usuarios:
+        lbl = tk.Label(frame_lista, text=f"{u['id']} - {u['nombre']} ({u['email']})")
+        lbl.pack()
+        </pre>
+            <p>🔁 Los datos viajan desde la base de datos → <code>obtener_usuarios()</code> → se renderizan en labels
+                dentro de un Frame.</p>
+        </div>
+
+        <!-- 7. TRANSICIONES Y ANIMACIONES (EJEMPLO) -->
+        <h2 style="margin-top: 2.5rem;">✨ Transiciones & animaciones</h2>
+        <div class="flex-row" style="justify-content: center;">
+            <div class="card" style="flex: 1 1 180px; text-align: center; transition: all 0.3s; background: #dbeafe;">
+                <span style="font-size: 2.8rem;">🔄</span>
+                <p>Hover → transición suave</p>
+            </div>
+            <div class="card"
+                style="flex: 1 1 180px; text-align: center; background: #e2f0e6; animation: fadeSlide 1.2s infinite alternate ease-in-out;">
+                <span style="font-size: 2.8rem;">📦</span>
+                <p>Animación infinita</p>
+            </div>
+            <div class="card"
+                style="flex: 1 1 180px; text-align: center; background: #fef3d7; transform: scale(1); transition: transform 0.25s;">
+                <span style="font-size: 2.8rem;">🎯</span>
+                <p>Escala al hacer hover</p>
+            </div>
+        </div>
+
+        <!-- 8. BUENAS PRÁCTICAS (WINDOWS) -->
+        <div
+            style="margin-top: 2.5rem; background: #e9f1fe; border-radius: 2rem; padding: 1.8rem 2rem; border: 2px solid #b3cbf0;">
+            <h2 style="margin: 0 0 0.8rem 0;">✅ Buenas prácticas en Windows</h2>
+            <ul class="ul-didactico">
+                <li><strong>Usa entorno virtual</strong> → evita conflictos de paquetes.</li>
+                <li><strong>Separa responsabilidades</strong> → interfaz (Tkinter) / lógica (CRUD) / conexión
+                    (db_config).</li>
+                <li><strong>Maneja excepciones</strong> → try/except en operaciones de base de datos.</li>
+                <li><strong>Cierra siempre la conexión</strong> → para evitar fugas de recursos.</li>
+                <li><strong>Usa parametrización</strong> → (%s) para evitar inyección SQL.</li>
+                <li><strong>En Windows:</strong> si usas <code>python</code> y no funciona, prueba con <code>py</code>.
+                </li>
+            </ul>
+            <p
+                style="margin-top: 1.2rem; font-style: italic; background: #fef9e0; padding: 0.6rem 1.2rem; border-radius: 40px;">
+                🧠 <strong>Recuerda:</strong> el <span class="destacar">viaje de datos</span> es circular: formulario →
+                procesamiento → BD → y de vuelta para mostrar.
+            </p>
+        </div>
+
+        <div class="footer-note">
+            ⚡ Material didáctico · Tkinter + MySQL · CRUD paso a paso · Enfoque Windows · Formato amigable
+        </div>
+
+    </div>
+</body>
+
+</html>
