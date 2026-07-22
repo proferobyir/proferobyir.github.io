@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Fundamentos Web & Peticiones Asíncronas</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-js: #f7df1e;
+            --accent-php: #777bb4;
+            --accent-json: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid #334155;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #f8fafc;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Layout Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .badge-js { background: var(--accent-js); color: #000; }
+        .badge-php { background: var(--accent-php); color: #fff; }
+        .badge-json { background: var(--accent-json); color: #000; }
+        .badge-net { background: var(--warning); color: #000; }
+
+        h2, h3 {
+            color: #fff;
+        }
+
+        .concept-list {
+            list-style: none;
+        }
+
+        .concept-list li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .concept-list li::before {
+            content: "👉";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* Highlight Boxes */
+        .key-idea {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent-json);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #090d16;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #1e293b;
+            margin: 10px 0;
+        }
+
+        code .keyword { color: #f472b6; }
+        code .function { color: #38bdf8; }
+        code .string { color: #a3e635; }
+        code .comment { color: #64748b; font-style: italic; }
+
+        /* Tables */
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .status-table th, .status-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+
+        .status-table th {
+            color: var(--text-muted);
+        }
+
+        /* Form Interactive Area */
+        .demo-area {
+            background: #111827;
+            border: 2px dashed #38bdf8;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-json);
+        }
+
+        .btn {
+            background: var(--accent-json);
+            color: #000;
+            font-weight: bold;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+        }
+
+        #feedbackConsole {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #000;
+            font-family: monospace;
+            min-height: 60px;
+            display: none;
+        }
+
+        .success-res { border-left: 4px solid var(--success); color: var(--success); }
+        .error-res { border-left: 4px solid var(--error); color: var(--error); }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            body { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ Guía Rápida: De HTML Tradicional a Peticiones Asíncronas</h1>
+        <p>Conceptos esenciales de JavaScript y PHP explicados visualmente punto por punto.</p>
+    </header>
+
+    <div class="container">
+
+        <!-- SECCIÓN 1: DATOS & FORMATOS -->
+        <h2 style="margin-bottom: 20px; color: var(--accent-json);">1. Formato de Datos: Objetos JS & JSON</h2>
+        <div class="grid-2">
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-js">JS</span>
+                    <h3>Objeto en JavaScript</h3>
+                </div>
+                <p>Es una estructura de tipo <strong>llave: valor</strong> que vive en la memoria de la aplicación mientras el navegador está ejecutando el código.</p>
+                
+                <div class="key-idea">
+                    💡 <strong>Uso:</strong> Manipular datos dinámicamente dentro de la página.
+                </div>
+
+<pre><code><span class="keyword">const</span> usuario = {
+    nombre: <span class="string">"Carlos"</span>,
+    correo: <span class="string">"carlos@email.com"</span>,
+    telefono: <span class="string">"04121234567"</span>
+};</code></pre>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-json">Formato</span>
+                    <h3>JSON (JavaScript Object Notation)</h3>
+                </div>
+                <p>Es simplemente <strong>texto plano con formato estandarizado</strong>. Se usa para enviar y recibir información entre lenguajes (ej: de PHP a JS).</p>
+                
+                <div class="key-idea">
+                    💡 <strong>Regla:</strong> Todas las llaves deben llevar comillas dobles <code>" "</code>.
+                </div>
+
+<pre><code>{
+    <span class="string">"nombre"</span>: <span class="string">"Carlos"</span>,
+    <span class="string">"correo"</span>: <span class="string">"carlos@email.com"</span>,
+    <span class="string">"telefono"</span>: <span class="string">"04121234567"</span>
+}</code></pre>
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN 2: BASE JAVASCRIPT -->
+        <h2 style="margin-bottom: 20px; color: var(--accent-js);">2. Fundamentos de JavaScript para la Red</h2>
+        <div class="grid-2">
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-js">JS</span>
+                    <h3>Escuchadores & Callbacks</h3>
+                </div>
+                <ul class="concept-list">
+                    <li><strong>addEventListener:</strong> Queda "escuchando" cuando un evento ocurre (ej: <code>submit</code>, <code>click</code>).</li>
+                    <li><strong>Callback:</strong> Es una función que se pasa como argumento a otra función para ejecutarse únicamente cuando la acción principal termina.</li>
+                </ul>
+
+<pre><code><span class="comment">// La función anónima es el 'Callback'</span>
+formulario.addEventListener(<span class="string">'submit'</span>, (event) => {
+    event.preventDefault(); <span class="comment">// Frena el recargo</span>
+    console.log(<span class="string">"¡Formulario interceptado!"</span>);
+});</code></pre>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-js">JS</span>
+                    <h3>Asincronía: Async & Await</h3>
+                </div>
+                <p>Las peticiones web toman tiempo en responder. Usamos <code>async/await</code> para pausar la ejecución dentro de la función sin congelar el resto de la interfaz del usuario.</p>
+
+<pre><code><span class="keyword">async function</span> guardarDatos() {
+    <span class="comment">// 'await' espera a que la red responda</span>
+    <span class="keyword">const</span> respuesta = <span class="keyword">await</span> fetch(<span class="string">'procesar.php'</span>);
+    <span class="keyword">const</span> datos = <span class="keyword">await</span> respuesta.json();
+}</code></pre>
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN 3: BASE PHP -->
+        <h2 style="margin-bottom: 20px; color: var(--accent-php);">3. Fundamentos de PHP para Backend</h2>
+        <div class="grid-2">
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-php">PHP</span>
+                    <h3>Arreglos Asociativos & JSON</h3>
+                </div>
+                <p>En PHP los arreglos asociativos usan claves personalizadas en lugar de índices numéricos. Son el equivalente perfecto a un objeto JSON.</p>
+
+<pre><code><span class="comment">// 1. Arreglo Asociativo</span>
+$respuesta = [
+    <span class="string">"status"</span> => <span class="string">"success"</span>,
+    <span class="string">"message"</span> => <span class="string">"Registro guardado"</span>
+];
+
+<span class="comment">// 2. Convertir a texto JSON</span>
+echo json_encode($respuesta);</code></pre>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-php">PHP</span>
+                    <h3>Base de Datos Procedimental (MySQLi)</h3>
+                </div>
+                <p>Uso directo de funciones mysqli para validar e insertar datos recibidos en el servidor.</p>
+
+<pre><code><span class="comment">// Crear conexión por procedimientos</span>
+$conexion = mysqli_connect(<span class="string">"localhost"</span>, <span class="string">"root"</span>, <span class="string">""</span>, <span class="string">"mi_bd"</span>);
+
+<span class="comment">// Ejecutar inserción básica</span>
+$sql = <span class="string">"INSERT INTO usuarios VALUES (NULL, '$nom', '$cor', '$tel')"</span>;
+$resultado = mysqli_query($conexion, $sql);</code></pre>
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN 4: PROTOCOLO & CORS -->
+        <h2 style="margin-bottom: 20px; color: var(--warning);">4. Comunicación entre Cliente y Servidor</h2>
+        <div class="grid-2">
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-net">Red</span>
+                    <h3>Códigos de Estado HTTP</h3>
+                </div>
+                <p>El servidor comunica qué ocurrió mediante un código estándar:</p>
+                <table class="status-table">
+                    <tr>
+                        <th>Código</th>
+                        <th>Significado</th>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--success);">200 / 201</strong></td>
+                        <td>OK / Creado exitosamente</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--warning);">400</strong></td>
+                        <td>Petición mala (Faltan campos)</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--warning);">409</strong></td>
+                        <td>Conflicto (Registro duplicado)</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:var(--error);">500</strong></td>
+                        <td>Error interno del Servidor/Base de Datos</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge badge-net">Seguridad</span>
+                    <h3>¿Qué es CORS y cómo configurarlo?</h3>
+                </div>
+                <p><strong>CORS</strong> (Cross-Origin Resource Sharing) es una regla de seguridad de los navegadores que bloquea peticiones si el Front-End y el Back-End están en dominios o puertos distintos.</p>
+                
+                <div class="key-idea">
+                    💡 <strong>Solución en PHP:</strong> Agregar cabeceras al inicio del archivo backend.
+                </div>
+
+<pre><code><span class="comment">// Permitir accesos desde cualquier origen</span>
+header(<span class="string">"Access-Control-Allow-Origin: *"</span>);
+header(<span class="string">"Access-Control-Allow-Methods: POST, GET"</span>);
+header(<span class="string">"Content-Type: application/json; charset=UTF-8"</span>);</code></pre>
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN 5: DEMOSTRACIÓN Y CÓDIGO COMPLETO -->
+        <div class="demo-area">
+            <h2 style="color: var(--accent-json); margin-bottom: 10px;">5. Laboratorio Práctico Integrado</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                Este formulario utiliza <code>fetch()</code>, intercepta el submit, maneja estados de carga y procesa la respuesta sin refrescar la ventana.
+            </p>
+
+            <form id="formDemo">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo:</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Ana Pérez" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico:</label>
+                    <input type="email" id="correo" name="correo" placeholder="Ej: ana@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Número de Teléfono:</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="Ej: 04141234567" required>
+                </div>
+
+                <button type="submit" id="btnEnviar" class="btn">Guardar Usuario Asíncronamente</button>
+            </form>
+
+            <div id="feedbackConsole"></div>
+        </div>
+
+        <!-- CÓDIGO BACKEND PARA IMPRIMIR EN CLASE -->
+        <div class="card" style="margin-top: 30px;">
+            <div class="card-header">
+                <span class="badge badge-php">PHP</span>
+                <h3>Código de referencia completo para: procesar.php</h3>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 10px;">Este es el archivo que debe residir en la misma carpeta que procesa los datos y devuelve el JSON.</p>
+<pre><code>&lt;?php
+<span class="comment">// 1. Cabeceras CORS y Formato de Respuesta</span>
+header(<span class="string">"Access-Control-Allow-Origin: *"</span>);
+header(<span class="string">"Content-Type: application/json; charset=UTF-8"</span>);
+
+<span class="comment">// 2. Recepción de variables por POST</span>
+$nombre   = $_POST[<span class="string">'nombre'</span>] ?? <span class="string">''</span>;
+$correo   = $_POST[<span class="string">'correo'</span>] ?? <span class="string">''</span>;
+$telefono = $_POST[<span class="string">'telefono'</span>] ?? <span class="string">''</span>;
+
+<span class="comment">// 3. Validación básica de backend</span>
+if (empty($nombre) || empty($correo) || empty($telefono)) {
+    http_response_code(400);
+    echo json_encode([
+        <span class="string">"status"</span>  => <span class="string">"error"</span>,
+        <span class="string">"message"</span> => <span class="string">"Todos los campos son obligatorios."</span>
+    ]);
+    exit;
+}
+
+<span class="comment">// 4. Conexión a Base de Datos (Procedimental)</span>
+$conexion = @mysqli_connect(<span class="string">"localhost"</span>, <span class="string">"root"</span>, <span class="string">""</span>, <span class="string">"mi_base_datos"</span>);
+
+if (!$conexion) {
+    http_response_code(500);
+    echo json_encode([
+        <span class="string">"status"</span>  => <span class="string">"error"</span>,
+        <span class="string">"message"</span> => <span class="string">"Error de conexión con la Base de Datos."</span>
+    ]);
+    exit;
+}
+
+<span class="comment">// 5. Intento de Inserción</span>
+$sql = <span class="string">"INSERT INTO usuarios (nombre, correo, telefono) VALUES ('$nombre', '$correo', '$telefono')"</span>;
+$query = mysqli_query($conexion, $sql);
+
+if ($query) {
+    http_response_code(200);
+    echo json_encode([
+        <span class="string">"status"</span>  => <span class="string">"success"</span>,
+        <span class="string">"message"</span> => <span class="string">"¡Usuario guardado con éxito!"</span>
+    ]);
+} else {
+    <span class="comment">// Capturar error de duplicado (Código SQL 1062)</span>
+    $errorCode = mysqli_errno($conexion);
+    http_response_code($errorCode == 1062 ? 409 : 500);
+    
+    echo json_encode([
+        <span class="string">"status"</span>  => <span class="string">"error"</span>,
+        <span class="string">"code"</span>    => $errorCode,
+        <span class="string">"message"</span> => $errorCode == 1062 ? <span class="string">"El correo ya está registrado."</span> : <span class="string">"Error al insertar el registro."</span>
+    ]);
+}
+
+mysqli_close($conexion);
+?&gt;</code></pre>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DEL FRONTEND -->
+    <script>
+        const formDemo = document.getElementById('formDemo');
+        const btnEnviar = document.getElementById('btnEnviar');
+        const consoleOut = document.getElementById('feedbackConsole');
+
+        formDemo.addEventListener('submit', async (e) => {
+            // Evitar que la página recargue automáticamente
+            e.preventDefault();
+
+            // Bloquear botón para evitar múltiple clic
+            btnEnviar.disabled = true;
+            btnEnviar.textContent = "Procesando respuesta...";
+            consoleOut.style.display = "none";
+
+            // Empaquetar los datos del formulario automáticamente
+            const formData = new FormData(formDemo);
+
+            try {
+                // Envío asíncrono vía FETCH
+                const response = await fetch('procesar.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Lectura de cuerpo JSON
+                const data = await response.json();
+
+                consoleOut.style.display = "block";
+
+                if (response.ok) {
+                    consoleOut.className = "success-res";
+                    consoleOut.textContent = `[HTTP ${response.status}] ${data.message}`;
+                    formDemo.reset();
+                } else {
+                    consoleOut.className = "error-res";
+                    consoleOut.textContent = `[HTTP ${response.status}] Error: ${data.message}`;
+                }
+
+            } catch (error) {
+                // Manejo de caídas de conexión/red
+                consoleOut.style.display = "block";
+                consoleOut.className = "error-res";
+                consoleOut.textContent = "Error crítico de red: No se pudo establecer conexión con el archivo procesar.php";
+            } finally {
+                // Restaurar el botón siempre
+                btnEnviar.disabled = false;
+                btnEnviar.textContent = "Guardar Usuario Asíncronamente";
+            }
+        });
+    </script>
+</body>
+</html>
