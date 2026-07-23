@@ -1,26 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Guía Didáctica: JS & Asincronía</title>
+
   <!-- Fuente diseñada para facilitar la lectura -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Fira+Code:wght@400;600&display=swap"
+    rel="stylesheet">
+
   <style>
     :root {
       --bg-color: #0b0f19;
       --card-bg: #151d30;
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.15);
+      --accent-glow: rgba(56, 189, 248, 0.12);
       --accent-success: #4ade80;
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
       --code-bg: #070a12;
       --border: #24334d;
       --highlight: #facc15;
+      --warning-bg: rgba(250, 204, 21, 0.1);
+
+      /* Colores para sintaxis de código */
+      --kw: #ff79c6;
+      /* Palabras clave: function, return, const */
+      --fn: #50fa7b;
+      /* Nombres de funciones */
+      --str: #f1fa8c;
+      /* Cadenas de texto */
+      --cm: #6272a4;
+      /* Comentarios */
     }
 
     * {
@@ -65,7 +80,7 @@
       font-size: 1.05rem;
     }
 
-    /* --- NAVEGACIÓN RÁPIDA (ANCHOR LINKS PARA TDAH) --- */
+    /* --- NAVEGACIÓN RÁPIDA --- */
     .nav-fast {
       display: flex;
       flex-wrap: wrap;
@@ -118,18 +133,40 @@
       gap: 0.6rem;
     }
 
-    /* Píldora conceptual (En resumen) */
+    /* Píldora conceptual */
     .concept-pill {
       background: var(--accent-glow);
       border-left: 4px solid var(--accent);
       padding: 0.8rem 1rem;
       border-radius: 0 8px 8px 0;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
       font-size: 0.95rem;
     }
 
     .concept-pill strong {
       color: var(--accent);
+    }
+
+    /* Cuadros de Advertencia / Tip Pro */
+    .tip-box {
+      background: var(--warning-bg);
+      border-left: 4px solid var(--highlight);
+      padding: 0.8rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1.2rem;
+      font-size: 0.9rem;
+      color: #fef08a;
+    }
+
+    .analogy-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed var(--border);
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
     }
 
     ul {
@@ -141,7 +178,7 @@
       margin-bottom: 0.5rem;
     }
 
-    /* --- CÓDIGO --- */
+    /* --- CÓDIGO Y RESALTADO --- */
     pre {
       background-color: var(--code-bg);
       padding: 1.2rem;
@@ -152,6 +189,7 @@
       font-size: 0.88rem;
       color: #e2e8f0;
       margin-bottom: 1.2rem;
+      line-height: 1.5;
     }
 
     code {
@@ -163,9 +201,28 @@
       font-size: 0.85em;
     }
 
-    /* --- Demos Interactivas --- */
+    /* Clases de sintaxis para el pre */
+    .kw {
+      color: var(--kw);
+      font-weight: 600;
+    }
+
+    .fn {
+      color: var(--fn);
+    }
+
+    .str {
+      color: var(--str);
+    }
+
+    .cm {
+      color: var(--cm);
+      font-style: italic;
+    }
+
+    /* --- DEMOS INTERACTIVAS --- */
     .demo-box {
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border);
       padding: 1.2rem;
       border-radius: 12px;
@@ -173,7 +230,7 @@
     }
 
     .demo-title {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: bold;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -207,7 +264,7 @@
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
@@ -215,7 +272,7 @@
       margin-top: 1rem;
       font-weight: 600;
       color: var(--highlight);
-      min-height: 2rem;
+      min-height: 2.5rem;
       white-space: pre-wrap;
       background: var(--code-bg);
       padding: 1rem;
@@ -226,24 +283,33 @@
     }
 
     @media (max-width: 600px) {
-      body { padding: 0.5rem; }
-      section { padding: 1.2rem; }
-      .nav-fast { display: none; } /* Se oculta en móviles para ahorrar espacio */
+      body {
+        padding: 0.5rem;
+      }
+
+      section {
+        padding: 1.2rem;
+      }
+
+      .nav-fast {
+        display: none;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
     <header>
       <h1>⚡ JS Fácil: Funciones & Asincronía</h1>
-      <p>Aprende paso a paso, visual y sin enredos conceptuales.</p>
+      <p>Una guía visual e interactiva para dominar conceptos clave de JavaScript.</p>
     </header>
 
-    <!-- NAVEGACIÓN RÁPIDA (Anchor Links) -->
+    <!-- NAVEGACIÓN RÁPIDA -->
     <nav class="nav-fast" aria-label="Navegación rápida">
       <a href="#tradicionales">1. Tradicionales</a>
-      <a href="#arrow">2. Arrow</a>
+      <a href="#arrow">2. Arrow Functions</a>
       <a href="#callbacks">3. Callbacks</a>
       <a href="#promesas">4. Promesas</a>
       <a href="#async">5. Async/Await</a>
@@ -254,17 +320,20 @@
     <section id="tradicionales">
       <h2>1. Funciones Tradicionales</h2>
       <div class="concept-pill">
-        💡 <strong>En resumen:</strong> Son bloques de código que puedes reutilizar. Si las declaras con <code>function</code>, puedes llamarlas incluso <i>antes</i> de haberlas escrito (a esto se le llama <i>Hoisting</i>).
+        💡 <strong>En resumen:</strong> Son bloques de código reutilizables. Reciben datos (parámetros), procesan algo y
+        te devuelven un resultado.
       </div>
+      <div class="analogy-tag">🍳 <strong>Analogía:</strong> Una máquina de café. Le pones granos (parámetro) y te
+        entrega café servido (resultado).</div>
 
-<pre><code>// 1. Declaración (¡Tiene hoisting! Puedes usarla antes en el código)
-function calcularArea(base, altura) {
-  return base * altura;
+      <pre><code><span class="cm">// 1. Declaración estándar (Tiene Hoisting: puedes llamarla antes de crearla)</span>
+<span class="kw">function</span> <span class="fn">calcularArea</span>(base, altura) {
+  <span class="kw">return</span> base * altura;
 }
 
-// 2. Expresión (Guardada en variable, NO tiene hoisting)
-const saludar = function(nombre) {
-  return `Hola, ${nombre}`;
+<span class="cm">// 2. Expresión (Guardada en variable, NO tiene hoisting)</span>
+<span class="kw">const</span> <span class="fn">saludar</span> = <span class="kw">function</span>(nombre) {
+  <span class="kw">return</span> <span class="str">`Hola, ${nombre}`</span>;
 };</code></pre>
     </section>
 
@@ -272,45 +341,55 @@ const saludar = function(nombre) {
     <section id="arrow">
       <h2>2. Funciones Arrow (Flecha) <code>=></code></h2>
       <div class="concept-pill">
-        💡 <strong>En resumen:</strong> Una forma moderna y rápida de escribir funciones.
+        💡 <strong>En resumen:</strong> Una sintaxis moderna, limpia y compacta para escribir funciones rápidamente.
       </div>
       <ul>
-        <li><strong>Más cortas:</strong> Si solo hacen una cosa, no necesitan <code>return</code> ni llaves <code>{}</code>.</li>
-        <li><strong>Comparten el contexto:</strong> No tienen su propio <code>this</code> (usan el del lugar donde fueron creadas).</li>
+        <li><strong>Más cortas:</strong> Si solo hacen una acción, puedes omitir las llaves <code>{}</code> y la palabra
+          <code>return</code>.</li>
+        <li><strong>Contexto <code>this</code>:</strong> No crean su propio <code>this</code>, sino que heredan el del
+          lugar donde fueron escritas.</li>
       </ul>
 
-<pre><code>// Sintaxis Completa
-const sumar = (a, b) => {
-  return a + b;
+      <pre><code><span class="cm">// Sintaxis Completa (Larga)</span>
+<span class="kw">const</span> <span class="fn">sumar</span> = (a, b) => {
+  <span class="kw">return</span> a + b;
 };
 
-// Sintaxis Corta (Retorno implícito automático)
-const duplicar = x => x * 2;</code></pre>
+<span class="cm">// Sintaxis Corta (Retorno implícito automático en una sola línea)</span>
+<span class="kw">const</span> <span class="fn">duplicar</span> = x => x * 2;</code></pre>
     </section>
 
     <!-- 3. CALLBACKS -->
     <section id="callbacks">
-      <h2>3. Callbacks (Funciones de Respuesta)</h2>
+      <h2>3. Callbacks (Pasar funciones como parámetros)</h2>
       <div class="concept-pill">
-        💡 <strong>En resumen:</strong> Pasar una función dentro de otra como si fuera una variable. Es como darle una receta a un amigo para que la prepare después.
+        💡 <strong>En resumen:</strong> Consiste en enviar una función dentro de otra función como si fuera una variable
+        o un "ingrediente".
+      </div>
+      <div class="analogy-tag">🔔 <strong>Analogía:</strong> Dejarle tu número de teléfono a un taller. No te quedas
+        esperando allí; les dices "llámenme cuando el auto esté listo".</div>
+
+      <div class="tip-box">
+        ⚠️ <strong>¡Ojo al pasar la función!</strong> Debes escribir solo su nombre (ej: <code>miCallback</code>). Si le
+        pones paréntesis <code>miCallback()</code>, la ejecutarás de inmediato en lugar de pasarla como parámetro.
       </div>
 
-<pre><code>function procesarUsuario(id, miCallback) {
-  console.log(`1. Buscando usuario ${id}...`);
+      <pre><code><span class="kw">function</span> <span class="fn">procesarUsuario</span>(id, instruccionAlTerminar) {
+  console.<span class="fn">log</span>(<span class="str">`1. Buscando usuario ${id}...`</span>);
 
-  // Al agregar paréntesis (), ejecutamos la función guardada:
-  miCallback("Carlos");
+  <span class="cm">// Ejecutamos la función recibida agregando los paréntesis ()</span>
+  instruccionAlTerminar(<span class="str">"Carlos"</span>);
 }
 
-// Pasamos una función Arrow como parámetro
-procesarUsuario(10, (nombre) => {
-  console.log(`2. ¡Usuario encontrado: ${nombre}!`);
+<span class="cm">// Pasamos una función flecha como segundo parámetro:</span>
+<span class="fn">procesarUsuario</span>(10, (nombre) => {
+  console.<span class="fn">log</span>(<span class="str">`2. ¡Usuario encontrado: ${nombre}!`</span>);
 });</code></pre>
 
       <div class="demo-box">
         <div class="demo-title">🧪 Probador Interactivo</div>
-        <button id="btn-callback">▶ Inspeccionar Callback</button>
-        <div id="out-callback" class="output">Haz clic para ver la inspección en vivo...</div>
+        <button id="btn-callback">▶ Probar Callback</button>
+        <div id="out-callback" class="output">Haz clic para ver el Callback en acción...</div>
       </div>
     </section>
 
@@ -318,19 +397,22 @@ procesarUsuario(10, (nombre) => {
     <section id="promesas">
       <h2>4. Promesas (Promises)</h2>
       <div class="concept-pill">
-        💡 <strong>En resumen:</strong> Como un ticket de pedido en un restaurante. Promete entregarte comida (éxito) o avisarte si se agotó (error) en el futuro.
+        💡 <strong>En resumen:</strong> Representan un valor que estará disponible <strong>ahora, en el futuro o
+          nunca</strong> (si ocurre un error).
       </div>
+      <div class="analogy-tag">🎟️ <strong>Analogía:</strong> El ticket con un número que te dan en la pizzería. No es
+        la pizza en sí, pero garantiza que la recibirás o te avisarán si se acabó.</div>
 
-<pre><code>const obtenerDatos = () => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve("✅ ¡Datos cargados!");
+      <pre><code><span class="kw">const</span> <span class="fn">obtenerDatos</span> = () => {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((resolve, reject) => {
+    <span class="fn">setTimeout</span>(() => {
+      <span class="fn">resolve</span>(<span class="str">"✅ ¡Datos cargados con éxito!"</span>);
     }, 1500);
   });
 };
 
-// Consumo con .then()
-obtenerDatos().then(respuesta => console.log(respuesta));</code></pre>
+<span class="cm">// Consumo básico con .then()</span>
+<span class="fn">obtenerDatos</span>().<span class="fn">then</span>(respuesta => console.<span class="fn">log</span>(respuesta));</code></pre>
 
       <div class="demo-box">
         <div class="demo-title">🧪 Probador Interactivo</div>
@@ -343,75 +425,76 @@ obtenerDatos().then(respuesta => console.log(respuesta));</code></pre>
     <section id="async">
       <h2>5. Async / Await</h2>
       <div class="concept-pill">
-        💡 <strong>En resumen:</strong> La forma moderna de leer Promesas. Hace que el código asíncrono parezca ordenado y secuencial (de arriba a abajo).
+        💡 <strong>En resumen:</strong> Una forma más clara y fácil de leer para trabajar con Promesas. Hace que el
+        código asíncrono parezca secuencial (de arriba a abajo).
       </div>
       <ul>
-        <li><code>async</code>: Marca una función para que trabaje con asincronía.</li>
-        <li><code>await</code>: Pausa el código hasta que la Promesa responda.</li>
+        <li><code>async</code>: Se pone antes de la función para indicar que usará tareas asíncronas.</li>
+        <li><code>await</code>: Pausa la ejecución <strong>únicamente dentro de esa función</strong> hasta que la
+          promesa responda.</li>
       </ul>
 
-<pre><code>const pedirServidor = async () => {
-  try {
-    // Pausa aquí hasta que los datos lleguen
-    const resultado = await obtenerDatos(); 
-    console.log(resultado);
-  } catch (error) {
-    console.error("Falló:", error);
+      <pre><code><span class="kw">const</span> <span class="fn">pedirServidor</span> = <span class="kw">async</span> () => {
+  <span class="kw">try</span> {
+    <span class="cm">// El código se "pausa" aquí hasta que obtenerDatos() termine:</span>
+    <span class="kw">const</span> resultado = <span class="kw">await</span> <span class="fn">obtenerDatos</span>(); 
+    console.<span class="fn">log</span>(resultado);
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">"Ocurrió un error:"</span>, error);
   }
 };</code></pre>
 
       <div class="demo-box">
         <div class="demo-title">🧪 Probador Interactivo</div>
-        <button id="btn-async">🚀 Consultar API</button>
+        <button id="btn-async">🚀 Consultar API con Await</button>
         <div id="out-async" class="output">Estado: Inactivo.</div>
       </div>
     </section>
 
     <!-- 6. EVENT LISTENERS -->
     <section id="events">
-      <h2>6. Uso Real en <code>addEventListener</code></h2>
+      <h2>6. Aplicación Real: Escuchadores de Eventos</h2>
       <div class="concept-pill">
-        💡 <strong>En resumen:</strong> Escuchadores de eventos que ejecutan una función cuando el usuario interactúa.
+        💡 <strong>En resumen:</strong> Es la aplicación práctica más común de las funciones como parámetro. Le dices al
+        navegador: <i>"Cuando el usuario haga clic en este botón, ejecuta esta función"</i>.
       </div>
 
-<pre><code>const boton = document.querySelector('button');
+      <pre><code><span class="kw">const</span> boton = document.<span class="fn">querySelector</span>(<span class="str">'button'</span>);
 
-// Opción A: Con Arrow Function anónima
-boton.addEventListener('click', (e) => {
-  console.log("Clic registrado");
+<span class="cm">// Opción A: Pasando una Arrow Function directamente</span>
+boton.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (evento) => {
+  console.<span class="fn">log</span>(<span class="str">"¡Hiciste clic!"</span>);
 });
 
-// Opción B: Pasando el nombre de la función (SIN paréntesis)
-function miManejador() { console.log("Clic externo"); }
-boton.addEventListener('click', miManejador); 
-
-// Opción C: Función Async para llamadas a APIS
-boton.addEventListener('click', async () => {
-  await consultarAPI();
-});</code></pre>
+<span class="cm">// Opción B: Pasando el nombre de una función existente (SIN paréntesis)</span>
+<span class="kw">function</span> <span class="fn">miManejador</span>() { 
+  console.<span class="fn">log</span>(<span class="str">"Clic detectado"</span>); 
+}
+boton.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, miManejador); </code></pre>
     </section>
   </div>
 
   <script>
-    // --- LÓGICA DE LAS DEMOS ---
+    // --- LÓGICA DE LAS DEMOS INTERACTIVAS ---
 
     // 1. Demo Callbacks
     const btnCallback = document.getElementById('btn-callback');
     const outCallback = document.getElementById('out-callback');
 
     function ejecutarCallbackDemo(funcionRecibida) {
-      outCallback.textContent = "1. Inspeccionando función recibida:\n";
-      outCallback.textContent += `   ${funcionRecibida.toString()}\n\n`;
-      outCallback.textContent += "2. Ejecutando...";
-      
+      outCallback.textContent = "1. Recibiendo la función pasada como parámetro...\n";
+      outCallback.textContent += `   Sintaxis recibida: ${funcionRecibida.toString()}\n\n`;
+      outCallback.textContent += "2. Procesando tarea... (esperando 0.6s)";
+
       setTimeout(() => {
-        funcionRecibida("🎉 ¡Éxito total!");
+        // Ejecución de la callback enviada
+        funcionRecibida("🎉 ¡El Callback se ejecutó correctamente!");
       }, 600);
     }
 
     btnCallback.addEventListener('click', () => {
       ejecutarCallbackDemo((mensaje) => {
-        outCallback.textContent += `\n3. Resultado final: ${mensaje}`;
+        outCallback.textContent += `\n\n3. Resultado final: ${mensaje}`;
       });
     });
 
@@ -421,16 +504,16 @@ boton.addEventListener('click', async () => {
 
     const simularPromesa = () => {
       return new Promise((resolve) => {
-        setTimeout(() => resolve("✅ Promesa cumplida tras 1.5 segundos."), 1500);
+        setTimeout(() => resolve("✅ Promesa cumplida: ¡Llegaron los datos tras 1.5s!"), 1500);
       });
     };
 
     btnPromise.addEventListener('click', () => {
-      outPromise.textContent = "⏳ Cargando orden...";
+      outPromise.textContent = "⏳ Estado: Promesa PENDIENTE (esperando respuesta)...";
       btnPromise.disabled = true;
-      
-      simularPromesa().then((res) => {
-        outPromise.textContent = res;
+
+      simularPromesa().then((respuesta) => {
+        outPromise.textContent = respuesta;
         btnPromise.disabled = false;
       });
     });
@@ -439,17 +522,21 @@ boton.addEventListener('click', async () => {
     const btnAsync = document.getElementById('btn-async');
     const outAsync = document.getElementById('out-async');
 
-    const pedirAPI = () => new Promise((res) => setTimeout(() => res("🚀 Datos traídos del servidor remotamente."), 1200));
+    const pedirAPI = () => new Promise((resolve) =>
+      setTimeout(() => resolve("🚀 ¡Servidor respondió! Datos renderizados."), 1200)
+    );
 
     btnAsync.addEventListener('click', async () => {
-      outAsync.textContent = "🔄 Pausando ejecución con 'await'...";
+      outAsync.textContent = "🔄 Ejecución pausada temporalmente con 'await'...";
       btnAsync.disabled = true;
 
+      // Pausa aquí sin congelar la pantalla del usuario
       const datos = await pedirAPI();
-      
+
       outAsync.textContent = datos;
       btnAsync.disabled = false;
     });
   </script>
 </body>
+
 </html>
