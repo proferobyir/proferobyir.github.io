@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Definitiva de Funciones en JavaScript</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --code-bg: #090d16;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 1.5rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: #cbd5e1;
+    }
+
+    ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: #cbd5e1;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      margin-bottom: 1rem;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background-color: var(--code-bg);
+      color: var(--accent);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+    }
+
+    .demo-box {
+      background-color: rgba(56, 189, 248, 0.05);
+      border: 1px dashed var(--accent);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin: 0.25rem;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    .output {
+      margin-top: 0.8rem;
+      font-weight: bold;
+      color: #facc15;
+      min-height: 1.5rem;
+      white-space: pre-wrap;
+      text-align: left;
+      background: var(--code-bg);
+      padding: 0.8rem;
+      border-radius: 6px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0.75rem;
+      }
+      section {
+        padding: 1rem;
+      }
+      pre {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Funciones & Asincronía en JS</h1>
+      <p>Conceptos profundos, arquitectura y uso práctico con <code>addEventListener</code></p>
+    </header>
+
+    <!-- 1. FUNCIONES TRADICIONALES -->
+    <section>
+      <h2>1. Funciones Tradicionales</h2>
+      <p>Son bloques de código reutilizables. Pueden definirse como <strong>Declaraciones</strong> o <strong>Expresiones</strong>. Tienen su propio contexto de ejecución (<code>this</code>) y sufren de <i>Hoisting</i> (pueden invocarse antes de ser declaradas en el código si usas la sintaxis declarativa).</p>
+      
+      <pre><code>// Declaración (Tiene hoisting)
+function calcularArea(base, altura) {
+  return base * altura;
+}
+
+// Expresión de Función (Guardada en variable, no tiene hoisting)
+const saludar = function(nombre) {
+  return `Hola, ${nombre}`;
+};</code></pre>
+    </section>
+
+    <!-- 2. FUNCIONES ARROW -->
+    <section>
+      <h2>2. Funciones Arrow (Flecha)</h2>
+      <p>Introducidas en ES6 (2015). Ofrecen una sintaxis más corta e implícita. Tienen dos características clave:</p>
+      <ul>
+        <li><strong>No tienen su propio <code>this</code>:</strong> Heredan el <code>this</code> del contexto léxico superior (donde fueron creadas).</li>
+        <li><strong>Retorno implícito:</strong> Si ocupan una sola línea, no requieren las llaves <code>{}</code> ni la palabra <code>return</code>.</li>
+      </ul>
+
+      <pre><code>// Sintaxis completa
+const sumar = (a, b) => {
+  return a + b;
+};
+
+// Sintaxis corta (Retorno Implícito)
+const duplicar = x => x * 2;</code></pre>
+    </section>
+
+    <!-- 3. FUNCIONES EJECUTADORAS / CALLBACKS -->
+    <section>
+      <h2>3. Funciones Ejecutadoras (Callbacks)</h2>
+      <p>En JS, las funciones son "ciudadanos de primera clase". Esto significa que una función se puede pasar como <strong>parámetro a otra función</strong> como si fuera una variable cualqueira. La función receptora guardará ese código y lo "ejecutará" más tarde.</p>
+      
+      <pre><code>// 'callback' guarda el CÓDIGO de la función que le enviamos
+function procesarUsuario(id, callback) {
+  console.log(`1. Buscando usuario ${id}...`);
+  
+  // 🔍 SI IMPRIMIMOS 'callback' SIN PARÉNTESIS (), VEREMOS SU CONTENIDO:
+  console.log("2. Contenido interno de la variable 'callback':", callback);
+
+  // ⚡ AL PONERLE PARÉNTESIS 'callback(...)', LA EJECUTAMOS:
+  callback("Carlos");
+}
+
+// Invocación: le pasamos el ID 10 y una función Arrow
+procesarUsuario(10, (nombre) => {
+  console.log(`3. ¡Resultado recibido! Usuario encontrado: ${nombre}`);
+});</code></pre>
+
+      <div class="demo-box">
+        <p><strong>Demo en vivo: Inspeccionando la función ejecutadora</strong></p>
+        <button id="btn-callback">Ejecutar Demostración Callback</button>
+        <div id="out-callback" class="output">Haz clic en el botón para ver qué hay dentro del callback...</div>
+      </div>
+    </section>
+
+    <!-- 4. PROMESAS -->
+    <section>
+      <h2>4. Promesas (Promises)</h2>
+      <p>Objeto que representa el resultado de una operación asíncrona que puede terminar con éxito (<code>resolve</code>) o con error (<code>reject</code>). Evitan el infierno de los callbacks (<i>Callback Hell</i>).</p>
+
+      <pre><code>const obtenerDatos = () => {
+  return new Promise((resolve, reject) => {
+    const exito = true;
+    setTimeout(() => {
+      if(exito) resolve("¡Datos cargados con éxito!");
+      else reject("Error en el servidor");
+    }, 1500);
+  });
+};
+
+// Consumo con .then() y .catch()
+obtenerDatos()
+  .then(respuesta => console.log(respuesta))
+  .catch(error => console.error(error));</code></pre>
+
+      <div class="demo-box">
+        <p><strong>Demo en vivo: Promesa con tiempo de espera</strong></p>
+        <button id="btn-promise">Cargar Datos (1.5s)</button>
+        <div id="out-promise" class="output">Esperando acción...</div>
+      </div>
+    </section>
+
+    <!-- 5. ASYNC / AWAIT -->
+    <section>
+      <h2>5. Funciones Async / Await</h2>
+      <p>Es una "azúcar sintáctica" construida sobre las Promesas. Hace que el código asíncrono se lea y se comporte de forma parecida al código síncrono, mejorando drásticamente la legibilidad.</p>
+      <ul>
+        <li><code>async</code>: Convierte una función para que siempre devuelva una Promesa.</li>
+        <li><code>await</code>: Pausa la ejecución de la función hasta que la Promesa se resuelva (solo se puede usar dentro de funciones <code>async</code>).</li>
+      </ul>
+
+      <pre><code>// Definición async + arrow
+const pedirDatosServidor = async () => {
+  try {
+    // Pausa la ejecución aquí hasta que la promesa responda
+    const resultado = await obtenerDatos(); 
+    console.log(resultado);
+  } catch (error) {
+    console.error("Falló:", error);
+  }
+};</code></pre>
+
+      <div class="demo-box">
+        <p><strong>Demo en vivo: Async/Await + EventListener</strong></p>
+        <button id="btn-async">Petición Async</button>
+        <div id="out-async" class="output">Esperando acción...</div>
+      </div>
+    </section>
+
+    <!-- 6. INTEGRADOR CON ADDEVENTLISTENER -->
+    <section>
+      <h2>6. Formas de Uso en <code>addEventListener</code></h2>
+      <p><code>addEventListener</code> recibe como segundo parámetro una <strong>función ejecutadora</strong>. Aquí verás las 3 formas principales de pasársela:</p>
+
+      <pre><code>const boton = document.querySelector('button');
+
+// FORMA 1: Arrow function anónima directamente
+boton.addEventListener('click', (e) => {
+  console.log("Clic en:", e.target);
+});
+
+// FORMA 2: Pasando la referencia de una función declarada
+function miManejador(e) {
+  console.log("Evento manejado por función externa");
+}
+boton.addEventListener('click', miManejador); // SIN paréntesis ()
+
+// FORMA 3: Ejecutadora Async para procesos asíncronos
+boton.addEventListener('click', async (e) => {
+  e.target.disabled = true;
+  await consultarAPI();
+  e.target.disabled = false;
+});</code></pre>
+    </section>
+  </div>
+
+  <script>
+    // --- LÓGICA DE LAS DEMOS ---
+
+    // Demo 1: Inspección de Callback
+    const btnCallback = document.getElementById('btn-callback');
+    const outCallback = document.getElementById('out-callback');
+
+    // Función receptora que explica el proceso a los estudiantes
+    function explicacionCallback(evento, funcionEjecutadora) {
+      const textoLog = [
+        `1. Evento capturado: "${evento.type}"`,
+        `2. Inspeccionando el parámetro 'funcionEjecutadora':`,
+        `   ${funcionEjecutadora.toString()}`,
+        `3. Ejecutando la función...`,
+      ].join('\n');
+
+      outCallback.textContent = textoLog;
+
+      // Ejecutamos la función ejecutadora pasándole un dato
+      funcionEjecutadora("¡Proceso completado con éxito!");
+    }
+
+    btnCallback.addEventListener('click', (e) => {
+      // Pasamos una función arrow como segundo parámetro
+      explicacionCallback(e, (mensajeFinal) => {
+        outCallback.textContent += `\n4. Resultado final recibido dentro del Callback: "${mensajeFinal}"`;
+      });
+    });
+
+
+    // Demo 2: Promesas
+    const btnPromise = document.getElementById('btn-promise');
+    const outPromise = document.getElementById('out-promise');
+
+    const simularPeticionPromise = () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("✅ Promesa resuelta después de 1.5 segundos");
+        }, 1500);
+      });
+    };
+
+    btnPromise.addEventListener('click', () => {
+      outPromise.textContent = "Cargando promesa...";
+      simularPeticionPromise()
+        .then(mensaje => {
+          outPromise.textContent = mensaje;
+        });
+    });
+
+
+    // Demo 3: Async / Await
+    const btnAsync = document.getElementById('btn-async');
+    const outAsync = document.getElementById('out-async');
+
+    const obtenerRespuestaAPI = () => {
+      return new Promise((resolve) => setTimeout(() => resolve("🚀 Datos recibidos con Async/Await"), 1200));
+    };
+
+    btnAsync.addEventListener('click', async () => {
+      outAsync.textContent = "Consultando API asíncrona...";
+      btnAsync.disabled = true;
+
+      const resultado = await obtenerRespuestaAPI();
+      
+      outAsync.textContent = resultado;
+      btnAsync.disabled = false;
+    });
+  </script>
+</body>
+</html>
