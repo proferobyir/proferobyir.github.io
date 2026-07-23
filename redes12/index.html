@@ -1,0 +1,909 @@
+import os
+
+html_content = """<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus Completo de Redes: De Cero a Maestro</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #090d16;
+            --accent-green: #10b981;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 2px solid var(--accent-green);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .badges {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        nav.toc {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        nav.toc h2 {
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        nav.toc ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+        }
+
+        nav.toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        nav.toc a:hover {
+            color: var(--accent-green);
+        }
+
+        .level-header {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            margin: 40px 0 20px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .day-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .day-title {
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tool-tag {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: normal;
+        }
+
+        .section-block {
+            margin-bottom: 20px;
+        }
+
+        .section-block h4 {
+            color: var(--accent-amber);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analogy-box {
+            background-color: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid var(--accent-amber);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #fde68a;
+        }
+
+        .analogy-box strong {
+            color: var(--accent-amber);
+            font-style: normal;
+        }
+
+        .matrix-box {
+            background-color: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--accent-green);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+        }
+
+        .matrix-box strong {
+            color: var(--accent-green);
+        }
+
+        pre, code {
+            font-family: "Fira Code", Consolas, Monaco, "Andale Mono", monospace;
+        }
+
+        pre {
+            background-color: var(--bg-code);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.7rem; }
+            .day-title { font-size: 1.2rem; }
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Redes de Computadoras: El Guión del Docente</h1>
+        <p>De la Teoría de Matrices a las Manzanas de la Pedagogía. Un plan de 20 Días diseñado para Desarrolladores que enseñan Redes sin complicaciones.</p>
+        <div class="badges">
+            <span class="badge">Nivel 1: Principiante (Días 1-10)</span>
+            <span class="badge">Nivel 2: Intermedio (Días 11-20)</span>
+            <span class="badge">100% Sin Fibra Óptica</span>
+            <span class="badge">Windows & Tools Gratis</span>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <nav class="toc">
+            <h2>🗺️ Índice Rápido del Curso</h2>
+            <ul>
+                <li><a href="#dia1">Día 1: Modelo OSI vs TCP/IP</a></li>
+                <li><a href="#dia2">Día 2: Medios Físicos Cobre/Wi-Fi</a></li>
+                <li><a href="#dia3">Día 3: Direcciones IPv4 y Clases</a></li>
+                <li><a href="#dia4">Día 4: Comandos de Diagnóstico</a></li>
+                <li><a href="#dia5">Día 5: Protocolo ARP</a></li>
+                <li><a href="#dia6">Día 6: Funcionamiento del Switch</a></li>
+                <li><a href="#dia7">Día 7: Servidor y Proceso DHCP</a></li>
+                <li><a href="#dia8">Día 8: Sistema de Nombres DNS</a></li>
+                <li><a href="#dia9">Día 9: El Router y Enrutamiento</a></li>
+                <li><a href="#dia10">Día 10: Integración SOHO</a></li>
+                <li><a href="#dia11">Día 11: Subnetting VLSM</a></li>
+                <li><a href="#dia12">Día 12: VLANs y Troncales</a></li>
+                <li><a href="#dia13">Día 13: Enrutamiento Inter-VLAN</a></li>
+                <li><a href="#dia14">Día 14: Enrutamiento Dinámico OSPF</a></li>
+                <li><a href="#dia15">Día 15: Traducción NAT / PAT</a></li>
+                <li><a href="#dia16">Día 16: TCP vs UDP (Análisis)</a></li>
+                <li><a href="#dia17">Día 17: Capa de Aplicación (HTTP)</a></li>
+                <li><a href="#dia18">Día 18: Seg. con Listas ACL</a></li>
+                <li><a href="#dia19">Día 19: Escaneo con Nmap/Zenmap</a></li>
+                <li><a href="#dia20">Día 20: Proyecto Multi-Sede</a></li>
+            </ul>
+        </nav>
+
+        <h2 class="level-header">🟢 NIVEL 1: PRINCIPIOS Y FUNDAMENTOS (Días 1 al 10)</h2>
+
+        <!-- DÍA 1 -->
+        <div class="day-card" id="dia1">
+            <div class="day-title">
+                <span>Día 1: Modelos de Red (OSI vs TCP/IP)</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Imagina que quieres enviar una manzana por correo postal. No solo la lanzas por la ventana. Primero la empaquetas (Capa de Aplicación), le pegas una etiqueta de fragilidad (Presentación/Sesión), aseguras el envío con número de guía (Transporte), le escribes la dirección destino (Red), la metes en la caja de la camioneta (Enlace) y la camioneta ruge por el asfalto (Física).
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix (Under the hood):</strong> La pila OSI es un pipeline de encapsulamiento. Cada capa toma la Data superior, le antepone un Header con información de control y lo pasa abajo. En TCP/IP agrupamos esto en 4 capas operativas: Aplicación, Transporte, Internet y Acceso a Red.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Por qué necesitamos estándares y capas interconectadas.</li>
+                    <li>Las 7 capas OSI y las 4 capas del modelo TCP/IP práctico.</li>
+                    <li>Concepto clave: Encapsulamiento (PDU: Data -> Segmento -> Paquete -> Trama -> Bits).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (Packet Tracer):</h4>
+                <ol>
+                    <li>Abre Packet Tracer y coloca 2 PCs simples en el lienzo.</li>
+                    <li>Conéctalas con un cable cruzado (Copper Crossover) o directo automático.</li>
+                    <li>Pasa al modo <strong>Simulation</strong> (abajo a la derecha).</li>
+                    <li>Haz un <code>ping</code> de PC0 a PC1 y observa cómo el sobre verde (ICMP PDU) baja por la pila de capas antes de viajar por el cable.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 2 -->
+        <div class="day-card" id="dia2">
+            <div class="day-title">
+                <span>Día 2: Medios Físicos Metálicos y Wi-Fi</span>
+                <span class="tool-tag">Herramienta: Packet Tracer / Muestras Reales</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Es la autopista. Los cables UTP son tuberías de tubo metálico donde lanzamos manzanas en fila india mediante impulsos eléctricos. El Wi-Fi es lanzar la manzana por el aire usando un cañón de aire comprimido (ondas de radio): llega rápido pero si hay paredes o interferencias, la manzana puede chocar.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> En cobre, la información son diferenciales de voltaje en pares trenzados para cancelar el acoplamiento electromagnético (crosstalk). Norma T568A vs T568B define el pinout. En Wi-Fi (802.11), es modulación QAM sobre frecuencias de 2.4 GHz (mayor alcance, más colisiones) o 5 GHz (más velocidad, menor penetración).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Cable UTP Categoría 5e / 6, conector RJ-45.</li>
+                    <li>Por qué se trenzan los pares de cables metálicos.</li>
+                    <li>Estándar T568B (Blanco-Naranja, Naranja, Blanco-Verde, Azul, Blanco-Azul, Verde, Blanco-Café, Café).</li>
+                    <li>Bases de Wi-Fi: SSIDs, Canales no solapados (1, 6, 11 en 2.4GHz).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (Packet Tracer):</h4>
+                <ol>
+                    <li>Muestra el diagrama físico de Packet Tracer (pestaña Physical).</li>
+                    <li>Configura un Access Point inalámbrico y conecta una Laptop cambiándole la tarjeta Ethernet por un módulo WPC300N.</li>
+                    <li>Comprueba cómo se asocia por aire y transmite datos sin cables.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 3 -->
+        <div class="day-card" id="dia3">
+            <div class="day-title">
+                <span>Día 3: Direccionamiento IPv4 y Clases</span>
+                <span class="tool-tag">Herramienta: CMD Windows (ipconfig)</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> La dirección IP es el número de la casa y el nombre de la calle. Si estás en la misma calle (misma subred), le entregas la manzana a tu vecino directamente. Si está en otra ciudad, tienes que llevarla a la oficina de correos.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Un número binario de 32 bits representado en 4 octetos decimales (ej: <code>192.168.1.10</code>). La máscara de subred (ej: <code>255.255.255.0</code>) actúa como un operador <code>AND</code> binario para separar la porción de RED (Network ID) de la porción de HOST (Host ID).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Conversión rápida Binario a Decimal (128-64-32-16-8-4-2-1).</li>
+                    <li>Clases de IP tradicionales: Clase A (1-127), Clase B (128-191), Clase C (192-223).</li>
+                    <li>IPs Privadas Reservadas (RFC 1918): 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (CMD Windows):</h4>
+                <ol>
+                    <li>Abre el CMD en Windows y ejecuta: <code>ipconfig /all</code>.</li>
+                    <li>Enseña a identificar la dirección IP actual, la máscara de subred y el Gateway.</li>
+                    <li>Calcula en la pizarra a qué red pertenece la IP haciendo el operador AND con la máscara.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 4 -->
+        <div class="day-card" id="dia4">
+            <div class="day-title">
+                <span>Día 4: Comandos de Diagnóstico Básico</span>
+                <span class="tool-tag">Herramienta: CMD de Windows</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> <code>ping</code> es como gritar: "¡Oye Juan, ¿me escuchas?!" y esperar a que responda "¡Sí!". <code>tracert</code> es enviar un mensajero que se detiene en cada garita del camino para preguntarle al guardia en qué kilómetro está hasta llegar a la meta.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> <code>ping</code> usa mensajes ICMP Echo Request (Tipo 8) y Echo Reply (Tipo 0). <code>tracert</code> manipula el campo TTL (Time to Live) del encabezado IP, incrementándolo desde 1 en adelante para forzar a cada router a devolver un mensaje ICMP Time Exceeded (Tipo 11).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Métricas del Ping: RTT (Round Trip Time) y Pérdida de paquetes.</li>
+                    <li>Entender el salto a salto de Tracert/Traceroute.</li>
+                    <li>Uso de Nslookup para consultar registros de DNS.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (CMD):</h4>
+                <pre><code>ping 127.0.0.1          :: Pruebas el stack TCP/IP local (Loopback)
+ping 192.168.1.1        :: Pruebas conectividad con el Gateway local
+ping 8.8.8.8            :: Pruebas salida a Internet (DNS de Google)
+tracert google.com      :: Identificas todos los routers intermedios
+nslookup google.com     :: Consultas la IP de un dominio</code></pre>
+            </div>
+        </div>
+
+        <!-- DÍA 5 -->
+        <div class="day-card" id="dia5">
+            <div class="day-title">
+                <span>Día 5: Protocolo ARP (Address Resolution Protocol)</span>
+                <span class="tool-tag">Herramienta: Wireshark + CMD</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Conoces el nombre de tu amigo (IP), pero no sabes en qué número de casillero colocar la manzana (MAC). Así que gritas en el salón: "¿Quién tiene el nombre '192.168.1.5'?" (Broadcast). Todos escuchan, pero solo el dueño responde: "Yo lo tengo, mi casillero es el A1-B2" (Unicast).
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> El Switch no entiende direcciones IP, solo entiende Direcciones MAC (Capa 2). ARP resuelve la dirección de Capa 3 a la dirección de Capa 2. Funciona mediante un ARP Request enviado a la dirección Broadcast MAC (<code>FF:FF:FF:FF:FF:FF</code>).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Estructura de la tabla ARP local (Caché).</li>
+                    <li>Solicitud ARP (Broadcast) y Respuesta ARP (Unicast).</li>
+                    <li>Riesgos de seguridad: ARP Spoofing / Poisoning (introducción teórica).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso:</h4>
+                <ol>
+                    <li>Abre CMD como Administrador y borra la caché ARP: <code>arp -d *</code>.</li>
+                    <li>Abre <strong>Wireshark</strong>, inicia captura en la tarjeta red e introduce el filtro: <code>arp</code>.</li>
+                    <li>Haz un ping a otro equipo local. Verás inmediatamente la trama Broadcast pidiendo la MAC y la respuesta Unicast.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 6 -->
+        <div class="day-card" id="dia6">
+            <div class="day-title">
+                <span>Día 6: El Switch y la Capa de Conmutación</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Un Hub es un repartidor ciego que recibe una manzana y le da una copia exacta a todo el mundo en el salón. Un Switch es un recepcionista inteligente: mira a quién va dirigida la manzana, revisa su libreta de apuntes y se la entrega únicamente a esa persona.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> El Switch opera en Capa 2. Construye su tabla CAM (Content Addressable Memory) asociando direcciones MAC de origen a puertos físicos mediante el proceso de *Learning* y *Forwarding*. Si la MAC no está en la tabla, realiza *Flooding* (inundación).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Diferencia entre Hub (Dominio de colisión único) y Switch (Segmenta dominios de colisión).</li>
+                    <li>El ciclo de vida de la tabla MAC: Learning, Flooding, Forwarding, Aging.</li>
+                    <li>Inspeccionar la tabla MAC en la CLI con <code>show mac address-table</code>.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (Packet Tracer):</h4>
+                <ol>
+                    <li>Crea una topología con 1 Switch (2960) y 4 PCs.</li>
+                    <li>Entra a la CLI del Switch y ejecuta: <code>show mac address-table</code> (estará vacía).</li>
+                    <li>Envia un ping de PC0 a PC3. Regresa a la CLI del Switch y ejecuta el comando de nuevo para ver cómo aprendió las MACs y sus puertos asociados.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 7 -->
+        <div class="day-card" id="dia7">
+            <div class="day-title">
+                <span>Día 7: Asignación Dinámica de IP (DHCP)</span>
+                <span class="tool-tag">Herramienta: Packet Tracer + CMD</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Es la taquilla de un evento. En lugar de escribirte la entrada a mano desde tu casa (IP Estática), llegas a la puerta, pides una credencial, el encargado te asigna la credencial #15 de su bloque por 2 horas (Lease Time) y te da el mapa del recinto.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> El protocolo DHCP (UDP Puertos 67/68) utiliza el proceso **DORA**:
+                1. **D**iscover (Cliente -> Broadcast: ¿Hay servidor DHCP?)
+                2. **O**ffer (Servidor -> Unicast/Broadcast: Te ofrezco esta IP)
+                3. **R**equest (Cliente -> Broadcast: Acepto esa IP)
+                4. **A**CK (Servidor -> Unicast: Confirmado, asignada).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Por qué no usamos IPs manuales en redes corporativas grandes.</li>
+                    <li>Parámetros entregados por DHCP: IP, Máscara, Default Gateway, Servidores DNS.</li>
+                    <li>El proceso DORA a detalle.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso:</h4>
+                <ol>
+                    <li>En Packet Tracer, agrega un Servidor y activa el servicio DHCP. Define el Pool (Rango IP, Gateway y DNS).</li>
+                    <li>Pon las PCs en modo "DHCP" en la pestaña Desktop -> IP Configuration.</li>
+                    <li>En Windows CMD real o simulado, usa: <code>ipconfig /release</code> y luego <code>ipconfig /renew</code> para ver el proceso en vivo.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 8 -->
+        <div class="day-card" id="dia8">
+            <div class="day-title">
+                <span>Día 8: Resolución de Nombres (DNS)</span>
+                <span class="tool-tag">Herramienta: Packet Tracer + CMD</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Es la agenda telefónica de tu celular. Tú no te memorizas que tu amigo se llama <code>142.250.190.46</code>; tú buscas "Google" en tu agenda y la aplicación hace la llamada al número numérico correspondiente.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Sistema de base de datos distribuida y jerárquica (UDP/TCP Puerto 53). Tipos de registros clave:
+                - **A Record:** Mapea Nombre -> IPv4
+                - **AAAA Record:** Mapea Nombre -> IPv6
+                - **CNAME:** Alias de un nombre a otro nombre
+                - **MX:** Servidor de correo.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Jerarquía DNS: Raíz (.), TLDs (.com, .org, .ve), Dominios.</li>
+                    <li>Caché DNS local vs Consultas Recursivas.</li>
+                    <li>Herramienta Nslookup para depurar problemas de nombres.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso:</h4>
+                <ol>
+                    <li>En Packet Tracer, configura un Server con servicio DNS habilitado. Crea un registro tipo A: <code>miprofe.com</code> -> <code>192.168.1.50</code>.</li>
+                    <li>En un PC cliente, pon la IP del servidor como DNS Primary.</li>
+                    <li>Abre el navegador del PC e ingresa a <code>http://miprofe.com</code> para verificar la resolución.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 9 -->
+        <div class="day-card" id="dia9">
+            <div class="day-title">
+                <span>Día 9: El Router y Enrutamiento Estático Básico</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Un Router es un aduanero entre dos países distintos. Si quieres enviar la manzana dentro de tu país (tu subred), no pasas por aduana. Si la manzana va a otro país, obligatoriamente debes entregarla al agente aduanero (Default Gateway) para que la selle y la despache.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> El Router opera en Capa 3. Desencapsula la trama Ethernet de Capa 2, inspecciona la IP de destino de Capa 3, consulta su **Tabla de Enrutamiento** (Routing Table) para determinar la interfaz de salida de mejor coincidencia (Longest Prefix Match) y reencapsula en una nueva trama.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Concepto de Puerta de Enlace Predeterminada (Default Gateway).</li>
+                    <li>Estructura de una Tabla de Enrutamiento.</li>
+                    <li>Configuración de rutas estáticas: <code>ip route [Red_Destino] [Máscara] [Siguiente_Salto]</code>.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (Packet Tracer):</h4>
+                <ol>
+                    <li>Crea Red A (<code>192.168.1.0/24</code>) y Red B (<code>192.168.2.0/24</code>) unidas por 1 Router Cisco (ej. 1941) con 2 interfaces GigabitEthernet.</li>
+                    <li>Configura el IP del router en cada interfaz (estos serán los Gateways de cada red).</li>
+                    <li>Prueba la conectividad con un ping cruzado desde Red A hacia Red B.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 10 -->
+        <div class="day-card" id="dia10">
+            <div class="day-title">
+                <span>Día 10: Integración Nivel Principiante (Taller SOHO)</span>
+                <span class="tool-tag">Herramienta: Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Ensamblar la panadería completa. Unimos las cajas, los repartidores, la libreta de direcciones y la oficina postal para que todo el negocio funcione en armonía perfecta sin que se pierda ninguna manzana.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Creación de una red de Oficina Pequeña / Hogar (SOHO). Todos los componentes trabajados en los primeros 9 días operando juntos: Direccionamiento, DHCP, DNS, Switching local y Enrutamiento de salida.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy / Desafío en Aula:</h4>
+                <ul>
+                    <li>Diseño e integración completa de infraestructura básica.</li>
+                    <li>Metodología de Troubleshooting (Troubleshooting Top-Down y Bottom-Up).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Laboratorio Integrador Paso a Paso:</h4>
+                <ol>
+                    <li>Construye una red con: 1 Router Edge, 1 Switch Central, 1 Servidor (DHCP + DNS), 3 PCs de escritorio y 1 Acces Point con 2 Laptops Wi-Fi.</li>
+                    <li>Configura el servidor para entregar IPs dinámicas y resolver el dominio <code>miempresa.local</code>.</li>
+                    <li>Verifica que cualquier Laptop por Wi-Fi pueda pedir IP, resolver el nombre y hacer ping al Router de salida.</li>
+                </ol>
+            </div>
+        </div>
+
+        <h2 class="level-header">🔴 NIVEL 2: REDES INTERMEDIAS Y SERVICIOS (Días 11 al 20)</h2>
+
+        <!-- DÍA 11 -->
+        <div class="day-card" id="dia11">
+            <div class="day-title">
+                <span>Día 11: Subnetting VLSM (IPv4)</span>
+                <span class="tool-tag">Herramienta: Hoja de Cálculo / Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Tienes un pastel gigante de manzanas de 256 porciones (un bloque /24). Si se lo das a una oficina de 5 personas, desperdicias la mayoría del pastel. Subnetting VLSM es cortar el pastel en rebanadas de distintos tamaños exactos según el hambre de cada departamento.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Variable Length Subnet Masking (VLSM). Permite tomar prestados bits del campo de Host para crear subredes con máscaras adaptadas (ej. <code>/26</code>, <code>/27</code>, <code>/30</code> para enlaces punto a punto). Optimiza drásticamente el espacio de direcciones IP.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Cálculo de bloques de subredes basados en requisitos de hosts ($2^n - 2$).</li>
+                    <li>Uso estratégico de máscaras <code>/30</code> y <code>/31</code> para enlaces entre Routers.</li>
+                    <li>Creación de tabla de direccionamiento estructurada.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso:</h4>
+                <ol>
+                    <li>Dado el bloque <code>192.168.10.0/24</code>, dividirlos para:
+                        <ul>
+                            <li>VLAN Ventas: 60 hosts (requiere /26)</li>
+                            <li>VLAN Admin: 25 hosts (requiere /27)</li>
+                            <li>Enlace Router-Router: 2 hosts (requiere /30)</li>
+                        </ul>
+                    </li>
+                    <li>Implementar las IPs resultantes en Packet Tracer y validar que no colisionen.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 12 -->
+        <div class="day-card" id="dia12">
+            <div class="day-title">
+                <span>Día 12: Redes Virtuales (VLANs) y Enlaces Troncales</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer (CLI)</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> En el mismo edificio escolar tienes estudiantes y profesores conectados al mismo switch. Para evitar que los estudiantes vean las manzanas de los profesores, colocas paredes invisibles dentro del switch. Y cuando las manzanas tienen que pasar de un switch a otro por un solo cable, les pones una pegatina con el color de su departamento (Etiquetado 802.1Q).
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Las VLANs rompen un Switch físico en múltiples dominios de Broadcast lógicos independientes. El protocolo **IEEE 802.1Q** inserta una etiqueta (Tag) de 4 bytes en la trama Ethernet para identificar el VLAN ID (VID) al atravesar un enlace **Trunk** (Troncal).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Beneficios de las VLANs: Seguridad, gestión de tráfico y reducción de Broadcast.</li>
+                    <li>Puertos de Acceso (Access) vs Puertos Troncales (Trunk).</li>
+                    <li>Configuración mediante CLI Cisco IOS.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (CLI Cisco):</h4>
+                <pre><code>Switch# configure terminal
+Switch(config)# vlan 10
+Switch(config-vlan)# name Ventas
+Switch(config)# vlan 20
+Switch(config-vlan)# name RRHH
+Switch(config)# interface fastEthernet 0/1
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 10
+Switch(config)# interface gigabitEthernet 0/1
+Switch(config-if)# switchport mode trunk   :: Habilita troncal 802.1Q</code></pre>
+            </div>
+        </div>
+
+        <!-- DÍA 13 -->
+        <div class="day-card" id="dia13">
+            <div class="day-title">
+                <span>Día 13: Enrutamiento Inter-VLAN (Router-on-a-Stick)</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Ya dividiste el edificio en paredes invisibles (VLAN 10 y VLAN 20). Ahora nadie se puede hablar. Para que Ventas le envíe una manzana a RRHH de forma controlada, instalas una puerta con un guardia de seguridad en el tejado (Router). La manzana sube al tejado por un tubo especial (subinterfaz) y baja por el otro.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Puesto que las VLANs separan dominios de broadcast en Capa 2, la comunicación entre ellas requiere un elemento de Capa 3. La técnica **Router-on-a-Stick** utiliza una sola interfaz física dividida en **subinterfaces lógicas**, cada una configurada con encapsulamiento 802.1Q y una IP Gateway para su respectiva VLAN.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Arquitectura Router-on-a-Stick vs Switch Multicapa (Layer 3 Switch).</li>
+                    <li>Creación y asignación de subinterfaces (ej: <code>g0/0.10</code>).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (CLI Router):</h4>
+                <pre><code>Router(config)# interface gigabitEthernet 0/0.10
+Router(config-subif)# encapsulation dot1Q 10
+Router(config-subif)# ip address 192.168.10.1 255.255.255.0
+Router(config)# interface gigabitEthernet 0/0.20
+Router(config-subif)# encapsulation dot1Q 20
+Router(config-subif)# ip address 192.168.20.1 255.255.255.0</code></pre>
+            </div>
+        </div>
+
+        <!-- DÍA 14 -->
+        <div class="day-card" id="dia14">
+            <div class="day-title">
+                <span>Día 14: Enrutamiento Dinámico (Protocolo OSPF)</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> En lugar de que el administrador configure a mano todas las carreteras del país, los routers usan un GPS inteligente llamado OSPF. Se llaman entre sí, se dicen "Hola", comparten sus mapas locales y calculan automáticamente la carretera más rápida y libre de tráfico para llevar la manzana a su destino.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> OSPF (Open Shortest Path First) es un protocolo de Enrutamiento de Estado de Enlace (Link-State) de interior (IGP). Construye una topología de la red completa en la base de datos LSDB y ejecuta el algoritmo de Dijkstra (SPF) para encontrar el camino de menor costo basado en el Ancho de Banda (Bandwidth).
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Diferencia entre enrutamiento estático y dinámico.</li>
+                    <li>Concepto de Áreas OSPF (Área 0 / Backbone).</li>
+                    <li>Adyacencias, mensajes Hello y métrica de costo.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso:</h4>
+                <pre><code>Router(config)# router ospf 1
+Router(config-router)# network 192.168.10.0 0.0.0.255 area 0
+Router(config-router)# network 10.0.0.0 0.0.0.3 area 0
+Router# show ip route ospf    :: Muestra las rutas aprendidas por OSPF</code></pre>
+            </div>
+        </div>
+
+        <!-- DÍA 15 -->
+        <div class="day-card" id="dia15">
+            <div class="day-title">
+                <span>Día 15: Traducción de Direcciones (NAT / PAT)</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Vives en un hotel con 500 habitaciones. Cuando envías una carta al exterior, el recepcionista quita tu número de habitación privada y pone la única dirección IP pública del hotel. Cuando llega la respuesta, el recepcionista mira su libreta de notas de puertos y sabe exactamente a qué habitación llevar la carta.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> NAT (Network Address Translation) resuelve la escasez de IPv4. **PAT (Port Address Translation / NAT Overload)** asigna múltiples IPs privadas internas a una sola IP pública global, diferenciando las conexiones mediante los números de puertos de origen cambiados dinámicamente.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>IPs Privadas Inside Local vs IPs Públicas Inside Global.</li>
+                    <li>NAT Estático (Servidores expuestos) vs PAT Overload (Navegación general).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (PAT Overload):</h4>
+                <pre><code>Router(config)# access-list 1 permit 192.168.0.0 0.0.255.255
+Router(config)# ip nat inside source list 1 interface gigabitEthernet 0/1 overload
+Router(config)# interface gigabitEthernet 0/0
+Router(config-if)# ip nat inside
+Router(config)# interface gigabitEthernet 0/1
+Router(config-if)# ip nat outside</code></pre>
+            </div>
+        </div>
+
+        <!-- DÍA 16 -->
+        <div class="day-card" id="dia16">
+            <div class="day-title">
+                <span>Día 16: Análisis Profundo de Protocolos (TCP vs UDP)</span>
+                <span class="tool-tag">Herramienta: Wireshark real en Windows</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> **TCP** es un envío registrado por correo certificado: llamas antes para avisar, envías las manzanas numeradas en orden, la otra persona confirma cada manzana y si una se cae, la vuelves a enviar. **UDP** es lanzar manzanas con una catapulta: las lanzas super rápido, no preguntas si llegaron y si una se rompe, sigues lanzando la siguiente (ideal para video en vivo).
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> TCP es orientado a conexión y confiable. Garantiza orden y entrega mediante el **Three-Way Handshake** (SYN, SYN-ACK, ACK) y control de flujo por ventana deslizante. UDP es un protocolo no orientado a conexión, sin overhead, diseñado para velocidad y baja latencia.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Análisis del Three-Way Handshake TCP en capturas de red real.</li>
+                    <li>Campos de cabecera: Sequence Number, Acknowledgment Number, Flags (SYN, ACK, FIN, RST).</li>
+                    <li>Casos de uso: Web/Email (TCP) vs Streaming/Gaming/DNS (UDP).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (Wireshark Real):</h4>
+                <ol>
+                    <li>Abre Wireshark en tu máquina Windows y pon el filtro: <code>tcp.flags.syn == 1</code>.</li>
+                    <li>Abre tu navegador y entra a una página web.</li>
+                    <li>Inspecciona el paquete capturado para ver el establecimiento exacto del apretón de manos TCP en vivo.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 17 -->
+        <div class="day-card" id="dia17">
+            <div class="day-title">
+                <span>Día 17: Capa de Aplicación (HTTP, HTTPS, FTP)</span>
+                <span class="tool-tag">Herramienta: Wireshark + DevTools del Navegador</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Es el formato en que pides la manzana. HTTP es pedir en voz alta: "Dame una manzana roja" (texto plano, todos lo escuchan). HTTPS es meter tu pedido en una caja fuerte blindada con candado criptográfico (TLS) donde solo el vendedor tiene la llave para abrirla.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Inspección de payloads de Capa de Aplicación. Estructura de peticiones HTTP (GET, POST, PUT, DELETE), códigos de respuesta (200 OK, 404 Not Found, 500 Server Error) y el proceso de handshake TLS para cifrado en HTTPS.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Anatomía de una petición y respuesta HTTP/1.1 y HTTP/2.</li>
+                    <li>Certificados Digitales y Cifrado Simétrico/Asimétrico en HTTPS.</li>
+                    <li>Uso del puerto 80 (HTTP) vs 443 (HTTPS) vs 21 (FTP).</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso:</h4>
+                <ol>
+                    <li>En Windows, abre Chrome/Edge y presiona <code>F12</code> (Developer Tools) en la pestaña **Network**.</li>
+                    <li>Haz una petición a un sitio web y examina las cabeceras Headers, Status Codes y Payloads.</li>
+                    <li>En Wireshark, usa el filtro <code>http</code> en un sitio no cifrado para ver las contraseñas enviadas en texto plano.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 18 -->
+        <div class="day-card" id="dia18">
+            <div class="day-title">
+                <span>Día 18: Seguridad de Red con Listas de Control (ACLs)</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Es la lista de invitados VIP a una fiesta. El guardia de la puerta tiene una hoja: "Si la manzana viene de la cocina, déjala pasar. Si viene del pasillo de estudiantes y va hacia la oficina del director, ¡bloquéala inmediatamente!".
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Las ACLs (Access Control Lists) son reglas secuenciales que permiten (permit) o deniegan (deny) tráfico basándose en criterios de IP o Puertos.
+                - **ACL Estándar (1-99):** Filtra solo por IP de Origen.
+                - **ACL Extendida (100-199):** Filtra por IP Origen, IP Destino, Protocolo (TCP/UDP) y Puerto Destino.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Evaluación top-down de las ACLs y el "Implicit Deny Any" final.</li>
+                    <li>Reglas de ubicación: Estándar cerca del destino, Extendida cerca del origen.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (ACL Extendida):</h4>
+                <pre><code>:: Bloquear tráfico Web (Puerto 80) de Ventas a Servidor Web
+Router(config)# access-list 100 deny tcp 192.168.10.0 0.0.0.255 host 10.0.0.5 eq 80
+Router(config)# access-list 100 permit ip any any
+Router(config)# interface gigabitEthernet 0/0
+Router(config-if)# ip access-group 100 in</code></pre>
+            </div>
+        </div>
+
+        <!-- DÍA 19 -->
+        <div class="day-card" id="dia19">
+            <div class="day-title">
+                <span>Día 19: Escaneo de Red y Auditoría Básica</span>
+                <span class="tool-tag">Herramienta: Nmap / Zenmap GUI para Windows</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> Es ir caminando por el pasillo de un hotel y tocar suavemente cada una de las puertas para ver cuáles están abiertas, cuáles cerradas con llave y qué tipo de persona responde desde adentro.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Reconocimiento activo. Nmap envía paquetes modificados (ej: TCP SYN) hacia rangos de IPs objetivo para analizar las respuestas (SYN-ACK = Puerto Abierto, RST = Puerto Cerrado) y determinar sistemas operativos, puertos y servicios en ejecución.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Qué explicar hoy:</h4>
+                <ul>
+                    <li>Concepto de Puertos TCP/UDP (0 al 65535). Puertos bien conocidos (0-1023).</li>
+                    <li>Tipos de escaneo: SYN Scan (-sS), Connect Scan (-sT), Ping Sweep (-sn).</li>
+                    <li>Ética y marco legal de la auditoría de redes.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Práctica Paso a Paso (Zenmap GUI en Windows):</h4>
+                <ol>
+                    <li>Abre Zenmap en Windows.</li>
+                    <li>Ingresa la IP de tu propia red local o de un servidor de laboratorio local.</li>
+                    <li>Selecciona el perfil **Quick Scan** y ejecuta: <code>nmap -F 192.168.1.1</code>.</li>
+                    <li>Analiza la pestaña de Puertos/Servicios para ver qué servicios (HTTP, SSH, SMB) están expuestos.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DÍA 20 -->
+        <div class="day-card" id="dia20">
+            <div class="day-title">
+                <span>Día 20: Proyecto Integrador Final Multi-Sede</span>
+                <span class="tool-tag">Herramienta: Cisco Packet Tracer</span>
+            </div>
+            <div class="analogy-box">
+                <strong>🍎 Analogía de las Manzanas:</strong> El diseño de la red metropolitana completa. Tienes dos sucursales en ciudades distintas interconectadas a través de Internet, con VLANs internas, enrutamiento dinámico, servidores protegidos por firewalls y salida pública optimizada.
+            </div>
+            <div class="matrix-box">
+                <strong>🕶️ Visión Matrix:</strong> Proyecto de arquitectura de red enterprise que integra: Subnetting VLSM, VLANs segmentadas, Trunking 802.1Q, Inter-VLAN Routing, OSPF como protocolo dinámico interior, NAT/PAT para salida WAN y ACLs para asegurar el datacenter.
+            </div>
+            <div class="section-block">
+                <h4>🎯 Requisitos del Proyecto Final:</h4>
+                <ul>
+                    <li>**Sede A:** 2 VLANs (Ventas y TI) con direccionamiento asignado por DHCP dinámico.</li>
+                    <li>**Sede B:** 1 VLAN de Servidores de Producción (Web y DNS local).</li>
+                    <li>**Enlace WAN:** Conexión entre Sede A y Sede B mediante enrutamiento OSPF.</li>
+                    <li>**Seguridad:** ACL que prohíba a la VLAN Ventas conectarse por SSH al Router, pero les permita acceso Web.</li>
+                </ul>
+            </div>
+            <div class="section-block">
+                <h4>🧪 Demostración y Cierre del Curso:</h4>
+                <ol>
+                    <li>Poner a correr la topología completa en Packet Tracer.</li>
+                    <li>Ejecutar pruebas cruzadas de simulación de envío de datos de extremo a extremo.</li>
+                    <li>¡Felicidades! Tus estudiantes han pasado de no saber qué es una IP a auditar y desplegar infraestructuras completas.</li>
+                </ol>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Diseñado especialmente para el inicio de la docencia en Informática y Redes.</p>
+        <p>Generado por el profesor: Ing.Robyir Loreto.</p>
+    </footer>
+
+</body>
+</html>
