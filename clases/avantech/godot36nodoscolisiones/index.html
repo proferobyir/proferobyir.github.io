@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Clase: Nodos, Colisiones y Animaciones en Godot 3.x</title>
+    <style>
+        :root {
+            --bg-main: #f4f7f6;
+            --bg-card: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #4a5568;
+            --accent: #319795;
+            --accent-light: #e6fffa;
+            --accent-border: #81e6d9;
+            --code-bg: #1a202c;
+            --code-text: #e2e8f0;
+            --highlight: #d69e2e;
+            --tag-static: #3182ce;
+            --tag-kinematic: #dd6b20;
+            --tag-area: #38a169;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.65;
+            letter-spacing: 0.015em;
+            padding: 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: #ffffff;
+            padding: 2rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            opacity: 0.95;
+            font-size: 1.05rem;
+        }
+
+        .meta-pills {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .section-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 1.75rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-left: 6px solid var(--accent);
+        }
+
+        .section-card h2 {
+            color: #1a202c;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-box {
+            background-color: var(--accent-light);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            font-weight: 500;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #f7fafc;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-static { background-color: var(--tag-static); }
+        .badge-kinematic { background-color: var(--tag-kinematic); }
+        .badge-area { background-color: var(--tag-area); }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .block-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+        }
+
+        .block-item h3 {
+            font-size: 1.1rem;
+            color: #2b6cb0;
+            margin-bottom: 0.4rem;
+        }
+
+        .block-item ul {
+            padding-left: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        .code-header {
+            background-color: #2d3748;
+            color: #a0aec0;
+            padding: 0.5rem 1rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.25rem;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            overflow-x: auto;
+            font-family: "Fira Code", Consolas, Monaco, "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .keyword { color: #f6e05e; font-weight: bold; }
+        .function { color: #63b3ed; }
+        .comment { color: #718096; font-style: italic; }
+        .string { color: #68d391; }
+        .type { color: #f6ad55; }
+
+        .tip-card {
+            background-color: #fffaf0;
+            border-left: 4px solid var(--highlight);
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .tip-card strong {
+            color: #9c4221;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 0.5rem; }
+            .section-card { padding: 1.25rem; }
+            header h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎮 Godot Engine 3.x: Guía de Clase Práctica</h1>
+        <p>Cuerpos Físicos, Detección de Colisiones y Sprites Animados</p>
+        <div class="meta-pills">
+            <span class="pill">⏱️ Duración: 3 Horas Académicas</span>
+            <span class="pill">🎯 Nivel: Introductorio</span>
+            <span class="pill">🛠️ Motor: Godot 3.x</span>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- RESUMEN VISUAL / MAPA DE NODOS -->
+        <section class="section-card">
+            <h2>📌 Mapa Rápido de Nodos Físicos</h2>
+            <div class="summary-box">
+                💡 <strong>Regla de Oro:</strong> Todo nodo de física o área necesita un <code>CollisionShape2D</code> como hijo para tener un cuerpo tangible.
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nodo</th>
+                            <th>¿Bloquea paso?</th>
+                            <th>¿Se mueve por código?</th>
+                            <th>Casos de Uso Primarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-static">StaticBody2D</span></td>
+                            <td>✅ Sí</td>
+                            <td>❌ No</td>
+                            <td>Suelos, paredes, estructuras fijas.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-kinematic">KinematicBody2D</span></td>
+                            <td>✅ Sí</td>
+                            <td>✅ Sí</td>
+                            <td>Jugador, enemigos, plataformas móviles.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-area">Area2D</span></td>
+                            <td>❌ No (Detector)</td>
+                            <td>⚡ Opcional</td>
+                            <td>Monedas, zonas de daño, portales.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ESTRUCTURA TEMÁTICA DE LA CLASE -->
+        <section class="section-card">
+            <h2>⏱️ Planificación de la Sesión (3 Horas)</h2>
+            <div class="timeline">
+                
+                <div class="block-item">
+                    <h3>Bloque 1: Fundamentos de Cuerpos 2D (45 min)</h3>
+                    <ul>
+                        <li>Diferenciación práctica entre Kinematic, Static y Area.</li>
+                        <li>Jerarquía de nodos y la importancia del <code>CollisionShape2D</code>.</li>
+                        <li>Configuración del entorno inicial en el escenario.</li>
+                    </ul>
+                </div>
+
+                <div class="block-item">
+                    <h3>Bloque 2: Sprites Animados y Capas (45 min)</h3>
+                    <ul>
+                        <li>Visual vs. Físico: El disfraz (Sprite) frente al cuerpo real (Colisión).</li>
+                        <li>Configuración de <code>AnimatedSprite</code> y recurso <code>SpriteFrames</code>.</li>
+                        <li>Creación de estados animados básicos: <i>idle</i> (reposo) y <i>walk</i> (caminar).</li>
+                    </ul>
+                </div>
+
+                <div class="block-item">
+                    <h3>☕ Receso Corto (15 min)</h3>
+                </div>
+
+                <div class="block-item">
+                    <h3>Bloque 3: Integración de Código GDScript (45 min)</h3>
+                    <ul>
+                        <li>Manejo de entrada de teclado y movimiento vectorizado.</li>
+                        <li>Uso de la función <code>move_and_slide()</code>.</li>
+                        <li>Lógica de recolección en el <code>Area2D</code> usando la señal <code>body_entered</code>.</li>
+                    </ul>
+                </div>
+
+                <div class="block-item">
+                    <h3>Bloque 4: Práctica Integradora y Reto (30 min)</h3>
+                    <ul>
+                        <li>Montaje de mini-escena: Paredes + Jugador + Moneda.</li>
+                        <li>Pruebas continuas de ejecución y ajustes visuales.</li>
+                        <li>Desafío guiado para fijación de conceptos.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- IMPLEMENTACIÓN EN GDSCRIPT -->
+        <section class="section-card">
+            <h2>💻 Código GDScript: Jugador (KinematicBody2D)</h2>
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">Adjunta este script al nodo raíz <code>KinematicBody2D</code> de tu personaje.</p>
+            
+            <div class="code-header">
+                <span>Jugador.gd</span>
+                <span>GDScript (Godot 3.x)</span>
+            </div>
+            <pre><code><span class="keyword">extends</span> <span class="type">KinematicBody2D</span>
+
+<span class="comment"># Variables configurables desde el Inspector</span>
+<span class="keyword">export</span> (<span class="type">int</span>) <span class="keyword">var</span> velocidad = 200
+
+<span class="comment"># Almacena la dirección del movimiento</span>
+<span class="keyword">var</span> movimiento = <span class="type">Vector2</span>.ZERO
+
+<span class="comment"># Referencia al nodo de animación hijo</span>
+<span class="keyword">onready var</span> sprite_animado = $AnimatedSprite
+
+<span class="keyword">func</span> <span class="function">_physics_process</span>(delta):
+    <span class="function">obtener_input</span>()
+    <span class="function">actualizar_animaciones</span>()
+    
+    <span class="comment"># move_and_slide aplica la velocidad y maneja colisiones automáticas</span>
+    movimiento = <span class="function">move_and_slide</span>(movimiento)
+
+<span class="keyword">func</span> <span class="function">obtener_input</span>():
+    movimiento = <span class="type">Vector2</span>.ZERO
+    
+    <span class="comment"># Lectura de teclas direccionales</span>
+    <span class="keyword">if</span> <span class="type">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">"ui_right"</span>):
+        movimiento.x += 1
+    <span class="keyword">if</span> <span class="type">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">"ui_left"</span>):
+        movimiento.x -= 1
+    <span class="keyword">if</span> <span class="type">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">"ui_down"</span>):
+        movimiento.y += 1
+    <span class="keyword">if</span> <span class="type">Input</span>.<span class="function">is_action_pressed</span>(<span class="string">"ui_up"</span>):
+        movimiento.y -= 1
+        
+    <span class="comment"># Normalización para evitar velocidad superior en diagonales</span>
+    movimiento = movimiento.<span class="function">normalized</span>() * velocidad
+
+<span class="keyword">func</span> <span class="function">actualizar_animaciones</span>():
+    <span class="keyword">if</span> movimiento != <span class="type">Vector2</span>.ZERO:
+        sprite_animado.<span class="function">play</span>(<span class="string">"walk"</span>)
+        <span class="comment"># Orientación horizontal del sprite</span>
+        <span class="keyword">if</span> movimiento.x != 0:
+            sprite_animado.flip_h = (movimiento.x &lt; 0)
+    <span class="keyword">else</span>:
+        sprite_animado.<span class="function">play</span>(<span class="string">"idle"</span>)
+</code></pre>
+
+            <div class="tip-card" style="margin-top: 1.5rem;">
+                <strong>Nota Técnica sobre Godot 3.x:</strong> En Godot 3.x, la función <code>move_and_slide()</code> ya multiplica la velocidad por el parámetro <code>delta</code> internamente. No debe multiplicarse de forma manual dentro de esa instrucción.
+            </div>
+        </section>
+
+        <!-- IMPLEMENTACIÓN DEL AREA2D -->
+        <section class="section-card">
+            <h2>🪙 Código GDScript: Moneda / Recolectable (Area2D)</h2>
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">Adjunta este script al nodo raíz <code>Area2D</code> del elemento recolectable y conecta su señal <code>body_entered</code>.</p>
+            
+            <div class="code-header">
+                <span>Moneda.gd</span>
+                <span>GDScript (Godot 3.x)</span>
+            </div>
+            <pre><code><span class="keyword">extends</span> <span class="type">Area2D</span>
+
+<span class="comment"># Función conectada desde la pestaña 'Nodos / Señales' (body_entered)</span>
+<span class="keyword">func</span> <span class="function">_on_Moneda_body_entered</span>(body):
+    <span class="comment"># Validamos que el objeto con el que chocó sea el jugador</span>
+    <span class="keyword">if</span> body <span class="keyword">is</span> <span class="type">KinematicBody2D</span>:
+        <span class="function">print</span>(<span class="string">"¡Moneda recolectada!"</span>)
+        <span class="comment"># Elimina el nodo de la escena de forma segura</span>
+        <span class="function">queue_free</span>()
+</code></pre>
+        </section>
+
+        <!-- TIPS PRACTICOS -->
+        <section class="section-card">
+            <h2>⚙️ Claves Prácticas para la Clase</h2>
+            <ul>
+                <li><strong>Centrado de Origen:</strong> Asegura que tanto el <code>Sprite</code> como el <code>CollisionShape2D</code> estén centrados en la posición <code>(0,0)</code> de su nodo padre.</li>
+                <li><strong>Capas de Colisión (Collision Layers):</strong> 
+                    <ul>
+                        <li><b>Layer:</b> En qué capa existe el objeto.</li>
+                        <li><b>Mask:</b> Con qué capas decide colisionar el objeto.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Material Docente  | Profesor: Ing.Robyir Loreto | Introducción al Desarrollo de Videojuegos con Godot Engine 3.x</p>
+    </footer>
+
+</body>
+</html>
