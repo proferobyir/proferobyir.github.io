@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Envíos Fetch: FormData vs JSON</title>
+    <style>
+        /* Variables de color y accesibilidad (Modo enfocado) */
+        :root {
+            --bg-body: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #38bdf8;
+            --accent-secondary: #a855f7;
+            --code-bg: #090d16;
+            --border-color: #334155;
+            --font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Reset básico y diseño responsivo */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        /* Encabezado principal */
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Estructura de Secciones */
+        .section-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .method-1 .section-title { color: var(--accent-primary); }
+        .method-2 .section-title { color: var(--accent-secondary); }
+
+        .explanation {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .method-1 .explanation { border-color: var(--accent-primary); }
+        .method-2 .explanation { border-color: var(--accent-secondary); }
+
+        .explanation ul {
+            margin-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Grids para los bloques de código */
+        .code-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        /* A partir de pantallas medianas (tablets/laptops) se divide en 2 columnas */
+        @media (min-width: 768px) {
+            .code-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Cajas de Código */
+        .code-box {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            background-color: #172133;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Resaltados rápidos de sintaxis por CSS */
+        .tag { color: #f43f5e; }
+        .attr { color: #fbbf24; }
+        .str { color: #34d399; }
+        .keyword { color: #c084fc; }
+        .comment { color: #64748b; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>⚡ Envíos asíncronos con Fetch</h1>
+            <p>Aprende a enviar formularios usando <strong>FormData directo</strong> vs <strong>JSON (Object.fromEntries)</strong></p>
+        </header>
+
+        <!-- SECCIÓN 1: FORMDATA DIRECTO -->
+        <section class="section-card method-1">
+            <h2 class="section-title">📌 Opción 1: Enviar como FormData Directo</h2>
+            
+            <div class="explanation">
+                <strong>¿Cómo funciona?</strong>
+                <ul>
+                    <li>El objeto <code>FormData</code> se pasa tal cual al <code>body</code> del <code>fetch</code>.</li>
+                    <li>No necesitas definir cabecera (<code>Content-Type</code>), el navegador la coloca automáticamente como <code>multipart/form-data</code>.</li>
+                    <li><strong>En PHP:</strong> Los datos llegan directo a la superglobal <code>$_POST</code>.</li>
+                </ul>
+            </div>
+
+            <div class="code-grid">
+                <!-- index.html -->
+                <div class="code-box">
+                    <div class="code-header"><span>FRONTEND</span><span>index.html</span></div>
+                    <pre><code><span class="comment">&lt;!-- Formulario Estándar --&gt;</span>
+&lt;<span class="tag">form</span> <span class="attr">id</span>=<span class="str">"form1"</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">name</span>=<span class="str">"nombre"</span> <span class="attr">required</span>&gt;
+  &lt;<span class="tag">button</span> <span class="attr">type</span>=<span class="str">"submit"</span>&gt;Enviar&lt;/<span class="tag">button</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">script</span>&gt;
+document.getElementById('form1').addEventListener('submit', <span class="keyword">async</span> (e) => {
+  e.preventDefault();
+  
+  <span class="comment">// 1. Capturamos el FormData</span>
+  <span class="keyword">const</span> datos = <span class="keyword">new</span> FormData(e.target);
+
+  <span class="comment">// 2. Enviamos directamente (Sin headers)</span>
+  <span class="keyword">const</span> res = <span class="keyword">await</span> fetch('procesar.php', {
+    method: 'POST',
+    body: datos 
+  });
+
+  <span class="keyword">const</span> resultado = <span class="keyword">await</span> res.json();
+  console.log(resultado);
+});
+&lt;/<span class="tag">script</span>&gt;</code></pre>
+                </div>
+
+                <!-- procesar.php -->
+                <div class="code-box">
+                    <div class="code-header"><span>BACKEND</span><span>procesar.php</span></div>
+                    <pre><code>&lt;?php
+header(<span class="str">'Content-Type: application/json'</span>);
+
+<span class="comment">// Recibimos directamente desde $_POST</span>
+<span class="keyword">$nombre</span> = <span class="keyword">$_POST</span>[<span class="str">'nombre'</span>] ?? <span class="str">''</span>;
+
+<span class="keyword">if</span> (empty(<span class="keyword">$nombre</span>)) {
+    echo json_encode([
+        <span class="str">'status'</span> => <span class="str">'error'</span>,
+        <span class="str">'msj'</span> => <span class="str">'Nombre vacío'</span>
+    ]);
+    exit;
+}
+
+echo json_encode([
+    <span class="str">'status'</span> => <span class="str">'success'</span>,
+    <span class="str">'msj'</span> => <span class="str">'Recibido con $_POST'</span>,
+    <span class="str">'usuario'</span> => <span class="keyword">$nombre</span>
+]);
+?&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: JSON (OBJECT.FROMENTRIES) -->
+        <section class="section-card method-2">
+            <h2 class="section-title">📌 Opción 2: Enviar como JSON (Object.fromEntries)</h2>
+            
+            <div class="explanation">
+                <strong>¿Cómo funciona?</strong>
+                <ul>
+                    <li>Transformamos el <code>FormData</code> a un objeto JS con <code>Object.fromEntries()</code> y lo convertimos a texto con <code>JSON.stringify()</code>.</li>
+                    <li>Es <strong>obligatorio</strong> colocar la cabecera <code>'Content-Type': 'application/json'</code>.</li>
+                    <li><strong>En PHP:</strong> <code>$_POST</code> quedará vacío. Debes leer el cuerpo con <code>file_get_contents('php://input')</code> y usar <code>json_decode()</code>.</li>
+                </ul>
+            </div>
+
+            <div class="code-grid">
+                <!-- index.html -->
+                <div class="code-box">
+                    <div class="code-header"><span>FRONTEND</span><span>index.html</span></div>
+                    <pre><code><span class="comment">&lt;!-- Formulario Estándar --&gt;</span>
+&lt;<span class="tag">form</span> <span class="attr">id</span>=<span class="str">"form2"</span>&gt;
+  &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">name</span>=<span class="str">"nombre"</span> <span class="attr">required</span>&gt;
+  &lt;<span class="tag">button</span> <span class="attr">type</span>=<span class="str">"submit"</span>&gt;Enviar&lt;/<span class="tag">button</span>&gt;
+&lt;/<span class="tag">form</span>&gt;
+
+&lt;<span class="tag">script</span>&gt;
+document.getElementById('form2').addEventListener('submit', <span class="keyword">async</span> (e) => {
+  e.preventDefault();
+  
+  <span class="comment">// 1. Convertimos FormData a Objeto y luego a JSON</span>
+  <span class="keyword">const</span> formData = <span class="keyword">new</span> FormData(e.target);
+  <span class="keyword">const</span> datosObjeto = Object.fromEntries(formData.entries());
+
+  <span class="comment">// 2. Enviamos especificando Header application/json</span>
+  <span class="keyword">const</span> res = <span class="keyword">await</span> fetch('procesar.php', {
+    method: 'POST',
+    headers: {
+      <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>
+    },
+    body: JSON.stringify(datosObjeto)
+  });
+
+  <span class="keyword">const</span> resultado = <span class="keyword">await</span> res.json();
+  console.log(resultado);
+});
+&lt;/<span class="tag">script</span>&gt;</code></pre>
+                </div>
+
+                <!-- procesar.php -->
+                <div class="code-box">
+                    <div class="code-header"><span>BACKEND</span><span>procesar.php</span></div>
+                    <pre><code>&lt;?php
+header(<span class="str">'Content-Type: application/json'</span>);
+
+<span class="comment">// 1. Leemos el flujo de entrada RAW (JSON)</span>
+<span class="keyword">$jsonRaw</span> = file_get_contents(<span class="str">'php://input'</span>);
+
+<span class="comment">// 2. Decodificamos a Array de PHP</span>
+<span class="keyword">$datos</span> = json_decode(<span class="keyword">$jsonRaw</span>, true);
+
+<span class="keyword">$nombre</span> = <span class="keyword">$datos</span>[<span class="str">'nombre'</span>] ?? <span class="str">''</span>;
+
+<span class="keyword">if</span> (empty(<span class="keyword">$nombre</span>)) {
+    echo json_encode([
+        <span class="str">'status'</span> => <span class="str">'error'</span>,
+        <span class="str">'msj'</span> => <span class="str">'Nombre vacío'</span>
+    ]);
+    exit;
+}
+
+echo json_encode([
+    <span class="str">'status'</span> => <span class="str">'success'</span>,
+    <span class="str">'msj'</span> => <span class="str">'Recibido vía php://input'</span>,
+    <span class="str">'usuario'</span> => <span class="keyword">$nombre</span>
+]);
+?&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
