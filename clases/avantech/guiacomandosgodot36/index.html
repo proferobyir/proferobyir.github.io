@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Rápida GDScript - Godot 3.6</title>
+    <style>
+        :root {
+            --bg-color: #12151c;
+            --card-bg: #1e222d;
+            --accent: #478cbf; /* Azul Godot */
+            --highlight: #00e676; /* Verde alto contraste */
+            --warning: #ffb74d; /* Naranja de advertencia */
+            --text-main: #e0e6ed;
+            --text-muted: #9fa8b6;
+            --code-bg: #0d0f14;
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Acordeón para dosificar la información de forma modular */
+        details {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border: 1px solid #2a303d;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        details[open] {
+            border-color: var(--accent);
+        }
+
+        summary {
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            background-color: #242936;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: '►';
+            color: var(--accent);
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        details[open] summary::after {
+            transform: rotate(90deg);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* Puntos clave destacados */
+        .key-takeaway {
+            background-color: rgba(71, 140, 191, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            font-size: 0.95rem;
+        }
+
+        .key-warning {
+            background-color: rgba(255, 183, 77, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            background-color: var(--highlight);
+            color: #000;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Bloques de Código */
+        .code-container {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+            border: 1px solid #1a1d24;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        /* Sintaxis básica de resaltado */
+        .kw { color: #569cd6; font-weight: bold; } /* Keywords */
+        .str { color: #ce9178; } /* Strings */
+        .num { color: #b5cea8; } /* Numbers */
+        .cmt { color: #6a9955; font-style: italic; } /* Comments */
+        .type { color: #4ec9b0; } /* Types */
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            summary { font-size: 1rem; padding: 12px 15px; }
+            .content { padding: 12px; }
+            pre { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GDScript 3.6 — Guía de Referencia Rápida</h1>
+        <p class="subtitle">Aprende por módulos interactivos • Haz clic en cada sección</p>
+    </header>
+
+    <main>
+
+        <!-- SECCIÓN 1: VARIABLES Y TIPADO -->
+        <details open>
+            <summary>1. Variables y Tipado Estático</summary>
+            <div class="content">
+                <div class="key-takeaway">
+                    📌 <strong>Recomendación:</strong> Utilizar el tipado estático (<code>: tipo</code>) facilita el autocompletado del editor de Godot y previene errores sintácticos.
+                </div>
+                <div class="key-warning">
+                    ⚠️ <strong>Regla de Godot 3.6:</strong> Las constantes (<code>const</code>) deben ser declaradas a nivel raíz de la clase/script. Declarar una constante dentro de una función como <code>_ready()</code> provocará un error de sintaxis.
+                </div>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code><span class="kw">extends</span> <span class="type">Node2D</span>
+
+<span class="cmt"># Constantes (Valores inmutables) -> DEBEN ir a nivel de clase</span>
+<span class="kw">const</span> GRAVEDAD: <span class="type">float</span> = <span class="num">9.8</span>
+
+<span class="cmt"># Declaración dinámica / Inferencia</span>
+<span class="kw">var</span> salud = <span class="num">100</span>
+<span class="kw">var</span> nombre = <span class="str">"Heroe"</span>
+
+<span class="cmt"># Tipado Estático (Recomendado)</span>
+<span class="kw">var</span> velocidad: <span class="type">float</span> = <span class="num">250.5</span>
+<span class="kw">var</span> esta_vivo: <span class="type">bool</span> = <span class="kw">true</span></code></pre>
+                </div>
+            </div>
+        </details>
+
+        <!-- SECCIÓN 2: EXPORTACIÓN AL INSPECTOR -->
+        <details>
+            <summary>2. Exportación de Variables (Inspector)</summary>
+            <div class="content">
+                <div class="key-takeaway">
+                    ⚡ <span class="badge">Uso Práctico</span> Modifica parámetros directamente desde la interfaz gráfica del Inspector de Godot utilizando la palabra clave <code>export</code>.
+                </div>
+                <div class="key-warning">
+                    💡 <strong>Sintaxis Godot 3.6:</strong> Se usa <code>export(tipo) var nombre</code>. En Godot 3.x no se combina <code>export var</code> con tipado estático posterior (<code>: int</code>), ni se usa la sintaxis con arroba (<code>@export</code> de Godot 4).
+                </div>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code><span class="cmt"># Exportar entero explícito en Godot 3.6</span>
+<span class="kw">export</span>(<span class="type">int</span>) <span class="kw">var</span> vida_maxima = <span class="num">100</span>
+
+<span class="cmt"># Exportar con rango limitado (Slider gráfico)</span>
+<span class="kw">export</span>(<span class="type">int</span>, <span class="num">1</span>, <span class="num">10</span>) <span class="kw">var</span> nivel_dificultad = <span class="num">1</span>
+<span class="kw">export</span>(<span class="type">float</span>, <span class="num">0.0</span>, <span class="num">1.0</span>, <span class="num">0.1</span>) <span class="kw">var</span> volumen = <span class="num">0.8</span>
+
+<span class="cmt"># Exportar lista desplegable de opciones</span>
+<span class="kw">export</span>(<span class="type">String</span>, <span class="str">"Espada"</span>, <span class="str">"Arco"</span>, <span class="str">"Magia"</span>) <span class="kw">var</span> arma_equipada = <span class="str">"Espada"</span>
+
+<span class="cmt"># Exportar referencias a escenas o recursos</span>
+<span class="kw">export</span>(<span class="type">PackedScene</span>) <span class="kw">var</span> escena_enemigo</code></pre>
+                </div>
+            </div>
+        </details>
+
+        <!-- SECCIÓN 3: CONDICIONALES -->
+        <details>
+            <summary>3. Condicionales (Toma de Decisiones)</summary>
+            <div class="content">
+                <div class="key-takeaway">
+                    ⚠️ <strong>Nota Sintáctica:</strong> GDScript utiliza indentación/sangría obligatoria mediante tabuladores para definir los bloques de código.
+                </div>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code><span class="kw">func</span> revisar_estado():
+    <span class="kw">if</span> salud &gt; <span class="num">50</span>:
+        <span class="kw">print</span>(<span class="str">"Estado: Excelente"</span>)
+    <span class="kw">elif</span> salud &gt; <span class="num">0</span>:
+        <span class="kw">print</span>(<span class="str">"Estado: Herido"</span>)
+    <span class="kw">else</span>:
+        <span class="kw">print</span>(<span class="str">"Estado: Game Over"</span>)
+
+    <span class="cmt"># Evaluación lógica múltiple</span>
+    <span class="kw">if</span> esta_vivo <span class="kw">and</span> salud == <span class="num">100</span>:
+        <span class="kw">print</span>(<span class="str">"Escudo activo"</span>)</code></pre>
+                </div>
+            </div>
+        </details>
+
+        <!-- SECCIÓN 4: ARREGLOS -->
+        <details>
+            <summary>4. Arreglos (Arrays)</summary>
+            <div class="content">
+                <div class="key-takeaway">
+                    📦 Permiten almacenar colecciones de datos. El primer elemento siempre inicia en el índice <code>0</code>.
+                </div>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code><span class="kw">var</span> inventario: <span class="type">Array</span> = [<span class="str">"Poción"</span>, <span class="str">"Llave"</span>, <span class="str">"Moneda"</span>]
+
+<span class="kw">func</span> gestionar_inventario():
+    <span class="cmt"># Agregar elemento al final</span>
+    inventario.append(<span class="str">"Escudo"</span>)
+    
+    <span class="cmt"># Acceder al primer elemento ("Poción")</span>
+    <span class="kw">var</span> item = inventario[<span class="num">0</span>]
+    
+    <span class="cmt"># Remover un elemento específico</span>
+    inventario.erase(<span class="str">"Moneda"</span>)
+    
+    <span class="cmt"># Obtener cantidad total de elementos</span>
+    <span class="kw">print</span>(<span class="str">"Total items: "</span> + <span class="type">str</span>(inventario.size()))</code></pre>
+                </div>
+            </div>
+        </details>
+
+        <!-- SECCIÓN 5: BUCLES -->
+        <details>
+            <summary>5. Bucles y Repeticiones</summary>
+            <div class="content">
+                <div class="key-takeaway">
+                    🔄 Estructuras <code>for</code> para recorridos secuenciales sobre rangos o arreglos, y <code>while</code> para bucles bajo condición.
+                </div>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code><span class="kw">func</span> probar_bucles():
+    <span class="cmt"># Bucle con rango numérico (0 al 4)</span>
+    <span class="kw">for</span> i <span class="kw">in</span> range(<span class="num">5</span>):
+        <span class="kw">print</span>(<span class="str">"Paso número: "</span>, i)
+
+    <span class="cmt"># Recorrido de elementos en un Arreglo</span>
+    <span class="kw">var</span> lista = [<span class="str">"A"</span>, <span class="str">"B"</span>, <span class="str">"C"</span>]
+    <span class="kw">for</span> elemento <span class="kw">in</span> lista:
+        <span class="kw">print</span>(<span class="str">"Item: "</span>, elemento)
+
+    <span class="cmt"># Bucle condicional</span>
+    <span class="kw">var</span> contador = <span class="num">3</span>
+    <span class="kw">while</span> contador &gt; <span class="num">0</span>:
+        contador -= <span class="num">1</span></code></pre>
+                </div>
+            </div>
+        </details>
+
+        <!-- SECCIÓN 6: FUNCIONES -->
+        <details>
+            <summary>6. Funciones y Métodos Integrados</summary>
+            <div class="content">
+                <div class="key-takeaway">
+                    ⚙️ <code>_ready()</code> se invoca una sola vez cuando el nodo entra al árbol de la escena, mientras que <code>_process()</code> ejecuta su lógica cíclicamente en cada fotograma/frame.
+                </div>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code><span class="cmt"># Ejecución inicial al cargar el nodo</span>
+<span class="kw">func</span> _ready():
+    <span class="kw">var</span> resultado = sumar(<span class="num">10</span>, <span class="num">20</span>)
+    <span class="kw">print</span>(<span class="str">"Suma: "</span>, resultado)
+
+<span class="cmt"># Ejecución continua por fotograma (delta = tiempo transcurrido)</span>
+<span class="kw">func</span> _process(delta: <span class="type">float</span>):
+    <span class="cmt"># Rotación constante independiente del framerate</span>
+    rotation += <span class="num">1.0</span> * delta
+
+<span class="cmt"># Función con parámetros y valor de retorno definido</span>
+<span class="kw">func</span> sumar(a: <span class="type">int</span>, b: <span class="type">int</span>) -&gt; <span class="type">int</span>:
+    <span class="kw">return</span> a + b</code></pre>
+                </div>
+            </div>
+        </details>
+
+    </main>
+
+    <script>
+        function copyCode(button) {
+            const container = button.parentElement;
+            const code = container.querySelector('code').innerText;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '¡Copiado!';
+                button.style.backgroundColor = '#00e676';
+                button.style.color = '#000';
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.backgroundColor = 'var(--accent)';
+                    button.style.color = '#fff';
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
