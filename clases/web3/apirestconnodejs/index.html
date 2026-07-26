@@ -278,13 +278,14 @@
         <header>
             <h1>Guía Práctica: API REST con Express y MySQL</h1>
             <p>Construcción paso a paso de una API REST funcional, segura y lista para producción (CORS + Remote
-                Binding).</p>
+                Binding + Subida de Archivos).</p>
             <div class="badge-container">
                 <span class="badge">Node.js</span>
                 <span class="badge">Express</span>
                 <span class="badge">MySQL2</span>
                 <span class="badge">CORS</span>
                 <span class="badge">dotenv</span>
+                <span class="badge">Multer</span>
             </div>
         </header>
 
@@ -300,14 +301,13 @@
                 <pre><code>mkdir api-express-mysql
 cd api-express-mysql
 npm init -y
-npm install express mysql2 cors dotenv</code></pre>
+npm install express mysql2 cors dotenv multer</code></pre>
             </div>
 
             <div class="callout callout-warning">
-                <div class="callout-title">⚠️ ¡Atención con el paquete de MySQL!</div>
-                <p>Asegúrate de instalar <code>mysql2</code> (con el número <strong>2</strong> al final) y NO el paquete
-                    heredado <code>mysql</code>. La versión 2 incluye soporte nativo para <code>Promises</code> e
-                    integraciones con <code>async/await</code> necesarias para este proyecto.</p>
+                <div class="callout-title">⚠️ ¡Atención con la carpeta 'uploads'!</div>
+                <p>Debes crear manualmente la carpeta <code>uploads/</code> en la raíz de tu proyecto para que la
+                    librería <strong>Multer</strong> pueda almacenar allí las imágenes subidas por los usuarios.</p>
             </div>
         </section>
 
@@ -355,122 +355,81 @@ npm install express mysql2 cors dotenv</code></pre>
                 <pre><code>// Cargamos las variables de entorno desde el archivo .env si existe
 require('dotenv').config();
 
-// ============================================================================
-// ¿QUÉ ES Y DÓNDE ESTÁ 'process.env'? (CONCEPTO CLAVE)
-// ----------------------------------------------------------------------------
-// En Node.js, 'process' es un objeto global que representa el proceso activo
-// de tu programa. La propiedad 'process.env' (Environment Variables) almacena
-// las VARIABLES DE ENTORNO de tu sistema operativo o del servidor en la nube.
-//
-// Viven FUERA del código de JavaScript (en tu sistema o en un archivo .env).
-// Sirven para dos cosas fundamentales:
-//   1. SEGURIDAD: Guardar contraseñas o claves sin escribirlas en el código.
-//   2. FLEXIBILIDAD: Usar puertos o servidores distintos en desarrollo y nube.
-// ============================================================================
-
-// ============================================================================
-// LÍNEA 1: Importamos la librería 'express' que instalamos con npm.
-// Express es un "framework" (herramienta) que nos ayuda a crear servidores web
-// de forma fácil y rápida sin necesidad de escribir código HTTP de bajo nivel.
-// ============================================================================
+const path = require('path');
 const express = require('express');
-
-// ============================================================================
-// LÍNEA 2: Importamos 'mysql2/promise'. Es el conector que nos permite
-// comunicarnos desde Node.js con nuestra base de datos MySQL.
-// La barra '/promise' es vital: nos da acceso a 'async/await', permitiendo
-// que JavaScript "espere" las respuestas de la base de datos limpiamente.
-// ============================================================================
 const mysql = require('mysql2/promise');
-
-// ============================================================================
-// LÍNEA 3: Importamos 'cors'. CORS es un mecanismo de seguridad.
-// Por defecto, los navegadores bloquean peticiones entre dominios distintos.
-// Esta librería habilita los permisos para que Postman, React, Flutter o web
-// puedan hacerle consultas a nuestra API sin ser bloqueados.
-// ============================================================================
 const cors = require('cors');
+const multer = require('multer');
 
-// ============================================================================
-// LÍNEA 4: Instanciamos la aplicación principal ejecutando la función de Express.
-// La variable 'app' representa a nuestro servidor web, donde definiremos todas
-// las rutas, reglas y filtros de nuestra API REST.
-// ============================================================================
 const app = express();
 
 // ============================================================================
-// 1. CONFIGURACIÓN DE MIDDLEWARES (Aduana o Filtros de la API)
-// Un Middleware es un código que se ejecuta SIEMPRE ANTES de que la petición
-// sea procesada por una ruta.
+// 1. CONFIGURACIÓN DE MIDDLEWARES Y ARCHIVOS ESTÁTICOS
 // ============================================================================
 
-// Permite peticiones de origen cruzado (CORS) desde cualquier cliente.
 app.use(cors());
-
-// Le enseña a Express a entender información enviada en formato JSON.
-// Transforma el cuerpo de las peticiones (Body) para poder leerlo en 'req.body'.
 app.use(express.json());
 
+// Servimos la carpeta 'uploads' de manera pública
+// Permite acceder a las imágenes mediante URL (ej: http://localhost:3000/uploads/foto.jpg)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // ============================================================================
-// 2. CONEXIÓN A LA BASE DE DATOS (Connection Pool y Fallbacks)
+// 2. CONFIGURACIÓN DE MULTER (Subida de Archivos)
 // ============================================================================
 
-// Creamos una "Piscina de Conexiones" (Connection Pool) compartida.
-// Mantiene conexiones abiertas para prestárselas a las consultas de forma eficiente.
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Carpeta donde se guardan los archivos
+    },
+    filename: (req, file, cb) => {
+        // Asignamos un nombre único usando la fecha actual + nombre original
+        const nombreUnico = Date.now() + '-' + file.originalname;
+        cb(null, nombreUnico);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// ============================================================================
+// 3. CONEXIÓN A LA BASE DE DATOS
+// ============================================================================
+
 const db = mysql.createPool({
-    // AQUÍ USAMOS process.env CON EL PATRÓN FALLBACK (Plan B):
-    // 'process.env.DB_HOST || 'localhost'' le dice a Node:
-    // "Busca en el sistema la variable DB_HOST; si no existe (undefined),
-    // usa por defecto 'localhost'".
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'tienda',
     port: process.env.DB_PORT || 3306,
-    waitForConnections: true, // Si las conexiones están ocupadas, la petición espera
-    connectionLimit: 10       // Máximo de conexiones simultáneas abiertas
+    waitForConnections: true,
+    connectionLimit: 10
 });
 
 // ============================================================================
-// 3. ENDPOINTS Y RUTAS
-// Usamos 'async (req, res)' en las rutas:
-// - 'req' (Request): Trae la información que envía el cliente.
-// - 'res' (Response): Objeto que usamos para responderle al cliente.
-// - 'async/await': Le dice a Node que espere a MySQL sin congelar el servidor.
+// 4. ENDPOINTS Y RUTAS
 // ============================================================================
 
-// ----------------------------------------------------------------------------
 // ENDPOINT 1: GET /productos (Obtener todo el catálogo)
-// ----------------------------------------------------------------------------
 app.get('/productos', async (req, res) => {
     try {
-        // Ejecutamos la consulta SQL y esperamos el resultado
         const [rows] = await db.query('SELECT * FROM productos');
-        
-        // Respondemos al cliente con la lista en JSON y status 200 (OK)
         res.json(rows);
     } catch (error) {
-        // En caso de fallar la base de datos, enviamos status 500 (Server Error)
         res.status(500).json({ error: error.message });
     }
 });
 
-// ----------------------------------------------------------------------------
-// ENDPOINT 2: GET /productos/:id (Obtener por ID en la URL)
-// ----------------------------------------------------------------------------
+// ENDPOINT 2: GET /productos/:id (Obtener por ID)
 app.get('/productos/:id', async (req, res) => {
     try {
-        // Extraemos el ID del parámetro de ruta (Path Parameter)
         const { id } = req.params;
 
-        // VALIDACIÓN: Verificamos si no enviaron ID o si no es un número
         if (!id || isNaN(id)) {
             return res.status(400).json({ 
                 error: "El parámetro 'id' en la URL es requerido y debe ser un número válido." 
             });
         }
 
-        // Consulta parametrizada con '?' para prevenir ataques de Inyección SQL
         const [rows] = await db.query('SELECT * FROM productos WHERE id = ?', [id]);
         
         if (rows.length === 0) {
@@ -483,49 +442,32 @@ app.get('/productos/:id', async (req, res) => {
     }
 });
 
-// ----------------------------------------------------------------------------
 // ENDPOINT 3: GET /productos/buscar/filtro (Búsqueda por Query String)
-// ----------------------------------------------------------------------------
 app.get('/productos/buscar/filtro', async (req, res) => {
     try {
-        // Extraemos la variable enviada en la URL (?nombre=...)
         const { nombre } = req.query;
 
-        // VALIDACIÓN: Verificamos que el parámetro exista y no sean solo espacios
         if (!nombre || nombre.trim() === '') {
             return res.status(400).json({ 
-                error: "Debes proporcionar el parámetro de búsqueda 'nombre' en la URL (ej: ?nombre=Lapiz)." 
+                error: "Debes proporcionar el parámetro de búsqueda 'nombre' en la URL." 
             });
         }
 
-        // Búsqueda con comodín '%': Encuentra coincidencias parciales de texto
         const [rows] = await db.query('SELECT * FROM productos WHERE nombre LIKE ?', [`%${nombre}%`]);
-
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ----------------------------------------------------------------------------
-// ENDPOINT 4: POST /productos (Insertar registro desde el Body JSON)
-// ----------------------------------------------------------------------------
+// ENDPOINT 4: POST /productos (Insertar registro vía JSON)
 app.post('/productos', async (req, res) => {
     try {
-        // Leemos las propiedades enviadas dentro del cuerpo del JSON
         const { nombre, precio } = req.body;
 
-        // VALIDACIÓN: Campos obligatorios
-        if (!nombre || precio === undefined || precio === null) {
+        if (!nombre || precio === undefined || precio === null || isNaN(precio)) {
             return res.status(400).json({ 
-                error: "Los campos 'nombre' y 'precio' son obligatorios en el JSON del body." 
-            });
-        }
-
-        // VALIDACIÓN: Tipo de dato del precio
-        if (isNaN(precio)) {
-            return res.status(400).json({ 
-                error: "El campo 'precio' debe ser un valor numérico." 
+                error: "Los campos 'nombre' y 'precio' (número) son obligatorios." 
             });
         }
 
@@ -534,42 +476,61 @@ app.post('/productos', async (req, res) => {
             [nombre, precio]
         );
         
-        // Respondemos con status 201 (Created) e incluimos el ID generado
-        res.status(201).json({ 
-            id: result.insertId, 
-            nombre, 
-            precio 
-        });
+        res.status(201).json({ id: result.insertId, nombre, precio });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ----------------------------------------------------------------------------
-// ENDPOINT 5: POST /categorias/:categoriaId/productos (Combinado Path + Body)
-// ----------------------------------------------------------------------------
+// ENDPOINT 5: POST /productos/con-imagen (Crear producto con subida de archivo)
+// Usamos upload.single('imagen') para recibir un único archivo en el campo 'imagen'
+app.post('/productos/con-imagen', upload.single('imagen'), async (req, res) => {
+    try {
+        const { nombre, precio } = req.body;
+
+        if (!nombre || precio === undefined || isNaN(precio)) {
+            return res.status(400).json({ error: "Los campos 'nombre' y 'precio' son requeridos." });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ error: "Debes adjuntar un archivo de imagen." });
+        }
+
+        // Armamos la URL pública accesible del archivo guardado
+        const imagenUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+        const [result] = await db.query(
+            'INSERT INTO productos (nombre, precio, imagen) VALUES (?, ?, ?)',
+            [nombre, precio, imagenUrl]
+        );
+
+        res.status(201).json({
+            id: result.insertId,
+            nombre,
+            precio,
+            imagen: imagenUrl
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ENDPOINT 6: POST /categorias/:categoriaId/productos (Combinado Path + Body)
 app.post('/categorias/:categoriaId/productos', async (req, res) => {
     try {
         const { categoriaId } = req.params;
         const { nombre, precio } = req.body;
 
-        // VALIDACIÓN: Parámetro de URL
         if (!categoriaId || isNaN(categoriaId)) {
             return res.status(400).json({ 
                 error: "El parámetro 'categoriaId' en la URL es requerido y debe ser un número." 
             });
         }
 
-        // VALIDACIÓN: Campos del JSON
-        if (!nombre || precio === undefined || precio === null) {
+        if (!nombre || precio === undefined || isNaN(precio)) {
             return res.status(400).json({ 
-                error: "Los campos 'nombre' y 'precio' son obligatorios en el JSON del body." 
-            });
-        }
-
-        if (isNaN(precio)) {
-            return res.status(400).json({ 
-                error: "El campo 'precio' debe ser un valor numérico." 
+                error: "Los campos 'nombre' y 'precio' (número) son obligatorios." 
             });
         }
 
@@ -590,18 +551,17 @@ app.post('/categorias/:categoriaId/productos', async (req, res) => {
 });
 
 // ============================================================================
-// 4. ARRANQUE DEL SERVIDOR
+// 5. ARRANQUE DEL SERVIDOR
 // ============================================================================
 
-// Leemos el puerto desde process.env (por si la nube asigna uno) o usamos 3000
 const PORT = process.env.PORT || 3000;
 
-// Escuchamos en '0.0.0.0' para permitir conexiones desde la red local/laboratorio
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor activo y escuchando en el puerto ${PORT}`);
 });</code></pre>
             </div>
         </section>
+
         <section>
             <h2>4. Ejecución del Servidor</h2>
             <p>Una vez creados los archivos y configurada la base de datos, abre tu terminal en la carpeta del proyecto
@@ -634,6 +594,7 @@ app.listen(PORT, '0.0.0.0', () => {
                     los cambios surtan efecto.</p>
             </div>
         </section>
+
         <section>
             <h2>5. Referencia de Endpoints</h2>
             <div class="table-container">
@@ -668,8 +629,14 @@ app.listen(PORT, '0.0.0.0', () => {
                         <tr>
                             <td><code style="color:var(--accent-blue)">POST</code></td>
                             <td><code>/productos</code></td>
-                            <td>Body (<code>req.body</code>)</td>
-                            <td>Crear un producto nuevo.</td>
+                            <td>Body (<code>req.body</code> JSON)</td>
+                            <td>Crear un producto sin imagen.</td>
+                        </tr>
+                        <tr>
+                            <td><code style="color:var(--accent-blue)">POST</code></td>
+                            <td><code>/productos/con-imagen</code></td>
+                            <td>form-data (File + Text)</td>
+                            <td>Crear producto adjuntando un archivo de imagen.</td>
                         </tr>
                         <tr>
                             <td><code style="color:var(--accent-blue)">POST</code></td>
@@ -688,6 +655,10 @@ app.listen(PORT, '0.0.0.0', () => {
                 <ul>
                     <li><strong>CORS:</strong> Habilitado globalmente para evitar fallos cuando el cliente (React, Vue,
                         Flutter, Postman) hace peticiones desde dominios distintos.</li>
+                    <li><strong>Archivos Estáticos:</strong> Se utiliza <code>express.static</code> para servir la
+                        carpeta de subidas públicamente.</li>
+                    <li><strong>Multer:</strong> Intercepta peticiones de tipo <code>multipart/form-data</code> para
+                        procesar la carga de archivos al disco.</li>
                     <li><strong>IP Binding (`0.0.0.0`):</strong> Permite escuchar peticiones de cualquier interfaz de
                         red local o pública.</li>
                     <li><strong>Seguridad SQL:</strong> Las consultas parametrizadas evitan inyecciones destructivas.
