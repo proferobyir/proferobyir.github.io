@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Visual: Envío de Datos a Backend</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-green: #10b981;
+            --green-light: #ecfdf5;
+            --primary-blue: #3b82f6;
+            --blue-light: #eff6ff;
+            --accent-orange: #f59e0b;
+            --orange-light: #fffbeeb;
+            --border-radius: 16px;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            max-width: 900px;
+            margin: 20px auto 40px auto;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-left: 8px solid var(--primary-blue);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card.form-data {
+            border-top: 6px solid var(--primary-green);
+        }
+
+        .card.json-data {
+            border-top: 6px solid var(--primary-blue);
+        }
+
+        .card-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .form-data .card-badge {
+            background-color: var(--green-light);
+            color: var(--primary-green);
+        }
+
+        .json-data .card-badge {
+            background-color: var(--blue-light);
+            color: var(--primary-blue);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .step-box {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        code {
+            background: #1e293b;
+            color: #38edf8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+
+        /* Sección Especial n8n */
+        .n8n-section {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border-left: 8px solid var(--accent-orange);
+        }
+
+        .n8n-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .n8n-icon {
+            background: #fff3ed;
+            color: #ff6d5a;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Tabla comparativa */
+        .summary-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            pre {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>⚡ ¿Cómo enviar datos desde JavaScript?</h1>
+        <p class="subtitle">Comparativa visual entre FormData y JSON.stringify</p>
+    </header>
+
+    <main class="grid-container">
+
+        <!-- RUTA 1: FORMDATA -->
+        <article class="card form-data">
+            <div>
+                <span class="card-badge">OPCIÓN A: La Ruta Directa</span>
+                <h2>1. Usando <code>FormData</code></h2>
+
+                <div class="step-box">
+                    <strong>📦 Embalaje:</strong> Envía los datos como una planilla de formulario tradicional.
+                </div>
+                <div class="step-box">
+                    <strong>📥 Cómo lo recibe PHP:</strong> Lo guarda directamente en la superglobal
+                    <code>$_POST</code>.
+                </div>
+
+                <pre><code>// JavaScript
+const datos = new FormData(formulario);
+
+fetch('backend.php', {
+    method: 'POST',
+    body: datos // Sin headers manuales
+});</code></pre>
+            </div>
+
+            <div class="step-box"
+                style="border-left-color: var(--primary-green); background-color: var(--green-light);">
+                <strong>✅ Ideal para:</strong> Formularios HTML directos, subida de archivos (imágenes/PDFs) y proyectos
+                nativos en PHP.
+            </div>
+        </article>
+
+        <!-- RUTA 2: JSON.STRINGIFY -->
+        <article class="card json-data">
+            <div>
+                <span class="card-badge">OPCIÓN B: La Ruta Estándar</span>
+                <h2>2. Usando <code>JSON.stringify</code></h2>
+
+                <div class="step-box">
+                    <strong>📦 Embalaje:</strong> Convierte el objeto en una cadena de texto en formato JSON.
+                </div>
+                <div class="step-box">
+                    <strong>📥 Cómo lo recibe PHP:</strong> No entra en <code>$_POST</code>. PHP debe leer la entrada
+                    cruda con <code>php://input</code>.
+                </div>
+
+                <pre><code>// JavaScript
+const datos = Object.fromEntries(new FormData(form));
+
+fetch('backend.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datos)
+});</code></pre>
+            </div>
+
+            <div class="step-box" style="border-left-color: var(--primary-blue); background-color: var(--blue-light);">
+                <strong>✅ Ideal para:</strong> APIs RESTful, frameworks modernos (React, Vue, Node.js) y
+                automatizaciones.
+            </div>
+        </article>
+
+    </main>
+
+    <!-- SECCIÓN ESPECIAL N8N -->
+    <section class="n8n-section">
+        <div class="n8n-header">
+            <span class="n8n-icon">n8n</span>
+            <h2>Caso Especial: Webhooks en n8n</h2>
+        </div>
+        <p>Cuando envías datos hacia un flujo de automatización en <strong>n8n (Webhook Node)</strong>, el sistema
+            espera recibir la estructura parseada como un objeto JSON nativo.</p>
+        <br>
+        <div class="step-box" style="border-left-color: var(--accent-orange);">
+            ⚠️ <strong>¿Por qué NO usar FormData en n8n?</strong> <br>
+            Si envías un <code>FormData</code> a n8n, el webhook recibirá un flujo de datos codificado como
+            <code>multipart/form-data</code>. Esto complica la lectura de los nodos posteriores, obligándote a usar
+            nodos de conversión binaria.
+        </div>
+        <div class="step-box" style="border-left-color: var(--primary-green);">
+            💡 <strong>La Solución:</strong> Convierte siempre el formulario con <code>Object.fromEntries()</code> y
+            envíalo empaquetado con <code>JSON.stringify()</code> definiendo el encabezado
+            <code>'Content-Type': 'application/json'</code>.
+        </div>
+    </section>
+
+    <!-- CUADRO RESUMEN RECOMENDACIONES -->
+    <section class="summary-section">
+        <h2>📌 ¿Cuál usar según cada escenario?</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Escenario / Contexto</th>
+                    <th>Forma Recomendada</th>
+                    <th>Razón Principal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Formulario HTML tradicional enviando a PHP local</td>
+                    <td><code>FormData</code></td>
+                    <td>PHP llena <code>$_POST</code> automáticamente de forma nativa.</td>
+                </tr>
+                <tr>
+                    <td>Subir imágenes, fotos o documentos (archivos)</td>
+                    <td><code>FormData</code></td>
+                    <td>Soporta el envío binario multi-parte requerido por el navegador.</td>
+                </tr>
+                <tr>
+                    <td>Enviar datos a Webhooks de <strong>n8n</strong> o Make</td>
+                    <td><code>JSON.stringify()</code></td>
+                    <td>n8n procesa objetos JSON en sus nodos de forma automática.</td>
+                </tr>
+                <tr>
+                    <td>APIs construidas en Node.js, Python (FastAPI/Flask) o Laravel</td>
+                    <td><code>JSON.stringify()</code></td>
+                    <td>Es el estándar de intercambio de datos en arquitectura REST.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+</body>
+
+</html>
