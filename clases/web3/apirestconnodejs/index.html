@@ -339,100 +339,256 @@ CREATE TABLE IF NOT EXISTS productos (
                     <span class="dot dot-yellow"></span>
                     <span class="dot dot-green"></span>
                 </div>
-                <pre><code>const express = require('express');
+                <pre><code>
+                    
+// ============================================================================
+// ¿QUÉ ES Y DÓNDE ESTÁ 'process.env'? (CONCEPTO CLAVE)
+// ----------------------------------------------------------------------------
+// En Node.js, 'process' es un objeto global que representa el proceso activo
+// de tu programa. La propiedad 'process.env' (Environment Variables) almacena
+// las VARIABLES DE ENTORNO de tu sistema operativo o del servidor en la nube.
+//
+// Viven FUERA del código de JavaScript (en tu sistema o en un archivo .env).
+// Sirven para dos cosas fundamentales:
+//   1. SEGURIDAD: Guardar contraseñas o claves sin escribirlas en el código.
+//   2. FLEXIBILIDAD: Usar puertos o servidores distintos en desarrollo y nube.
+// ============================================================================
+
+// ============================================================================
+// LÍNEA 1: Importamos la librería 'express' que instalamos con npm.
+// Express es un "framework" (herramienta) que nos ayuda a crear servidores web
+// de forma fácil y rápida sin necesidad de escribir código HTTP de bajo nivel.
+// ============================================================================
+const express = require('express');
+
+// ============================================================================
+// LÍNEA 2: Importamos 'mysql2/promise'. Es el conector que nos permite
+// comunicarnos desde Node.js con nuestra base de datos MySQL.
+// La barra '/promise' es vital: nos da acceso a 'async/await', permitiendo
+// que JavaScript "espere" las respuestas de la base de datos limpiamente.
+// ============================================================================
 const mysql = require('mysql2/promise');
+
+// ============================================================================
+// LÍNEA 3: Importamos 'cors'. CORS es un mecanismo de seguridad.
+// Por defecto, los navegadores bloquean peticiones entre dominios distintos.
+// Esta librería habilita los permisos para que Postman, React, Flutter o web
+// puedan hacerle consultas a nuestra API sin ser bloqueados.
+// ============================================================================
 const cors = require('cors');
 
+// ============================================================================
+// LÍNEA 4: Instanciamos la aplicación principal ejecutando la función de Express.
+// La variable 'app' representa a nuestro servidor web, donde definiremos todas
+// las rutas, reglas y filtros de nuestra API REST.
+// ============================================================================
 const app = express();
 
-// Middlewares
-app.use(cors()); 
+// ============================================================================
+// 1. CONFIGURACIÓN DE MIDDLEWARES (Aduana o Filtros de la API)
+// Un Middleware es un código que se ejecuta SIEMPRE ANTES de que la petición
+// sea procesada por una ruta.
+// ============================================================================
+
+// Permite peticiones de origen cruzado (CORS) desde cualquier cliente.
+app.use(cors());
+
+// Le enseña a Express a entender información enviada en formato JSON.
+// Transforma el cuerpo de las peticiones (Body) para poder leerlo en 'req.body'.
 app.use(express.json());
 
-// Conexión MySQL con fallback de variables de entorno
+// ============================================================================
+// 2. CONEXIÓN A LA BASE DE DATOS (Connection Pool y Fallbacks)
+// ============================================================================
+
+// Creamos una "Piscina de Conexiones" (Connection Pool) compartida.
+// Mantiene conexiones abiertas para prestárselas a las consultas de forma eficiente.
 const db = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'tienda',
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 10
+    // AQUÍ USAMOS process.env CON EL PATRÓN FALLBACK (Plan B):
+    // 'process.env.DB_HOST || 'localhost'' le dice a Node:
+    // "Busca en el sistema la variable DB_HOST; si no existe (undefined),
+    // usa por defecto 'localhost'".
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'tienda',
+    port: process.env.DB_PORT || 3306,
+    waitForConnections: true, // Si las conexiones están ocupadas, la petición espera
+    connectionLimit: 10       // Máximo de conexiones simultáneas abiertas
 });
 
-// GET No parametrizado
+// ============================================================================
+// 3. ENDPOINTS Y RUTAS
+// Usamos 'async (req, res)' en las rutas:
+// - 'req' (Request): Trae la información que envía el cliente.
+// - 'res' (Response): Objeto que usamos para responderle al cliente.
+// - 'async/await': Le dice a Node que espere a MySQL sin congelar el servidor.
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// ENDPOINT 1: GET /productos (Obtener todo el catálogo)
+// ----------------------------------------------------------------------------
 app.get('/productos', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM productos');
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        // Ejecutamos la consulta SQL y esperamos el resultado
+        const [rows] = await db.query('SELECT * FROM productos');
+        
+        // Respondemos al cliente con la lista en JSON y status 200 (OK)
+        res.json(rows);
+    } catch (error) {
+        // En caso de fallar la base de datos, enviamos status 500 (Server Error)
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// GET Parametrizado (Path)
+// ----------------------------------------------------------------------------
+// ENDPOINT 2: GET /productos/:id (Obtener por ID en la URL)
+// ----------------------------------------------------------------------------
 app.get('/productos/:id', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM productos WHERE id = ?', [req.params.id]);
-    if (rows.length === 0) return res.status(404).json({ mensaje: 'No encontrado' });
-    res.json(rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        // Extraemos el ID del parámetro de ruta (Path Parameter)
+        const { id } = req.params;
+
+        // VALIDACIÓN: Verificamos si no enviaron ID o si no es un número
+        if (!id || isNaN(id)) {
+            return res.status(400).json({ 
+                error: "El parámetro 'id' en la URL es requerido y debe ser un número válido." 
+            });
+        }
+
+        // Consulta parametrizada con '?' para prevenir ataques de Inyección SQL
+        const [rows] = await db.query('SELECT * FROM productos WHERE id = ?', [id]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ mensaje: 'Producto no encontrado' });
+        }
+        
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// GET Parametrizado (Query)
+// ----------------------------------------------------------------------------
+// ENDPOINT 3: GET /productos/buscar/filtro (Búsqueda por Query String)
+// ----------------------------------------------------------------------------
 app.get('/productos/buscar/filtro', async (req, res) => {
-  try {
-    const { nombre } = req.query;
-    const [rows] = await db.query('SELECT * FROM productos WHERE nombre LIKE ?', [`%${nombre}%`]);
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        // Extraemos la variable enviada en la URL (?nombre=...)
+        const { nombre } = req.query;
+
+        // VALIDACIÓN: Verificamos que el parámetro exista y no sean solo espacios
+        if (!nombre || nombre.trim() === '') {
+            return res.status(400).json({ 
+                error: "Debes proporcionar el parámetro de búsqueda 'nombre' en la URL (ej: ?nombre=Lapiz)." 
+            });
+        }
+
+        // Búsqueda con comodín '%': Encuentra coincidencias parciales de texto
+        const [rows] = await db.query('SELECT * FROM productos WHERE nombre LIKE ?', [`%${nombre}%`]);
+
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// POST No parametrizado
+// ----------------------------------------------------------------------------
+// ENDPOINT 4: POST /productos (Insertar registro desde el Body JSON)
+// ----------------------------------------------------------------------------
 app.post('/productos', async (req, res) => {
-  try {
-    const { nombre, precio } = req.body;
-    const [result] = await db.query(
-      'INSERT INTO productos (nombre, precio) VALUES (?, ?)',
-      [nombre, precio]
-    );
-    res.status(201).json({ id: result.insertId, nombre, precio });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        // Leemos las propiedades enviadas dentro del cuerpo del JSON
+        const { nombre, precio } = req.body;
+
+        // VALIDACIÓN: Campos obligatorios
+        if (!nombre || precio === undefined || precio === null) {
+            return res.status(400).json({ 
+                error: "Los campos 'nombre' y 'precio' son obligatorios en el JSON del body." 
+            });
+        }
+
+        // VALIDACIÓN: Tipo de dato del precio
+        if (isNaN(precio)) {
+            return res.status(400).json({ 
+                error: "El campo 'precio' debe ser un valor numérico." 
+            });
+        }
+
+        const [result] = await db.query(
+            'INSERT INTO productos (nombre, precio) VALUES (?, ?)',
+            [nombre, precio]
+        );
+        
+        // Respondemos con status 201 (Created) e incluimos el ID generado
+        res.status(201).json({ 
+            id: result.insertId, 
+            nombre, 
+            precio 
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// POST Parametrizado (Path + Body)
+// ----------------------------------------------------------------------------
+// ENDPOINT 5: POST /categorias/:categoriaId/productos (Combinado Path + Body)
+// ----------------------------------------------------------------------------
 app.post('/categorias/:categoriaId/productos', async (req, res) => {
-  try {
-    const { categoriaId } = req.params;
-    const { nombre, precio } = req.body;
-    
-    const [result] = await db.query(
-      'INSERT INTO productos (nombre, precio) VALUES (?, ?)',
-      [nombre, precio]
-    );
+    try {
+        const { categoriaId } = req.params;
+        const { nombre, precio } = req.body;
 
-    res.status(201).json({
-      id: result.insertId,
-      categoriaId,
-      nombre,
-      precio
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+        // VALIDACIÓN: Parámetro de URL
+        if (!categoriaId || isNaN(categoriaId)) {
+            return res.status(400).json({ 
+                error: "El parámetro 'categoriaId' en la URL es requerido y debe ser un número." 
+            });
+        }
+
+        // VALIDACIÓN: Campos del JSON
+        if (!nombre || precio === undefined || precio === null) {
+            return res.status(400).json({ 
+                error: "Los campos 'nombre' y 'precio' son obligatorios en el JSON del body." 
+            });
+        }
+
+        if (isNaN(precio)) {
+            return res.status(400).json({ 
+                error: "El campo 'precio' debe ser un valor numérico." 
+            });
+        }
+
+        const [result] = await db.query(
+            'INSERT INTO productos (nombre, precio) VALUES (?, ?)',
+            [nombre, precio]
+        );
+
+        res.status(201).json({
+            id: result.insertId,
+            categoriaId: Number(categoriaId),
+            nombre,
+            precio
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// Arranque
+// ============================================================================
+// 4. ARRANQUE DEL SERVIDOR
+// ============================================================================
+
+// Leemos el puerto desde process.env (por si la nube asigna uno) o usamos 3000
 const PORT = process.env.PORT || 3000;
+
+// Escuchamos en '0.0.0.0' para permitir conexiones desde la red local/laboratorio
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor activo en el puerto ${PORT}`);
-});</code></pre>
+    console.log(`Servidor activo y escuchando en el puerto ${PORT}`);
+});
+
+
+                </code></pre>
             </div>
         </section>
 
