@@ -253,19 +253,19 @@
     <!-- Encabezado -->
     <header>
       <h1>Envío de Datos en Web con <code>fetch()</code></h1>
-      <p class="subtitle">Guía de referencia rápida: cuándo y cómo usar FormData y JSON.</p>
+      <p class="subtitle">Guía de referencia rápida: de lo nativo directo a la construcción manual en JSON.</p>
     </header>
 
-    <!-- Explicación Previa de FormData -->
+    <!-- Paso 1: FormData Directo -->
     <section class="section-card">
-      <h2 class="section-title"><span class="badge">Previo</span> 1. El Método Directo: <code>FormData</code></h2>
-      <p>El objeto <code>FormData</code> empaqueta los campos del formulario automáticamente basándose en el atributo <code>name</code> de cada elemento HTML.</p>
+      <h2 class="section-title"><span class="badge">Paso 1</span> FormData Directo</h2>
+      <p>El objeto <code>FormData</code> empaqueta todos los campos del formulario automáticamente basándose en el atributo <code>name</code> de cada campo HTML.</p>
       
       <div class="key-points">
         <strong>¿Cuándo usarlo?</strong>
         <ul>
           <li>Cuando el formulario incluye <strong>archivos, imágenes o documentos</strong>.</li>
-          <li>Cuando quieres enviar los datos directamente a un servidor PHP sin transformarlos a JSON.</li>
+          <li>Cuando envías datos directamente a un backend que acepta multipart/form-data.</li>
         </ul>
       </div>
 
@@ -294,18 +294,63 @@ formulario.<span class="fn">addEventListener</span>(<span class="str">'submit'</
       </div>
     </section>
 
-    <!-- Sección Principal: Métodos JSON -->
+    <!-- Paso 2: Object.fromEntries -->
     <section class="section-card">
-      <h2 class="section-title"><span class="badge">Enfoque Principal</span> 2. Envío de Datos en Formato JSON</h2>
-      <p>Cuando el backend requiere un JSON plano, puedes preparar el objeto de datos de tres formas distintas antes de pasarlo por <code>JSON.stringify()</code>.</p>
+      <h2 class="section-title"><span class="badge">Paso 2</span> Conversión Automática con <code>Object.fromEntries</code></h2>
+      <p>Convierte de forma limpia el paquete <code>FormData</code> en un objeto JavaScript estándar en una sola línea para enviarlo como JSON.</p>
 
-      <div class="comparison-grid comparison-grid-3">
+      <div class="key-points">
+        <strong>¿Cuándo usarlo?</strong>
+        <ul>
+          <li>Para formularios extensos de solo texto donde quieres evitar escribir campo por campo.</li>
+          <li>Requiere que todos los inputs tengan su atributo <code>name</code> definido.</li>
+        </ul>
+      </div>
+
+      <!-- Ventana Carbon -->
+      <div class="carbon-window">
+        <div class="carbon-header">
+          <span class="carbon-dot dot-red"></span>
+          <span class="carbon-dot dot-yellow"></span>
+          <span class="carbon-dot dot-green"></span>
+        </div>
+        <div class="code-container">
+<code><span class="kw">const</span> form = document.<span class="fn">getElementById</span>(<span class="str">'miForm'</span>);
+
+form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, (<span class="kw">e</span>) => {
+  e.<span class="fn">preventDefault</span>();
+
+  <span class="cm">// 1. Lectura de inputs vía atributo 'name'</span>
+  <span class="kw">const</span> formData = <span class="kw">new</span> <span class="fn">FormData</span>(e.target);
+  
+  <span class="cm">// 2. Transformación automática a Objeto JS</span>
+  <span class="kw">const</span> usuario = Object.<span class="fn">fromEntries</span>(formData.<span class="fn">entries</span>());
+
+  <span class="cm">// 3. Conversión a JSON plano</span>
+  <span class="kw">const</span> jsonPlano = JSON.<span class="fn">stringify</span>(usuario);
+
+  <span class="fn">fetch</span>(<span class="str">'api.php'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: jsonPlano
+  });
+});</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paso 3: Creación de JSON Manual -->
+    <section class="section-card">
+      <h2 class="section-title"><span class="badge">Paso 3</span> Creación de JSON Manual</h2>
+      <p>Construye el objeto manualmente extrayendo los valores directamente antes de convertirlos a JSON. Tienes dos variantes según el origen de los datos:</p>
+
+      <div class="comparison-grid comparison-grid-3" style="grid-template-columns: 1fr 1fr;">
         
-        <!-- Ejemplo A -->
+        <!-- Variante 3-A: DOM Explícito -->
         <div class="col-card">
           <div>
-            <div class="col-title">Ejemplo A: DOM Explícito</div>
-            <p>Obtiene valor por valor directo desde los IDs del HTML.</p>
+            <div class="col-title">Opción 3-A: Por ID (DOM Explícito)</div>
+            <p>Selecciona valor por valor usando los IDs del documento.</p>
             
             <div class="carbon-window">
               <div class="carbon-header">
@@ -319,19 +364,16 @@ formulario.<span class="fn">addEventListener</span>(<span class="str">'submit'</
 form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, (<span class="kw">e</span>) => {
   e.<span class="fn">preventDefault</span>();
 
-  <span class="cm">// 1. Selección por ID</span>
+  <span class="cm">// Objeto construido manualmente vía ID</span>
   <span class="kw">const</span> usuario = {
     nombre: document.<span class="fn">getElementById</span>(<span class="str">'nombre'</span>).value,
     correo: document.<span class="fn">getElementById</span>(<span class="str">'correo'</span>).value
   };
 
-  <span class="cm">// 2. Conversión a JSON</span>
-  <span class="kw">const</span> jsonPlano = JSON.<span class="fn">stringify</span>(usuario);
-
   <span class="fn">fetch</span>(<span class="str">'api.php'</span>, {
     method: <span class="str">'POST'</span>,
     headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
-    body: jsonPlano
+    body: JSON.<span class="fn">stringify</span>(usuario)
   });
 });</code>
               </div>
@@ -341,17 +383,17 @@ form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>,
           <div class="key-points">
             <strong>Detalles:</strong>
             <ul>
-              <li>Lectura directa mediante IDs.</li>
+              <li>Lectura directa por ID.</li>
               <li>Paso a paso fácil de rastrear.</li>
             </ul>
           </div>
         </div>
 
-        <!-- Ejemplo B-1 -->
+        <!-- Variante 3-B: In-Situ e.target -->
         <div class="col-card">
           <div>
-            <div class="col-title">Ejemplo B-1: Conversión Automática</div>
-            <p>Convierte el FormData completo a un objeto en una sola línea.</p>
+            <div class="col-title">Opción 3-B: In-Situ con <code>e.target</code></div>
+            <p>Extrae del evento del formulario e inyecta directo a JSON.</p>
             
             <div class="carbon-window">
               <div class="carbon-header">
@@ -365,54 +407,7 @@ form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>,
 form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, (<span class="kw">e</span>) => {
   e.<span class="fn">preventDefault</span>();
 
-  <span class="cm">// 1. Lectura de inputs 'name'</span>
-  <span class="kw">const</span> formData = <span class="kw">new</span> <span class="fn">FormData</span>(e.target);
-  
-  <span class="cm">// 2. Transformación a Objeto</span>
-  <span class="kw">const</span> usuario = Object.<span class="fn">fromEntries</span>(formData.<span class="fn">entries</span>());
-
-  <span class="cm">// 3. Conversión a JSON</span>
-  <span class="kw">const</span> jsonPlano = JSON.<span class="fn">stringify</span>(usuario);
-
-  <span class="fn">fetch</span>(<span class="str">'api.php'</span>, {
-    method: <span class="str">'POST'</span>,
-    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
-    body: jsonPlano
-  });
-});</code>
-              </div>
-            </div>
-          </div>
-
-          <div class="key-points">
-            <strong>Detalles:</strong>
-            <ul>
-              <li>Muy corto de escribir.</li>
-              <li>Requiere atributo <code>name</code> en HTML.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Ejemplo B-2 -->
-        <div class="col-card">
-          <div>
-            <div class="col-title">Ejemplo B-2: Objeto Manual In-Situ</div>
-            <p>Construye el objeto manualmente extrayendo datos directo al stringificar.</p>
-            
-            <div class="carbon-window">
-              <div class="carbon-header">
-                <span class="carbon-dot dot-red"></span>
-                <span class="carbon-dot dot-yellow"></span>
-                <span class="carbon-dot dot-green"></span>
-              </div>
-              <div class="code-container">
-<code><span class="kw">const</span> form = document.<span class="fn">getElementById</span>(<span class="str">'miForm'</span>);
-
-form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, (<span class="kw">e</span>) => {
-  e.<span class="fn">preventDefault</span>();
-
-  <span class="cm">// Construcción explícita del objeto</span>
-  <span class="cm">// y conversión directa a JSON</span>
+  <span class="cm">// Construcción in-situ sin variable intermedia</span>
   <span class="kw">const</span> jsonPlano = JSON.<span class="fn">stringify</span>({
     nombre: e.target.elements.<span class="fn">nombre</span>.value,
     correo: e.target.elements.<span class="fn">correo</span>.value
@@ -432,7 +427,7 @@ form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>,
             <strong>Detalles:</strong>
             <ul>
               <li>Usa <code>e.target.elements</code>.</li>
-              <li>Mantiene control manual sin variables extra.</li>
+              <li>Sin necesidad de crear variables intermedias.</li>
             </ul>
           </div>
         </div>
@@ -443,7 +438,9 @@ form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>,
       <div class="summary-box">
         <strong style="color: var(--accent-primary);">Resumen de Elección:</strong>
         <p style="margin-top: 6px; margin-bottom: 0;">
-          Usa <strong>FormData directo</strong> para subir archivos. Usa la <strong>Opción A o B-2</strong> para entender el origen de los datos paso a paso. Usa la <strong>Opción B-1</strong> para formularios extensos de solo texto.
+          1. Usa <strong>FormData directo</strong> si hay archivos.<br>
+          2. Usa <strong>Object.fromEntries</strong> para automatizar el objeto si el formulario es grande.<br>
+          3. Usa la <strong>Creación manual</strong> cuando necesites validar, renombrar o formatear claves específicas antes de enviar.
         </p>
       </div>
     </section>
