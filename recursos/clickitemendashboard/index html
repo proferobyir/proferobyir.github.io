@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patrón SPA con Vanilla JS y Fetch API</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-color: #f8fafc;
+      --accent-color: #38bdf8;
+      --code-bg: #090d16;
+      --comment-color: #64748b;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      color: var(--accent-color);
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p.description {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      background-color: rgba(255, 255, 255, 0.03);
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', Courier, monospace;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    code {
+      color: #e2e8f0;
+      white-space: pre;
+    }
+
+    /* Estilos responsivos */
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      
+      pre {
+        padding: 1rem 0.75rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Navegación Dinámica Asíncrona (SPA)</h1>
+      <p class="description">
+        Patrón en Vanilla JS para carga de vistas con Fetch API, Spinner de carga, bloqueo de peticiones simultáneas y gestión de eventos POST/Submit.
+      </p>
+    </header>
+
+    <main class="card">
+      <div class="card-header">
+        <span class="card-title">js/main.js</span>
+      </div>
+      <pre><code>document.addEventListener('DOMContentLoaded', () => {
+  const contenedor = document.getElementById('contenido-principal');
+  const enlacesMenu = document.querySelectorAll('.nav-link');
+
+  // 1. Escuchamos los clics en todos los enlaces del menú
+  enlacesMenu.forEach(enlace => {
+    enlace.addEventListener('click', async (evento) => {
+      evento.preventDefault();
+
+      // Identificamos la vista mediante el atributo data-vista
+      const vistaSolicitada = evento.currentTarget.getAttribute('data-vista');
+
+      // Bloqueamos el menú e insertamos el spinner mientras ocurre la petición
+      alternarEstadoMenu(enlacesMenu, true);
+      mostrarSpinner(contenedor);
+
+      try {
+        // Hacemos la petición HTTP al servidor para obtener la plantilla HTML
+        const respuesta = await fetch(`vistas/${vistaSolicitada}.html`);
+
+        // Verificamos si la respuesta del servidor fue exitosa (Status 200-299)
+        if (!respuesta.ok) {
+          throw new Error(`Error en la petición: Estado ${respuesta.status}`);
+        }
+
+        const htmlObtenido = await respuesta.text();
+
+        // Inyectamos el HTML en el contenedor central
+        contenedor.innerHTML = htmlObtenido;
+
+        // Tomamos decisiones y vinculamos eventos según la vista cargada
+        ejecutarLogicaDeVista(vistaSolicitada);
+
+      } catch (error) {
+        console.error(error);
+        contenedor.innerHTML = `
+          &lt;div class="error-box"&gt;
+            &lt;h2&gt;Ocurrió un error&lt;/h2&gt;
+            &lt;p&gt;No se pudo cargar la vista solicitada. Intente de nuevo.&lt;/p&gt;
+          &lt;/div&gt;
+        `;
+      } finally {
+        // Habilitamos nuevamente el menú independientemente del resultado
+        alternarEstadoMenu(enlacesMenu, false);
+      }
+    });
+  });
+});
+
+/**
+ * Muestra una animación de carga dentro del contenedor principal
+ */
+function mostrarSpinner(contenedor) {
+  contenedor.innerHTML = `
+    &lt;div class="spinner-container"&gt;
+      &lt;div class="spinner"&gt;&lt;/div&gt;
+      &lt;p&gt;Cargando módulo...&lt;/p&gt;
+    &lt;/div&gt;
+  `;
+}
+
+/**
+ * Deshabilita o habilita los enlaces del menú para evitar peticiones duplicadas
+ */
+function alternarEstadoMenu(enlaces, deshabilitar) {
+  enlaces.forEach(enlace => {
+    if (deshabilitar) {
+      enlace.classList.add('disabled');
+      enlace.style.pointerEvents = 'none';
+    } else {
+      enlace.classList.remove('disabled');
+      enlace.style.pointerEvents = 'auto';
+    }
+  });
+}
+
+/**
+ * Evaluador de decisiones: Asocia la lógica JS específica según la página cargada
+ */
+function ejecutarLogicaDeVista(vista) {
+  switch (vista) {
+    case 'registrar-usuario':
+      inicializarFormularioUsuario();
+      break;
+    case 'reporte-ventas':
+      // Lógica específica para otro módulo
+      break;
+    default:
+      console.log('Vista sin controladores específicos.');
+      break;
+  }
+}
+
+/**
+ * Lógica específica para el módulo de registro de usuarios
+ */
+function inicializarFormularioUsuario() {
+  const formulario = document.getElementById('formRegistro');
+
+  if (formulario) {
+    formulario.addEventListener('submit', (evento) => {
+      evento.preventDefault(); // Frenamos el recargo de la página
+      
+      // Empacamos los datos del formulario de forma automática
+      const datos = new FormData(evento.target);
+      
+      console.log('Datos capturados:', Object.fromEntries(datos));
+      alert(`Usuario ${datos.get('nombre')} registrado con éxito.`);
+    });
+  }
+}</code></pre>
+    </main>
+  </div>
+
+</body>
+</html>
