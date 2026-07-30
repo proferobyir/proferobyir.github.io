@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electiva III - Módulo 3: API REST, Node.js & MySQL</title>
+    <style>
+        /* IBM Carbon Design System Inspired Palette (Gray 100 Theme) */
+        :root {
+            --cds-bg-01: #161616;
+            --cds-bg-02: #262626;
+            --cds-bg-03: #393939;
+            --cds-text-01: #f4f4f4;
+            --cds-text-02: #c6c6c6;
+            --cds-text-03: #8d8d8d;
+            --cds-brand-01: #0f62fe;
+            --cds-brand-hover: #0353e9;
+            --cds-border-subtle: #393939;
+            --cds-support-warning: #f1c21b;
+            --cds-code-bg: #1d1d1d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--cds-bg-01);
+            color: var(--cds-text-01);
+            line-height: 1.5;
+            padding: 0;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Carbon Header Banner */
+        header {
+            background-color: var(--cds-bg-02);
+            border-bottom: 2px solid var(--cds-brand-01);
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--cds-brand-01);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 400;
+            line-height: 1.25;
+            color: var(--cds-text-01);
+            margin-bottom: 0.75rem;
+        }
+
+        header p {
+            color: var(--cds-text-02);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Content Section Card */
+        .content-section {
+            background-color: var(--cds-bg-02);
+            border: 1px solid var(--cds-border-subtle);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--cds-text-01);
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--cds-border-subtle);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        p {
+            color: var(--cds-text-02);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        /* Carbon List Style */
+        ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--cds-text-02);
+        }
+
+        ul li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: var(--cds-brand-01);
+            font-weight: bold;
+        }
+
+        /* Architecture ASCII Box */
+        .architecture-box {
+            background-color: var(--cds-code-bg);
+            border-left: 4px solid var(--cds-brand-01);
+            padding: 1.25rem;
+            font-family: 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--cds-text-01);
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            line-height: 1.6;
+        }
+
+        /* Downloads Grid Tile */
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .tile {
+            background-color: var(--cds-bg-03);
+            border: 1px solid var(--cds-border-subtle);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .tile:hover {
+            border-color: var(--cds-brand-01);
+            transform: translateY(-2px);
+        }
+
+        .tile-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--cds-text-01);
+            margin-bottom: 0.5rem;
+        }
+
+        .tile-desc {
+            font-size: 0.875rem;
+            color: var(--cds-text-02);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-carbon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--cds-brand-01);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-carbon:hover {
+            background-color: var(--cds-brand-hover);
+        }
+
+        /* Carbon Callout Alert */
+        .callout {
+            background-color: #2a2415;
+            border-left: 4px solid var(--cds-support-warning);
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .callout-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--cds-support-warning);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .callout p {
+            color: #f1c21b;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--cds-text-03);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--cds-border-subtle);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            header { padding: 1.5rem 1rem; }
+            h1 { font-size: 1.75rem; }
+            .content-section { padding: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container" style="padding: 0;">
+            <span class="tag">Electiva III • Módulo 3</span>
+            <h1>Creación y Consumo de APIs RESTful</h1>
+            <p>Arquitectura Cliente-Servidor con Node.js, Express, MySQL y Fetch API</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="content-section">
+            <h2>💻 Descripción de la Clase</h2>
+            <p>En esta sesión práctica integraremos los conocimientos de desarrollo web Frontend y Backend. Implementaremos una arquitectura desacoplada real utilizando <strong>Apache</strong> para servir el cliente, <strong>Node.js con Express</strong> para construir el servicio API RESTful y <strong>MySQL</strong> como motor de persistencia relacional.</p>
+        </section>
+
+        <section class="content-section">
+            <h2>🎯 Objetivos de Aprendizaje</h2>
+            <ul>
+                <li>Comprender los fundamentos de la arquitectura <strong>RESTful</strong> (Verbos HTTP, códigos de estado y formato JSON).</li>
+                <li>Resolver el intercambio de recursos de origen cruzado (<strong>CORS</strong>) entre Apache (Puerto 80) y Node.js (Puerto 3000).</li>
+                <li>Capturar datos mediante un formulario web e interactuar de forma asíncrona con la <strong>Fetch API</strong> (<code>async/await</code>).</li>
+                <li>Conectar Node.js con la base de datos <code>ejemplodb</code> e insertar registros mediante consultas preparadas en SQL.</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h2>🏗️ Arquitectura del Sistema</h2>
+            <p>Diagrama del flujo de comunicación entre el cliente web, el servidor de aplicaciones y la base de datos:</p>
+            <div class="architecture-box">
+[ Navegador del Alumno ]
+       │
+       ├── 1. Pide la interfaz web ────► [ Apache (Puerto 80 / htdocs) ]
+       │◄── 2. Devuelve index.html ───┘
+       │
+       ├── 3. Petición POST (fetch) ──► [ Node.js (Puerto 3000) ]
+       │                                       │
+       │                                 4. INSERT SQL
+       │                                       ▼
+       │                                [ Base de Datos MySQL ]
+       │                                       │
+       │◄── 5. Respuesta JSON (200 OK) ────────┘
+            </div>
+            
+            <div class="callout">
+                <div class="callout-title">⚠️ Nota sobre Seguridad / CORS</div>
+                <p>Asegúrate de acceder al Frontend siempre a través de la URL de Apache o <code>http://localhost:3000</code>. No abras el archivo HTML mediante doble clic directo desde el explorador para evitar bloqueos del navegador.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>📦 Materiales y Recursos Descargables</h2>
+            <p>Descarga los paquetes preparados para el laboratorio (configurados para trabajo offline tras proxy):</p>
+            
+            <div class="downloads-grid">
+                <div class="tile">
+                    <div>
+                        <div class="tile-title">📁 Kit de Código Base (.ZIP)</div>
+                        <div class="tile-desc">Contiene <code>server.js</code>, <code>index.html</code>, <code>package.json</code> y las dependencias compiladas (<code>node_modules</code>).</div>
+                    </div>
+                    <a href="kit_laboratorio.zip" class="btn-carbon" download>Descargar ZIP <span>→</span></a>
+                </div>
+
+                <div class="tile">
+                    <div>
+                        <div class="tile-title">📄 Guía de Despliegue (.PDF)</div>
+                        <div class="tile-desc">Paso a paso para desplegar en el laboratorio, solución de errores de red y comandos principales.</div>
+                    </div>
+                    <a href="Guia_Despliegue_Laboratorio.pdf" class="btn-carbon" target="_blank">Ver Guía PDF <span>→</span></a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Electiva III • Facultad de Ingeniería • Material Docente de Apoyo Offline</p>
+    </footer>
+
+</body>
+</html>
