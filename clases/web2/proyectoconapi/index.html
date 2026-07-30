@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electiva Web II y III : API REST, HTML, JavaScript, Node.js & MySQL</title>
+    <title>Electiva II y III - Clase: Arquitectura Cliente-Servidor & API REST</title>
     <style>
         /* IBM Carbon Design System Inspired Palette (Gray 100 Theme) */
         :root {
@@ -18,6 +18,7 @@
             --cds-border-subtle: #393939;
             --cds-support-warning: #f1c21b;
             --cds-support-success: #24a148;
+            --cds-support-info: #4589ff;
             --cds-code-bg: #1d1d1d;
         }
 
@@ -97,6 +98,13 @@
             gap: 0.5rem;
         }
 
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--cds-support-info);
+            margin: 1.25rem 0 0.75rem 0;
+        }
+
         p {
             color: var(--cds-text-02);
             margin-bottom: 1rem;
@@ -118,7 +126,7 @@
             color: var(--cds-text-01);
         }
 
-        /* Architecture ASCII Box & Code */
+        /* ASCII Diagram & Code */
         .architecture-box, pre {
             background-color: var(--cds-code-bg);
             border-left: 4px solid var(--cds-brand-01);
@@ -139,8 +147,8 @@
             font-size: 0.85rem;
         }
 
-        /* Location Grid Tile */
-        .location-grid {
+        /* Grid Layouts */
+        .grid-two {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1rem;
@@ -167,6 +175,18 @@
             font-size: 0.9rem;
             color: var(--cds-text-02);
         }
+
+        /* Carbon Badges for HTTP Methods */
+        .badge-method {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        .post { background-color: #0043ce; color: #ffffff; }
+        .get { background-color: #0e6027; color: #ffffff; }
 
         /* Carbon Callout Alert */
         .callout {
@@ -211,88 +231,133 @@
 
     <header>
         <div class="container" style="padding: 0;">
-            <span class="tag">Electivas II y III • Guía del Repositorio</span>
-            <h1>Estructura del Proyecto y Despliegue Local</h1>
-            <p>Separación de capas: Servidor Apache (Frontend) y Node.js (API REST Backend)</p>
+            <span class="tag">Electiva III • Guía Teórico-Práctica</span>
+            <h1>Arquitectura Cliente-Servidor y API REST</h1>
+            <p>Aprende el flujo de datos moderno: HTML5, Express, JSON, Dotenv y MySQL</p>
         </div>
     </header>
 
     <main class="container">
 
+        <!-- MINI CLASE: ARQUITECTURA CLIENTE-SERVIDOR -->
         <section class="content-section">
-            <h2>📁 Ubicación de las Carpetas</h2>
-            <p>El proyecto está organizado en dos componentes independientes. Debes ubicar cada carpeta en su entorno correspondiente:</p>
+            <h2> La Arquitectura Cliente-Servidor</h2>
+            <p>En el desarrollo web moderno, la **Separación de Responsabilidades** es la regla de oro. En lugar de tener un solo sistema monolítico que haga todo, dividimos la aplicación en dos roles independientes que se comunican a través de la red:</p>
             
-            <div class="location-grid">
+            <div class="grid-two">
                 <div class="tile">
                     <div>
-                        <div class="tile-title">🌐 Carpeta /frontend</div>
+                        <div class="tile-title">El Cliente (Frontend)</div>
                         <div class="tile-desc">
-                            Debe copiarse dentro del directorio web de Apache:<br>
-                            <code>C:\xampp\htdocs\frontend</code><br><br>
-                            <strong>Acceso web:</strong><br>
-                            <code>http://localhost/frontend/index.html</code>
+                            <p><strong>Ubicación:</strong> Servidor Apache (<code>/htdocs/frontend</code>)</p>
+                            <p>Es la interfaz visual con la que interactúa el usuario. Su trabajo es capturar datos, validar entradas y mostrar resultados. <em>No procesa lógica de negocios crítica ni toca la base de datos directamente.</em></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="tile">
                     <div>
-                        <div class="tile-title">⚙️ Carpeta /backend</div>
+                        <div class="tile-title">El Servidor (Backend)</div>
                         <div class="tile-desc">
-                            Puede ir en <strong>cualquier ruta</strong> fuera de htdocs (ej. Escritorio o Documentos):<br>
-                            <code>C:\Users\Alumno\Desktop\backend</code><br><br>
-                            <strong>API Escuchando en:</strong><br>
-                            <code>http://localhost:3000</code>
+                            <p><strong>Ubicación:</strong> Node.js + Express (<code>/backend</code>)</p>
+                            <p>Es el cerebro del sistema. Escucha peticiones por la red, aplica reglas de negocio, lee/escribe en la base de datos MySQL y responde datos puros (generalmente JSON).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>¿Por qué usamos esta arquitectura?</h3>
+            <ul>
+                <li><strong>Desacoplamiento:</strong> Puedes cambiar el Frontend (ej. hacer una app móvil) sin tocar una sola línea del Backend.</li>
+                <li><strong>Seguridad:</strong> Las credenciales de MySQL y la lógica del servidor quedan ocultas dentro del Backend y nunca se exponen al navegador.</li>
+                <li><strong>Escalabilidad:</strong> El servidor backend puede atender a miles de clientes en simultáneo.</li>
+            </ul>
+        </section>
+
+        <!-- MINI CLASE: ¿QUÉ ES UNA API REST? -->
+        <section class="content-section">
+            <h2>Entendiendo la API REST</h2>
+            <p>Una <strong>API REST</strong> (<em>Application Programming Interface</em>) es un "contrato de comunicación" entre el Cliente y el Servidor utilizando el protocolo HTTP estándar.</p>
+            
+            <h3>1. El Idioma Universal: JSON</h3>
+            <p>El cliente y el servidor no se envían pantallas ni archivos gigantes, se envían texto plano estructurado llamado <strong>JSON</strong> (JavaScript Object Notation):</p>
+            <pre>
+// Petición que envía el Cliente al Servidor:
+{
+  "txtnombre": "Ana Pérez",
+  "txtemail": "ana@correo.com",
+  "txtphone": "0412-1234567"
+}</pre>
+
+            <h3>2. Anatomía del Endpoint en nuestro Proyecto</h3>
+            <p>En la práctica de hoy estaremos consumiendo la siguiente ruta del servicio:</p>
+            <ul>
+                <li><strong>Método HTTP:</strong> <span class="badge-method post">POST</span> (Utilizado para enviar/crear nuevos recursos)</li>
+                <li><strong>URL del Endpoint:</strong> <code>http://localhost:3000/api/usuarios</code></li>
+                <li><strong>Formato de envío:</strong> <code>Content-Type: application/json</code></li>
+            </ul>
+
+            <h3>3. Flujo de Respuesta de la API</h3>
+            <p>Una vez procesados los datos en MySQL, el servidor Express responde un JSON con el estado de la operación:</p>
+            <pre>
+// Respuesta del Servidor al Cliente (HTTP 200 OK):
+{
+  "exito": true,
+  "mensaje": "¡Usuario guardado con éxito!",
+  "idInsertado": 12
+}</pre>
+        </section>
+
+        <!-- GUÍA DE DESPLIEGUE LOCAL -->
+        <section class="content-section">
+            <h2>Ubicación de Archivos en el Laboratorio</h2>
+            
+            <div class="grid-two">
+                <div class="tile">
+                    <div>
+                        <div class="tile-title">Frontend (Apache)</div>
+                        <div class="tile-desc">
+                            Copiar en: <code>C:\xampp\htdocs\frontend</code><br>
+                            Abrir en navegador: <code>http://localhost/frontend/index.html</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div>
+                        <div class="tile-title">Backend (Node.js)</div>
+                        <div class="tile-desc">
+                            Copiar en: <code>C:\Users\Alumno\Desktop\backend</code><br>
+                            API escuchando en: <code>http://localhost:3000</code>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- INSTRUCCIONES PASO A PASO -->
         <section class="content-section">
-            <h2>🚀 Cómo Levantar el Backend (API REST)</h2>
-            <p>Sigue estos pasos para iniciar el servidor de servicios con Node.js:</p>
-            
+            <h2>Pasos para Ejecutar el Proyecto</h2>
             <ol>
-                <li>Abre el panel de <strong>XAMPP</strong> e inicia únicamente el servicio de <strong>MySQL</strong> (puerto 3306).</li>
-                <li>Abre una ventana de la terminal (CMD o PowerShell) y navega hasta tu carpeta backend:
-                    <pre>cd C:\Users\TuUsuario\Desktop\backend</pre>
-                </li>
-                <li>Ejecuta el comando para iniciar la API REST:
+                <li>Abre <strong>XAMPP Control Panel</strong> e inicia el servicio <strong>MySQL</strong>.</li>
+                <li>Asegúrate de haber creado la base de datos <code>ejemplodb</code> e importado la tabla <code>usuarios</code>.</li>
+                <li>Verifica que la carpeta <code>backend/</code> contenga su archivo <code>.env</code> con las variables de conexión.</li>
+                <li>Abre una terminal CMD en la carpeta backend y ejecuta:
                     <pre>node server.js</pre>
                 </li>
-                <li>Verifica los mensajes de confirmación en consola:
-                    <pre>¡Conectado exitosamente a la base de datos MySQL!
-Servidor API REST corriendo en http://localhost:3000</pre>
-                </li>
+                <li>Abre tu navegador y entra a: <code>http://localhost/frontend/index.html</code> para probar el formulario.</li>
             </ol>
-        </section>
 
-        <section class="content-section">
-            <h2>🏗️ Estructura del Repositorio en GitHub</h2>
-            <p>Así está organizado este repositorio para la práctica del laboratorio:</p>
-            <div class="architecture-box">
-mi-repositorio-api/
-├── frontend/                     <-- COPIAR A: C:\xampp\htdocs\frontend
-│   └── index.html                <-- Vista + Fetch API (apunta a puerto 3000)
-│
-└── backend/                      <-- COPIAR A: C:\Escritorio\backend (o cualquier ruta)
-    ├── node_modules/             <-- Dependencias offline preinstaladas
-    ├── package.json              <-- Configuración de paquetes Node
-    └── server.js                 <-- Express + Conexión MySQL + CORS habilitado
-            </div>
-            
             <div class="callout">
-                <div class="callout-title">💡 Recordatorio de CORS y Peticiones</div>
-                <p>El código JavaScript en <code>frontend/index.html</code> hace peticiones mediante <code>fetch('http://localhost:3000/api/usuarios')</code>. El backend tiene configurado el middleware de CORS para permitir la comunicación entre Apache (Puerto 80) y Node.js (Puerto 3000) sin bloqueos.</p>
+                <div class="callout-title">Buenas Prácticas de Seguridad (.env)</div>
+                <p>Recuerda que las credenciales de la base de datos viven exclusivamente en el archivo <code>.env</code> del Backend. El Frontend jamás conoce las contraseñas del motor de base de datos ni interactúa directamente con MySQL.</p>
             </div>
         </section>
 
     </main>
 
     <footer>
-        <p>Electiva III • Guía de Integración Frontend - Backend para Laboratorio</p>
+        <p>Electiva IIy III • Guía Teórica y Práctica para Laboratorio</p>
     </footer>
 
 </body>
