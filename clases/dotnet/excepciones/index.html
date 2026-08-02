@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C# .NET: Guía Completa de Manejo de Excepciones</title>
+  
+  <style>
+    /* ==========================================================================
+       VARIABLES Y RESET (IBM Carbon g100 Dark Theme)
+       ========================================================================== */
+    :root {
+      --cds-bg-background: #161616;
+      --cds-bg-container: #262626;
+      --cds-bg-hover: #353535;
+      --cds-bg-code: #0f0f0f;
+      --cds-border-subtle: #393939;
+      
+      --cds-text-primary: #ffffff;
+      --cds-text-secondary: #c6c6c6;
+      --cds-text-muted: #8d8d8d;
+      
+      --cds-interactive-primary: #0f62fe;
+      --cds-interactive-hover: #0353e9;
+      --cds-accent-red: #da1e28;
+      --cds-accent-yellow: #f1c21b;
+      --cds-accent-blue: #78a9ff;
+      
+      --cds-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --cds-font-mono: "Consolas", "Courier New", Courier, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--cds-bg-background);
+      color: var(--cds-text-primary);
+      font-family: var(--cds-font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ENCABEZADO */
+    .cds-header {
+      background-color: var(--cds-bg-background);
+      border-bottom: 1px solid var(--cds-border-subtle);
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .cds-header__title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--cds-text-primary);
+    }
+
+    .cds-header__title span {
+      font-weight: 400;
+      color: var(--cds-text-secondary);
+    }
+
+    /* HERO */
+    .cds-hero {
+      background-color: var(--cds-bg-container);
+      border-bottom: 1px solid var(--cds-border-subtle);
+      padding: 3rem 1.5rem;
+    }
+
+    .cds-hero__content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .cds-hero__tag {
+      color: var(--cds-accent-blue);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .cds-hero__title {
+      font-size: 2.5rem;
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .cds-hero__description {
+      font-size: 1.125rem;
+      color: var(--cds-text-secondary);
+      max-width: 850px;
+      font-weight: 300;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .cds-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .cds-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .cds-section-title {
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--cds-interactive-primary);
+      padding-left: 0.75rem;
+    }
+
+    /* BLOQUES DE CÓDIGO */
+    pre {
+      background-color: var(--cds-bg-code);
+      border: 1px solid var(--cds-border-subtle);
+      border-left: 3px solid var(--cds-interactive-primary);
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: var(--cds-font-mono);
+      font-size: 0.875rem;
+      color: #f4f4f4;
+      margin: 1rem 0;
+    }
+
+    code {
+      font-family: var(--cds-font-mono);
+      background-color: rgba(255,255,255,0.1);
+      padding: 0.1rem 0.3rem;
+      border-radius: 2px;
+      color: #78a9ff;
+    }
+
+    pre code {
+      background-color: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    /* LISTA DE DICCIONARIO / GLOSARIO */
+    .cds-glossary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .cds-glossary-item {
+      background-color: var(--cds-bg-container);
+      border: 1px solid var(--cds-border-subtle);
+      padding: 1.25rem;
+    }
+
+    .cds-glossary-item__term {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--cds-accent-blue);
+      margin-bottom: 0.5rem;
+      font-family: var(--cds-font-mono);
+    }
+
+    .cds-glossary-item__def {
+      font-size: 0.875rem;
+      color: var(--cds-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* DESTACADOS Y NOTAS */
+    .cds-callout {
+      background-color: var(--cds-bg-container);
+      border: 1px solid var(--cds-border-subtle);
+      border-left: 4px solid var(--cds-accent-red);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .cds-callout--warning {
+      border-left-color: var(--cds-accent-yellow);
+    }
+
+    .cds-callout__title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    /* TABLA COMPARATIVA */
+    .cds-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background-color: var(--cds-bg-container);
+    }
+
+    .cds-table th, .cds-table td {
+      border: 1px solid var(--cds-border-subtle);
+      padding: 0.875rem;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    .cds-table th {
+      background-color: #1e1e1e;
+      color: var(--cds-text-primary);
+      font-weight: 600;
+    }
+
+    .cds-table td {
+      color: var(--cds-text-secondary);
+    }
+
+    /* FOOTER */
+    .cds-footer {
+      border-top: 1px solid var(--cds-border-subtle);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--cds-text-muted);
+      background-color: var(--cds-bg-background);
+    }
+
+    @media (max-width: 672px) {
+      .cds-hero__title { font-size: 1.75rem; }
+      .cds-hero, .cds-container { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header class="cds-header">
+    <div class="cds-header__title">
+      C# .NET <span>| Manual Definitivo de Manejo de Excepciones</span>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="cds-hero">
+    <div class="cds-hero__content">
+      <span class="cds-hero__tag">Arquitectura y Robustez en C#</span>
+      <h1 class="cds-hero__title">Manejo Total de Excepciones en .NET</h1>
+      <p class="cds-hero__description">
+        Aprende a controlar errores en tiempo de ejecución, resguardar la lógica de negocio, crear excepciones personalizadas y entender cada término clave utilizado en el ecosistema C# y ASP.NET Core MVC.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contenido Principal -->
+  <main class="cds-container">
+
+    <!-- SECCIÓN 1: DICCIONARIO DE TÉRMINOS -->
+    <section class="cds-section">
+      <h2 class="cds-section-title">1. Diccionario de Términos Términos Básicos y Avanzados</h2>
+      <p>Para dominar las excepciones en C#, primero debemos hablar el mismo idioma técnico:</p>
+
+      <div class="cds-glossary">
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">Excepción (Exception)</div>
+          <div class="cds-glossary-item__def">Un objeto especial en C# que se crea automáticamente cuando el flujo normal del programa falla en tiempo de ejecución.</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">throw</div>
+          <div class="cds-glossary-item__def">Instrucción que interrumpe intencionalmente el programa y "lanza" una excepción cuando se detecta un error o dato no válido.</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">try</div>
+          <div class="cds-glossary-item__def">Bloque de código que "sometes a prueba". Si ocurre un error dentro de él, no tumba la aplicación, sino que lo transfiere al bloque catch.</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">catch</div>
+          <div class="cds-glossary-item__def">Bloque que intercepta ("atrapa") la excepción lanzada por el bloque try para procesarla o mostrar un mensaje.</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">finally</div>
+          <div class="cds-glossary-item__def">Bloque especial que <strong>SIEMPRE se ejecuta</strong>, haya ocurrido un error o no. Ideal para liberar recursos (cerrar archivos o conexiones).</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">Stack Trace</div>
+          <div class="cds-glossary-item__def">Rastro de llamadas que muestra la ruta exacta de métodos y líneas de código por las que viajó el error hasta explotar.</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">InnerException</div>
+          <div class="cds-glossary-item__def">Propiedad de una excepción que guarda el error original que provocó la excepción actual (útil en excepciones compuestas).</div>
+        </div>
+
+        <div class="cds-glossary-item">
+          <div class="cds-glossary-item__term">Rethrow (throw;)</div>
+          <div class="cds-glossary-item__def">Volver a lanzar la excepción dentro de un <code>catch</code> manteniendo intacto el <em>Stack Trace</em> original.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: ESTRUCTURA COMPLETA (TRY-CATCH-FINALLY) -->
+    <section class="cds-section">
+      <h2 class="cds-section-title">2. El Ciclo de Vida: try - catch - finally</h2>
+      <p>Esta es la estructura completa con múltiples bloques <code>catch</code> ordenados de lo más específico a lo más general:</p>
+
+      <pre><code>using System;
+
+public class CalculadoraServicio
+{
+    public decimal ProcesarPago(string montoTexto, string tarjeta)
+    {
+        try
+        {
+            // 1. Intentamos convertir el texto a número (Puede lanzar FormatException)
+            decimal monto = decimal.Parse(montoTexto);
+
+            // 2. Validamos la regla de negocio (Lanzamos ArgumentOutOfRangeException)
+            if (monto <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(montoTexto), "El monto debe ser mayor a cero.");
+            }
+
+            return monto;
+        }
+        catch (FormatException ex)
+        {
+            // Atrapa solo errores de formato numérico
+            Console.WriteLine($"Error de conversión: {ex.Message}");
+            return 0;
+        }
+        catch (ArgumentOutOfRangeException ex)
+        {
+            // Atrapa errores de rangos o límites inválidos
+            Console.WriteLine($"Regla de negocio violada: {ex.Message}");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            // Atrapa CUALQUIER otro error no previsto anteriormente
+            Console.WriteLine($"Error crítico no esperado: {ex.Message}");
+            throw; // Re-lanzamos preservando la pila de llamadas
+        }
+        finally
+        {
+            // ESTO SE EJECUTA SIEMPRE (haya o no haya error)
+            Console.WriteLine("Proceso de pago finalizado. Liberando memoria...");
+        }
+    }
+}</code></pre>
+    </section>
+
+    <!-- SECCIÓN 3: EXCEPCIONES NATIVAS MÁS COMUNES -->
+    <section class="cds-section">
+      <h2 class="cds-section-title">3. Catálogo de Excepciones Frecuentes en .NET</h2>
+
+      <table class="cds-table">
+        <thead>
+          <tr>
+            <th>Excepción</th>
+            <th>¿Cuándo ocurre o cuándo usarla?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ArgumentNullException</code></td>
+            <td>Cuando un método requiere un valor obligatorio y recibe <code>null</code>.</td>
+          </tr>
+          <tr>
+            <td><code>ArgumentException</code></td>
+            <td>Cuando un argumento es válido en tipo, pero no cumple las reglas del método.</td>
+          </tr>
+          <tr>
+            <td><code>InvalidOperationException</code></td>
+            <td>Lanzada cuando el estado actual de un objeto impide ejecutar una acción.</td>
+          </tr>
+          <tr>
+            <td><code>NullReferenceException</code></td>
+            <td>Lanzada automáticamente por .NET al intentar acceder a propiedades de algo que es <code>null</code>.</td>
+          </tr>
+          <tr>
+            <td><code>KeyNotFoundException</code></td>
+            <td>Al intentar buscar un elemento en un Diccionario usando una clave inexistente.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECCIÓN 4: CREACIÓN DE EXCEPCIONES PERSONALIZADAS -->
+    <section class="cds-section">
+      <h2 class="cds-section-title">4. Excepciones Personalizadas (Custom Exceptions)</h2>
+      <p>
+        Para un sistema empresarial profesional, es recomendable crear tus propias excepciones de dominio heredando de la clase base <code>Exception</code>:
+      </p>
+
+      <pre><code>// 1. Definimos nuestra propia clase de excepción
+public class SaldoInsuficienteException : Exception
+{
+    public decimal SaldoActual { get; }
+
+    public SaldoInsuficienteException(decimal saldoActual) 
+        : base($"Operación rechazada. Saldo actual insuficiente (${saldoActual}).")
+    {
+        SaldoActual = saldoActual;
+    }
+}
+
+// 2. Uso en el dominio / POO
+public class CuentaBancaria
+{
+    public decimal Saldo { get; private set; } = 100;
+
+    public void Retirar(decimal cantidad)
+    {
+        if (cantidad > Saldo)
+        {
+            // Lanzamos nuestra propia excepción
+            throw new SaldoInsuficienteException(Saldo);
+        }
+
+        Saldo -= cantidad;
+    }
+}</code></pre>
+    </section>
+
+    <!-- SECCIÓN 5: INTEGRACIÓN CON ASP.NET CORE MVC -->
+    <section class="cds-section">
+      <h2 class="cds-section-title">5. Aplicación Práctica en ASP.NET Core MVC</h2>
+      <p>
+        A continuación verás cómo se orquesta una excepción personalizada dentro del flujo <strong>Controlador-Vista</strong>:
+      </p>
+
+      <pre><code>using Microsoft.AspNetCore.Mvc;
+
+public class CuentasController : Controller
+{
+    private readonly CuentaBancaria _cuenta = new CuentaBancaria();
+
+    [HttpPost]
+    public IActionResult RetirarDinero(decimal monto)
+    {
+        try
+        {
+            _cuenta.Retirar(monto);
+            // Si no hay excepciones, redirigimos con éxito
+            return RedirectToAction("Exito");
+        }
+        catch (SaldoInsuficienteException ex)
+        {
+            // Atrapamos el error personalizado y pasamos la información a la Vista
+            ViewBag.ErrorMessage = ex.Message;
+            ViewBag.SaldoDisponible = ex.SaldoActual;
+            
+            return View("ErrorPago"); // Devuelve la vista con el error controlado
+        }
+        catch (Exception)
+        {
+            // Manejo genérico para errores desconocidos
+            ViewBag.ErrorMessage = "Ocurrió un error inesperado en el servidor.";
+            return View("Error");
+        }
+    }
+}</code></pre>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="cds-footer">
+    <p>Manual C# .NET Core • Guía de Excepciones y POO • Estilizado con IBM Carbon Design (g100) • Listo para GitHub Pages</p>
+  </footer>
+
+</body>
+</html>
