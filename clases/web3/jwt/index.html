@@ -1,713 +1,654 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial Interactivo: Middleware y JWT - Electiva III</title>
-    <style>
-        /* ==========================================================================
-       VARIABLES Y PALETA DE COLORES (Diseño Enfocado & Accesible)
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial Interactivo: Middleware y JWT - Electiva III</title>
+  <style>
+    /* ==========================================================================
+       VARIABLES Y PALETA DE COLORES
        ========================================================================== */
-        :root {
-            /* Fondo neutro de bajo contraste para reducir fatiga visual */
-            --bg-main: #f4f6f9;
-            --bg-card: #ffffff;
-            --bg-sidebar: #0f172a;
+    :root {
+      --bg-main: #f4f6f9;
+      --bg-card: #ffffff;
+      --bg-sidebar: #0f172a;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #f8fafc;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+      --accent-analogy: #0d9488;
+      --bg-analogy: #f0fdf4;
+      --border-analogy: #99f6e4;
+      --accent-alert: #d97706;
+      --bg-alert: #fffbeb;
+      --border-alert: #fde68a;
+      --code-bg: #1e293b;
+      --code-header: #0f172a;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
-            /* Texto */
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --text-light: #f8fafc;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-            /* Accents & Indicadores claros */
-            --primary: #2563eb;
-            --primary-light: #eff6ff;
-            --primary-border: #bfdbfe;
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
 
-            --accent-analogy: #0d9488;
-            --bg-analogy: #f0fdf4;
-            --border-analogy: #99f6e4;
-
-            --accent-alert: #d97706;
-            --bg-alert: #fffbeb;
-            --border-alert: #fde68a;
-
-            --code-bg: #1e293b;
-            --code-header: #0f172a;
-
-            /* Espaciado y Estructura */
-            --radius: 12px;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        /* Reset Básico */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            line-height: 1.6;
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ==========================================================================
-       LAYOUT PRINCIPAL (Grid Responsive: Sidebar + Contenido)
+    /* ==========================================================================
+       LAYOUT PRINCIPAL
        ========================================================================== */
-        .app-container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-        }
+    .app-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
 
-        /* Sidebar / Menú Navegación */
-        .sidebar {
-            background-color: var(--bg-sidebar);
-            color: var(--text-light);
-            padding: 2rem 1.5rem;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        }
+    /* Sidebar */
+    .sidebar {
+      background-color: var(--bg-sidebar);
+      color: var(--text-light);
+      padding: 2rem 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #38bdf8;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #334155;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #38bdf8;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #334155;
+    }
 
-        .brand-badge {
-            background: #0284c7;
-            color: #fff;
-            font-size: 0.75rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    .brand-badge {
+      background: #0284c7;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
 
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: #94a3b8;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
 
-        .nav-link:hover,
-        .nav-link.active {
-            background-color: #1e293b;
-            color: #ffffff;
-            border-left: 4px solid #38bdf8;
-        }
+    .nav-link:hover, .nav-link.active {
+      background-color: #1e293b;
+      color: #ffffff;
+      border-left: 4px solid #38bdf8;
+    }
 
-        /* Área Principal de Contenido */
-        .content-area {
-            padding: 2.5rem 3rem;
-            max-width: 1100px;
-            margin: 0 auto;
-            width: 100%;
-        }
+    .content-area {
+      padding: 2.5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-        /* ==========================================================================
-       HERO / ENCABEZADO
+    /* ==========================================================================
+       HEADER
        ========================================================================== */
-        .header-banner {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: white;
-            padding: 2.5rem;
-            border-radius: var(--radius);
-            margin-bottom: 2.5rem;
-            box-shadow: var(--shadow-md);
-        }
+    .header-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: white;
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-md);
+    }
 
-        .header-banner h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            line-height: 1.2;
-        }
+    .header-banner h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
 
-        .header-banner p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 700px;
-        }
+    .header-banner p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 700px;
+    }
 
-        /* Quick Stats Bar */
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
 
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.9rem;
-        }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
 
-        .stat-icon {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .stat-icon {
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      min-height: 32px;
+    }
 
-        /* ==========================================================================
-       SECCIONES Y TARJETAS (Estructura Limpia)
+    /* ==========================================================================
+       TARJETAS
        ========================================================================== */
-        .section-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid #e2e8f0;
-        }
+    .section-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #e2e8f0;
+    }
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #f1f5f9;
-        }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #f1f5f9;
+    }
 
-        .step-number {
-            background-color: var(--primary);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
+    .step-number {
+      background-color: var(--primary);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
 
-        .section-title {
-            font-size: 1.5rem;
-            color: var(--text-main);
-            font-weight: 700;
-        }
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--text-main);
+      font-weight: 700;
+    }
 
-        /* ==========================================================================
-       ANALOGÍA / CALLOUT BOXES (Visual Chunking)
+    /* ==========================================================================
+       ANALOGIA
        ========================================================================== */
-        .analogy-box {
-            background-color: var(--bg-analogy);
-            border-left: 5px solid var(--accent-analogy);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
+    .analogy-box {
+      background-color: var(--bg-analogy);
+      border-left: 5px solid var(--accent-analogy);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
 
-        .analogy-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent-analogy);
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-        }
+    .analogy-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-analogy);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
 
-        .analogy-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.25rem;
-            margin-top: 1rem;
-        }
+    .analogy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
 
-        .analogy-card {
-            background: white;
-            padding: 1.25rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-analogy);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-        }
+    .analogy-card {
+      background: white;
+      padding: 1.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-analogy);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
 
-        .analogy-card h4 {
-            color: var(--accent-analogy);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    .analogy-card h4 {
+      color: var(--accent-analogy);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-        /* ==========================================================================
-       DESGLOSE JWT (Visual Component Breakdown)
+    /* ==========================================================================
+       JWT
        ========================================================================== */
-        .jwt-structure {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
+    .jwt-structure {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
 
-        .jwt-part {
-            padding: 1.25rem;
-            border-radius: 8px;
-            background: #fafafa;
-            border: 2px solid;
-        }
+    .jwt-part {
+      padding: 1.25rem;
+      border-radius: 8px;
+      background: #fafafa;
+      border: 2px solid;
+    }
 
-        .jwt-header-part {
-            border-color: #ef4444;
-        }
+    .jwt-header-part { border-color: #ef4444; }
+    .jwt-payload-part { border-color: #8b5cf6; }
+    .jwt-signature-part { border-color: #06b6d4; }
 
-        .jwt-payload-part {
-            border-color: #8b5cf6;
-        }
+    .jwt-part h4 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
 
-        .jwt-signature-part {
-            border-color: #06b6d4;
-        }
+    .jwt-tag {
+      font-size: 0.75rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      color: white;
+    }
 
-        .jwt-part h4 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-        }
+    .tag-red { background: #ef4444; }
+    .tag-purple { background: #8b5cf6; }
+    .tag-blue { background: #06b6d4; }
 
-        .jwt-tag {
-            font-size: 0.75rem;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            color: white;
-        }
-
-        .tag-red {
-            background: #ef4444;
-        }
-
-        .tag-purple {
-            background: #8b5cf6;
-        }
-
-        .tag-blue {
-            background: #06b6d4;
-        }
-
-        /* ==========================================================================
-       DIAGRAMA DE FLUJO (Flexbox Flow)
+    /* ==========================================================================
+       FLUJO
        ========================================================================== */
-        .flow-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            background: #f8fafc;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px dashed #cbd5e1;
-        }
+    .flow-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px dashed #cbd5e1;
+    }
 
-        .flow-step {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: white;
-            padding: 1rem 1.25rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-            border-left: 4px solid var(--primary);
-        }
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      border-left: 4px solid var(--primary);
+    }
 
-        .flow-arrow {
-            text-align: center;
-            color: var(--text-muted);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
+    .flow-arrow {
+      text-align: center;
+      color: var(--text-muted);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
 
-        /* ==========================================================================
-       BLOQUES DE CÓDIGO (Alto Contraste y Fácil Lectura)
+    /* ==========================================================================
+       CÓDIGO
        ========================================================================== */
-        .code-container {
-            background-color: var(--code-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 1.25rem 0;
-            box-shadow: var(--shadow-sm);
-        }
+    .code-container {
+      background-color: var(--code-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1.25rem 0;
+      box-shadow: var(--shadow-sm);
+    }
 
-        .code-header-bar {
-            background-color: var(--code-header);
-            padding: 0.6rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #94a3b8;
-            font-size: 0.85rem;
-            font-family: monospace;
-            border-bottom: 1px solid #334155;
-        }
+    .code-header-bar {
+      background-color: var(--code-header);
+      padding: 0.6rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-family: monospace;
+      border-bottom: 1px solid #334155;
+    }
 
-        pre {
-            padding: 1.25rem;
-            overflow-x: auto;
-            color: #f8fafc;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.92rem;
-            line-height: 1.5;
-        }
+    pre {
+      padding: 1.25rem;
+      overflow-x: auto;
+      color: #f8fafc;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
 
-        /* Resaltado de Sintaxis Básico en CSS */
-        .kw {
-            color: #f472b6;
-        }
+    .kw { color: #f472b6; }
+    .fn { color: #38bdf8; }
+    .str { color: #4ade80; }
+    .cm { color: #94a3b8; font-style: italic; }
+    .num { color: #fb923c; }
 
-        /* Keyword */
-        .fn {
-            color: #38bdf8;
-        }
-
-        /* Function */
-        .str {
-            color: #4ade80;
-        }
-
-        /* String */
-        .cm {
-            color: #94a3b8;
-            font-style: italic;
-        }
-
-        /* Comment */
-        .num {
-            color: #fb923c;
-        }
-
-        /* Number */
-
-        /* ==========================================================================
-       NOTAS Y ADVERTENCIAS (Attention Grabbers)
+    /* ==========================================================================
+       ALERTAS Y LISTAS
        ========================================================================== */
-        .alert-box {
-            background-color: var(--bg-alert);
-            border-left: 5px solid var(--accent-alert);
-            padding: 1.25rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-        }
+    .alert-box {
+      background-color: var(--bg-alert);
+      border-left: 5px solid var(--accent-alert);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
 
-        .alert-icon {
-            font-size: 1.5rem;
-            color: var(--accent-alert);
-            line-height: 1;
-        }
+    .alert-icon {
+      font-size: 1.5rem;
+      color: var(--accent-alert);
+      line-height: 1;
+    }
 
-        /* Lista Check-list para la presentación */
-        .checklist {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
 
-        .checklist li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            background: #f8fafc;
-            padding: 0.8rem 1rem;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      background: #f8fafc;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
 
-        .checklist-icon {
-            color: #16a34a;
-            font-weight: bold;
-        }
+    .checklist-icon {
+      color: #16a34a;
+      font-weight: bold;
+    }
 
-        /* ==========================================================================
-       RESPONSIVE DESIGN (Media Queries)
+    /* ==========================================================================
+       RESPONSIVE
        ========================================================================== */
-        @media (max-width: 900px) {
-            .app-container {
-                grid-template-columns: 1fr;
-            }
+    @media (max-width: 900px) {
+      .app-container {
+        grid-template-columns: 1fr;
+      }
 
-            .sidebar {
-                height: auto;
-                position: relative;
-                padding: 1.25rem;
-            }
+      .sidebar {
+        height: auto;
+        position: relative;
+        padding: 1.25rem;
+      }
 
-            .nav-menu {
-                flex-direction: row;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-            }
+      .nav-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+      }
 
-            .nav-link {
-                white-space: nowrap;
-            }
+      .nav-link {
+        white-space: nowrap;
+      }
 
-            .content-area {
-                padding: 1.5rem 1rem;
-            }
+      .content-area {
+        padding: 1.5rem 1rem;
+      }
 
-            .header-banner {
-                padding: 1.5rem;
-            }
+      .header-banner {
+        padding: 1.5rem;
+      }
 
-            .header-banner h1 {
-                font-size: 1.6rem;
-            }
-        }
+      .header-banner h1 {
+        font-size: 1.6rem;
+      }
+    }
 
-        @media (max-width: 600px) {
-            .section-card {
-                padding: 1.25rem;
-            }
+    @media (max-width: 600px) {
+      .section-card {
+        padding: 1.25rem;
+      }
 
-            .analogy-grid {
-                grid-template-columns: 1fr;
-            }
+      .analogy-grid {
+        grid-template-columns: 1fr;
+      }
 
-            .jwt-structure {
-                grid-template-columns: 1fr;
-            }
+      .jwt-structure {
+        grid-template-columns: 1fr;
+      }
 
-            .flow-step {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    </style>
+      .flow-step {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-    <div class="app-container">
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span>Electiva III</span>
+        <span class="brand-badge">Guía</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <a href="#analogia" class="nav-link active">1. Analogía VIP</a>
+        <a href="#jwt" class="nav-link">2. Estructura JWT</a>
+        <a href="#middleware" class="nav-link">3. Qué es Middleware</a>
+        <a href="#flujo" class="nav-link">4. Flujo Paso a Paso</a>
+        <a href="#codigo" class="nav-link">5. Código Node.js</a>
+        <a href="#tips" class="nav-link">6. Tips Exposición</a>
+      </nav>
+    </aside>
 
-        <!-- BARRA NAVEGACIÓN LATERAL (Control Global) -->
-        <aside class="sidebar">
-            <div class="brand">
-                <span>Electiva III</span>
-                <span class="brand-badge">Guía</span>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="content-area">
+      
+      <!-- HEADER -->
+      <header class="header-banner">
+        <h1>Middleware y JWT en Express</h1>
+        <p>Guía de estudio estructurada para la clase de Electiva III. Diseñada para una comprensión rápida, modular y visual.</p>
+        
+        <div class="quick-stats">
+          <div class="stat-item">
+            <span class="stat-icon">10</span>
+            <span><strong>Lectura:</strong> 10 min</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">Node</span>
+            <span><strong>Tech Stack:</strong> Node.js / Express / JWT</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">Auth</span>
+            <span><strong>Objetivo:</strong> Autenticación Stateless</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- SECCIÓN 1: ANALOGÍA -->
+      <section id="analogia" class="section-card">
+        <div class="section-header">
+          <div class="step-number">1</div>
+          <h2 class="section-title">Concepto Clave (La Analogía del Club VIP)</h2>
+        </div>
+        
+        <p>Aplica esta metáfora al iniciar tu exposición para fijar la idea central de inmediato:</p>
+
+        <div class="analogy-box">
+          <div class="analogy-header">
+            <span>Club</span> La Discoteca / Club Privado
+          </div>
+          <div class="analogy-grid">
+            <div class="analogy-card">
+              <h4>JWT (La Pulsera VIP)</h4>
+              <p>Es un carnet o pulsera que te entregan al entrar. Contiene tu ID y rol, viene con una <strong>firma digital infalsificable</strong>. No cambia en cada puerta.</p>
             </div>
+            <div class="analogy-card">
+              <h4>Middleware (El Guardia)</h4>
+              <p>Es el personal de seguridad en la puerta de la zona VIP. Intercepta tu paso, revisa la validez de tu pulsera y decide si entras o te rechaza.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <nav class="nav-menu">
-                <a href="#analogia" class="nav-link active">1. Analogía VIP</a>
-                <a href="#jwt" class="nav-link">2. Estructura JWT</a>
-                <a href="#middleware" class="nav-link">3. ¿Qué es Middleware?</a>
-                <a href="#flujo" class="nav-link">4. Flujo Paso a Paso</a>
-                <a href="#codigo" class="nav-link">5. Código Node.js</a>
-                <a href="#tips" class="nav-link">6. Tips Exposición</a>
-            </nav>
-        </aside>
+      <!-- SECCIÓN 2: JWT -->
+      <section id="jwt" class="section-card">
+        <div class="section-header">
+          <div class="step-number">2</div>
+          <h2 class="section-title">Anatomía de un JSON Web Token (JWT)</h2>
+        </div>
 
-        <!-- ÁREA DE CONTENIDO PRINCIPAL -->
-        <main class="content-area">
+        <p>Un JWT es una cadena de texto dividida en <strong>3 partes separadas por puntos (.)</strong>:</p>
 
-            <!-- HERO BANNER -->
-            <header class="header-banner">
-                <h1>Middleware & JWT en Express</h1>
-                <p>Guía de estudio estructurada para la clase de Electiva III. Diseñada para una comprensión rápida,
-                    modular y visual.</p>
+        <div class="jwt-structure">
+          <div class="jwt-part jwt-header-part">
+            <h4>Header <span class="jwt-tag tag-red">Encabezado</span></h4>
+            <p><small>Define el algoritmo de firma y tipo de token.</small></p>
+            <code style="font-size:0.8rem; color:#ef4444;">{"alg": "HS256", "typ": "JWT"}</code>
+          </div>
 
-                <div class="quick-stats">
-                    <div class="stat-item">
-                        <span class="stat-icon">⏱️</span>
-                        <span><strong>Lectura:</strong> 10 min</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">⚙️</span>
-                        <span><strong>Tech Stack:</strong> Node.js / Express / JWT</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">🎯</span>
-                        <span><strong>Objetivo:</strong> Autenticación Stateless</span>
-                    </div>
-                </div>
-            </header>
+          <div class="jwt-part jwt-payload-part">
+            <h4>Payload <span class="jwt-tag tag-purple">Carga Útil</span></h4>
+            <p><small>Datos del usuario (claims). Visibles, no sensibles!</small></p>
+            <code style="font-size:0.8rem; color:#8b5cf6;">{"id": 101, "role": "admin"}</code>
+          </div>
 
-            <!-- SECCIÓN 1: ANALOGÍA -->
-            <section id="analogia" class="section-card">
-                <div class="section-header">
-                    <div class="step-number">1</div>
-                    <h2 class="section-title">Concepto Clave (La Analogía del Club VIP)</h2>
-                </div>
+          <div class="jwt-part jwt-signature-part">
+            <h4>Signature <span class="jwt-tag tag-blue">Firma</span></h4>
+            <p><small>Garantiza la integridad. Creada con clave secreta.</small></p>
+            <code style="font-size:0.8rem; color:#06b6d4;">HMACSHA256(header+payload, secret)</code>
+          </div>
+        </div>
 
-                <p>Aplica esta metáfora al iniciar tu exposición para fijar la idea central de inmediato:</p>
+        <div class="alert-box">
+          <div class="alert-icon">i</div>
+          <div>
+            <strong>Regla de Oro:</strong> El Payload es accesible en Base64. <strong>Nunca</strong> almacenes contraseñas, claves secretas o tarjetas de crédito dentro de un JWT.
+          </div>
+        </div>
+      </section>
 
-                <div class="analogy-box">
-                    <div class="analogy-header">
-                        <span>🍹</span> La Discoteca / Club Privado
-                    </div>
-                    <div class="analogy-grid">
-                        <div class="analogy-card">
-                            <h4>🏷️ JWT (La Pulsera VIP)</h4>
-                            <p>Es un carnet o pulsera que te entregan al entrar. Contiene tu ID y rol, viene con una
-                                <strong>firma digital infalsificable</strong>. No cambia en cada puerta.</p>
-                        </div>
-                        <div class="analogy-card">
-                            <h4>🛡️ Middleware (El Guardia)</h4>
-                            <p>Es el personal de seguridad en la puerta de la zona VIP. Intercepta tu paso, revisa la
-                                validez de tu pulsera y decide si entras o te rechaza.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+      <!-- SECCIÓN 3: MIDDLEWARE -->
+      <section id="middleware" class="section-card">
+        <div class="section-header">
+          <div class="step-number">3</div>
+          <h2 class="section-title">Qué es un Middleware</h2>
+        </div>
 
-            <!-- SECCIÓN 2: JWT -->
-            <section id="jwt" class="section-card">
-                <div class="section-header">
-                    <div class="step-number">2</div>
-                    <h2 class="section-title"> Anatomía de un JSON Web Token (JWT)</h2>
-                </div>
+        <p>Es una función intermedia entre la petición recibida y la respuesta enviada por el servidor. Posee 3 parámetros fundamentales:</p>
 
-                <p>Un JWT es una cadena de texto dividida en <strong>3 partes separadas por puntos
-                        (<code>.</code>)</strong>:</p>
+        <ul class="checklist" style="margin-bottom: 1.5rem;">
+          <li><span class="checklist-icon">-</span> <strong>req (Request):</strong> La petición entrante (headers, body, datos recibidos).</li>
+          <li><span class="checklist-icon">-</span> <strong>res (Response):</strong> Objeto para responder al cliente (envía JSON, estados HTTP).</li>
+          <li><span class="checklist-icon">-</span> <strong>next():</strong> Función pivote que transfiere el control al siguiente middleware o ruta.</li>
+        </ul>
+      </section>
 
-                <div class="jwt-structure">
-                    <div class="jwt-part jwt-header-part">
-                        <h4>Header <span class="jwt-tag tag-red">Encabezado</span></h4>
-                        <p><small>Define el algoritmo de firma y tipo de token.</small></p>
-                        <code style="font-size:0.8rem; color:#ef4444;">{"alg": "HS256", "typ": "JWT"}</code>
-                    </div>
+      <!-- SECCIÓN 4: FLUJO -->
+      <section id="flujo" class="section-card">
+        <div class="section-header">
+          <div class="step-number">4</div>
+          <h2 class="section-title">Flujo Completo de Autenticación</h2>
+        </div>
 
-                    <div class="jwt-part jwt-payload-part">
-                        <h4>Payload <span class="jwt-tag tag-purple">Carga Útil</span></h4>
-                        <p><small>Datos del usuario (claims). ¡Visibles, no sensibles!</small></p>
-                        <code style="font-size:0.8rem; color:#8b5cf6;">{"id": 101, "role": "admin"}</code>
-                    </div>
+        <div class="flow-container">
+          <div class="flow-step">
+            <strong>Paso 1:</strong> Cliente envía credenciales <code>POST /login</code>
+          </div>
+          <div class="flow-arrow">▼</div>
+          <div class="flow-step">
+            <strong>Paso 2:</strong> Servidor valida, genera el JWT y se lo retorna al Cliente
+          </div>
+          <div class="flow-arrow">▼</div>
+          <div class="flow-step">
+            <strong>Paso 3:</strong> Cliente realiza petición a ruta protegida adjuntando Header <code>Authorization: Bearer &lt;TOKEN&gt;</code>
+          </div>
+          <div class="flow-arrow">▼</div>
+          <div class="flow-step">
+            <strong>Paso 4:</strong> <strong>Middleware</strong> valida el token. Si es correcto llama a <code>next()</code>, de lo contrario devuelve <code>401 Unauthorized</code>.
+          </div>
+        </div>
+      </section>
 
-                    <div class="jwt-part jwt-signature-part">
-                        <h4>Signature <span class="jwt-tag tag-blue">Firma</span></h4>
-                        <p><small>Garantiza la integridad. Creada con clave secreta.</small></p>
-                        <code style="font-size:0.8rem; color:#06b6d4;">HMACSHA256(header+payload, secret)</code>
-                    </div>
-                </div>
+      <!-- SECCIÓN 5: CÓDIGO -->
+      <section id="codigo" class="section-card">
+        <div class="section-header">
+          <div class="step-number">5</div>
+          <h2 class="section-title">Implementación en Código (Node.js + Express)</h2>
+        </div>
 
-                <div class="alert-box">
-                    <div class="alert-icon">💡</div>
-                    <div>
-                        <strong>Regla de Oro:</strong> El Payload es accesible en Base64. <strong>Nunca</strong>
-                        almacenes contraseñas, claves secretas o tarjetas de crédito dentro de un JWT.
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN 3: MIDDLEWARE -->
-            <section id="middleware" class="section-card">
-                <div class="section-header">
-                    <div class="step-number">3</div>
-                    <h2 class="section-title">¿Qué es un Middleware?</h2>
-                </div>
-
-                <p>Es una función intermedia entre la petición recibida y la respuesta enviada por el servidor. Posee 3
-                    parámetros fundamentales:</p>
-
-                <ul class="checklist" style="margin-bottom: 1.5rem;">
-                    <li><span class="checklist-icon">🔹</span> <strong>req (Request):</strong> La petición entrante
-                        (headers, body, datos recibidos).</li>
-                    <li><span class="checklist-icon">🔹</span> <strong>res (Response):</strong> Objeto para responder al
-                        cliente (envía JSON, estados HTTP).</li>
-                    <li><span class="checklist-icon">🔹</span> <strong>next():</strong> Función pivote que transfiere el
-                        control al siguiente middleware o ruta.</li>
-                </ul>
-            </section>
-
-            <!-- SECCIÓN 4: FLUJO DE AUTENTICACIÓN -->
-            <section id="flujo" class="section-card">
-                <div class="section-header">
-                    <div class="step-number">4</div>
-                    <h2 class="section-title">Flujo Completo de Autenticación</h2>
-                </div>
-
-                <div class="flow-container">
-                    <div class="flow-step">
-                        <strong>Paso 1:</strong> Cliente envía credenciales <code>POST /login</code>
-                    </div>
-                    <div class="flow-arrow">⬇️</div>
-                    <div class="flow-step">
-                        <strong>Paso 2:</strong> Servidor valida, genera el JWT y se lo retorna al Cliente
-                    </div>
-                    <div class="flow-arrow">⬇️</div>
-                    <div class="flow-step">
-                        <strong>Paso 3:</strong> Cliente realiza petición a ruta protegida adjuntando Header
-                        <code>Authorization: Bearer &lt;TOKEN&gt;</code>
-                    </div>
-                    <div class="flow-arrow">⬇️</div>
-                    <div class="flow-step">
-                        <strong>Paso 4:</strong> <strong>Middleware</strong> valida el token. Si es correcto llama a
-                        <code>next()</code>, de lo contrario devuelve <code>401 Unauthorized</code>.
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN 5: CÓDIGO -->
-            <section id="codigo" class="section-card">
-                <div class="section-header">
-                    <div class="step-number">5</div>
-                    <h2 class="section-title">Implementación en Código (Node.js + Express)</h2>
-                </div>
-
-                <p>Instalación inicial de librerías en terminal:</p>
-                <div class="code-container">
-                    <div class="code-header-bar">
-                        <span>Terminal / Bash</span>
-                    </div>
-                    <pre><code>npm init -y
+        <p>Instalación inicial de librerías en terminal:</p>
+        <div class="code-container">
+          <div class="code-header-bar">
+            <span>Terminal / Bash</span>
+          </div>
+          <pre><code>npm init -y
 npm install express jsonwebtoken</code></pre>
-                </div>
+        </div>
 
-                <p>Código del Servidor y Middleware (<code>server.js</code>):</p>
-                <div class="code-container">
-                    <div class="code-header-bar">
-                        <span>server.js</span>
-                        <span>JavaScript</span>
-                    </div>
-                    <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
+          <div class="alert-icon">i</div>
+          <div>
+            <strong>Importante:</strong> La librería se llama <code>jsonwebtoken</code> (no <code>jwt</code>). Así se instala y se usa correctamente.
+          </div>
+        </div>
+
+        <p>Código del Servidor y Middleware (<code>server.js</code>):</p>
+        <div class="code-container">
+          <div class="code-header-bar">
+            <span>server.js</span>
+            <span>JavaScript</span>
+          </div>
+          <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
 <span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
 
 <span class="kw">const</span> app = <span class="fn">express</span>();
@@ -720,10 +661,8 @@ app.<span class="fn">post</span>(<span class="str">'/login'</span>, (req, res) =
   <span class="kw">const</span> { username, password } = req.body;
 
   <span class="kw">if</span> (username === <span class="str">'profesor'</span> && password === <span class="str">'123456'</span>) {
-    <span class="cm">// Payload con datos públicos del usuario</span>
     <span class="kw">const</span> payload = { id: <span class="num">101</span>, username: <span class="str">'profesor'</span>, role: <span class="str">'docente'</span> };
     
-    <span class="cm">// Generar token con tiempo de expiración (1 hora)</span>
     <span class="kw">const</span> token = jwt.<span class="fn">sign</span>(payload, SECRET_KEY, { expiresIn: <span class="str">'1h'</span> });
     <span class="kw">return</span> res.<span class="fn">json</span>({ mensaje: <span class="str">'Autenticación Exitosa'</span>, token });
   }
@@ -731,10 +670,9 @@ app.<span class="fn">post</span>(<span class="str">'/login'</span>, (req, res) =
   <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Credenciales incorrectas'</span> });
 });
 
-<span class="cm">// --- 2. MIDDLEWARE DE VERIFICACIÓN DE TOKEN ---</span>
+<span class="cm">// --- 2. MIDDLEWARE DE VERIFICACIÓN ---</span>
 <span class="kw">function</span> <span class="fn">authMiddleware</span>(req, res, next) {
   <span class="kw">const</span> authHeader = req.headers[<span class="str">'authorization'</span>];
-  <span class="cm">// Extraer el token del encabezado "Bearer <TOKEN>"</span>
   <span class="kw">const</span> token = authHeader && authHeader.<span class="fn">split</span>(<span class="str">' '</span>)[<span class="num">1</span>];
 
   <span class="kw">if</span> (!token) {
@@ -742,16 +680,15 @@ app.<span class="fn">post</span>(<span class="str">'/login'</span>, (req, res) =
   }
 
   <span class="kw">try</span> {
-    <span class="cm">// Verificar validez y firma del token</span>
     <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, SECRET_KEY);
-    req.user = decoded; <span class="cm">// Inyectar usuario a la petición</span>
-    <span class="fn">next</span>(); <span class="cm">// Pasar a la siguiente función/ruta</span>
+    req.user = decoded;
+    <span class="fn">next</span>();
   } <span class="kw">catch</span> (err) {
     <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ error: <span class="str">'Token inválido o expirado'</span> });
   }
 }
 
-<span class="cm">// --- 3. RUTA PROTEGIDA (USO DEL MIDDLEWARE) ---</span>
+<span class="cm">// --- 3. RUTA PROTEGIDA ---</span>
 app.<span class="fn">get</span>(<span class="str">'/dashboard'</span>, authMiddleware, (req, res) => {
   res.<span class="fn">json</span>({
     mensaje: <span class="str">`Bienvenido ${req.user.username}`</span>,
@@ -759,46 +696,63 @@ app.<span class="fn">get</span>(<span class="str">'/dashboard'</span>, authMiddl
   });
 });
 
-app.<span class="fn">listen</span>(<span class="num">3000</span>, () => console.<span class="fn">log</span>(<span class="str">'Servidor en ejecucion en puerto 3000'</span>));</code></pre>
-                </div>
-            </section>
+app.<span class="fn">listen</span>(<span class="num">3000</span>, () => console.<span class="fn">log</span>(<span class="str">'Servidor en ejecución en puerto 3000'</span>));</code></pre>
+        </div>
 
-            <!-- SECCIÓN 6: TIPS EXPOSICIÓN -->
-            <section id="tips" class="section-card">
-                <div class="section-header">
-                    <div class="step-number">6</div>
-                    <h2 class="section-title">Puntos Clave para Destacar en Clase</h2>
-                </div>
+        <div class="alert-box">
+          <div class="alert-icon">i</div>
+          <div>
+            <strong>Para probar:</strong> Usa Postman o Insomnia. 
+            <br>1. POST a <code>http://localhost:3000/login</code> con body: <code>{"username":"profesor","password":"123456"}</code>
+            <br>2. Copia el token recibido.
+            <br>3. GET a <code>http://localhost:3000/dashboard</code> con Header: <code>Authorization: Bearer &lt;TOKEN&gt;</code>
+          </div>
+        </div>
+      </section>
 
-                <ul class="checklist">
-                    <li>
-                        <span class="checklist-icon">✔</span>
-                        <div>
-                            <strong>JWT es Stateless (Sin Estado):</strong> El servidor no necesita guardar sesiones en
-                            Base de Datos. La firma del token valida la petición instantáneamente.
-                        </div>
-                    </li>
-                    <li>
-                        <span class="checklist-icon">✔</span>
-                        <div>
-                            <strong>Estructura del Header:</strong> Recordar siempre enviar el token usando el formato
-                            estándar <code>Authorization: Bearer &lt;TOKEN&gt;</code>.
-                        </div>
-                    </li>
-                    <li>
-                        <span class="checklist-icon">✔</span>
-                        <div>
-                            <strong>Codificación vs Encriptación:</strong> Base64 es solo una codificación de formato,
-                            no oculta información. La seguridad radica exclusivamente en la <strong>Firma
-                                (Signature)</strong>.
-                        </div>
-                    </li>
-                </ul>
-            </section>
+      <!-- SECCIÓN 6: TIPS -->
+      <section id="tips" class="section-card">
+        <div class="section-header">
+          <div class="step-number">6</div>
+          <h2 class="section-title">Puntos Clave para Destacar en Clase</h2>
+        </div>
 
-        </main>
-    </div>
+        <ul class="checklist">
+          <li>
+            <span class="checklist-icon">+</span>
+            <div>
+              <strong>JWT es Stateless (Sin Estado):</strong> El servidor no necesita guardar sesiones en Base de Datos. La firma del token valida la petición instantáneamente.
+            </div>
+          </li>
+          <li>
+            <span class="checklist-icon">+</span>
+            <div>
+              <strong>Estructura del Header:</strong> Recordar siempre enviar el token usando el formato estándar <code>Authorization: Bearer &lt;TOKEN&gt;</code>.
+            </div>
+          </li>
+          <li>
+            <span class="checklist-icon">+</span>
+            <div>
+              <strong>Codificación vs Encriptación:</strong> Base64 es solo una codificación de formato, no oculta información. La seguridad radica exclusivamente en la <strong>Firma (Signature)</strong>.
+            </div>
+          </li>
+          <li>
+            <span class="checklist-icon">+</span>
+            <div>
+              <strong>Librería correcta:</strong> Se instala con <code>npm install jsonwebtoken</code> y se importa con <code>require('jsonwebtoken')</code>.
+            </div>
+          </li>
+          <li>
+            <span class="checklist-icon">+</span>
+            <div>
+              <strong>Expiración:</strong> Siempre usar <code>expiresIn</code> al firmar el token para evitar tokens que nunca expiren.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
 
 </body>
-
 </html>
