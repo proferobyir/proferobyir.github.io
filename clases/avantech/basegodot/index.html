@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Godot 3.x 2D · Nodos físicos y sonido</title>
+    <title>Godot 3.x 2D · Guía de nodos físicos, señales y sonido</title>
     <style>
         /* ——— reset & base ——— */
         * {
@@ -14,65 +14,63 @@
         }
 
         body {
-            background: #1e1e1e;
-            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
-            color: #d4d4d4;
-            padding: 2rem 1rem;
-            line-height: 1.6;
+            background: #ffffff;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: #1e1e1e;
+            padding: 2rem 1.5rem;
+            line-height: 1.7;
         }
 
-        /* ——— contenedor grid ——— */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 1.8rem;
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
         }
 
-        /* ——— tarjetas (Carbon style) ——— */
         .card {
-            background: #2d2d2d;
-            border-radius: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
             padding: 1.5rem 1.2rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-            border-left: 4px solid #f1c40f;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #2c3e50;
             transition: 0.2s ease;
             display: flex;
             flex-direction: column;
+            border: 1px solid #e0e0e0;
         }
 
         .card:hover {
-            background: #333;
-            border-left-color: #f39c12;
+            background: #f5f5f5;
         }
 
         .card h3 {
-            color: #f1c40f;
-            font-weight: 600;
-            font-size: 1.4rem;
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 1.3rem;
             margin-bottom: 0.75rem;
-            letter-spacing: -0.3px;
-            border-bottom: 1px solid #444;
+            border-bottom: 2px solid #d0d0d0;
             padding-bottom: 0.4rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .card h3 small {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 400;
-            color: #aaa;
+            color: #555;
             margin-left: auto;
-            background: #3a3a3a;
+            background: #eaeaea;
             padding: 0.15rem 0.6rem;
             border-radius: 30px;
         }
 
         .card p,
         .card li {
-            color: #cecece;
+            color: #1e1e1e;
         }
 
         .card ul,
@@ -88,61 +86,67 @@
         }
 
         .card ul li::before {
-            content: "▹";
-            color: #f1c40f;
+            content: "•";
+            color: #2c3e50;
             position: absolute;
             left: 0;
+            font-weight: bold;
         }
 
         .badge {
-            background: #3d3d3d;
+            background: #eaeaea;
             padding: 0.2rem 0.6rem;
             border-radius: 30px;
             font-size: 0.7rem;
-            color: #bbb;
+            color: #333;
             display: inline-block;
             margin-right: 0.3rem;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #ccc;
         }
 
         .code-block {
-            background: #1a1a1a;
+            background: #f0f0f0;
             padding: 0.8rem 1rem;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border-radius: 6px;
+            font-family: 'Courier New', 'Fira Code', monospace;
             font-size: 0.8rem;
-            color: #dcdcaa;
+            color: #1e1e1e;
             margin: 0.8rem 0 0.3rem;
             overflow-x: auto;
-            border: 1px solid #3a3a3a;
+            border: 1px solid #d0d0d0;
         }
 
         .code-block .comment {
-            color: #6a9955;
+            color: #2e7d32;
         }
 
         .code-block .kw {
-            color: #c586c0;
+            color: #0000cd;
         }
 
         .code-block .func {
-            color: #dcdcaa;
+            color: #8b008b;
         }
 
         .code-block .str {
-            color: #ce9178;
+            color: #a31515;
         }
 
         .code-block .num {
-            color: #b5cea8;
+            color: #098658;
+        }
+
+        .code-block .op {
+            color: #1e1e1e;
         }
 
         .signal-box {
-            background: #252525;
+            background: #f0f0f0;
             border-radius: 6px;
             padding: 0.5rem 0.8rem;
             margin: 0.5rem 0;
-            border-left: 3px solid #f1c40f;
+            border-left: 3px solid #2c3e50;
             font-size: 0.85rem;
         }
 
@@ -155,30 +159,45 @@
         }
 
         .tag {
-            background: #3a3a3a;
+            background: #eaeaea;
             padding: 0.1rem 0.7rem;
             border-radius: 30px;
             font-size: 0.7rem;
-            color: #ccc;
+            color: #333;
+            border: 1px solid #ccc;
         }
 
-        /* ——— sección extra: sonido ——— */
+        .method-detail {
+            background: #f4f4f4;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            margin: 0.3rem 0;
+            font-size: 0.85rem;
+            border-left: 2px solid #2c3e50;
+        }
+
+        .method-detail strong {
+            color: #1a1a1a;
+        }
+
         .sound-section {
             grid-column: 1 / -1;
-            background: #2a2a2a;
-            border-radius: 14px;
+            background: #f9f9f9;
+            border-radius: 8px;
             padding: 1.8rem 1.5rem;
-            border: 1px solid #444;
+            border: 1px solid #d0d0d0;
             margin-top: 0.5rem;
         }
 
         .sound-section h2 {
-            color: #f1c40f;
-            font-weight: 500;
+            color: #1a1a1a;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 0.6rem;
             margin-bottom: 1rem;
+            border-bottom: 2px solid #d0d0d0;
+            padding-bottom: 0.4rem;
         }
 
         .sound-grid {
@@ -188,17 +207,16 @@
         }
 
         .sound-item {
-            background: #323232;
+            background: #f4f4f4;
             padding: 0.8rem 1rem;
-            border-radius: 10px;
-            border-left: 3px solid #f39c12;
+            border-radius: 8px;
+            border-left: 3px solid #2c3e50;
         }
 
         .sound-item strong {
-            color: #f1c40f;
+            color: #1a1a1a;
         }
 
-        /* ——— responsive ——— */
         @media (max-width: 700px) {
             body {
                 padding: 1rem 0.8rem;
@@ -224,7 +242,6 @@
             }
         }
 
-        /* util */
         .mt-1 {
             margin-top: 0.5rem;
         }
@@ -235,8 +252,84 @@
 
         hr {
             border: 0;
-            border-top: 1px solid #3d3d3d;
+            border-top: 1px solid #d0d0d0;
             margin: 0.8rem 0;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .example-box {
+            background: #f4f4f4;
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        kbd {
+            background: #eaeaea;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #bbb;
+            font-size: 0.8rem;
+        }
+
+        /* ——— print styles ——— */
+        @media print {
+            body {
+                background: white;
+                padding: 0.5in;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #aaa;
+                background: white;
+            }
+
+            .card:hover {
+                background: white;
+            }
+
+            .code-block {
+                background: #f4f4f4;
+                border: 1px solid #aaa;
+            }
+
+            .signal-box {
+                background: #f4f4f4;
+                border-left-color: #000;
+            }
+
+            .sound-section {
+                background: white;
+                border: 1px solid #aaa;
+            }
+
+            .sound-item {
+                background: #f4f4f4;
+            }
+
+            .example-box {
+                background: #f4f4f4;
+                border: 1px solid #aaa;
+            }
+
+            .method-detail {
+                background: #f4f4f4;
+            }
+
+            .badge {
+                background: #eaeaea;
+                border: 1px solid #aaa;
+            }
+
+            .tag {
+                background: #eaeaea;
+                border: 1px solid #aaa;
+            }
         }
     </style>
 </head>
@@ -246,79 +339,149 @@
 
         <!-- KINEMATICBODY2D -->
         <div class="card">
-            <h3>⚡ KinematicBody2D <small>movimiento controlado</small></h3>
-            <p><span class="badge">propiedades</span> <code>velocity</code>, <code>motion</code>,
-                <code>up_direction</code></p>
-            <ul>
-                <li><strong>move_and_slide()</strong> — desplaza y detecta colisiones</li>
-                <li><strong>is_on_floor()</strong> → bool (suelo)</li>
-                <li><strong>is_on_wall()</strong> , <strong>is_on_ceiling()</strong></li>
-                <li><strong>get_slide_count()</strong> + <strong>get_slide_collision()</strong></li>
-            </ul>
+            <h3>KinematicBody2D <small>movimiento controlado</small></h3>
+            <p><span class="badge">propiedades</span> <code>velocity</code>, <code>up_direction</code>,
+                <code>motion</code> (solo lectura)</p>
+
+            <div class="method-detail">
+                <strong>move_and_slide(velocity, up_direction, stop_on_slope, max_slides, floor_max_angle)</strong><br>
+                Desplaza el cuerpo aplicando <code>velocity</code> y actualiza automáticamente <code>velocity</code>
+                tras colisiones. Devuelve <code>Vector2</code> con la velocidad final.
+            </div>
+            <div class="method-detail">
+                <strong>move_and_collide(velocity, test_only, safe_margin)</strong><br>
+                Mueve el cuerpo y devuelve un objeto <code>KinematicCollision2D</code> si hay colisión, o
+                <code>null</code> si no.
+            </div>
+            <div class="method-detail">
+                <strong>is_on_floor()</strong> → <code>bool</code><br>
+                Devuelve <code>true</code> si el cuerpo está en contacto con el suelo (según <code>up_direction</code>).
+            </div>
+            <div class="method-detail">
+                <strong>is_on_wall()</strong> → <code>bool</code><br>
+                Devuelve <code>true</code> si hay colisión con una pared (lateral).
+            </div>
+            <div class="method-detail">
+                <strong>is_on_ceiling()</strong> → <code>bool</code><br>
+                Devuelve <code>true</code> si hay colisión con el techo.
+            </div>
+            <div class="method-detail">
+                <strong>get_slide_count()</strong> → <code>int</code><br>
+                Número de colisiones detectadas en el último <code>move_and_slide()</code>.
+            </div>
+            <div class="method-detail">
+                <strong>get_slide_collision(slide_idx)</strong> → <code>KinematicCollision2D</code><br>
+                Devuelve información detallada de una colisión específica.
+            </div>
+
             <div class="code-block">
-                <span class="comment"># Ejemplo _physics_process</span><br>
-                velocity.y += <span class="num">9.8</span> <span class="comment"># gravedad</span><br>
-                velocity = move_and_slide(velocity, Vector2.UP)<br>
-                <span class="kw">if</span> is_on_floor(): <span class="func">jump()</span>
+                <span class="comment"># Ejemplo completo en _physics_process</span><br>
+                <span class="kw">var</span> vel = velocity<br>
+                <span class="comment"># Input.get_axis(negative, positive) devuelve -1, 0 o 1 según las
+                    teclas</span><br>
+                vel.x = Input.get_axis(<span class="str">"ui_left"</span>, <span class="str">"ui_right"</span>) * <span
+                    class="num">200</span><br>
+                vel.y += <span class="num">9.8</span> <span class="comment"># gravedad</span><br>
+                velocity = move_and_slide(vel, Vector2.UP)<br>
+                <span class="kw">if</span> is_on_floor():<br>
+                &nbsp;&nbsp;<span class="kw">if</span> Input.is_action_just_pressed(<span
+                    class="str">"ui_accept"</span>):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;vel.y = -<span class="num">300</span>
+            </div>
+
+            <div class="signal-box">
+                <strong>Señales:</strong> KinematicBody2D <strong>no emite señales de colisión</strong> por sí mismo.
+                Para detectar colisiones se usa un <strong>Area2D</strong> hijo.<br>
+                <span class="tag">ejemplo</span> <code>$Area2D.connect("body_entered", self, "_on_area_entered")</code>
             </div>
             <div class="signal-box">
-                <strong>📡 Señales típicas:</strong> no posee señales de colisión nativas; se usan <em>áreas</em> o
-                <em>raycasts</em>.<br>
-                <span class="tag">ejemplo</span> <code>body_entered</code> desde un <strong>Area2D</strong> hijo.
+                <strong>Sonido en colisión:</strong> Conectar <code>body_entered</code> del Area2D y llamar a
+                <code>$AudioStreamPlayer2D.play()</code>.
             </div>
         </div>
 
         <!-- RIGIDBODY2D -->
         <div class="card">
-            <h3>🌀 RigidBody2D <small>física completa</small></h3>
+            <h3>RigidBody2D <small>física completa</small></h3>
             <p><span class="badge">propiedades</span> <code>mass</code>, <code>gravity_scale</code>,
-                <code>linear_velocity</code>, <code>angular_velocity</code></p>
-            <ul>
-                <li><strong>apply_central_impulse()</strong> — golpe</li>
-                <li><strong>apply_force()</strong> — fuerza continua</li>
-                <li><strong>set_axis_velocity()</strong></li>
-                <li><strong>is_on_floor()</strong> (solo si <code>contact_monitor</code> true)</li>
-            </ul>
+                <code>linear_velocity</code>, <code>angular_velocity</code>, <code>contact_monitor</code></p>
+
+            <div class="method-detail">
+                <strong>apply_central_impulse(impulse: Vector2)</strong><br>
+                Aplica un impulso instantáneo en el centro de masa (golpe).
+            </div>
+            <div class="method-detail">
+                <strong>apply_force(force: Vector2, position: Vector2 = Vector2.ZERO)</strong><br>
+                Aplica una fuerza continua en una posición (por defecto en el centro).
+            </div>
+            <div class="method-detail">
+                <strong>set_axis_velocity(axis_velocity: Vector2)</strong><br>
+                Establece la velocidad en los ejes X e Y.
+            </div>
+            <div class="method-detail">
+                <strong>is_on_floor()</strong> → <code>bool</code><br>
+                Disponible solo si <code>contact_monitor</code> está activo y hay contacto con el suelo.
+            </div>
+            <div class="method-detail">
+                <strong>get_contact_count()</strong> → <code>int</code><br>
+                Número de contactos activos.
+            </div>
+
             <div class="code-block">
-                <span class="comment"># desde _integrate_forces(state)</span><br>
+                <span class="comment"># Dentro de _integrate_forces(state)</span><br>
                 <span class="kw">if</span> Input.is_action_just_pressed(<span class="str">"jump"</span>):<br>
-                &nbsp;&nbsp;apply_central_impulse(Vector2(<span class="num">0</span>, -<span class="num">200</span>))
+                &nbsp;&nbsp;apply_central_impulse(Vector2(<span class="num">0</span>, -<span class="num">250</span>))
+            </div>
+
+            <div class="signal-box">
+                <strong>Señales:</strong> <code>body_entered</code>, <code>body_exited</code>,
+                <code>body_shape_entered</code><br>
+                <span class="tag">ejemplo</span> <code>connect("body_entered", self, "_on_body_entered")</code>
             </div>
             <div class="signal-box">
-                <strong>📡 Señales:</strong> <code>body_entered</code>, <code>body_exited</code>,
-                <code>body_shape_entered</code><br>
-                <span class="tag">ejemplo</span> conectar <code>body_entered</code> para detectar suelo u objetos.
+                <strong>Sonido:</strong> En <code>_on_body_entered(body)</code> llamar a
+                <code>$AudioStreamPlayer.play()</code>.
             </div>
         </div>
 
         <!-- STATICBODY2D -->
         <div class="card">
-            <h3>🧱 StaticBody2D <small>estático / obstáculo</small></h3>
-            <p>No se mueve, ideal para suelos, paredes, plataformas.</p>
+            <h3>StaticBody2D <small>estático / obstáculo</small></h3>
+            <p>No se mueve. Ideal para suelos, paredes, plataformas fijas.</p>
             <ul>
-                <li><strong>set_collision_layer()</strong> / <strong>set_collision_mask()</strong></li>
-                <li>No tiene métodos de movimiento.</li>
-                <li>Puede emitir señales si se usa con <strong>Area2D</strong> hijo.</li>
+                <li><strong>set_collision_layer(layer)</strong> — establecer capa de colisión</li>
+                <li><strong>set_collision_mask(mask)</strong> — establecer máscara de colisión</li>
+                <li>No tiene métodos de movimiento ni detección de suelo.</li>
             </ul>
             <div class="signal-box">
-                <strong>📡 Señales:</strong> (a través de <em>Area2D</em> hijo) <code>body_entered</code>,
-                <code>area_entered</code><br>
-                <span class="tag">ejemplo</span> activar sonido al pisar una plataforma.
+                <strong>Señales:</strong> No emite señales directamente. Se usa un <strong>Area2D</strong> hijo para
+                detectar entrada/salida de cuerpos.<br>
+                <span class="tag">ejemplo</span> <code>$Area2D.connect("body_entered", self, "_on_body_entered")</code>
             </div>
         </div>
 
         <!-- AREA2D -->
         <div class="card">
-            <h3>🔵 Area2D <small>detección & superposición</small></h3>
+            <h3>Area2D <small>detección & superposición</small></h3>
             <p>Detecta cuerpos y áreas sin colisión física.</p>
-            <ul>
-                <li><strong>overlaps_body()</strong> → bool</li>
-                <li><strong>get_overlapping_bodies()</strong> → Array</li>
-                <li><strong>get_overlapping_areas()</strong></li>
-                <li><strong>set_collision_mask()</strong></li>
-            </ul>
+            <div class="method-detail">
+                <strong>overlaps_body(body: Node)</strong> → <code>bool</code><br>
+                Devuelve <code>true</code> si el área se superpone con el cuerpo dado.
+            </div>
+            <div class="method-detail">
+                <strong>overlaps_area(area: Node)</strong> → <code>bool</code><br>
+                Devuelve <code>true</code> si se superpone con otra área.
+            </div>
+            <div class="method-detail">
+                <strong>get_overlapping_bodies()</strong> → <code>Array</code><br>
+                Devuelve una lista de cuerpos que están superponiéndose.
+            </div>
+            <div class="method-detail">
+                <strong>get_overlapping_areas()</strong> → <code>Array</code><br>
+                Devuelve una lista de áreas superpuestas.
+            </div>
             <div class="signal-box">
-                <strong>📡 Señales:</strong> <code>body_entered</code>, <code>body_exited</code>,
+                <strong>Señales:</strong> <code>body_entered</code>, <code>body_exited</code>,
                 <code>area_entered</code>, <code>area_exited</code><br>
                 <span class="tag">ejemplo</span> <code>body_entered</code> → reproducir sonido de impacto.
             </div>
@@ -326,156 +489,205 @@
 
         <!-- COLLISIONSHAPE2D -->
         <div class="card">
-            <h3>⬡ CollisionShape2D <small>forma de colisión</small></h3>
-            <p>Define la geometría: <code>RectangleShape2D</code>, <code>CircleShape2D</code>,
-                <code>CapsuleShape2D</code>, etc.</p>
-            <ul>
-                <li><strong>set_shape()</strong> — asignar forma</li>
-                <li><strong>get_shape()</strong></li>
-                <li>Propiedad <code>disabled</code> para desactivar temporalmente.</li>
-                <li>Se usa como hijo de <em>KinematicBody2D</em>, <em>RigidBody2D</em>, <em>StaticBody2D</em>,
-                    <em>Area2D</em>.</li>
-            </ul>
+            <h3>CollisionShape2D <small>forma de colisión</small></h3>
+            <p>Define la geometría de colisión. Se usa como hijo de <em>KinematicBody2D</em>, <em>RigidBody2D</em>,
+                <em>StaticBody2D</em> o <em>Area2D</em>.</p>
+            <div class="method-detail">
+                <strong>set_shape(shape: Shape2D)</strong><br>
+                Asigna una forma (RectangleShape2D, CircleShape2D, CapsuleShape2D, etc.)
+            </div>
+            <div class="method-detail">
+                <strong>get_shape()</strong> → <code>Shape2D</code><br>
+                Devuelve la forma actual.
+            </div>
+            <div class="method-detail">
+                <strong>disabled</strong> (propiedad) — si es <code>true</code>, la colisión se desactiva temporalmente.
+            </div>
             <div class="code-block">
-                <span class="comment"># Asignar círculo desde código</span><br>
-                var shape = CircleShape2D.new()<br>
-                shape.radius = <span class="num">16</span><br>
-                $CollisionShape2D.shape = shape
+                <span class="comment"># Crear un círculo desde código</span><br>
+                <span class="kw">var</span> circle = CircleShape2D.new()<br>
+                circle.radius = <span class="num">16</span><br>
+                $CollisionShape2D.shape = circle
             </div>
         </div>
 
         <!-- COLLISIONPOLYGON2D -->
         <div class="card">
-            <h3>⬡ CollisionPolygon2D <small>polígono a medida</small></h3>
-            <p>Permite dibujar formas de colisión personalizadas (polígonos convexos).</p>
-            <ul>
-                <li><strong>set_polygon()</strong> — array de Vector2</li>
-                <li><strong>get_polygon()</strong></li>
-                <li>Propiedad <code>build_mode</code> (solids / segments).</li>
-            </ul>
+            <h3>CollisionPolygon2D <small>polígono personalizado</small></h3>
+            <p>Permite dibujar formas de colisión con polígonos convexos.</p>
+            <div class="method-detail">
+                <strong>set_polygon(polygon: Array)</strong><br>
+                Establece un array de <code>Vector2</code> que define el polígono.
+            </div>
+            <div class="method-detail">
+                <strong>get_polygon()</strong> → <code>Array</code><br>
+                Devuelve el polígono actual.
+            </div>
+            <div class="method-detail">
+                <strong>build_mode</strong> (propiedad) — <code>BuildMode.SOLIDS</code> o
+                <code>BuildMode.SEGMENTS</code>.
+            </div>
             <div class="code-block">
-                <span class="comment"># polígono triangular</span><br>
-                var pts = [ Vector2(<span class="num">0</span>,<span class="num">-20</span>), Vector2(<span
-                    class="num">20</span>,<span class="num">20</span>), Vector2(<span class="num">-20</span>,<span
-                    class="num">20</span>) ]<br>
+                <span class="comment"># Triángulo</span><br>
+                <span class="kw">var</span> pts = [<br>
+                &nbsp;&nbsp;Vector2(<span class="num">0</span>, <span class="num">-20</span>),<br>
+                &nbsp;&nbsp;Vector2(<span class="num">20</span>, <span class="num">20</span>),<br>
+                &nbsp;&nbsp;Vector2(<span class="num">-20</span>, <span class="num">20</span>)<br>
+                ]<br>
                 $CollisionPolygon2D.polygon = pts
             </div>
         </div>
 
         <!-- ANIMATEDSPRITE -->
         <div class="card">
-            <h3>🎞️ AnimatedSprite <small>animaciones 2D</small></h3>
-            <p>Reproduce spritesheet con <code>SpriteFrames</code>.</p>
-            <ul>
-                <li><strong>play()</strong> — inicia animación</li>
-                <li><strong>stop()</strong> / <strong>pause()</strong></li>
-                <li><strong>set_frame()</strong>, <strong>get_frame()</strong></li>
-                <li><strong>is_playing()</strong> → bool</li>
-                <li><strong>connect("animation_finished")</strong> — señal</li>
-            </ul>
-            <div class="code-block">
-                $AnimatedSprite.play(<span class="str">"correr"</span>)<br>
-                <span class="kw">if</span> $AnimatedSprite.is_playing(): <span class="func">hacer_algo()</span>
+            <h3>AnimatedSprite <small>animaciones 2D</small></h3>
+            <p>Reproduce spritesheet usando <code>SpriteFrames</code>.</p>
+            <div class="method-detail">
+                <strong>play(animation_name: String)</strong><br>
+                Inicia la animación con el nombre dado.
+            </div>
+            <div class="method-detail">
+                <strong>stop()</strong> — detiene la animación en el frame actual.
+            </div>
+            <div class="method-detail">
+                <strong>pause()</strong> — pausa la reproducción.
+            </div>
+            <div class="method-detail">
+                <strong>set_frame(frame: int)</strong> — establece el frame actual.
+            </div>
+            <div class="method-detail">
+                <strong>get_frame()</strong> → <code>int</code> — devuelve el frame actual.
+            </div>
+            <div class="method-detail">
+                <strong>is_playing()</strong> → <code>bool</code> — devuelve <code>true</code> si está reproduciendo.
+            </div>
+            <div class="signal-box">
+                <strong>Señal:</strong> <code>animation_finished</code> — se emite cuando termina la animación.<br>
+                <span class="tag">ejemplo</span> <code>connect("animation_finished", self, "_on_anim_finished")</code>
             </div>
         </div>
 
-        <!-- BLOQUE KINEMATIC + SEÑALES + SONIDO -->
-        <div class="card" style="grid-column: 1 / -1; border-left-color: #e67e22;">
-            <h3>🧩 KinematicBody2D · ejemplo completo + señales + sonido</h3>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
-                <div style="flex: 2; min-width: 220px;">
-                    <p><strong>Propiedades:</strong> <code>velocity</code>, <code>speed</code>,
-                        <code>jump_strength</code>, <code>gravity</code></p>
+        <!-- BLOQUE KINEMATIC + SEÑALES + SONIDO (detallado) -->
+        <div class="card full-width" style="border-left-color: #1a1a1a;">
+            <h3>KinematicBody2D · ejemplo completo con señales y sonido</h3>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">
+                <div style="flex: 2; min-width: 240px;">
+                    <p><strong>Propiedades comunes:</strong> <code>velocity</code>, <code>speed</code> (custom),
+                        <code>jump_strength</code> (custom), <code>gravity</code> (custom)</p>
                     <p><strong>Métodos clave:</strong></p>
                     <ul>
-                        <li><code>move_and_slide(velocity, up_direction)</code></li>
-                        <li><code>is_on_floor()</code> → bool</li>
-                        <li><code>is_on_wall()</code></li>
-                        <li><code>get_floor_velocity()</code></li>
+                        <li><code>move_and_slide(velocity, up_direction)</code> — mueve y detecta colisiones.</li>
+                        <li><code>is_on_floor()</code> → <code>bool</code> — detecta suelo.</li>
+                        <li><code>is_on_wall()</code> → <code>bool</code> — detecta pared.</li>
+                        <li><code>get_floor_velocity()</code> → <code>Vector2</code> — velocidad del suelo (útil para
+                            plataformas móviles).</li>
                     </ul>
                     <div class="code-block" style="font-size:0.75rem;">
                         <span class="comment"># _physics_process</span><br>
                         <span class="kw">var</span> vel = velocity<br>
-                        vel.x = Input.get_axis(<span class="str">"left"</span>, <span class="str">"right"</span>) *
-                        speed<br>
-                        <span class="kw">if</span> Input.is_action_just_pressed(<span class="str">"jump"</span>) <span
-                            class="kw">and</span> is_on_floor():<br>
+                        <span class="comment"># get_axis(negative_key, positive_key) → -1, 0, 1</span><br>
+                        vel.x = Input.get_axis(<span class="str">"ui_left"</span>, <span class="str">"ui_right"</span>)
+                        * speed<br>
+                        vel.y += gravity <span class="comment"># gravedad</span><br>
+                        <span class="kw">if</span> Input.is_action_just_pressed(<span class="str">"ui_accept"</span>)
+                        <span class="kw">and</span> is_on_floor():<br>
                         &nbsp;&nbsp;vel.y = -jump_strength<br>
                         velocity = move_and_slide(vel, Vector2.UP)
                     </div>
+                    <div class="example-box">
+                        <strong>Explicación de <code>get_axis()</code>:</strong><br>
+                        <code>Input.get_axis("ui_left", "ui_right")</code> devuelve <code>-1</code> si se pulsa
+                        <kbd>←</kbd>, <code>1</code> si se pulsa <kbd>→</kbd>, y <code>0</code> si no se pulsa ninguna o
+                        ambas. Esto permite un control analógico suave. Se multiplica por la velocidad para obtener el
+                        movimiento.
+                    </div>
                 </div>
-                <div style="flex: 1; min-width: 170px; background: #262626; padding: 0.8rem; border-radius: 8px;">
-                    <strong style="color: #f1c40f;">📡 Señales (con Area2D hijo)</strong>
-                    <ul style="margin-top: 0.2rem;">
+                <div
+                    style="flex: 1; min-width: 180px; background: #f4f4f4; padding: 0.8rem; border-radius: 6px; border: 1px solid #e0e0e0;">
+                    <strong style="color: #1a1a1a;">Señales con Area2D hijo</strong>
+                    <ul>
                         <li><code>body_entered</code> → detecta colisión</li>
                         <li><code>body_exited</code> → fin de colisión</li>
                     </ul>
-                    <div
-                        style="background: #1e1e1e; padding: 0.4rem 0.6rem; border-radius: 6px; font-size:0.75rem; margin:0.4rem 0;">
+                    <div class="code-block" style="font-size:0.7rem; margin:0.4rem 0;">
                         <span class="comment"># Conectar en _ready()</span><br>
                         $Area2D.connect(<span class="str">"body_entered"</span>, self, <span
                             class="str">"_on_body_entered"</span>)
                     </div>
-                    <p style="font-size:0.8rem; margin-top:0.2rem;">Dentro de <code>_on_body_entered(body)</code> se
-                        puede comprobar si es suelo o enemigo.</p>
+                    <div class="code-block" style="font-size:0.7rem;">
+                        <span class="comment"># Función de callback</span><br>
+                        <span class="kw">func</span> <span class="func">_on_body_entered</span>(body):<br>
+                        &nbsp;&nbsp;<span class="kw">if</span> body.is_in_group(<span class="str">"suelo"</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;$AudioStreamPlayer2D.play()
+                    </div>
                 </div>
             </div>
+
             <hr>
             <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
-                <div><span style="background: #3d3d3d; padding:0.2rem 0.8rem; border-radius:30px;">🔊 Nodos de
-                        sonido</span></div>
+                <div><span
+                        style="background: #eaeaea; padding:0.2rem 0.8rem; border-radius:30px; border:1px solid #ccc;">Nodos
+                        de sonido</span></div>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
-                    <div><span class="badge">AudioStreamPlayer2D</span> sonido posicional (2D)</div>
-                    <div><span class="badge">AudioStreamPlayer</span> sonido global</div>
+                    <div><span class="badge">AudioStreamPlayer2D</span> sonido posicional (atenúa con distancia)</div>
+                    <div><span class="badge">AudioStreamPlayer</span> sonido global (sin posición)</div>
                 </div>
             </div>
-            <div style="background: #1f1f1f; border-radius: 8px; padding: 0.6rem 1rem; margin-top: 0.5rem;">
-                <strong style="color: #f1c40f;">🎵 Ejemplo: reproducir sonido al entrar en colisión</strong>
-                <div class="code-block" style="font-size:0.75rem; margin:0.2rem 0;">
-                    <span class="kw">func</span> <span class="func">_on_body_entered</span>(body):<br>
-                    &nbsp;&nbsp;<span class="kw">if</span> body.is_in_group(<span class="str">"suelo"</span>):<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;$AudioStreamPlayer2D.play() <span class="comment"># reproduce el sonido
-                        asignado</span>
-                </div>
-                <p style="font-size:0.8rem;">También se puede usar <code>play()</code> desde <code>is_on_floor()</code>
-                    en <code>_physics_process</code>.</p>
+            <div class="example-box">
+                <strong>Procedimiento completo para colisión + sonido:</strong>
+                <ol style="padding-left: 1.2rem; margin-top: 0.3rem;">
+                    <li>Agregar <strong>Area2D</strong> como hijo del KinematicBody2D.</li>
+                    <li>Agregar <strong>CollisionShape2D</strong> o <strong>CollisionPolygon2D</strong> como hijo del
+                        Area2D.</li>
+                    <li>Conectar la señal <code>body_entered</code> del Area2D a un método.</li>
+                    <li>En el método, verificar si el cuerpo es suelo o enemigo (usando grupos o tipos).</li>
+                    <li>Llamar a <code>$AudioStreamPlayer2D.play()</code> para reproducir el sonido.</li>
+                    <li>Opcional: usar <code>is_on_floor()</code> en <code>_physics_process</code> para sonidos de
+                        aterrizaje.</li>
+                </ol>
             </div>
         </div>
 
         <!-- SECCIÓN SONIDO ampliada -->
         <div class="sound-section">
-            <h2>🔊 Nodos de sonido en Godot 3.x 2D</h2>
+            <h2>Nodos de sonido en Godot 3.x 2D</h2>
             <div class="sound-grid">
-                <div class="sound-item"><strong>AudioStreamPlayer</strong> — sonido sin posición, ideal para música o
-                    efectos globales.<br><span class="tag">métodos</span> <code>play()</code>, <code>stop()</code>,
-                    <code>set_stream()</code></div>
-                <div class="sound-item"><strong>AudioStreamPlayer2D</strong> — sonido posicional (atenúa con
-                    distancia).<br><span class="tag">propiedades</span> <code>max_distance</code>,
-                    <code>attenuation</code></div>
-                <div class="sound-item"><strong>AudioStreamPlayer3D</strong> — (aunque es 3D, puede usarse con ciertos
-                    trucos, pero en 2D se usa el 2D)</div>
-                <div class="sound-item"><strong>Ejemplo típico:</strong> <code>$AudioStreamPlayer2D.play()</code> dentro
-                    de <code>body_entered</code> o <code>is_on_floor()</code>.</div>
-                <div class="sound-item"><strong>Señal útil:</strong> <code>finished</code> — se emite cuando termina la
-                    reproducción.</div>
+                <div class="sound-item">
+                    <strong>AudioStreamPlayer</strong><br>
+                    Sonido global, sin posición. Ideal para música, efectos generales.<br>
+                    <span class="tag">métodos</span> <code>play()</code>, <code>stop()</code>,
+                    <code>set_stream(stream)</code>
+                </div>
+                <div class="sound-item">
+                    <strong>AudioStreamPlayer2D</strong><br>
+                    Sonido posicional. Atenúa según la distancia al oyente.<br>
+                    <span class="tag">propiedades</span> <code>max_distance</code>, <code>attenuation</code>,
+                    <code>panning_strength</code>
+                </div>
+                <div class="sound-item">
+                    <strong>Señal útil:</strong> <code>finished</code> — se emite cuando termina la reproducción. Útil
+                    para encadenar sonidos.
+                </div>
+                <div class="sound-item">
+                    <strong>Ejemplo típico:</strong><br>
+                    <code>$AudioStreamPlayer2D.play()</code> dentro de <code>body_entered</code> o
+                    <code>is_on_floor()</code>.
+                </div>
             </div>
-            <div style="margin-top: 1rem; background: #252525; padding: 0.8rem 1rem; border-radius: 10px;">
-                <p><strong>🎯 Procedimiento para colisiones + sonido:</strong></p>
-                <ol style="padding-left: 1.4rem; color: #ccc;">
-                    <li>Agregar <strong>Area2D</strong> como hijo del KinematicBody2D (o RigidBody).</li>
-                    <li>Conectar señal <code>body_entered</code> a un método personalizado.</li>
-                    <li>Dentro del método, verificar etiqueta (grupo) o tipo del cuerpo.</li>
-                    <li>Ejecutar <code>$AudioStreamPlayer2D.play()</code> para reproducir sonido.</li>
-                    <li>Opcional: usar <code>is_on_floor()</code> para sonidos de aterrizaje en
-                        <code>_physics_process</code>.</li>
-                </ol>
+            <div
+                style="margin-top: 1rem; background: #f4f4f4; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #e0e0e0;">
+                <p><strong>Recomendación:</strong> Para sonidos de pasos o saltos, usar <code>is_on_floor()</code> en
+                    <code>_physics_process</code> y reproducir el sonido solo cuando cambia el estado (ej. al
+                    aterrizar).</p>
             </div>
         </div>
 
     </div> <!-- end grid -->
+
     <footer
-        style="text-align: center; margin-top: 2.5rem; color: #666; font-size: 0.8rem; border-top: 1px solid #333; padding-top: 1.2rem;">
-        Godot 3.x 2D · referencia rápida de nodos físicos, señales y sonido · estilo Carbon
+        style="text-align: center; margin-top: 2.5rem; color: #666; font-size: 0.8rem; border-top: 1px solid #d0d0d0; padding-top: 1.2rem;">
+        Godot 3.x 2D · guía de referencia de nodos físicos, señales y sonido
     </footer>
 </body>
 
