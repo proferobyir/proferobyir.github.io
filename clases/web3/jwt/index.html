@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tutorial Interactivo: Middleware y JWT - Electiva III</title>
+  <title>Arquitectura de Endpoints, Middleware y JWT - Electiva III </title>
   <style>
     /* ==========================================================================
        VARIABLES Y PALETA DE COLORES
@@ -147,7 +147,7 @@
     .header-banner p {
       font-size: 1.1rem;
       opacity: 0.9;
-      max-width: 700px;
+      max-width: 750px;
     }
 
     .quick-stats {
@@ -175,6 +175,7 @@
       justify-content: center;
       min-width: 32px;
       min-height: 32px;
+      font-weight: bold;
     }
 
     /* ==========================================================================
@@ -216,6 +217,40 @@
       font-size: 1.5rem;
       color: var(--text-main);
       font-weight: 700;
+    }
+
+    /* ==========================================================================
+       ANATOMÍA DE ENDPOINT
+       ========================================================================== */
+    .endpoint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
+
+    .endpoint-card {
+      background: #f8fafc;
+      padding: 1.25rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      border-top: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .endpoint-card h4 {
+      color: var(--primary);
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .endpoint-card p {
+      font-size: 0.92rem;
+      color: var(--text-main);
     }
 
     /* ==========================================================================
@@ -487,7 +522,8 @@
         padding: 1.25rem;
       }
 
-      .analogy-grid {
+      .analogy-grid,
+      .endpoint-grid {
         grid-template-columns: 1fr;
       }
 
@@ -511,16 +547,17 @@
     <aside class="sidebar">
       <div class="brand">
         <span>Electiva III</span>
-        <span class="brand-badge">Guía</span>
+        <span class="brand-badge">Académico</span>
       </div>
 
       <nav class="nav-menu">
-        <a href="#analogia" class="nav-link active">1. Analogía VIP</a>
-        <a href="#jwt" class="nav-link">2. Estructura JWT</a>
-        <a href="#middleware" class="nav-link">3. Qué es Middleware</a>
-        <a href="#flujo" class="nav-link">4. Flujo Paso a Paso</a>
-        <a href="#codigo" class="nav-link">5. Código Node.js</a>
-        <a href="#tips" class="nav-link">6. Tips Exposición</a>
+        <a href="#anatomia-endpoint" class="nav-link active">1. Anatomía de Endpoint</a>
+        <a href="#analogia" class="nav-link">2. Modelo Conceptual</a>
+        <a href="#jwt" class="nav-link">3. Arquitectura JWT</a>
+        <a href="#middleware" class="nav-link">4. Patrón Middleware</a>
+        <a href="#flujo" class="nav-link">5. Flujo de Control</a>
+        <a href="#codigo" class="nav-link">6. Implementación</a>
+        <a href="#tips" class="nav-link">7. Consideraciones Técnicas</a>
       </nav>
     </aside>
 
@@ -529,147 +566,214 @@
 
       <!-- HEADER -->
       <header class="header-banner">
-        <h1>Middleware y JWT en Express</h1>
-        <p>Guía de estudio estructurada para la clase de Electiva III. Diseñada para una comprensión rápida, modular y
-          visual.</p>
+        <h1>Anatomía de Endpoints, Middleware y JWT en Node.js con Express</h1>
+        <p>Unidad Didáctica de Electiva III: Fundamentos teóricos e implementación práctica de un esquema de
+          autenticación desacoplado y sin estado (Stateless) mediante REST APIs.</p>
 
         <div class="quick-stats">
           <div class="stat-item">
-            <span class="stat-icon">10</span>
-            <span><strong>Lectura:</strong> 10 min</span>
+            <span class="stat-icon">Nivel</span>
+            <span><strong>Nivel:</strong> Universitario / Avanzado</span>
           </div>
           <div class="stat-item">
-            <span class="stat-icon">Node</span>
-            <span><strong>Tech Stack:</strong> Node.js / Express / JWT</span>
+            <span class="stat-icon">Tech</span>
+            <span><strong>Stack:</strong> Node.js / Express.js / JWT</span>
           </div>
           <div class="stat-item">
-            <span class="stat-icon">Auth</span>
-            <span><strong>Objetivo:</strong> Autenticación Stateless</span>
+            <span class="stat-icon">Paradigma</span>
+            <span><strong>Patrón:</strong> Autenticación Stateless</span>
           </div>
         </div>
       </header>
 
-      <!-- SECCIÓN 1: ANALOGÍA -->
-      <section id="analogia" class="section-card">
+      <!-- SECCIÓN 1: ANATOMÍA DE UN ENDPOINT -->
+      <section id="anatomia-endpoint" class="section-card">
         <div class="section-header">
           <div class="step-number">1</div>
-          <h2 class="section-title">Concepto Clave (La Analogía del Club VIP)</h2>
+          <h2 class="section-title">Anatomía Académica de un Endpoint REST en Express</h2>
         </div>
 
+        <p>Un <strong>Endpoint</strong> es un punto final de comunicación que expone un servidor para un recurso
+          específico mediante el protocolo HTTP. En el ecosistema Express.js, la estructura formal de una declaración de
+          endpoint sigue la firma sintáctica: <code>app.METHOD(PATH, [MIDDLEWARES...], HANDLER)</code>.</p>
+
+        <div class="code-container">
+          <div class="code-header-bar">
+            <span>Sintaxis Estructural en Express</span>
+            <span>JavaScript</span>
+          </div>
+          <pre><code>app.<span class="fn">get</span>(<span class="str">'/api/v1/recurso'</span>, middlewareDeControl, (req, res) => {
+  <span class="cm">// Función Manejadora (Controller Handler)</span>
+  res.<span class="fn">status</span>(<span class="num">200</span>).<span class="fn">json</span>({ ok: <span class="kw">true</span> });
+});</code></pre>
+        </div>
+
+        <div class="endpoint-grid">
+          <div class="endpoint-card">
+            <h4>1. Verbo / Método HTTP</h4>
+            <p>Define el tipo de operación a ejecutar sobre el servidor según la especificación REST (<code>GET</code>,
+              <code>POST</code>, <code>PUT</code>, <code>DELETE</code>, <code>PATCH</code>).</p>
+          </div>
+          <div class="endpoint-card">
+            <h4>2. Ruta / URI (Path)</h4>
+            <p>Identificador de recurso unívoco en el servidor. Puede contener parámetros estáticos o dinámicos (ej:
+              <code>/usuarios/:id</code>).</p>
+          </div>
+          <div class="endpoint-card">
+            <h4>3. Cadena de Middlewares</h4>
+            <p>Funciones intermedias opcionales que interceptan la petición antes del controlador final para validación,
+              parsing o autenticación.</p>
+          </div>
+          <div class="endpoint-card">
+            <h4>4. Objeto Request (req)</h4>
+            <p>Representa el mensaje de solicitud HTTP entrante (encabezados, parámetros de URL, cuerpo en JSON, query
+              params).</p>
+          </div>
+          <div class="endpoint-card">
+            <h4>5. Objeto Response (res)</h4>
+            <p>Abstracción encargada de construir y emitir la respuesta HTTP HTTP (código de estado HTTP, encabezados y
+              carga JSON).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 2: ANALOGÍA -->
+      <section id="analogia" class="section-card">
+        <div class="section-header">
+          <div class="step-number">2</div>
+          <h2 class="section-title">Modelo Conceptual (Abstracción del Club VIP)</h2>
+        </div>
+
+        <p>Para facilitar la asimilación conceptual de la arquitectura desacoplada de seguridad, utilizaremos la
+          analogía de un evento privado de acceso restringido:</p>
 
         <div class="analogy-box">
           <div class="analogy-header">
-            <span>Club</span> La Discoteca / Club Privado
+            <span>Analogía</span> Control de Acceso Perimetral
           </div>
           <div class="analogy-grid">
             <div class="analogy-card">
-              <h4>JWT (La Pulsera VIP)</h4>
-              <p>Es un carnet o pulsera que te entregan al entrar. Contiene tu ID y rol, viene con una <strong>firma
-                  digital infalsificable</strong>. No cambia en cada puerta.</p>
+              <h4>JWT (Credencial Digital / Credencial Acreditada)</h4>
+              <p>Representa una pulsera criptográfica intransferible otorgada tras autenticar tu identidad en taquilla.
+                Contiene tus privilegios codificados y una <strong>firma de seguridad infalsificable</strong> generada
+                por el establecimiento.</p>
             </div>
             <div class="analogy-card">
-              <h4>Middleware (El Guardia)</h4>
-              <p>Es el personal de seguridad en la puerta de la zona VIP. Intercepta tu paso, revisa la validez de tu
-                pulsera y decide si entras o te rechaza.</p>
+              <h4>Middleware (El Personal de Seguridad / Guardias)</h4>
+              <p>Funciona como el filtro de seguridad apostado en los accesos VIP. Intercepta al sujeto antes de su
+                ingreso, verifica la integridad matemática de la firma en la pulsera y autoriza el paso o ejecuta la
+                expulsión inmediata.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SECCIÓN 2: JWT -->
+      <!-- SECCIÓN 3: JWT -->
       <section id="jwt" class="section-card">
         <div class="section-header">
-          <div class="step-number">2</div>
-          <h2 class="section-title">Anatomía de un JSON Web Token (JWT)</h2>
+          <div class="step-number">3</div>
+          <h2 class="section-title">Estructura y Especificación de un JSON Web Token (RFC 7519)</h2>
         </div>
 
-        <p>Un JWT es una cadena de texto dividida en <strong>3 partes separadas por puntos (.)</strong>:</p>
+        <p>Un <strong>JWT</strong> es un estándar abierto (RFC 7519) que define un método compacto y autónomo para
+          transmitir información estructurada de forma segura entre partes como un objeto JSON. Se compone de <strong>3
+            cadenas delimitadas por puntos (.)</strong> codificadas en Base64URL:</p>
 
         <div class="jwt-structure">
           <div class="jwt-part jwt-header-part">
             <h4>Header <span class="jwt-tag tag-red">Encabezado</span></h4>
-            <p><small>Define el algoritmo de firma y tipo de token.</small></p>
+            <p><small>Especifica el tipo de token y el algoritmo de firma hash utilizado.</small></p>
             <code style="font-size:0.8rem; color:#ef4444;">{"alg": "HS256", "typ": "JWT"}</code>
           </div>
 
           <div class="jwt-part jwt-payload-part">
             <h4>Payload <span class="jwt-tag tag-purple">Carga Útil</span></h4>
-            <p><small>Datos del usuario (claims). Visibles, no sensibles!</small></p>
-            <code style="font-size:0.8rem; color:#8b5cf6;">{"id": 101, "role": "admin"}</code>
+            <p><small>Contiene los <i>claims</i> (declaraciones de la entidad y metadatos del token).</small></p>
+            <code style="font-size:0.8rem; color:#8b5cf6;">{"sub": 101, "role": "docente", "iat": 17000000}</code>
           </div>
 
           <div class="jwt-part jwt-signature-part">
-            <h4>Signature <span class="jwt-tag tag-blue">Firma</span></h4>
-            <p><small>Garantiza la integridad. Creada con clave secreta.</small></p>
-            <code style="font-size:0.8rem; color:#06b6d4;">HMACSHA256(header+payload, secret)</code>
+            <h4>Signature <span class="jwt-tag tag-blue">Firma Criptográfica</span></h4>
+            <p><small>Valida que el mensaje no haya sido alterado en el tránsito.</small></p>
+            <code style="font-size:0.8rem; color:#06b6d4;">HMACSHA256(Base64(H) + "." + Base64(P), Secret)</code>
           </div>
         </div>
 
         <div class="alert-box">
-          <div class="alert-icon">i</div>
+          <div class="alert-icon">⚠</div>
           <div>
-            <strong>Regla de Oro:</strong> El Payload es accesible en Base64. <strong>Nunca</strong> almacenes
-            contraseñas, claves secretas o tarjetas de crédito dentro de un JWT.
+            <strong>Principio de Seguridad Criptográfica:</strong> El <i>Payload</i> solo está
+            <strong>codificado</strong> en Base64, no encriptado. Cualquier entidad intermedia puede leer su contenido.
+            Por estándar, <strong>nunca se deben almacenar datos confidenciales</strong> (como contraseñas o tokens de
+            sesión de terceros) en esta sección.
           </div>
         </div>
       </section>
 
-      <!-- SECCIÓN 3: MIDDLEWARE -->
+      <!-- SECCIÓN 4: MIDDLEWARE -->
       <section id="middleware" class="section-card">
         <div class="section-header">
-          <div class="step-number">3</div>
-          <h2 class="section-title">Qué es un Middleware</h2>
+          <div class="step-number">4</div>
+          <h2 class="section-title">El Patrón Middleware en Express.js</h2>
         </div>
 
-        <p>Es una función intermedia entre la petición recibida y la respuesta enviada por el servidor. Posee 3
-          parámetros fundamentales:</p>
+        <p>Un Middleware es un bloque funcional que se ejecuta de manera secuencial dentro del ciclo de
+          solicitud-respuesta (<i>Request-Response Cycle</i>) en Express. Tiene acceso completo al objeto de solicitud
+          (<code>req</code>), al objeto de respuesta (<code>res</code>) y a la siguiente función de middleware mediante
+          la función <code>next()</code>.</p>
 
         <ul class="checklist" style="margin-bottom: 1.5rem;">
-          <li><span class="checklist-icon">-</span> <strong>req (Request):</strong> La petición entrante (headers, body,
-            datos recibidos).</li>
-          <li><span class="checklist-icon">-</span> <strong>res (Response):</strong> Objeto para responder al cliente
-            (envía JSON, estados HTTP).</li>
-          <li><span class="checklist-icon">-</span> <strong>next():</strong> Función pivote que transfiere el control al
-            siguiente middleware o ruta.</li>
+          <li><span class="checklist-icon">✓</span> <strong>req (Request Object):</strong> Instancia encargada de
+            encapsular el flujo de entrada HTTP. Permite la inyección de contexto personalizado (ej:
+            <code>req.user = decodedData</code>).</li>
+          <li><span class="checklist-icon">✓</span> <strong>res (Response Object):</strong> Instancia que gestiona la
+            comunicación de salida. Permite la finalización prematura del ciclo mediante respuestas de estado (ej:
+            <code>401 Unauthenticated</code>).</li>
+          <li><span class="checklist-icon">✓</span> <strong>next() (Pivote de Control):</strong> Función callback que,
+            al ser invocada, cede el control de la ejecución al siguiente middleware en la pila (<i>middleware
+              stack</i>).</li>
         </ul>
       </section>
 
-      <!-- SECCIÓN 4: FLUJO -->
+      <!-- SECCIÓN 5: FLUJO -->
       <section id="flujo" class="section-card">
         <div class="section-header">
-          <div class="step-number">4</div>
-          <h2 class="section-title">Flujo Completo de Autenticación</h2>
+          <div class="step-number">5</div>
+          <h2 class="section-title">Flujo Completo de Autenticación Stateless</h2>
         </div>
 
         <div class="flow-container">
           <div class="flow-step">
-            <strong>Paso 1:</strong> Cliente envía credenciales <code>POST /login</code>
+            <strong>Fase 1: Autenticación Inicial</strong> — El Cliente emite credenciales válidas mediante
+            <code>POST /api/v1/login</code>.
           </div>
           <div class="flow-arrow">▼</div>
           <div class="flow-step">
-            <strong>Paso 2:</strong> Servidor valida, genera el JWT y se lo retorna al Cliente
+            <strong>Fase 2: Generación de Token</strong> — El Servidor valida las credenciales, firma un JWT con una
+            clave privada y lo retorna al Cliente en la carga de respuesta.
           </div>
           <div class="flow-arrow">▼</div>
           <div class="flow-step">
-            <strong>Paso 3:</strong> Cliente realiza petición a ruta protegida adjuntando Header
-            <code>Authorization: Bearer &lt;TOKEN&gt;</code>
+            <strong>Fase 3: Solicitud de Recurso Protegido</strong> — El Cliente consulta un Endpoint restringido
+            enviando el encabezado estándar: <code>Authorization: Bearer &lt;TOKEN&gt;</code>.
           </div>
           <div class="flow-arrow">▼</div>
           <div class="flow-step">
-            <strong>Paso 4:</strong> <strong>Middleware</strong> valida el token. Si es correcto llama a
-            <code>next()</code>, de lo contrario devuelve <code>401 Unauthorized</code>.
+            <strong>Fase 4: Intercepción y Verificación</strong> — El <strong>Middleware de Autenticación</strong>
+            intercepta la solicitud, deserializa la firma y ejecuta <code>next()</code> si el token es válido o retorna
+            un error HTTP <code>401/403</code> si ha sido alterado o expiro.
           </div>
         </div>
       </section>
 
-      <!-- SECCIÓN 5: CÓDIGO -->
+      <!-- SECCIÓN 6: CÓDIGO -->
       <section id="codigo" class="section-card">
         <div class="section-header">
-          <div class="step-number">5</div>
-          <h2 class="section-title">Implementación en Código (Node.js + Express)</h2>
+          <div class="step-number">6</div>
+          <h2 class="section-title">Implementación de Referencia (Node.js + Express)</h2>
         </div>
 
-        <p>Instalación inicial de librerías en terminal:</p>
+        <p>Comandos de inicialización del proyecto y gestión de dependencias en consola:</p>
         <div class="code-container">
           <div class="code-header-bar">
             <span>Terminal / Bash</span>
@@ -679,125 +783,170 @@ npm install express jsonwebtoken</code></pre>
         </div>
 
         <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-
           <div>
-            <strong>
-              <p>Código del Servidor y Middleware (<code>server.js</code>):</p>
-            </strong>
+            <strong>Implementación completa del Servidor Express con Middleware de Seguridad
+              (<code>server.js</code>):</strong>
           </div>
         </div>
-
 
         <div class="code-container">
           <div class="code-header-bar">
             <span>server.js</span>
-            <span>JavaScript</span>
+            <span>JavaScript (Node.js)</span>
           </div>
           <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
 <span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
 
 <span class="kw">const</span> app = <span class="fn">express</span>();
+
+<span class="cm">// Middleware global para el parseo del cuerpo de la petición en formato JSON</span>
 app.<span class="fn">use</span>(express.<span class="fn">json</span>());
 
-<span class="kw">const</span> SECRET_KEY = <span class="str">'clave_secreta_electiva_3'</span>;
+<span class="cm">// Clave secreta para la firma simétrica HMAC (En producción debe habitar en variables de entorno)</span>
+<span class="kw">const</span> JWT_SECRET = <span class="str">'clave_secreta_electiva_3_super_segura'</span>;
 
-<span class="cm">// --- 1. RUTA PÚBLICA (LOGIN) ---</span>
-app.<span class="fn">post</span>(<span class="str">'/login'</span>, (req, res) => {
+<span class="cm">/* ==========================================================================
+   1. ENDPOINT PÚBLICO: Autenticación y Generación de JWT
+   ========================================================================== */</span>
+app.<span class="fn">post</span>(<span class="str">'/api/v1/login'</span>, (req, res) => {
   <span class="kw">const</span> { username, password } = req.body;
 
+  <span class="cm">// Simulación de validación contra base de datos</span>
   <span class="kw">if</span> (username === <span class="str">'profesor'</span> && password === <span class="str">'123456'</span>) {
-    <span class="kw">const</span> payload = { id: <span class="num">101</span>, username: <span class="str">'profesor'</span>, role: <span class="str">'docente'</span> };
+    <span class="kw">const</span> payload = { 
+      id: <span class="num">101</span>, 
+      username: <span class="str">'profesor'</span>, 
+      role: <span class="str">'docente'</span> 
+    };
     
-    <span class="kw">const</span> token = jwt.<span class="fn">sign</span>(payload, SECRET_KEY, { expiresIn: <span class="str">'1h'</span> });
-    <span class="kw">return</span> res.<span class="fn">json</span>({ mensaje: <span class="str">'Autenticación Exitosa'</span>, token });
+    <span class="cm">// Firma del token asignando un tiempo explícito de expiración</span>
+    <span class="kw">const</span> token = jwt.<span class="fn">sign</span>(payload, JWT_SECRET, { expiresIn: <span class="str">'1h'</span> });
+    
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">200</span>).<span class="fn">json</span>({
+      status: <span class="str">'success'</span>,
+      message: <span class="str">'Autenticación satisfactoria'</span>,
+      token
+    });
   }
 
-  <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Credenciales incorrectas'</span> });
-});
-
-<span class="cm">// --- 2. MIDDLEWARE DE VERIFICACIÓN ---</span>
-<span class="kw">function</span> <span class="fn">authMiddleware</span>(req, res, next) {
-  <span class="kw">const</span> authHeader = req.headers[<span class="str">'authorization'</span>];
-  <span class="kw">const</span> token = authHeader && authHeader.<span class="fn">split</span>(<span class="str">' '</span>)[<span class="num">1</span>];
-
-  <span class="kw">if</span> (!token) {
-    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Acceso denegado. Token no suministrado.'</span> });
-  }
-
-  <span class="kw">try</span> {
-    <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, SECRET_KEY);
-    req.user = decoded;
-    <span class="fn">next</span>();
-  } <span class="kw">catch</span> (err) {
-    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ error: <span class="str">'Token inválido o expirado'</span> });
-  }
-}
-
-<span class="cm">// --- 3. RUTA PROTEGIDA ---</span>
-app.<span class="fn">get</span>(<span class="str">'/dashboard'</span>, authMiddleware, (req, res) => {
-  res.<span class="fn">json</span>({
-    mensaje: <span class="str">`Bienvenido ${req.user.username}`</span>,
-    contenidoExclusivo: <span class="str">'Notas de la materia: Todos aprobados.'</span>
+  <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ 
+    status: <span class="str">'error'</span>,
+    error: <span class="str">'Credenciales de acceso inválidas'</span> 
   });
 });
 
-app.<span class="fn">listen</span>(<span class="num">3000</span>, () => console.<span class="fn">log</span>(<span class="str">'Servidor en ejecución en puerto 3000'</span>));</code></pre>
+<span class="cm">/* ==========================================================================
+   2. MIDDLEWARE: Verificación de Autenticación mediante JWT
+   ========================================================================== */</span>
+<span class="kw">function</span> <span class="fn">authenticateToken</span>(req, res, next) {
+  <span class="kw">const</span> authHeader = req.headers[<span class="str">'authorization'</span>];
+  <span class="cm">// Formato esperado: "Bearer <TOKEN>"</span>
+  <span class="kw">const</span> token = authHeader && authHeader.<span class="fn">split</span>(<span class="str">' '</span>)[<span class="num">1</span>];
+
+  <span class="kw">if</span> (!token) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ 
+      status: <span class="str">'error'</span>,
+      error: <span class="str">'Acceso no autorizado. Token criptográfico no suministrado.'</span> 
+    });
+  }
+
+  <span class="kw">try</span> {
+    <span class="cm">// Verificación de autenticidad e integridad del token</span>
+    <span class="kw">const</span> decodedPayload = jwt.<span class="fn">verify</span>(token, JWT_SECRET);
+    
+    <span class="cm">// Inyección de la entidad decodificada en el objeto Request</span>
+    req.user = decodedPayload;
+    
+    <span class="cm">// Transferencia de control al siguiente middleware o controlador</span>
+    <span class="fn">next</span>();
+  } <span class="kw">catch</span> (err) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ 
+      status: <span class="str">'error'</span>,
+      error: <span class="str">'Acceso prohibido. El token suministrado es inválido o ha expirado.'</span> 
+    });
+  }
+}
+
+<span class="cm">/* ==========================================================================
+   3. ENDPOINT PROTEGIDO: Anatomía Completa de la Ruta
+   ========================================================================== */</span>
+app.<span class="fn">get</span>(<span class="str">'/api/v1/dashboard'</span>, authenticateToken, (req, res) => {
+  res.<span class="fn">status</span>(<span class="num">200</span>).<span class="fn">json</span>({
+    status: <span class="str">'success'</span>,
+    message: <span class="str">`Acceso concedido al usuario: ${req.user.username}`</span>,
+    data: {
+      materia: <span class="str">'Electiva III'</span>,
+      seccion: <span class="str">'Sistemas'</span>,
+      contenido: <span class="str">'Evaluaciones finales procesadas exitosamente.'</span>
+    }
+  });
+});
+
+<span class="cm">// Inicialización del servidor HTTP</span>
+<span class="kw">const</span> PORT = <span class="num">3000</span>;
+app.<span class="fn">listen</span>(PORT, () => console.<span class="fn">log</span>(<span class="str">`Servidor académico en ejecución en el puerto ${PORT}`</span>));</code></pre>
         </div>
 
         <div class="alert-box">
-          <div class="alert-icon">i</div>
+          <div class="alert-icon">💡</div>
           <div>
-            <strong>Para probar:</strong> Usa Postman o Insomnia.
-            <br>1. POST a <code>http://localhost:3000/login</code> con body:
-            <code>{"username":"profesor","password":"123456"}</code>
-            <br>2. Copia el token recibido.
-            <br>3. GET a <code>http://localhost:3000/dashboard</code> con Header:
-            <code>Authorization: Bearer &lt;TOKEN&gt;</code>
+            <strong>Protocolo de Pruebas Tecnológicas:</strong> Para la verificación de los endpoints con clientes HTTP
+            como Postman, Bruno o Insomnia:
+            <br>1. Emita una solicitud <code>POST</code> a <code>http://localhost:3000/api/v1/login</code> enviando el
+            JSON <code>{"username":"profesor","password":"123456"}</code>.
+            <br>2. Copie la cadena devuelta en la propiedad <code>token</code>.
+            <br>3. Emita una solicitud <code>GET</code> a <code>http://localhost:3000/api/v1/dashboard</code>
+            configurando la pestaña de Autenticación mediante <code>Bearer Token</code> (o agregando la cabecera
+            <code>Authorization: Bearer &lt;TOKEN&gt;</code>).
           </div>
         </div>
       </section>
 
-      <!-- SECCIÓN 6: TIPS -->
+      <!-- SECCIÓN 7: CONSIDERACIONES TÉCNICAS -->
       <section id="tips" class="section-card">
         <div class="section-header">
-          <div class="step-number">6</div>
-          <h2 class="section-title">Puntos Clave para Destacar en Clase</h2>
+          <div class="step-number">7</div>
+          <h2 class="section-title">Consideraciones Técnicas y Argumentación Académica</h2>
         </div>
 
         <ul class="checklist">
           <li>
-            <span class="checklist-icon">+</span>
+            <span class="checklist-icon">▪</span>
             <div>
-              <strong>JWT es Stateless (Sin Estado):</strong> El servidor no necesita guardar sesiones en Base de Datos.
-              La firma del token valida la petición instantáneamente.
+              <strong>Escalabilidad Stateless (Sin Estado):</strong> A diferencia de las sesiones basadas en Cookies y
+              Redis/Memcached, las arquitecturas basadas en JWT no requieren que el servidor persista estados de sesión
+              en memoria centralizada, lo que facilita el escalado horizontal tras un balanceador de carga.
             </div>
           </li>
           <li>
-            <span class="checklist-icon">+</span>
+            <span class="checklist-icon">▪</span>
             <div>
-              <strong>Estructura del Header:</strong> Recordar siempre enviar el token usando el formato estándar
-              <code>Authorization: Bearer &lt;TOKEN&gt;</code>.
+              <strong>Estándar de Encabezados (Authorization Header):</strong> El uso del prefijo <code>Bearer</code>
+              indica que la entidad solicitante es la portadora legítima del token de autorización otorgado previamente.
             </div>
           </li>
           <li>
-            <span class="checklist-icon">+</span>
+            <span class="checklist-icon">▪</span>
             <div>
-              <strong>Codificación vs Encriptación:</strong> Base64 es solo una codificación de formato, no oculta
-              información. La seguridad radica exclusivamente en la <strong>Firma (Signature)</strong>.
+              <strong>Codificación Base64URL vs Encriptación:</strong> Es crucial enfatizar que la codificación
+              Base64URL no proporciona confidencialidad, sino formateo para transmisión sobre HTTP. La protección contra
+              alteración de datos descansa enteramente en la <strong>Signature (Firma Simétrica/Asimétrica)</strong>.
             </div>
           </li>
           <li>
-            <span class="checklist-icon">+</span>
+            <span class="checklist-icon">▪</span>
             <div>
-              <strong>Librería correcta:</strong> Se instala con <code>npm install jsonwebtoken</code> y se importa con
-              <code>require('jsonwebtoken')</code>.
+              <strong>Inyección de Contexto en Request:</strong> La asignación <code>req.user = decodedPayload</code>
+              demuestra la capacidad de los middlewares en Node.js de enriquecer el ciclo de vida de la petición
+              transfiriendo metadatos validados hacia los controladores finales.
             </div>
           </li>
           <li>
-            <span class="checklist-icon">+</span>
+            <span class="checklist-icon">▪</span>
             <div>
-              <strong>Expiración:</strong> Siempre usar <code>expiresIn</code> al firmar el token para evitar tokens que
-              nunca expiren.
+              <strong>Gestión Explícita del Ciclo de Vida:</strong> Siempre debe configurarse la propiedad de expiración
+              (<code>expiresIn</code>) al firmar un token para mitigar los riesgos derivados del secuestro de
+              credenciales pasivas (Replay Attacks).
             </div>
           </li>
         </ul>
