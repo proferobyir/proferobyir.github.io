@@ -4,32 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arquitectura de Endpoints, Middleware y JWT - Electiva III</title>
+  <title>API REST con Express, JWT y MySQL - Guía Rápida</title>
   <style>
-    :root {
-      --bg-main: #f4f6f9;
-      --bg-card: #ffffff;
-      --bg-sidebar: #0f172a;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --text-light: #f8fafc;
-      --primary: #2563eb;
-      --primary-light: #eff6ff;
-      --primary-border: #bfdbfe;
-      --accent-analogy: #0d9488;
-      --bg-analogy: #f0fdf4;
-      --border-analogy: #99f6e4;
-      --accent-alert: #d97706;
-      --bg-alert: #fffbeb;
-      --border-alert: #fde68a;
-      --code-bg: #1e293b;
-      --code-header: #0f172a;
-      --radius: 12px;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -37,677 +13,281 @@
     }
 
     body {
-      font-family: var(--font-family);
-      background-color: var(--bg-main);
-      color: var(--text-main);
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
       line-height: 1.6;
-      font-size: 16px;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .app-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      background-color: var(--bg-sidebar);
-      color: var(--text-light);
-      padding: 2rem 1.5rem;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #38bdf8;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #334155;
-    }
-
-    .brand-badge {
-      background: #0284c7;
-      color: #fff;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .nav-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      color: #94a3b8;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      background-color: #1e293b;
-      color: #ffffff;
-      border-left: 4px solid #38bdf8;
-    }
-
-    .content-area {
-      padding: 2.5rem 3rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .header-banner {
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-      color: white;
-      padding: 2.5rem;
-      border-radius: var(--radius);
-      margin-bottom: 2.5rem;
-      box-shadow: var(--shadow-md);
-    }
-
-    .header-banner h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-bottom: 0.75rem;
-      line-height: 1.2;
-    }
-
-    .header-banner p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      max-width: 750px;
-    }
-
-    .quick-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.9rem;
-    }
-
-    .stat-icon {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 0.5rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 32px;
-      min-height: 32px;
-      font-weight: bold;
-    }
-
-    .section-card {
-      background-color: var(--bg-card);
-      border-radius: var(--radius);
       padding: 2rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
       margin-bottom: 2rem;
-      box-shadow: var(--shadow-sm);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      opacity: 0.9;
+      margin-top: 0.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       border: 1px solid #e2e8f0;
     }
 
-    .section-header {
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid #f1f5f9;
+      gap: 0.5rem;
     }
 
-    .step-number {
-      background-color: var(--primary);
+    .card h2 .num {
+      background: #2563eb;
       color: white;
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       flex-shrink: 0;
     }
 
-    .section-title {
-      font-size: 1.5rem;
-      color: var(--text-main);
-      font-weight: 700;
-    }
-
-    .endpoint-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.25rem;
-      margin-top: 1.25rem;
-    }
-
-    .endpoint-card {
-      background: #f8fafc;
-      padding: 1.25rem;
-      border-radius: 8px;
-      border-left: 4px solid var(--primary);
-      border-top: 1px solid #e2e8f0;
-      border-right: 1px solid #e2e8f0;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .endpoint-card h4 {
-      color: var(--primary);
-      font-size: 1.05rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .endpoint-card p {
-      font-size: 0.92rem;
-      color: var(--text-main);
-    }
-
-    .principle-card {
-      background: var(--primary-light);
-      padding: 1.25rem;
-      border-radius: 8px;
-      border-left: 4px solid var(--primary);
-      border-top: 1px solid var(--primary-border);
-      border-right: 1px solid var(--primary-border);
-      border-bottom: 1px solid var(--primary-border);
-    }
-
-    .principle-card h4 {
-      color: var(--primary);
-      font-size: 1.05rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .principle-card p {
-      font-size: 0.92rem;
-      color: var(--text-main);
-    }
-
-    .analogy-box {
-      background-color: var(--bg-analogy);
-      border-left: 5px solid var(--accent-analogy);
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-    }
-
-    .analogy-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--accent-analogy);
-      font-weight: 700;
+    .card h3 {
       font-size: 1.1rem;
-      margin-bottom: 0.75rem;
+      margin: 1rem 0 0.5rem 0;
+      color: #2563eb;
     }
 
-    .analogy-grid {
+    .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.25rem;
-      margin-top: 1rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
     }
 
-    .analogy-card {
-      background: white;
-      padding: 1.25rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-analogy);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    }
-
-    .analogy-card h4 {
-      color: var(--accent-analogy);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .jwt-structure {
+    .grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
-      margin: 1.5rem 0;
+      margin: 1rem 0;
     }
 
-    .jwt-part {
-      padding: 1.25rem;
-      border-radius: 8px;
-      background: #fafafa;
-      border: 2px solid;
-    }
-
-    .jwt-header-part {
-      border-color: #ef4444;
-    }
-
-    .jwt-payload-part {
-      border-color: #8b5cf6;
-    }
-
-    .jwt-signature-part {
-      border-color: #06b6d4;
-    }
-
-    .jwt-part h4 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .jwt-tag {
-      font-size: 0.75rem;
-      padding: 0.1rem 0.4rem;
-      border-radius: 4px;
-      color: white;
-    }
-
-    .tag-red {
-      background: #ef4444;
-    }
-
-    .tag-purple {
-      background: #8b5cf6;
-    }
-
-    .tag-blue {
-      background: #06b6d4;
-    }
-
-    .flow-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin: 1.5rem 0;
+    .box {
       background: #f8fafc;
-      padding: 1.5rem;
+      padding: 1rem;
       border-radius: 8px;
-      border: 1px dashed #cbd5e1;
+      border-left: 4px solid #2563eb;
     }
 
-    .flow-step {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: white;
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-      border-left: 4px solid var(--primary);
+    .box-green {
+      border-left-color: #22c55e;
     }
 
-    .flow-arrow {
-      text-align: center;
-      color: var(--text-muted);
-      font-weight: bold;
-      font-size: 1.2rem;
+    .box-yellow {
+      border-left-color: #f59e0b;
     }
 
-    .code-container {
-      background-color: var(--code-bg);
-      border-radius: 8px;
-      overflow: hidden;
-      margin: 1.25rem 0;
-      box-shadow: var(--shadow-sm);
+    .box-red {
+      border-left-color: #ef4444;
     }
 
-    .code-header-bar {
-      background-color: var(--code-header);
-      padding: 0.6rem 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #94a3b8;
+    .box-purple {
+      border-left-color: #8b5cf6;
+    }
+
+    .box-orange {
+      border-left-color: #f97316;
+    }
+
+    .box h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .box p {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    code {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
       font-size: 0.85rem;
-      font-family: monospace;
-      border-bottom: 1px solid #334155;
     }
 
     pre {
-      padding: 1.25rem;
-      overflow-x: auto;
+      background: #1e293b;
       color: #f8fafc;
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-      font-size: 0.92rem;
-      line-height: 1.5;
-    }
-
-    .kw {
-      color: #f472b6;
-    }
-
-    .fn {
-      color: #38bdf8;
-    }
-
-    .str {
-      color: #4ade80;
-    }
-
-    .cm {
-      color: #94a3b8;
-      font-style: italic;
-    }
-
-    .num {
-      color: #fb923c;
-    }
-
-    .sql-keyword {
-      color: #f472b6;
-    }
-
-    .sql-string {
-      color: #4ade80;
-    }
-
-    .sql-number {
-      color: #fb923c;
-    }
-
-    .sql-comment {
-      color: #94a3b8;
-      font-style: italic;
-    }
-
-    .sql-function {
-      color: #38bdf8;
-    }
-
-    .alert-box {
-      background-color: var(--bg-alert);
-      border-left: 5px solid var(--accent-alert);
-      padding: 1.25rem;
-      border-radius: 8px;
-      margin: 1.5rem 0;
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-
-    .alert-icon {
-      font-size: 1.5rem;
-      color: var(--accent-alert);
-      line-height: 1;
-    }
-
-    .checklist {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .checklist li {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      background: #f8fafc;
-      padding: 0.8rem 1rem;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .checklist-icon {
-      color: #16a34a;
-      font-weight: bold;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.25rem;
-      margin: 1.25rem 0;
-    }
-
-    .feature-item {
-      background: #f8fafc;
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .feature-item h4 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .fetch-example {
-      background: #f1f5f9;
       padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 0.5rem 0;
+    }
+
+    .keyword {
+      color: #f472b6;
+    }
+
+    .string {
+      color: #4ade80;
+    }
+
+    .comment {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .function {
+      color: #38bdf8;
+    }
+
+    .number {
+      color: #fb923c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+    }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .tag-get {
+      background: #22c55e;
+    }
+
+    .tag-post {
+      background: #3b82f6;
+    }
+
+    .tag-put {
+      background: #f59e0b;
+    }
+
+    .tag-patch {
+      background: #8b5cf6;
+    }
+
+    .tag-delete {
+      background: #ef4444;
+    }
+
+    .alert {
+      background: #fffbeb;
+      border-left: 4px solid #d97706;
+      padding: 0.75rem 1rem;
       border-radius: 6px;
       margin: 0.5rem 0;
-      border-left: 3px solid var(--primary);
+      font-size: 0.9rem;
     }
 
-    .fetch-example code {
-      font-size: 0.85rem;
+    .alert-blue {
+      background: #eff6ff;
+      border-left-color: #2563eb;
     }
 
-    .db-diagram {
+    .alert-green {
+      background: #f0fdf4;
+      border-left-color: #22c55e;
+    }
+
+    .alert-red {
+      background: #fef2f2;
+      border-left-color: #ef4444;
+    }
+
+    .alert-orange {
+      background: #fff7ed;
+      border-left-color: #f97316;
+    }
+
+    .cors-diagram {
       background: #f8fafc;
       padding: 1.5rem;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      margin: 1rem 0;
+      text-align: center;
       font-family: monospace;
-      font-size: 0.9rem;
-      line-height: 1.8;
-    }
-
-    .table-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.25rem;
-      margin: 1rem 0;
-    }
-
-    .table-card {
-      background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 1rem;
-      overflow-x: auto;
-    }
-
-    .table-card h4 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 0.5rem;
-    }
-
-    .table-card table {
-      width: 100%;
-      font-size: 0.85rem;
-      border-collapse: collapse;
-    }
-
-    .table-card th {
-      text-align: left;
-      padding: 0.3rem 0.5rem;
-      border-bottom: 1px solid #e2e8f0;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .table-card td {
-      padding: 0.3rem 0.5rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .rest-method-table {
-      width: 100%;
-      border-collapse: collapse;
       margin: 1rem 0;
-      font-size: 0.9rem;
     }
 
-    .rest-method-table th {
-      background: var(--primary);
-      color: white;
-      padding: 0.75rem 1rem;
-      text-align: left;
+    .cors-diagram .arrow {
+      color: #2563eb;
+      font-size: 1.5rem;
+      margin: 0.3rem 0;
     }
 
-    .rest-method-table td {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #e2e8f0;
+    .cors-diagram .blocked {
+      color: #ef4444;
+      font-weight: bold;
     }
 
-    .rest-method-table tr:nth-child(even) {
-      background: #f8fafc;
+    .cors-diagram .allowed {
+      color: #22c55e;
+      font-weight: bold;
     }
 
-    .rest-method-table tr:hover {
-      background: var(--primary-light);
-    }
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
 
-    .badge-get {
-      background: #22c55e;
-      color: white;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    .badge-post {
-      background: #3b82f6;
-      color: white;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    .badge-put {
-      background: #f59e0b;
-      color: white;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    .badge-delete {
-      background: #ef4444;
-      color: white;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    .badge-patch {
-      background: #8b5cf6;
-      color: white;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    @media (max-width: 900px) {
-      .app-container {
+      .grid-2,
+      .grid-3 {
         grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        height: auto;
-        position: relative;
-        padding: 1.25rem;
-      }
-
-      .nav-menu {
-        flex-direction: row;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-      }
-
-      .nav-link {
-        white-space: nowrap;
-      }
-
-      .content-area {
-        padding: 1.5rem 1rem;
-      }
-
-      .header-banner {
-        padding: 1.5rem;
-      }
-
-      .header-banner h1 {
-        font-size: 1.6rem;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .section-card {
-        padding: 1.25rem;
-      }
-
-      .analogy-grid,
-      .endpoint-grid,
-      .feature-grid,
-      .table-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .jwt-structure {
-        grid-template-columns: 1fr;
-      }
-
-      .flow-step {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .rest-method-table {
-        font-size: 0.75rem;
-      }
-
-      .rest-method-table th,
-      .rest-method-table td {
-        padding: 0.4rem 0.5rem;
       }
     }
   </style>
@@ -715,2085 +295,799 @@
 
 <body>
 
-  <div class="app-container">
+  <div class="container">
 
-    <aside class="sidebar">
-      <div class="brand">
-        <span>Electiva III</span>
-        <span class="brand-badge">Academico</span>
+    <div class="header">
+      <h1>🚀 API REST con Express, JWT y MySQL</h1>
+      <p>Guía práctica para construir una API con autenticación stateless</p>
+      <div style="margin-top: 0.75rem;">
+        <span class="badge">Node.js</span>
+        <span class="badge">Express</span>
+        <span class="badge">JWT</span>
+        <span class="badge">MySQL</span>
+        <span class="badge">CORS</span>
+      </div>
+    </div>
+
+    <!-- ========== SECCIÓN 1: QUÉ ES UNA API REST ========== -->
+    <div class="card">
+      <h2><span class="num">1</span> ¿Qué es una API REST?</h2>
+      <p style="margin-bottom: 1rem;">REST es un estilo arquitectónico para diseñar servicios web. Sus principios clave
+        son:</p>
+
+      <div class="grid-2">
+        <div class="box">
+          <h4>📌 Sin Estado (Stateless)</h4>
+          <p>Cada petición es independiente. El servidor no guarda información entre peticiones.</p>
+        </div>
+        <div class="box box-green">
+          <h4>📌 Interfaz Uniforme</h4>
+          <p>Usa verbos HTTP estándar: GET, POST, PUT, DELETE, PATCH.</p>
+        </div>
+        <div class="box box-yellow">
+          <h4>📌 Recursos Identificables</h4>
+          <p>Todo se accede mediante URLs: <code>/productos</code>, <code>/usuarios/1</code></p>
+        </div>
+        <div class="box box-purple">
+          <h4>📌 Cliente-Servidor</h4>
+          <p>Frontend y backend están separados y evolucionan independientemente.</p>
+        </div>
       </div>
 
-      <nav class="nav-menu">
-        <a href="#introduccion" class="nav-link active">1. Introduccion</a>
-        <a href="#principios-rest" class="nav-link">2. Principios RESTful</a>
-        <a href="#verbos-http" class="nav-link">3. Verbos HTTP</a>
-        <a href="#tipos-endpoints" class="nav-link">4. Tipos de Endpoints</a>
-        <a href="#endpoints-archivos" class="nav-link">5. Endpoints de Archivos</a>
-        <a href="#ejemplos-endpoints" class="nav-link">6. Ejemplos Practicos</a>
-        <a href="#base-datos" class="nav-link">7. Base de Datos</a>
-        <a href="#analogia-club" class="nav-link">8. Analogia del Club VIP</a>
-        <a href="#jwt" class="nav-link">9. Arquitectura JWT</a>
-        <a href="#middleware" class="nav-link">10. Patron Middleware</a>
-        <a href="#flujo" class="nav-link">11. Flujo de Control</a>
-        <a href="#codigo" class="nav-link">12. Implementacion</a>
-        <a href="#frontend" class="nav-link">13. Consumo desde Frontend</a>
-        <a href="#tips" class="nav-link">14. Consideraciones Tecnicas</a>
-      </nav>
-    </aside>
+      <div class="alert alert-green">
+        <strong>💡 Analogía:</strong> Una API REST es como un restaurante. Tú (cliente) pides del menú (URL + verbo
+        HTTP),
+        la cocina (servidor) prepara tu pedido y te lo entrega (respuesta). No necesitas saber cómo cocinan, solo qué
+        pedir.
+      </div>
+    </div>
 
-    <main class="content-area">
+    <!-- ========== SECCIÓN 2: VERBOS HTTP ========== -->
+    <div class="card">
+      <h2><span class="num">2</span> Verbos HTTP que debes conocer</h2>
 
-      <header class="header-banner">
-        <h1>Arquitectura de Endpoints, Middleware y JWT en Node.js con Express</h1>
-        <p>Unidad Didactica de Electiva III: Fundamentos teoricos e implementacion practica de un esquema de
-          autenticacion desacoplado y sin estado (Stateless) mediante REST APIs con MySQL.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Verbo</th>
+            <th>Qué hace</th>
+            <th>Ejemplo</th>
+            <th>¿Idempotente?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-get">GET</span></td>
+            <td>Leer datos</td>
+            <td><code>/productos</code></td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-post">POST</span></td>
+            <td>Crear un recurso</td>
+            <td><code>/productos</code></td>
+            <td>❌ No</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-put">PUT</span></td>
+            <td>Actualizar TODO</td>
+            <td><code>/productos/1</code></td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-patch">PATCH</span></td>
+            <td>Actualizar PARTE</td>
+            <td><code>/productos/1</code></td>
+            <td>❌ No</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-delete">DELETE</span></td>
+            <td>Eliminar</td>
+            <td><code>/productos/1</code></td>
+            <td>✅ Sí</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div class="quick-stats">
-          <div class="stat-item">
-            <span class="stat-icon">Nivel</span>
-            <span><strong>Nivel:</strong> Universitario / Avanzado</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-icon">Tech</span>
-            <span><strong>Stack:</strong> Node.js / Express.js / JWT / MySQL</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-icon">Paradigma</span>
-            <span><strong>Patron:</strong> Autenticacion Stateless</span>
-          </div>
-        </div>
-      </header>
+      <div class="alert">
+        <strong>⚠️ Importante:</strong> <strong>Idempotente</strong> = hacer la misma petición varias veces da el mismo
+        resultado.
+        GET, PUT y DELETE son idempotentes. POST no lo es (cada vez crea un nuevo recurso).
+      </div>
+    </div>
 
-      <!-- SECCION 1: INTRODUCCION -->
-      <section id="introduccion" class="section-card">
-        <div class="section-header">
-          <div class="step-number">1</div>
-          <h2 class="section-title">Introduccion a las APIs REST y Endpoints</h2>
-        </div>
+    <!-- ========== SECCIÓN 3: ESTRUCTURA BÁSICA DE UN ENDPOINT ========== -->
+    <div class="card">
+      <h2><span class="num">3</span> Estructura de un Endpoint en Express</h2>
 
-        <p>Una <strong>API REST</strong> (Representational State Transfer) es un conjunto de reglas y convenciones para
-          construir servicios web que permiten la comunicacion entre sistemas de forma estandarizada. En el corazon
-          de una API REST se encuentran los <strong>Endpoints</strong>, que son los puntos de acceso a los recursos
-          del sistema.</p>
+      <pre><code><span class="comment">// Sintaxis básica</span>
+app.<span class="function">METHOD</span>(<span class="string">'/ruta'</span>, (req, res) => {
+  <span class="comment">// Lógica aquí</span>
+  res.<span class="function">json</span>({ mensaje: <span class="string">'Hola mundo'</span> });
+});</code></pre>
 
-        <p>En Express.js, la estructura formal de un endpoint sigue la firma sintactica:</p>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>Sintaxis Estructural en Express</span>
-            <span>JavaScript</span>
-          </div>
-          <pre><code>app.<span class="fn">METHOD</span>(<span class="str">'PATH'</span>, [MIDDLEWARES...], (req, res) => {
-  <span class="cm">// Funcion Manejadora</span>
+      <div class="grid-2">
+        <div class="box">
+          <h4>🔹 Parámetros de Ruta</h4>
+          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">get</span>(<span class="string">'/usuarios/:id'</span>, (req, res) => {
+  <span class="keyword">const</span> { id } = req.params;
+  <span class="comment">// id = "123"</span>
 });</code></pre>
         </div>
-
-        <p>Los endpoints son la piedra angular de cualquier API REST, ya que permiten exponer funcionalidades y recursos
-          del sistema a traves de una interfaz estandarizada y predecible.</p>
-
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Objetivos de Aprendizaje:</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-              <li>Comprender los principios fundamentales de REST y su aplicacion en APIs modernas</li>
-              <li>Identificar y utilizar correctamente los verbos HTTP en el diseno de endpoints</li>
-              <li>Implementar un sistema de autenticacion stateless con JWT</li>
-              <li>Proteger endpoints mediante middlewares de autorizacion</li>
-              <li>Integrar una base de datos MySQL con consultas preparadas</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 2: PRINCIPIOS RESTFUL -->
-      <section id="principios-rest" class="section-card">
-        <div class="section-header">
-          <div class="step-number">2</div>
-          <h2 class="section-title">Principios Fundamentales de REST</h2>
-        </div>
-
-        <p>REST (Representational State Transfer) es un estilo arquitectonico definido por Roy Fielding en su tesis
-          doctoral en el año 2000. Para que una API sea considerada <strong>RESTful</strong>, debe cumplir con seis
-          principios fundamentales:</p>
-
-        <div class="feature-grid">
-          <div class="principle-card">
-            <h4>1. Cliente-Servidor (Client-Server)</h4>
-            <p>Separa claramente la interfaz de usuario (cliente) del almacenamiento de datos (servidor). Esto permite
-              que ambos evolucionen de forma independiente y facilita la escalabilidad.</p>
-          </div>
-
-          <div class="principle-card">
-            <h4>2. Sin Estado (Stateless)</h4>
-            <p>Cada peticion del cliente al servidor debe contener toda la informacion necesaria para ser entendida
-              y procesada. El servidor no almacena ningun estado de sesion entre peticiones. Cada solicitud es
-              independiente y autocontenida.</p>
-          </div>
-
-          <div class="principle-card">
-            <h4>3. Cacheable (Cacheability)</h4>
-            <p>Las respuestas del servidor deben indicar explicitamente si pueden ser almacenadas en cache por el
-              cliente o por intermediarios. Esto mejora el rendimiento al reducir la carga del servidor.</p>
-          </div>
-
-          <div class="principle-card">
-            <h4>4. Interfaz Uniforme (Uniform Interface)</h4>
-            <p>Define una interfaz estandar entre cliente y servidor que simplifica la arquitectura. Se compone de:
-              identificacion de recursos, manipulacion mediante representaciones, mensajes autodescriptivos y
-              hypermedia como motor del estado de la aplicacion (HATEOAS).</p>
-          </div>
-
-          <div class="principle-card">
-            <h4>5. Sistema en Capas (Layered System)</h4>
-            <p>La arquitectura puede organizarse en capas jerarquicas donde cada capa solo conoce a la inmediata
-              inferior. Esto permite añadir proxies, balanceadores de carga y puertas de enlace sin afectar al
-              cliente o al servidor final.</p>
-          </div>
-
-          <div class="principle-card">
-            <h4>6. Codigo Bajo Demanda (Code on Demand - Opcional)</h4>
-            <p>Los servidores pueden extender la funcionalidad del cliente enviando codigo ejecutable (como JavaScript
-              o applets). Este es el unico principio opcional de REST.</p>
-          </div>
-        </div>
-
-        <div class="alert-box" style="border-left-color: #0d9488; background-color: #f0fdf4;">
-          <div>
-            <strong>Principios mas Relevantes para API Design:</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-              <li><strong>Stateless:</strong> Es el principio que habilita la arquitectura con JWT que veremos mas
-                adelante.</li>
-              <li><strong>Interfaz Uniforme:</strong> Nos guia en el uso correcto de verbos HTTP y codigos de estado.
-              </li>
-              <li><strong>Client-Server:</strong> Permite que el frontend y backend se desarrollen de forma
-                independiente.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="analogy-box">
-          <div class="analogy-header">
-            <span>Analogia</span> REST como un Restaurante
-          </div>
-          <div class="analogy-grid">
-            <div class="analogy-card">
-              <h4>Cliente (Comensal)</h4>
-              <p>El comensal (cliente) llega al restaurante y hace un pedido. No necesita saber como se prepara la
-                comida ni donde se almacenan los ingredientes.</p>
-            </div>
-            <div class="analogy-card">
-              <h4>Servidor (Cocina)</h4>
-              <p>La cocina (servidor) recibe el pedido, prepara la comida y la entrega. No necesita saber quien es
-                el comensal para cada pedido (stateless). Cada pedido es independiente.</p>
-            </div>
-            <div class="analogy-card">
-              <h4>Interfaz Uniforme (Menu)</h4>
-              <p>El menu (interfaz uniforme) estandariza como se hacen los pedidos. Todos los comensales usan el mismo
-                formato para ordenar: entrantes, plato principal, postre (verbos HTTP estandarizados).</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 3: VERBOS HTTP -->
-      <section id="verbos-http" class="section-card">
-        <div class="section-header">
-          <div class="step-number">3</div>
-          <h2 class="section-title">Verbos HTTP y su Significado en REST</h2>
-        </div>
-
-        <p>Los <strong>verbos HTTP</strong> (o metodos) son las acciones que el cliente puede realizar sobre los
-          recursos del servidor. En una API RESTful, cada verbo tiene un significado especifico y debe usarse de
-          acuerdo a las convenciones establecidas:</p>
-
-        <table class="rest-method-table">
-          <thead>
-            <tr>
-              <th>Verbo</th>
-              <th>Color</th>
-              <th>Operacion</th>
-              <th>Idempotente?</th>
-              <th>Seguro?</th>
-              <th>Ejemplo de Uso</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="badge-get">GET</span></td>
-              <td>Verde</td>
-              <td>Consultar / Leer</td>
-              <td>Si</td>
-              <td>Si</td>
-              <td>Obtener lista de productos</td>
-            </tr>
-            <tr>
-              <td><span class="badge-post">POST</span></td>
-              <td>Azul</td>
-              <td>Crear / Insertar</td>
-              <td>No</td>
-              <td>No</td>
-              <td>Crear un nuevo producto</td>
-            </tr>
-            <tr>
-              <td><span class="badge-put">PUT</span></td>
-              <td>Amarillo</td>
-              <td>Actualizar (completo)</td>
-              <td>Si</td>
-              <td>No</td>
-              <td>Reemplazar un producto existente</td>
-            </tr>
-            <tr>
-              <td><span class="badge-patch">PATCH</span></td>
-              <td>Morado</td>
-              <td>Actualizar (parcial)</td>
-              <td>No</td>
-              <td>No</td>
-              <td>Actualizar solo el precio de un producto</td>
-            </tr>
-            <tr>
-              <td><span class="badge-delete">DELETE</span></td>
-              <td>Rojo</td>
-              <td>Eliminar</td>
-              <td>Si</td>
-              <td>No</td>
-              <td>Eliminar un producto</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="feature-grid">
-          <div class="feature-item">
-            <h4>Idempotencia</h4>
-            <p>Un metodo es <strong>idempotente</strong> cuando multiples solicitudes identicas producen el mismo
-              efecto que una sola solicitud. GET, PUT y DELETE son idempotentes. POST no lo es, ya que cada solicitud
-              puede crear un recurso diferente.</p>
-          </div>
-
-          <div class="feature-item">
-            <h4>Seguridad</h4>
-            <p>Un metodo es <strong>seguro</strong> cuando no modifica el estado del servidor. GET y HEAD son seguros.
-              POST, PUT, PATCH y DELETE no lo son porque modifican datos en el servidor.</p>
-          </div>
-        </div>
-
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Convencion de Nombrado de Endpoints:</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-              <li><strong>Usar sustantivos en plural:</strong> /productos, /usuarios, /pedidos</li>
-              <li><strong>Evitar verbos en la URL:</strong> ❌ /api/crearProducto, ✅ /api/productos</li>
-              <li><strong>Anidar recursos cuando sea logico:</strong> /usuarios/1/pedidos</li>
-              <li><strong>Usar parametros de ruta para identificadores:</strong> /productos/123</li>
-              <li><strong>Usar query params para filtros:</strong> /productos?categoria=electronica</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>Ejemplo de Verbos HTTP en Accion</span>
-            <span>JavaScript</span>
-          </div>
-          <pre><code><span class="cm">// GET - Obtener todos los productos</span>
-app.<span class="fn">get</span>(<span class="str">'/api/productos'</span>, (req, res) => {
-  <span class="cm">// Retorna lista de productos</span>
-});
-
-<span class="cm">// GET - Obtener un producto especifico</span>
-app.<span class="fn">get</span>(<span class="str">'/api/productos/:id'</span>, (req, res) => {
-  <span class="cm">// Retorna un producto por ID</span>
-});
-
-<span class="cm">// POST - Crear un nuevo producto</span>
-app.<span class="fn">post</span>(<span class="str">'/api/productos'</span>, (req, res) => {
-  <span class="cm">// Crea un nuevo producto con los datos del body</span>
-});
-
-<span class="cm">// PUT - Actualizar producto completo</span>
-app.<span class="fn">put</span>(<span class="str">'/api/productos/:id'</span>, (req, res) => {
-  <span class="cm">// Reemplaza completamente el producto con ID :id</span>
-});
-
-<span class="cm">// PATCH - Actualizar producto parcialmente</span>
-app.<span class="fn">patch</span>(<span class="str">'/api/productos/:id'</span>, (req, res) => {
-  <span class="cm">// Actualiza solo los campos enviados en el body</span>
-});
-
-<span class="cm">// DELETE - Eliminar un producto</span>
-app.<span class="fn">delete</span>(<span class="str">'/api/productos/:id'</span>, (req, res) => {
-  <span class="cm">// Elimina el producto con ID :id</span>
+        <div class="box box-green">
+          <h4>🔹 Query Params (filtros)</h4>
+          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">get</span>(<span class="string">'/productos'</span>, (req, res) => {
+  <span class="keyword">const</span> { categoria, precioMin } = req.query;
+  <span class="comment">// /productos?categoria=electronica&precioMin=100</span>
 });</code></pre>
         </div>
-      </section>
-
-      <!-- SECCION 4: TIPOS DE ENDPOINTS -->
-      <section id="tipos-endpoints" class="section-card">
-        <div class="section-header">
-          <div class="step-number">4</div>
-          <h2 class="section-title">Clasificacion de Endpoints segun su Funcionalidad</h2>
-        </div>
-
-        <p>En el ecosistema de Express, los endpoints se categorizan segun el verbo HTTP que implementan, cada uno con
-          un proposito especifico en el diseno de APIs RESTful:</p>
-
-        <div class="endpoint-grid">
-          <div class="endpoint-card">
-            <h4>GET - Consulta de Datos</h4>
-            <p>Utilizado para recuperar informacion del servidor sin modificar el estado del recurso. Es idempotente y
-              seguro, lo que significa que multiples solicitudes identicas producen el mismo resultado.</p>
-          </div>
-          <div class="endpoint-card">
-            <h4>POST - Creacion de Recursos</h4>
-            <p>Empleado para enviar datos al servidor y crear nuevos recursos. No es idempotente, ya que cada solicitud
-              puede generar un recurso diferente o efectos secundarios en el sistema.</p>
-          </div>
-          <div class="endpoint-card">
-            <h4>PUT - Actualizacion Completa</h4>
-            <p>Reemplaza completamente un recurso existente con los datos proporcionados. Requiere que el cliente envie
-              la representacion completa del recurso.</p>
-          </div>
-          <div class="endpoint-card">
-            <h4>DELETE - Eliminacion</h4>
-            <p>Remueve un recurso especifico del servidor. Generalmente requiere autenticacion y autorizacion para
-              prevenir eliminaciones accidentales.</p>
-          </div>
-          <div class="endpoint-card">
-            <h4>PATCH - Actualizacion Parcial</h4>
-            <p>Modifica parcialmente un recurso existente. A diferencia de PUT, solo requiere los campos que se desean
-              actualizar, lo que lo hace mas eficiente para cambios incrementales.</p>
-          </div>
-          <div class="endpoint-card">
-            <h4>HEAD - Metadatos</h4>
-            <p>Identico a GET pero sin el cuerpo de la respuesta. Util para verificar la existencia de un recurso o
-              obtener sus metadatos sin transferir datos pesados.</p>
-          </div>
-        </div>
-
-        <div class="alert-box">
-          <div class="alert-icon">i</div>
-          <div>
-            <strong>Nota Academica:</strong> La eleccion del verbo HTTP adecuado es fundamental para diseñar APIs que
-            sigan los principios RESTful y sean intuitivas para los desarrolladores que consumen nuestros servicios.
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 5: ENDPOINTS PARA ARCHIVOS -->
-      <section id="endpoints-archivos" class="section-card">
-        <div class="section-header">
-          <div class="step-number">5</div>
-          <h2 class="section-title">Endpoints para Gestion de Archivos y Directorios</h2>
-        </div>
-
-        <p>Express proporciona mecanismos especializados para manejar la transferencia de archivos, tanto para
-          subida (upload) como para descarga (download) y acceso a directorios estaticos.</p>
-
-        <div class="feature-grid">
-          <div class="feature-item">
-            <h4>Acceso a Directorios Estaticos</h4>
-            <p>Mediante el middleware <code>express.static</code>, Express puede servir archivos estaticos como
-              imagenes,
-              hojas de estilo y JavaScript desde un directorio especifico.</p>
-            <div class="code-container" style="margin: 0.5rem 0;">
-              <div class="code-header-bar">
-                <span>Servir Archivos Estaticos</span>
-              </div>
-              <pre><code>app.<span class="fn">use</span>(<span class="str">'/static'</span>, express.<span class="fn">static</span>(<span class="str">'public'</span>));</code></pre>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>Subida de Archivos (Upload)</h4>
-            <p>Para recibir archivos desde el cliente, se utiliza middleware como <code>multer</code> o
-              <code>formidable</code> que procesan formularios multipart/form-data y exponen los archivos en
-              <code>req.file</code>.
-            </p>
-            <div class="code-container" style="margin: 0.5rem 0;">
-              <div class="code-header-bar">
-                <span>Subida con Multer</span>
-              </div>
-              <pre><code><span class="kw">const</span> multer = <span class="fn">require</span>(<span class="str">'multer'</span>);
-<span class="kw">const</span> upload = multer({ dest: <span class="str">'uploads/'</span> });
-
-app.<span class="fn">post</span>(<span class="str">'/upload'</span>, upload.<span class="fn">single</span>(<span class="str">'file'</span>), (req, res) => {
-  <span class="cm">// req.file contiene los metadatos del archivo</span>
-  res.<span class="fn">json</span>({ message: <span class="str">'Archivo subido correctamente'</span>, file: req.file });
+        <div class="box box-yellow">
+          <h4>🔹 Body (datos en POST/PUT)</h4>
+          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">post</span>(<span class="string">'/productos'</span>, (req, res) => {
+  <span class="keyword">const</span> { nombre, precio } = req.body;
+  <span class="comment">// body: { "nombre": "Laptop", "precio": 1200 }</span>
 });</code></pre>
-            </div>
-          </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="feature-item">
-            <h4>Descarga de Archivos</h4>
-            <p>Express facilita la descarga de archivos mediante el metodo <code>res.download()</code>, que establece
-              las cabeceras adecuadas para que el navegador inicie la descarga.</p>
-            <div class="code-container" style="margin: 0.5rem 0;">
-              <div class="code-header-bar">
-                <span>Descarga de Archivos</span>
-              </div>
-              <pre><code>app.<span class="fn">get</span>(<span class="str">'/download/:filename'</span>, (req, res) => {
-  <span class="kw">const</span> filePath = <span class="str">`./uploads/${req.params.filename}`</span>;
-  res.<span class="fn">download</span>(filePath, (err) => {
-    <span class="kw">if</span> (err) res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ error: <span class="str">'Archivo no encontrado'</span> });
-  });
-});</code></pre>
-            </div>
-          </div>
+    <!-- ========== SECCIÓN 4: CORS - EL PROBLEMA Y LA SOLUCIÓN ========== -->
+    <div class="card">
+      <h2><span class="num">4</span> CORS - Cross-Origin Resource Sharing</h2>
+
+      <div class="alert alert-red">
+        <strong>🚨 El problema:</strong> Por seguridad, los navegadores <strong>bloquean</strong> peticiones HTTP entre
+        diferentes dominios (orígenes). Ejemplo: tu frontend en <code>http://localhost:5500</code> no puede hablar
+        con tu API en <code>http://localhost:3000</code>.
+      </div>
+
+      <div class="cors-diagram">
+        <div>🌐 Frontend (http://localhost:5500)</div>
+        <div class="arrow">⬇️</div>
+        <div>🚫 <span class="blocked">BLOQUEADO por el navegador</span> ❌</div>
+        <div class="arrow">⬇️</div>
+        <div>🖥️ API (http://localhost:3000)</div>
+        <div style="margin-top: 1rem; font-size: 0.9rem; color: #64748b;">
+          <strong>¿Por qué?</strong> El navegador aplica la <strong>Same-Origin Policy</strong> (Política de mismo
+          origen).
+        </div>
+      </div>
+
+      <div class="alert alert-green">
+        <strong>✅ La solución: CORS</strong> El servidor debe <strong>permitir explícitamente</strong> las peticiones
+        desde otros orígenes mediante cabeceras HTTP.
+      </div>
+
+      <div class="cors-diagram" style="border-color: #22c55e;">
+        <div>🌐 Frontend (http://localhost:5500)</div>
+        <div class="arrow">⬇️</div>
+        <div>✅ <span class="allowed">PERMITIDO por CORS</span> ✓</div>
+        <div class="arrow">⬇️</div>
+        <div>🖥️ API (http://localhost:3000)</div>
+        <div style="margin-top: 1rem; font-size: 0.9rem; color: #64748b;">
+          <strong>¿Cómo?</strong> El servidor envía la cabecera: <code>Access-Control-Allow-Origin: *</code>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 1rem;">🛠️ Cómo habilitar CORS en Express (2 formas)</h3>
+
+      <div class="grid-2">
+        <div>
+          <h4>Opción 1: Con el middleware <code>cors</code> (recomendado)</h4>
+          <pre style="font-size:0.8rem;"><code><span class="comment">// 1. Instalar</span>
+npm install cors
+
+<span class="comment">// 2. Importar</span>
+<span class="keyword">const</span> cors = <span class="function">require</span>(<span class="string">'cors'</span>);
+
+<span class="comment">// 3. Usar (permitir todo)</span>
+app.<span class="function">use</span>(<span class="function">cors</span>());
+
+<span class="comment">// 🔒 Configuración más segura</span>
+app.<span class="function">use</span>(<span class="function">cors</span>({
+  origin: <span class="string">'http://localhost:5500'</span>, <span class="comment">// solo este frontend</span>
+  methods: [<span class="string">'GET'</span>, <span class="string">'POST'</span>, <span class="string">'PUT'</span>, <span class="string">'PATCH'</span>, <span class="string">'DELETE'</span>],
+  allowedHeaders: [<span class="string">'Content-Type'</span>, <span class="string">'Authorization'</span>]
+}));</code></pre>
         </div>
 
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Consideraciones sobre Archivos:</strong> Al manejar subidas de archivos, es crucial implementar
-            validaciones de tipo, tamaño y contenido para prevenir ataques de denegacion de servicio o ejecucion de
-            codigo malicioso. Ademas, se recomienda almacenar los archivos en servicios externos como S3 para entornos
-            de produccion.
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 6: EJEMPLOS PRACTICOS -->
-      <section id="ejemplos-endpoints" class="section-card">
-        <div class="section-header">
-          <div class="step-number">6</div>
-          <h2 class="section-title">Ejemplos Practicos de Endpoints con Parametros</h2>
-        </div>
-
-        <p>Los endpoints pueden recibir diferentes tipos de parametros para personalizar las respuestas segun las
-          necesidades del cliente. A continuacion se presentan ejemplos de cada tipo:</p>
-
-        <div class="feature-grid">
-          <div class="feature-item">
-            <h4>Endpoint GET con Parametros de Ruta (Route Parameters)</h4>
-            <p>Los parametros de ruta se definen en la URL y se acceden mediante <code>req.params</code>.</p>
-            <div class="code-container" style="margin: 0.5rem 0;">
-              <div class="code-header-bar">
-                <span>GET con Parametros de Ruta</span>
-              </div>
-              <pre><code>app.<span class="fn">get</span>(<span class="str">'/api/usuarios/:id'</span>, (req, res) => {
-  <span class="kw">const</span> userId = req.params.id;
-  <span class="cm">// Buscar usuario con ese ID en la base de datos</span>
-  res.<span class="fn">json</span>({ usuario: { id: userId, nombre: <span class="str">'Juan'</span> } });
-});</code></pre>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>Endpoint GET con Parametros de Consulta (Query Parameters)</h4>
-            <p>Los parametros de consulta se envian en la URL despues del signo de interrogacion y se acceden mediante
-              <code>req.query</code>. Son utiles para filtros, paginacion y ordenamiento.
-            </p>
-            <div class="code-container" style="margin: 0.5rem 0;">
-              <div class="code-header-bar">
-                <span>GET con Query Parameters</span>
-              </div>
-              <pre><code>app.<span class="fn">get</span>(<span class="str">'/api/productos'</span>, (req, res) => {
-  <span class="kw">const</span> { categoria, precioMin, precioMax, pagina, limite } = req.query;
-  <span class="cm">// Construir query de base de datos con los filtros</span>
-  res.<span class="fn">json</span>({ 
-    productos: [/* productos filtrados */], 
-    paginacion: { pagina, limite, total: 100 } 
-  });
-});</code></pre>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>Endpoint POST con Cuerpo (Request Body)</h4>
-            <p>Los endpoints POST reciben datos en el cuerpo de la solicitud, que pueden ser JSON, formularios o
-              archivos
-              multipart. Se accede mediante <code>req.body</code> tras configurar el middleware correspondiente.</p>
-            <div class="code-container" style="margin: 0.5rem 0;">
-              <div class="code-header-bar">
-                <span>POST con Body JSON</span>
-              </div>
-              <pre><code>app.<span class="fn">post</span>(<span class="str">'/api/usuarios'</span>, (req, res) => {
-  <span class="kw">const</span> { nombre, email, password } = req.body;
-  <span class="cm">// Validar y crear nuevo usuario</span>
-  <span class="kw">const</span> nuevoUsuario = { id: <span class="num">101</span>, nombre, email };
-  res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({ usuario: nuevoUsuario });
-});</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Buenas Practicas:</strong> Para endpoints con muchos parametros, se recomienda usar query params
-            para
-            filtros y paginacion, route params para identificadores de recursos, y el body para datos complejos en
-            operaciones de escritura. Ademas, siempre valide y sanitice los datos de entrada.
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 7: BASE DE DATOS MYSQL -->
-      <section id="base-datos" class="section-card">
-        <div class="section-header">
-          <div class="step-number">7</div>
-          <h2 class="section-title">Base de Datos MySQL - Estructura y Datos de Prueba</h2>
-        </div>
-
-        <p>Para que el sistema funcione correctamente, necesitamos una base de datos que almacene usuarios, productos y
-          archivos. A continuacion se presenta el esquema completo con las tablas necesarias y datos precargados para
-          pruebas.</p>
-
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Requisitos Previos:</strong> Asegurese de tener MySQL instalado y en ejecucion. Puede usar XAMPP,
-            WAMP, MAMP o una instalacion nativa de MySQL. La base de datos se llamara <code>electiva3_db</code>.
-          </div>
-        </div>
-
-        <h3 style="margin: 1.5rem 0 0.5rem 0;">Diagrama de Relaciones</h3>
-        <div class="db-diagram">
-          +------------------+ +------------------+ +------------------+
-          | usuarios | | productos | | archivos |
-          +------------------+ +------------------+ +------------------+
-          | id (PK) | | id (PK) | | id (PK) |
-          | nombre | | nombre | | nombre_original |
-          | email | | descripcion | | nombre_guardado |
-          | password_hash | | precio | | ruta |
-          | rol | | categoria | | tamaño |
-          | creado_en | | stock | | tipo_mime |
-          | actualizado_en | | creado_en | | id_usuario (FK) |
-          +------------------+ | actualizado_en | | creado_en |
-          +------------------+ +------------------+
-          | |
-          | |
-          +------------------------+
-        </div>
-
-        <h3 style="margin: 1.5rem 0 0.5rem 0;">Estructura de Tablas</h3>
-        <div class="table-grid">
-          <div class="table-card">
-            <h4>Tabla: usuarios</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Campo</th>
-                  <th>Tipo</th>
-                  <th>Descripcion</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>id</td>
-                  <td>INT AUTO_INCREMENT</td>
-                  <td>Identificador unico</td>
-                </tr>
-                <tr>
-                  <td>nombre</td>
-                  <td>VARCHAR(100)</td>
-                  <td>Nombre completo</td>
-                </tr>
-                <tr>
-                  <td>email</td>
-                  <td>VARCHAR(100) UNIQUE</td>
-                  <td>Correo electronico</td>
-                </tr>
-                <tr>
-                  <td>password_hash</td>
-                  <td>VARCHAR(255)</td>
-                  <td>Hash de la contraseña</td>
-                </tr>
-                <tr>
-                  <td>rol</td>
-                  <td>ENUM('admin','docente','estudiante')</td>
-                  <td>Rol del usuario</td>
-                </tr>
-                <tr>
-                  <td>creado_en</td>
-                  <td>TIMESTAMP</td>
-                  <td>Fecha de creacion</td>
-                </tr>
-                <tr>
-                  <td>actualizado_en</td>
-                  <td>TIMESTAMP</td>
-                  <td>Fecha de actualizacion</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="table-card">
-            <h4>Tabla: productos</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Campo</th>
-                  <th>Tipo</th>
-                  <th>Descripcion</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>id</td>
-                  <td>INT AUTO_INCREMENT</td>
-                  <td>Identificador unico</td>
-                </tr>
-                <tr>
-                  <td>nombre</td>
-                  <td>VARCHAR(150)</td>
-                  <td>Nombre del producto</td>
-                </tr>
-                <tr>
-                  <td>descripcion</td>
-                  <td>TEXT</td>
-                  <td>Descripcion detallada</td>
-                </tr>
-                <tr>
-                  <td>precio</td>
-                  <td>DECIMAL(10,2)</td>
-                  <td>Precio del producto</td>
-                </tr>
-                <tr>
-                  <td>categoria</td>
-                  <td>VARCHAR(50)</td>
-                  <td>Categoria del producto</td>
-                </tr>
-                <tr>
-                  <td>stock</td>
-                  <td>INT</td>
-                  <td>Cantidad en inventario</td>
-                </tr>
-                <tr>
-                  <td>creado_en</td>
-                  <td>TIMESTAMP</td>
-                  <td>Fecha de creacion</td>
-                </tr>
-                <tr>
-                  <td>actualizado_en</td>
-                  <td>TIMESTAMP</td>
-                  <td>Fecha de actualizacion</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="table-card">
-            <h4>Tabla: archivos</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Campo</th>
-                  <th>Tipo</th>
-                  <th>Descripcion</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>id</td>
-                  <td>INT AUTO_INCREMENT</td>
-                  <td>Identificador unico</td>
-                </tr>
-                <tr>
-                  <td>nombre_original</td>
-                  <td>VARCHAR(255)</td>
-                  <td>Nombre original del archivo</td>
-                </tr>
-                <tr>
-                  <td>nombre_guardado</td>
-                  <td>VARCHAR(255)</td>
-                  <td>Nombre guardado en servidor</td>
-                </tr>
-                <tr>
-                  <td>ruta</td>
-                  <td>VARCHAR(255)</td>
-                  <td>Ruta de almacenamiento</td>
-                </tr>
-                <tr>
-                  <td>tamaño</td>
-                  <td>INT</td>
-                  <td>Tamaño en bytes</td>
-                </tr>
-                <tr>
-                  <td>tipo_mime</td>
-                  <td>VARCHAR(50)</td>
-                  <td>Tipo MIME del archivo</td>
-                </tr>
-                <tr>
-                  <td>id_usuario</td>
-                  <td>INT</td>
-                  <td>Usuario que subio el archivo (FK)</td>
-                </tr>
-                <tr>
-                  <td>creado_en</td>
-                  <td>TIMESTAMP</td>
-                  <td>Fecha de subida</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <h3 style="margin: 1.5rem 0 0.5rem 0;">Script SQL Completo</h3>
-        <div class="alert-box" style="border-left-color: #0d9488; background-color: #f0fdf4;">
-          <div>
-            <strong>Instrucciones:</strong> Copie y ejecute el siguiente script en su cliente MySQL (phpMyAdmin, MySQL
-            Workbench o linea de comandos) para crear la base de datos, las tablas y cargar los datos de prueba.
-          </div>
-        </div>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>database.sql</span>
-            <span>MySQL</span>
-          </div>
-          <pre><code><span class="sql-comment">-- ============================================================
--- Base de Datos para Electiva III - API con Express y JWT
--- ============================================================</span>
-
-<span class="sql-comment">-- Eliminar la base de datos si existe (con precaucion)</span>
-<span class="sql-keyword">DROP DATABASE IF EXISTS</span> electiva3_db;
-
-<span class="sql-comment">-- Crear la base de datos</span>
-<span class="sql-keyword">CREATE DATABASE</span> electiva3_db
-  <span class="sql-keyword">CHARACTER SET</span> utf8mb4
-  <span class="sql-keyword">COLLATE</span> utf8mb4_unicode_ci;
-
-<span class="sql-comment">-- Usar la base de datos</span>
-<span class="sql-keyword">USE</span> electiva3_db;
-
-<span class="sql-comment">-- ============================================================
--- TABLA: usuarios
--- ============================================================</span>
-<span class="sql-keyword">CREATE TABLE</span> usuarios (
-  id <span class="sql-keyword">INT</span> <span class="sql-keyword">AUTO_INCREMENT</span> <span class="sql-keyword">PRIMARY KEY</span>,
-  nombre <span class="sql-keyword">VARCHAR</span>(100) <span class="sql-keyword">NOT NULL</span>,
-  email <span class="sql-keyword">VARCHAR</span>(100) <span class="sql-keyword">NOT NULL</span> <span class="sql-keyword">UNIQUE</span>,
-  password_hash <span class="sql-keyword">VARCHAR</span>(255) <span class="sql-keyword">NOT NULL</span>,
-  rol <span class="sql-keyword">ENUM</span>(<span class="sql-string">'admin'</span>, <span class="sql-string">'docente'</span>, <span class="sql-string">'estudiante'</span>) <span class="sql-keyword">DEFAULT</span> <span class="sql-string">'estudiante'</span>,
-  creado_en <span class="sql-keyword">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span>,
-  actualizado_en <span class="sql-keyword">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span> <span class="sql-keyword">ON UPDATE</span> <span class="sql-function">CURRENT_TIMESTAMP</span>
-);
-
-<span class="sql-comment">-- ============================================================
--- TABLA: productos
--- ============================================================</span>
-<span class="sql-keyword">CREATE TABLE</span> productos (
-  id <span class="sql-keyword">INT</span> <span class="sql-keyword">AUTO_INCREMENT</span> <span class="sql-keyword">PRIMARY KEY</span>,
-  nombre <span class="sql-keyword">VARCHAR</span>(150) <span class="sql-keyword">NOT NULL</span>,
-  descripcion <span class="sql-keyword">TEXT</span>,
-  precio <span class="sql-keyword">DECIMAL</span>(10,2) <span class="sql-keyword">NOT NULL</span>,
-  categoria <span class="sql-keyword">VARCHAR</span>(50),
-  stock <span class="sql-keyword">INT</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-number">0</span>,
-  creado_en <span class="sql-keyword">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span>,
-  actualizado_en <span class="sql-keyword">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span> <span class="sql-keyword">ON UPDATE</span> <span class="sql-function">CURRENT_TIMESTAMP</span>
-);
-
-<span class="sql-comment">-- ============================================================
--- TABLA: archivos
--- ============================================================</span>
-<span class="sql-keyword">CREATE TABLE</span> archivos (
-  id <span class="sql-keyword">INT</span> <span class="sql-keyword">AUTO_INCREMENT</span> <span class="sql-keyword">PRIMARY KEY</span>,
-  nombre_original <span class="sql-keyword">VARCHAR</span>(255) <span class="sql-keyword">NOT NULL</span>,
-  nombre_guardado <span class="sql-keyword">VARCHAR</span>(255) <span class="sql-keyword">NOT NULL</span>,
-  ruta <span class="sql-keyword">VARCHAR</span>(255) <span class="sql-keyword">NOT NULL</span>,
-  tamaño <span class="sql-keyword">INT</span> <span class="sql-keyword">NOT NULL</span>,
-  tipo_mime <span class="sql-keyword">VARCHAR</span>(50),
-  id_usuario <span class="sql-keyword">INT</span>,
-  creado_en <span class="sql-keyword">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> <span class="sql-function">CURRENT_TIMESTAMP</span>,
-  <span class="sql-keyword">FOREIGN KEY</span> (id_usuario) <span class="sql-keyword">REFERENCES</span> usuarios(id) <span class="sql-keyword">ON DELETE</span> <span class="sql-keyword">SET NULL</span>
-);
-
-<span class="sql-comment">-- ============================================================
--- INDICES PARA OPTIMIZAR CONSULTAS
--- ============================================================</span>
-<span class="sql-keyword">CREATE INDEX</span> idx_productos_categoria <span class="sql-keyword">ON</span> productos(categoria);
-<span class="sql-keyword">CREATE INDEX</span> idx_productos_precio <span class="sql-keyword">ON</span> productos(precio);
-<span class="sql-keyword">CREATE INDEX</span> idx_archivos_usuario <span class="sql-keyword">ON</span> archivos(id_usuario);
-
-<span class="sql-comment">-- ============================================================
--- DATOS DE PRUEBA - USUARIOS
--- ============================================================</span>
-<span class="sql-comment">-- Nota: Las contraseñas estan hasheadas con bcrypt
--- password: '123456' -> hash: $2b$10$somehash...
--- password: 'admin123' -> hash: $2b$10$somehash...</span>
-
-<span class="sql-keyword">INSERT INTO</span> usuarios (nombre, email, password_hash, rol) <span class="sql-keyword">VALUES</span>
-(
-  <span class="sql-string">'Profesor Principal'</span>,
-  <span class="sql-string">'profesor@electiva3.com'</span>,
-  <span class="sql-string">'$2b$10$3Xq9kE6FzYbG7H8jK9L0M1N2O3P4Q5R6S7T8U9V0W1X2Y3Z4A5B6C7D8E9F0'</span>,
-  <span class="sql-string">'docente'</span>
-),
-(
-  <span class="sql-string">'Administrador'</span>,
-  <span class="sql-string">'admin@electiva3.com'</span>,
-  <span class="sql-string">'$2b$10$4Yr9kE7FzCbH8I9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5A6B7C8D9E0F'</span>,
-  <span class="sql-string">'admin'</span>
-),
-(
-  <span class="sql-string">'Estudiante Test'</span>,
-  <span class="sql-string">'estudiante@electiva3.com'</span>,
-  <span class="sql-string">'$2b$10$5Zs9kF7GzDbI9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A7B8C9D0E1F'</span>,
-  <span class="sql-string">'estudiante'</span>
-),
-(
-  <span class="sql-string">'Maria Gonzalez'</span>,
-  <span class="sql-string">'maria@electiva3.com'</span>,
-  <span class="sql-string">'$2b$10$6At0kG8HzEcJ0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A7B8C9D0E2F'</span>,
-  <span class="sql-string">'docente'</span>
-),
-(
-  <span class="sql-string">'Carlos Rodriguez'</span>,
-  <span class="sql-string">'carlos@electiva3.com'</span>,
-  <span class="sql-string">'$2b$10$7Bu1kH9IzFdK0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5A6B7C8D9E3F'</span>,
-  <span class="sql-string">'estudiante'</span>
-);
-
-<span class="sql-comment">-- ============================================================
--- DATOS DE PRUEBA - PRODUCTOS
--- ============================================================</span>
-<span class="sql-keyword">INSERT INTO</span> productos (nombre, descripcion, precio, categoria, stock) <span class="sql-keyword">VALUES</span>
-(
-  <span class="sql-string">'Laptop Pro X'</span>,
-  <span class="sql-string">'Laptop de alto rendimiento con procesador Intel i7, 16GB RAM y 1TB SSD'</span>,
-  <span class="sql-number">1299.99</span>,
-  <span class="sql-string">'electronica'</span>,
-  <span class="sql-number">15</span>
-),
-(
-  <span class="sql-string">'Mouse Inalambrico'</span>,
-  <span class="sql-string">'Mouse ergonomico Bluetooth con bateria de larga duracion'</span>,
-  <span class="sql-number">29.99</span>,
-  <span class="sql-string">'perifericos'</span>,
-  <span class="sql-number">50</span>
-),
-(
-  <span class="sql-string">'Teclado Mecanico RGB'</span>,
-  <span class="sql-string">'Teclado mecanico con switches Cherry MX y retroiluminacion RGB personalizable'</span>,
-  <span class="sql-number">89.99</span>,
-  <span class="sql-string">'perifericos'</span>,
-  <span class="sql-number">30</span>
-),
-(
-  <span class="sql-string">'Monitor 4K UHD'</span>,
-  <span class="sql-string">'Monitor de 27 pulgadas 4K UHD con HDR y frecuencia de 144Hz'</span>,
-  <span class="sql-number">499.99</span>,
-  <span class="sql-string">'electronica'</span>,
-  <span class="sql-number">10</span>
-),
-(
-  <span class="sql-string">'Auriculares Gaming'</span>,
-  <span class="sql-string">'Auriculares con cancelacion de ruido y sonido envolvente 7.1'</span>,
-  <span class="sql-number">79.99</span>,
-  <span class="sql-string">'audio'</span>,
-  <span class="sql-number">25</span>
-),
-(
-  <span class="sql-string">'Webcam HD'</span>,
-  <span class="sql-string">'Camara web Full HD 1080p con microfono integrado y ajuste de luz'</span>,
-  <span class="sql-number">45.99</span>,
-  <span class="sql-string">'electronica'</span>,
-  <span class="sql-number">20</span>
-),
-(
-  <span class="sql-string">'Libro Javascript Avanzado'</span>,
-  <span class="sql-string">'Guia completa de Javascript moderno con ejemplos practicos y patrones de diseno'</span>,
-  <span class="sql-number">39.99</span>,
-  <span class="sql-string">'libros'</span>,
-  <span class="sql-number">100</span>
-),
-(
-  <span class="sql-string">'Calculadora Cientifica'</span>,
-  <span class="sql-string">'Calculadora con funciones avanzadas para estudiantes de ingenieria'</span>,
-  <span class="sql-number">24.99</span>,
-  <span class="sql-string">'papeleria'</span>,
-  <span class="sql-number">45</span>
-),
-(
-  <span class="sql-string">'Tablet Digital'</span>,
-  <span class="sql-string">'Tablet con pantalla 10.5 pulgadas y lapiz digital para tomar notas'</span>,
-  <span class="sql-number">299.99</span>,
-  <span class="sql-string">'electronica'</span>,
-  <span class="sql-number">12</span>
-),
-(
-  <span class="sql-string">'Cargador Portatil'</span>,
-  <span class="sql-string">'Banco de energia de 20000mAh con carga rapida'</span>,
-  <span class="sql-number">34.99</span>,
-  <span class="sql-string">'accesorios'</span>,
-  <span class="sql-number">60</span>
-);
-
-<span class="sql-comment">-- ============================================================
--- CONSULTAS DE VERIFICACION
--- ============================================================</span>
-<span class="sql-comment">-- Verificar usuarios</span>
-<span class="sql-keyword">SELECT</span> id, nombre, email, rol <span class="sql-keyword">FROM</span> usuarios;
-
-<span class="sql-comment">-- Verificar productos</span>
-<span class="sql-keyword">SELECT</span> id, nombre, precio, categoria, stock <span class="sql-keyword">FROM</span> productos;
-
-<span class="sql-comment">-- Verificar archivos (vacio inicialmente)</span>
-<span class="sql-keyword">SELECT</span> <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> total_archivos <span class="sql-keyword">FROM</span> archivos;
-
-<span class="sql-comment">-- ============================================================
--- FIN DEL SCRIPT
--- ============================================================</span></code></pre>
-        </div>
-
-        <div class="alert-box" style="border-left-color: #d97706; background-color: #fffbeb;">
-          <div>
-            <strong>Credenciales de Prueba:</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-              <li><strong>Docente:</strong> profesor@electiva3.com / 123456</li>
-              <li><strong>Administrador:</strong> admin@electiva3.com / 123456</li>
-              <li><strong>Estudiante:</strong> estudiante@electiva3.com / 123456</li>
-              <li><strong>Maria:</strong> maria@electiva3.com / 123456</li>
-              <li><strong>Carlos:</strong> carlos@electiva3.com / 123456</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 8: ANALOGIA DEL CLUB VIP -->
-      <section id="analogia-club" class="section-card">
-        <div class="section-header">
-          <div class="step-number">8</div>
-          <h2 class="section-title">Analogia Conceptual: El Club VIP</h2>
-        </div>
-
-        <p>Para facilitar la comprension de la arquitectura de autenticacion, utilizaremos la analogia de un evento
-          privado de acceso restringido:</p>
-
-        <div class="analogy-box">
-          <div class="analogy-header">
-            <span>Analogia</span> Control de Acceso Perimetral
-          </div>
-          <div class="analogy-grid">
-            <div class="analogy-card">
-              <h4>JWT (Credencial Digital / Pulsera VIP)</h4>
-              <p>Representa una pulsera criptografica intransferible otorgada tras autenticar tu identidad en taquilla.
-                Contiene tus privilegios codificados y una <strong>firma de seguridad infalsificable</strong> generada
-                por el establecimiento. Como una pulsera con codigo QR que solo el sistema del club puede verificar.</p>
-            </div>
-            <div class="analogy-card">
-              <h4>Middleware (El Personal de Seguridad)</h4>
-              <p>Funciona como el filtro de seguridad apostado en los accesos VIP. Intercepta al asistente antes de su
-                ingreso, verifica la integridad matematica de la firma en la pulsera y autoriza el paso o ejecuta la
-                expulsion inmediata. Es la primera linea de defensa.</p>
-            </div>
-            <div class="analogy-card">
-              <h4>Endpoint Protegido (Area VIP)</h4>
-              <p>Son las areas de acceso restringido dentro del evento, como la zona de artistas o la sala privada.
-                Solo los asistentes con la pulsera validada pueden ingresar. Cada endpoint protegido es un espacio
-                exclusivo dentro del servidor.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="alert-box" style="border-left-color: #0d9488; background-color: #f0fdf4;">
-          <div>
-            <strong>Flujo en la Practica:</strong> El cliente (asistente) se autentica en la taquilla
-            (<code>POST /login</code>) y recibe su pulsera JWT. Luego, al intentar acceder a cualquier area VIP
-            (endpoint protegido), el personal de seguridad (middleware) verifica la pulsera antes de permitir el
-            ingreso.
-            Sin la pulsera o con una firma invalida, el acceso es denegado inmediatamente.
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 9: JWT -->
-      <section id="jwt" class="section-card">
-        <div class="section-header">
-          <div class="step-number">9</div>
-          <h2 class="section-title">Estructura y Especificacion de un JSON Web Token (RFC 7519)</h2>
-        </div>
-
-        <p>Un <strong>JWT</strong> es un estandar abierto (RFC 7519) que define un metodo compacto y autonomo para
-          transmitir informacion estructurada de forma segura entre partes como un objeto JSON. Se compone de <strong>3
-            cadenas delimitadas por puntos (.)</strong> codificadas en Base64URL:</p>
-
-        <div class="jwt-structure">
-          <div class="jwt-part jwt-header-part">
-            <h4>Header <span class="jwt-tag tag-red">Encabezado</span></h4>
-            <p><small>Especifica el tipo de token y el algoritmo de firma hash utilizado para la autenticacion.</small>
-            </p>
-            <code style="font-size:0.8rem; color:#ef4444;">{"alg": "HS256", "typ": "JWT"}</code>
-          </div>
-
-          <div class="jwt-part jwt-payload-part">
-            <h4>Payload <span class="jwt-tag tag-purple">Carga Util</span></h4>
-            <p><small>Contiene los <i>claims</i> (declaraciones de la entidad y metadatos del token). Incluye
-                informacion
-                como el ID del usuario, su rol y el tiempo de expiracion.</small></p>
-            <code
-              style="font-size:0.8rem; color:#8b5cf6;">{"sub": 101, "role": "docente", "iat": 17000000, "exp": 17000360}</code>
-          </div>
-
-          <div class="jwt-part jwt-signature-part">
-            <h4>Signature <span class="jwt-tag tag-blue">Firma Criptografica</span></h4>
-            <p><small>Valida que el mensaje no haya sido alterado en el transito y confirma la identidad del emisor.
-                Se genera combinando las dos primeras partes con una clave secreta.</small></p>
-            <code style="font-size:0.8rem; color:#06b6d4;">HMACSHA256(Base64(H) + "." + Base64(P), Secret)</code>
-          </div>
-        </div>
-
-        <div class="alert-box">
-          <div class="alert-icon">i</div>
-          <div>
-            <strong>Principio de Seguridad Criptografica:</strong> El <i>Payload</i> solo esta
-            <strong>codificado</strong> en Base64, no encriptado. Cualquier entidad intermedia puede leer su contenido.
-            Por estandar, <strong>nunca se deben almacenar datos confidenciales</strong> (como contraseñas o tokens de
-            sesion de terceros) en esta seccion. La confidencialidad se logra mediante el uso de JWE (JSON Web
-            Encryption),
-            que encripta el contenido completo.
-          </div>
-        </div>
-      </section>
-
-      <!-- SECCION 10: MIDDLEWARE -->
-      <section id="middleware" class="section-card">
-        <div class="section-header">
-          <div class="step-number">10</div>
-          <h2 class="section-title">El Patron Middleware en Express.js</h2>
-        </div>
-
-        <p>Un Middleware es un bloque funcional que se ejecuta de manera secuencial dentro del ciclo de
-          solicitud-respuesta (<i>Request-Response Cycle</i>) en Express. Tiene acceso completo al objeto de solicitud
-          (<code>req</code>), al objeto de respuesta (<code>res</code>) y a la siguiente funcion de middleware mediante
-          la funcion <code>next()</code>.</p>
-
-        <ul class="checklist" style="margin-bottom: 1.5rem;">
-          <li><span class="checklist-icon">✓</span> <strong>req (Request Object):</strong> Instancia encargada de
-            encapsular el flujo de entrada HTTP. Permite la inyeccion de contexto personalizado (ej:
-            <code>req.user = decodedData</code>) que se propaga a traves de toda la cadena de middlewares.
-          </li>
-          <li><span class="checklist-icon">✓</span> <strong>res (Response Object):</strong> Instancia que gestiona la
-            comunicacion de salida. Permite la finalizacion prematura del ciclo mediante respuestas de estado (ej:
-            <code>401 Unauthenticated</code> o <code>403 Forbidden</code>).
-          </li>
-          <li><span class="checklist-icon">✓</span> <strong>next() (Pivote de Control):</strong> Funcion callback que,
-            al ser invocada, cede el control de la ejecucion al siguiente middleware en la pila (<i>middleware
-              stack</i>). Si no se invoca, la peticion queda colgada sin respuesta.</li>
-        </ul>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>Estructura de un Middleware</span>
-            <span>JavaScript</span>
-          </div>
-          <pre><code><span class="kw">function</span> <span class="fn">miMiddleware</span>(req, res, next) {
-  <span class="cm">// Logica de procesamiento</span>
-  console.<span class="fn">log</span>(<span class="str">'Middleware ejecutado'</span>);
+        <div>
+          <h4>Opción 2: Manual (sin dependencias extra)</h4>
+          <pre style="font-size:0.8rem;"><code><span class="comment">// Middleware manual</span>
+app.<span class="function">use</span>((req, res, next) => {
+  res.<span class="function">setHeader</span>(<span class="string">'Access-Control-Allow-Origin'</span>, <span class="string">'*'</span>);
+  res.<span class="function">setHeader</span>(<span class="string">'Access-Control-Allow-Methods'</span>, 
+    <span class="string">'GET, POST, PUT, PATCH, DELETE'</span>
+  );
+  res.<span class="function">setHeader</span>(<span class="string">'Access-Control-Allow-Headers'</span>, 
+    <span class="string">'Content-Type, Authorization'</span>
+  );
   
-  <span class="cm">// Pasar el control al siguiente middleware</span>
-  <span class="fn">next</span>();
-}
-
-<span class="cm">// Uso en un endpoint</span>
-app.<span class="fn">get</span>(<span class="str">'/ruta'</span>, miMiddleware, (req, res) => {
-  res.<span class="fn">json</span>({ message: <span class="str">'Endpoint protegido'</span> });
+  <span class="comment">// Manejar peticiones OPTIONS (preflight)</span>
+  <span class="keyword">if</span> (req.method === <span class="string">'OPTIONS'</span>) {
+    <span class="keyword">return</span> res.<span class="function">sendStatus</span>(<span class="number">200</span>);
+  }
+  
+  <span class="function">next</span>();
 });</code></pre>
         </div>
-      </section>
+      </div>
 
-      <!-- SECCION 11: FLUJO -->
-      <section id="flujo" class="section-card">
-        <div class="section-header">
-          <div class="step-number">11</div>
-          <h2 class="section-title">Flujo Completo de Autenticacion Stateless</h2>
+      <div class="alert alert-orange">
+        <strong>📌 ¿Qué es una petición OPTIONS (Preflight)?</strong><br>
+        Antes de enviar peticiones "complejas" (PUT, DELETE, o con cabeceras personalizadas), el navegador
+        envía automáticamente una petición <strong>OPTIONS</strong> para preguntar al servidor qué métodos
+        y cabeceras permite. Si el servidor responde correctamente, el navegador envía la petición real.
+      </div>
+    </div>
+
+    <!-- ========== SECCIÓN 5: BASE DE DATOS ========== -->
+    <div class="card">
+      <h2><span class="num">5</span> Base de Datos MySQL</h2>
+
+      <p style="margin-bottom:0.5rem;">Ejecuta este script en MySQL para crear la base de datos y sus tablas:</p>
+
+      <pre><code><span class="comment">-- Crear base de datos</span>
+<span class="keyword">CREATE DATABASE</span> electiva3_db;
+<span class="keyword">USE</span> electiva3_db;
+
+<span class="comment">-- Tabla de usuarios</span>
+<span class="keyword">CREATE TABLE</span> usuarios (
+  id <span class="keyword">INT</span> <span class="keyword">AUTO_INCREMENT</span> <span class="keyword">PRIMARY KEY</span>,
+  nombre <span class="keyword">VARCHAR</span>(100) <span class="keyword">NOT NULL</span>,
+  email <span class="keyword">VARCHAR</span>(100) <span class="keyword">UNIQUE</span> <span class="keyword">NOT NULL</span>,
+  password_hash <span class="keyword">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>,
+  rol <span class="keyword">ENUM</span>(<span class="string">'admin'</span>, <span class="string">'docente'</span>, <span class="string">'estudiante'</span>) <span class="keyword">DEFAULT</span> <span class="string">'estudiante'</span>
+);
+
+<span class="comment">-- Tabla de productos</span>
+<span class="keyword">CREATE TABLE</span> productos (
+  id <span class="keyword">INT</span> <span class="keyword">AUTO_INCREMENT</span> <span class="keyword">PRIMARY KEY</span>,
+  nombre <span class="keyword">VARCHAR</span>(150) <span class="keyword">NOT NULL</span>,
+  descripcion <span class="keyword">TEXT</span>,
+  precio <span class="keyword">DECIMAL</span>(10,2) <span class="keyword">NOT NULL</span>,
+  categoria <span class="keyword">VARCHAR</span>(50),
+  stock <span class="keyword">INT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>
+);
+
+<span class="comment">-- Datos de prueba</span>
+<span class="keyword">INSERT INTO</span> usuarios (nombre, email, password_hash, rol) <span class="keyword">VALUES</span>
+(<span class="string">'Profesor'</span>, <span class="string">'profe@mail.com'</span>, <span class="string">'hash_de_123456'</span>, <span class="string">'docente'</span>),
+(<span class="string">'Admin'</span>, <span class="string">'admin@mail.com'</span>, <span class="string">'hash_de_123456'</span>, <span class="string">'admin'</span>);
+
+<span class="keyword">INSERT INTO</span> productos (nombre, precio, categoria, stock) <span class="keyword">VALUES</span>
+(<span class="string">'Laptop Pro'</span>, <span class="number">1299.99</span>, <span class="string">'electronica'</span>, <span class="number">15</span>),
+(<span class="string">'Mouse Inalambrico'</span>, <span class="number">29.99</span>, <span class="string">'perifericos'</span>, <span class="number">50</span>),
+(<span class="string">'Monitor 4K'</span>, <span class="number">499.99</span>, <span class="string">'electronica'</span>, <span class="number">10</span>);</code></pre>
+
+      <div class="alert alert-green" style="margin-top:0.5rem;">
+        <strong>🔑 Credenciales de prueba:</strong> profe@mail.com / 123456 | admin@mail.com / 123456
+      </div>
+    </div>
+
+    <!-- ========== SECCIÓN 6: JWT ========== -->
+    <div class="card">
+      <h2><span class="num">6</span> JWT - JSON Web Tokens</h2>
+
+      <p style="margin-bottom:0.5rem;">Un JWT es como un <strong>pase VIP</strong> que le das al usuario después de que
+        inicia sesión.</p>
+
+      <div class="grid-3">
+        <div class="box box-red">
+          <h4>Header</h4>
+          <p style="font-size:0.8rem;">Algoritmo y tipo</p>
+          <code style="font-size:0.7rem;">{"alg":"HS256","typ":"JWT"}</code>
         </div>
-
-        <div class="flow-container">
-          <div class="flow-step">
-            <strong>Fase 1: Autenticacion Inicial</strong> — El Cliente emite credenciales validas mediante
-            <code>POST /api/v1/login</code> con email y password.
-          </div>
-          <div class="flow-arrow">▼</div>
-          <div class="flow-step">
-            <strong>Fase 2: Generacion de Token</strong> — El Servidor valida las credenciales contra la base de datos,
-            firma un JWT con una clave privada y lo retorna al Cliente en la carga de respuesta. El token incluye
-            informacion del usuario y un tiempo de expiracion.
-          </div>
-          <div class="flow-arrow">▼</div>
-          <div class="flow-step">
-            <strong>Fase 3: Solicitud de Recurso Protegido</strong> — El Cliente consulta un Endpoint restringido
-            enviando el encabezado estandar: <code>Authorization: Bearer &lt;TOKEN&gt;</code>. Este es el mecanismo
-            estandarizado para transmitir credenciales en APIs.
-          </div>
-          <div class="flow-arrow">▼</div>
-          <div class="flow-step">
-            <strong>Fase 4: Intercepcion y Verificacion</strong> — El <strong>Middleware de Autenticacion</strong>
-            intercepta la solicitud, deserializa la firma y ejecuta <code>next()</code> si el token es valido o retorna
-            un error HTTP <code>401</code> (no autenticado) o <code>403</code> (prohibido) si ha sido alterado o
-            expirado.
-            Si todo es correcto, la informacion del usuario se inyecta en <code>req.user</code> para uso posterior.
-          </div>
+        <div class="box box-purple">
+          <h4>Payload</h4>
+          <p style="font-size:0.8rem;">Datos del usuario</p>
+          <code style="font-size:0.7rem;">{"id":1,"rol":"docente"}</code>
         </div>
-
-        <div class="alert-box" style="border-left-color: #0d9488; background-color: #f0fdf4;">
-          <div>
-            <strong>Ventaja del Modelo Stateless:</strong> Al no requerir almacenamiento de sesion en el servidor,
-            esta arquitectura escala horizontalmente de forma natural. Cualquier instancia del servidor puede verificar
-            el token de forma independiente, lo que permite balanceo de carga sin configuraciones adicionales. Esto
-            es posible gracias al principio <strong>Stateless</strong> de REST que vimos anteriormente.
-          </div>
+        <div class="box box-yellow">
+          <h4>Signature</h4>
+          <p style="font-size:0.8rem;">Firma para verificar</p>
+          <code style="font-size:0.7rem;">HMACSHA256(...)</code>
         </div>
-      </section>
+      </div>
 
-      <!-- SECCION 12: CODIGO -->
-      <section id="codigo" class="section-card">
-        <div class="section-header">
-          <div class="step-number">12</div>
-          <h2 class="section-title">Implementacion de Referencia con MySQL (Node.js + Express)</h2>
-        </div>
+      <div class="alert alert-blue">
+        <strong>🔒 Importante:</strong> El JWT <strong>NO está encriptado</strong>, solo codificado en Base64.
+        <strong>Nunca guardes contraseñas en el payload.</strong>
+      </div>
+    </div>
 
-        <p>Comandos de inicializacion del proyecto y gestion de dependencias en consola:</p>
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>Terminal / Bash</span>
-          </div>
-          <pre><code>npm init -y
-npm install express jsonwebtoken mysql2 multer dotenv bcrypt
-npm install --save-dev nodemon <span class="cm"># Para desarrollo</span></code></pre>
-        </div>
+    <!-- ========== SECCIÓN 7: CÓDIGO COMPLETO (CON CORS) ========== -->
+    <div class="card">
+      <h2><span class="num">7</span> Código Completo del Servidor (con CORS)</h2>
 
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Estructura de Archivos del Proyecto:</strong>
-            <pre style="background: transparent; padding: 0.5rem 0; color: #1e293b; font-size: 0.9rem;">project/
-├── server.js
-├── database/
-│   └── connection.js
-├── routes/
-│   ├── auth.js
-│   ├── productos.js
-│   └── upload.js
-├── middleware/
-│   └── auth.js
-├── uploads/
-├── .env
-└── package.json</pre>
-          </div>
-        </div>
+      <p style="margin-bottom:0.5rem;">Instala las dependencias:</p>
+      <pre><code>npm init -y
+npm install express jsonwebtoken mysql2 bcrypt dotenv multer cors
+npm install --save-dev nodemon</code></pre>
 
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>.env</span>
-            <span>Variables de Entorno</span>
-          </div>
-          <pre><code><span class="cm"># Configuracion del Servidor</span>
-PORT=3000
-JWT_SECRET=clave_super_segura_para_jwt_electiva3
+      <div class="alert alert-blue">
+        <strong>🔧 Nota:</strong> Ahora incluimos <code>cors</code> como dependencia para habilitar peticiones desde el
+        frontend.
+      </div>
 
-<span class="cm"># Configuracion de MySQL</span>
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=tu_contraseña
-DB_DATABASE=electiva3_db
-DB_PORT=3306</code></pre>
-        </div>
+      <p style="margin:1rem 0 0.5rem 0;">Archivo <strong>server.js</strong> completo:</p>
 
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>database/connection.js</span>
-            <span>Conexion a MySQL</span>
-          </div>
-          <pre><code><span class="kw">const</span> mysql = <span class="fn">require</span>(<span class="str">'mysql2'</span>);
-<span class="kw">require</span>(<span class="str">'dotenv'</span>).<span class="fn">config</span>();
+      <pre><code><span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> jwt = <span class="function">require</span>(<span class="string">'jsonwebtoken'</span>);
+<span class="keyword">const</span> bcrypt = <span class="function">require</span>(<span class="string">'bcrypt'</span>);
+<span class="keyword">const</span> mysql = <span class="function">require</span>(<span class="string">'mysql2/promise'</span>);
+<span class="keyword">const</span> multer = <span class="function">require</span>(<span class="string">'multer'</span>);
+<span class="keyword">const</span> cors = <span class="function">require</span>(<span class="string">'cors'</span>);
+<span class="keyword">const</span> dotenv = <span class="function">require</span>(<span class="string">'dotenv'</span>);
+dotenv.<span class="function">config</span>();
 
-<span class="kw">const</span> pool = mysql.<span class="fn">createPool</span>({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  port: process.env.DB_PORT,
-  waitForConnections: <span class="kw">true</span>,
-  connectionLimit: <span class="num">10</span>,
-  queueLimit: <span class="num">0</span>
+<span class="keyword">const</span> app = <span class="function">express</span>();
+
+<span class="comment">// ========== CONFIGURACIÓN DE CORS ==========</span>
+<span class="comment">// Opción 1: Permitir todo (solo para desarrollo)</span>
+app.<span class="function">use</span>(<span class="function">cors</span>());
+
+<span class="comment">// Opción 2: Configuración específica (más segura)</span>
+<span class="comment">// app.use(cors({</span>
+<span class="comment">//   origin: 'http://localhost:5500', // tu frontend</span>
+<span class="comment">//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],</span>
+<span class="comment">//   allowedHeaders: ['Content-Type', 'Authorization']</span>
+<span class="comment">// }));</span>
+
+<span class="comment">// Middlewares para parsear JSON y formularios</span>
+app.<span class="function">use</span>(express.<span class="function">json</span>());
+app.<span class="function">use</span>(express.<span class="function">urlencoded</span>({ extended: <span class="keyword">true</span> }));
+
+<span class="comment">// ========== CONEXIÓN A MYSQL ==========</span>
+<span class="keyword">const</span> pool = mysql.<span class="function">createPool</span>({
+  host: <span class="string">'localhost'</span>,
+  user: <span class="string">'root'</span>,
+  password: <span class="string">'tu_contraseña'</span>,
+  database: <span class="string">'electiva3_db'</span>
 });
 
-<span class="cm">// Promisify para usar async/await</span>
-<span class="kw">const</span> promisePool = pool.<span class="fn">promise</span>();
+<span class="comment">// ========== CONFIGURACIÓN JWT ==========</span>
+<span class="keyword">const</span> JWT_SECRET = <span class="string">'mi_clave_super_secreta'</span>;
 
-<span class="kw">module</span>.<span class="fn">exports</span> = { pool, promisePool };</code></pre>
-        </div>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>middleware/auth.js</span>
-            <span>Middleware de Autenticacion</span>
-          </div>
-          <pre><code><span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
-<span class="kw">require</span>(<span class="str">'dotenv'</span>).<span class="fn">config</span>();
-
-<span class="kw">function</span> <span class="fn">authenticateToken</span>(req, res, next) {
-  <span class="kw">const</span> authHeader = req.headers[<span class="str">'authorization'</span>];
-  <span class="kw">const</span> token = authHeader && authHeader.<span class="fn">split</span>(<span class="str">' '</span>)[<span class="num">1</span>];
-
-  <span class="kw">if</span> (!token) {
-    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Acceso no autorizado. Token no suministrado.'</span>
-    });
+<span class="comment">// ========== MIDDLEWARE DE AUTENTICACIÓN ==========</span>
+<span class="keyword">function</span> <span class="function">autenticar</span>(req, res, next) {
+  <span class="keyword">const</span> token = req.headers[<span class="string">'authorization'</span>]?.<span class="function">split</span>(<span class="string">' '</span>)[<span class="number">1</span>];
+  
+  <span class="keyword">if</span> (!token) {
+    <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">401</span>).<span class="function">json</span>({ error: <span class="string">'Token requerido'</span> });
   }
 
-  <span class="kw">try</span> {
-    <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, process.env.JWT_SECRET);
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> decoded = jwt.<span class="function">verify</span>(token, JWT_SECRET);
     req.user = decoded;
-    <span class="fn">next</span>();
-  } <span class="kw">catch</span> (err) {
-    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Token invalido o expirado.'</span>
-    });
+    <span class="function">next</span>();
+  } <span class="keyword">catch</span> {
+    res.<span class="function">status</span>(<span class="number">403</span>).<span class="function">json</span>({ error: <span class="string">'Token inválido o expirado'</span> });
   }
 }
 
-<span class="kw">module</span>.<span class="fn">exports</span> = { authenticateToken };</code></pre>
-        </div>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>server.js</span>
-            <span>Servidor Principal</span>
-          </div>
-          <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
-<span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
-<span class="kw">const</span> bcrypt = <span class="fn">require</span>(<span class="str">'bcrypt'</span>);
-<span class="kw">const</span> multer = <span class="fn">require</span>(<span class="str">'multer'</span>);
-<span class="kw">const</span> path = <span class="fn">require</span>(<span class="str">'path'</span>);
-<span class="kw">require</span>(<span class="str">'dotenv'</span>).<span class="fn">config</span>();
-
-<span class="kw">const</span> { promisePool } = <span class="fn">require</span>(<span class="str">'./database/connection'</span>);
-<span class="kw">const</span> { authenticateToken } = <span class="fn">require</span>(<span class="str">'./middleware/auth'</span>);
-
-<span class="kw">const</span> app = <span class="fn">express</span>();
-
-<span class="cm">// Middlewares globales</span>
-app.<span class="fn">use</span>(express.<span class="fn">json</span>());
-app.<span class="fn">use</span>(express.<span class="fn">urlencoded</span>({ extended: <span class="kw">true</span> }));
-
-<span class="cm">// Configuracion de Multer para archivos</span>
-<span class="kw">const</span> storage = multer.<span class="fn">diskStorage</span>({
-  destination: <span class="str">'uploads/'</span>,
-  filename: (req, file, cb) => {
-    <span class="kw">const</span> uniqueName = <span class="str">`${Date.now()}-${file.originalname}`</span>;
-    cb(<span class="kw">null</span>, uniqueName);
-  }
-});
-
-<span class="kw">const</span> upload = multer({
-  storage,
-  limits: { fileSize: <span class="num">5</span> * <span class="num">1024</span> * <span class="num">1024</span> },
-  fileFilter: (req, file, cb) => {
-    <span class="kw">const</span> allowedTypes = [<span class="str">'image/jpeg'</span>, <span class="str">'image/png'</span>, <span class="str">'image/gif'</span>, <span class="str">'application/pdf'</span>];
-    <span class="kw">if</span> (allowedTypes.<span class="fn">includes</span>(file.mimetype)) {
-      cb(<span class="kw">null</span>, <span class="kw">true</span>);
-    } <span class="kw">else</span> {
-      cb(<span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Tipo de archivo no permitido'</span>), <span class="kw">false</span>);
+<span class="comment">// ========== 1. LOGIN (público) ==========</span>
+app.<span class="function">post</span>(<span class="string">'/api/login'</span>, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> { email, password } = req.body;
+    
+    <span class="keyword">if</span> (!email || !password) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'Email y contraseña requeridos'</span> });
     }
-  }
-});
-
-<span class="cm">/* ============================================================
-   ENDPOINTS DE AUTENTICACION
-   ============================================================ */</span>
-
-<span class="cm">// POST /api/v1/login - Autenticacion de usuario</span>
-app.<span class="fn">post</span>(<span class="str">'/api/v1/login'</span>, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { email, password } = req.body;
-
-    <span class="kw">if</span> (!email || !password) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Email y contraseña son requeridos'</span>
-      });
-    }
-
-    <span class="kw">const</span> [rows] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT id, nombre, email, password_hash, rol FROM usuarios WHERE email = ?'</span>,
-      [email]
+    
+    <span class="keyword">const</span> [rows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'SELECT * FROM usuarios WHERE email = ?'</span>, [email]
     );
-
-    <span class="kw">if</span> (rows.<span class="fn">length</span> === <span class="num">0</span>) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Credenciales invalidas'</span>
-      });
+    
+    <span class="keyword">if</span> (rows.<span class="function">length</span> === <span class="number">0</span>) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">401</span>).<span class="function">json</span>({ error: <span class="string">'Credenciales inválidas'</span> });
     }
-
-    <span class="kw">const</span> user = rows[<span class="num">0</span>];
-    <span class="kw">const</span> validPassword = <span class="kw">await</span> bcrypt.<span class="fn">compare</span>(password, user.password_hash);
-
-    <span class="kw">if</span> (!validPassword) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Credenciales invalidas'</span>
-      });
+    
+    <span class="keyword">const</span> user = rows[<span class="number">0</span>];
+    <span class="keyword">const</span> valido = <span class="keyword">await</span> bcrypt.<span class="function">compare</span>(password, user.password_hash);
+    
+    <span class="keyword">if</span> (!valido) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">401</span>).<span class="function">json</span>({ error: <span class="string">'Credenciales inválidas'</span> });
     }
-
-    <span class="kw">const</span> tokenPayload = {
-      id: user.id,
-      nombre: user.nombre,
-      email: user.email,
-      rol: user.rol
-    };
-
-    <span class="kw">const</span> token = jwt.<span class="fn">sign</span>(tokenPayload, process.env.JWT_SECRET, {
-      expiresIn: <span class="str">'1h'</span>
-    });
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      message: <span class="str">'Autenticacion exitosa'</span>,
+    
+    <span class="keyword">const</span> token = jwt.<span class="function">sign</span>(
+      { id: user.id, email: user.email, rol: user.rol },
+      JWT_SECRET,
+      { expiresIn: <span class="string">'1h'</span> }
+    );
+    
+    res.<span class="function">json</span>({ 
+      mensaje: <span class="string">'Login exitoso'</span>, 
       token,
-      usuario: {
-        id: user.id,
-        nombre: user.nombre,
-        email: user.email,
-        rol: user.rol
-      }
+      usuario: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol }
     });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error en login:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error interno del servidor'</span>
-    });
+  } <span class="keyword">catch</span> (error) {
+    console.<span class="function">error</span>(error);
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error en el servidor'</span> });
   }
 });
 
-<span class="cm">/* ============================================================
-   ENDPOINTS DE PRODUCTOS (Protegidos)
-   ============================================================ */</span>
-
-<span class="cm">// GET /api/v1/productos - Listar productos con filtros</span>
-app.<span class="fn">get</span>(<span class="str">'/api/v1/productos'</span>, authenticateToken, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { categoria, precioMin, precioMax, busqueda, pagina = <span class="num">1</span>, limite = <span class="num">10</span> } = req.query;
-    <span class="kw">const</span> offset = (pagina - <span class="num">1</span>) * limite;
-
-    <span class="kw">let</span> sql = <span class="str">'SELECT * FROM productos WHERE 1=1'</span>;
-    <span class="kw">const</span> params = [];
-
-    <span class="kw">if</span> (categoria) {
-      sql += <span class="str">' AND categoria = ?'</span>;
-      params.<span class="fn">push</span>(categoria);
+<span class="comment">// ========== 2. LISTAR PRODUCTOS (protegido) ==========</span>
+app.<span class="function">get</span>(<span class="string">'/api/productos'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> { categoria, precioMin, precioMax, busqueda, pagina = <span class="number">1</span>, limite = <span class="number">10</span> } = req.query;
+    <span class="keyword">const</span> offset = (pagina - <span class="number">1</span>) * limite;
+    
+    <span class="keyword">let</span> sql = <span class="string">'SELECT * FROM productos WHERE 1=1'</span>;
+    <span class="keyword">const</span> params = [];
+    
+    <span class="keyword">if</span> (categoria) { sql += <span class="string">' AND categoria = ?'</span>; params.<span class="function">push</span>(categoria); }
+    <span class="keyword">if</span> (precioMin) { sql += <span class="string">' AND precio >= ?'</span>; params.<span class="function">push</span>(<span class="function">parseFloat</span>(precioMin)); }
+    <span class="keyword">if</span> (precioMax) { sql += <span class="string">' AND precio <= ?'</span>; params.<span class="function">push</span>(<span class="function">parseFloat</span>(precioMax)); }
+    <span class="keyword">if</span> (busqueda) { 
+      sql += <span class="string">' AND (nombre LIKE ? OR descripcion LIKE ?)'</span>; 
+      params.<span class="function">push</span>(<span class="string">`%${busqueda}%`</span>, <span class="string">`%${busqueda}%`</span>); 
     }
-
-    <span class="kw">if</span> (precioMin) {
-      sql += <span class="str">' AND precio >= ?'</span>;
-      params.<span class="fn">push</span>(parseFloat(precioMin));
-    }
-
-    <span class="kw">if</span> (precioMax) {
-      sql += <span class="str">' AND precio <= ?'</span>;
-      params.<span class="fn">push</span>(parseFloat(precioMax));
-    }
-
-    <span class="kw">if</span> (busqueda) {
-      sql += <span class="str">' AND (nombre LIKE ? OR descripcion LIKE ?)'</span>;
-      params.<span class="fn">push</span>(<span class="str">`%${busqueda}%`</span>, <span class="str">`%${busqueda}%`</span>);
-    }
-
-    <span class="kw">const</span> [totalRows] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">`SELECT COUNT(*) as total FROM (${sql}) as subquery`</span>,
-      params
+    
+    <span class="comment">// Contar total</span>
+    <span class="keyword">const</span> [totalRows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">`SELECT COUNT(*) as total FROM (${sql}) as sub`</span>, params
     );
-
-    sql += <span class="str">' LIMIT ? OFFSET ?'</span>;
-    params.<span class="fn">push</span>(parseInt(limite), parseInt(offset));
-
-    <span class="kw">const</span> [rows] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(sql, params);
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      data: rows,
-      paginacion: {
-        pagina: parseInt(pagina),
-        limite: parseInt(limite),
-        total: totalRows[<span class="num">0</span>].total,
-        totalPaginas: Math.<span class="fn">ceil</span>(totalRows[<span class="num">0</span>].total / limite)
-      }
+    
+    sql += <span class="string">' LIMIT ? OFFSET ?'</span>;
+    params.<span class="function">push</span>(<span class="function">parseInt</span>(limite), <span class="function">parseInt</span>(offset));
+    
+    <span class="keyword">const</span> [rows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(sql, params);
+    
+    res.<span class="function">json</span>({ 
+      productos: rows, 
+      pagina: <span class="function">parseInt</span>(pagina), 
+      limite: <span class="function">parseInt</span>(limite),
+      total: totalRows[<span class="number">0</span>].total,
+      totalPaginas: Math.<span class="function">ceil</span>(totalRows[<span class="number">0</span>].total / limite)
     });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al listar productos:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al obtener productos'</span>
-    });
+  } <span class="keyword">catch</span> (error) {
+    console.<span class="function">error</span>(error);
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al obtener productos'</span> });
   }
 });
 
-<span class="cm">// GET /api/v1/productos/:id - Obtener un producto por ID</span>
-app.<span class="fn">get</span>(<span class="str">'/api/v1/productos/:id'</span>, authenticateToken, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { id } = req.params;
-
-    <span class="kw">const</span> [rows] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [id]
+<span class="comment">// ========== 3. OBTENER UN PRODUCTO (protegido) ==========</span>
+app.<span class="function">get</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> [rows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [req.params.id]
     );
-
-    <span class="kw">if</span> (rows.<span class="fn">length</span> === <span class="num">0</span>) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Producto no encontrado'</span>
-      });
+    
+    <span class="keyword">if</span> (rows.<span class="function">length</span> === <span class="number">0</span>) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ error: <span class="string">'Producto no encontrado'</span> });
     }
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      data: rows[<span class="num">0</span>]
-    });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al obtener producto:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al obtener producto'</span>
-    });
+    
+    res.<span class="function">json</span>(rows[<span class="number">0</span>]);
+  } <span class="keyword">catch</span> (error) {
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al obtener producto'</span> });
   }
 });
 
-<span class="cm">// POST /api/v1/productos - Crear nuevo producto</span>
-app.<span class="fn">post</span>(<span class="str">'/api/v1/productos'</span>, authenticateToken, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { nombre, descripcion, precio, categoria, stock } = req.body;
-
-    <span class="kw">if</span> (!nombre || !precio) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Nombre y precio son requeridos'</span>
-      });
+<span class="comment">// ========== 4. CREAR PRODUCTO (protegido) ==========</span>
+app.<span class="function">post</span>(<span class="string">'/api/productos'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> { nombre, descripcion, precio, categoria, stock } = req.body;
+    
+    <span class="keyword">if</span> (!nombre || !precio) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'Nombre y precio requeridos'</span> });
     }
-
-    <span class="kw">const</span> [result] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'INSERT INTO productos (nombre, descripcion, precio, categoria, stock) VALUES (?, ?, ?, ?, ?)'</span>,
-      [nombre, descripcion || <span class="str">''</span>, precio, categoria || <span class="str">'general'</span>, stock || <span class="num">0</span>]
+    
+    <span class="keyword">const</span> [result] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'INSERT INTO productos (nombre, descripcion, precio, categoria, stock) VALUES (?, ?, ?, ?, ?)'</span>,
+      [nombre, descripcion || <span class="string">''</span>, precio, categoria || <span class="string">'general'</span>, stock || <span class="number">0</span>]
     );
-
-    <span class="kw">const</span> [newProduct] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [result.insertId]
+    
+    <span class="keyword">const</span> [newProduct] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [result.insertId]
     );
-
-    res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      message: <span class="str">'Producto creado exitosamente'</span>,
-      data: newProduct[<span class="num">0</span>]
-    });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al crear producto:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al crear producto'</span>
-    });
+    
+    res.<span class="function">status</span>(<span class="number">201</span>).<span class="function">json</span>(newProduct[<span class="number">0</span>]);
+  } <span class="keyword">catch</span> (error) {
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al crear producto'</span> });
   }
 });
 
-<span class="cm">// PUT /api/v1/productos/:id - Actualizar producto completo</span>
-app.<span class="fn">put</span>(<span class="str">'/api/v1/productos/:id'</span>, authenticateToken, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { id } = req.params;
-    <span class="kw">const</span> { nombre, descripcion, precio, categoria, stock } = req.body;
-
-    <span class="kw">const</span> [existing] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [id]
-    );
-
-    <span class="kw">if</span> (existing.<span class="fn">length</span> === <span class="num">0</span>) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Producto no encontrado'</span>
-      });
-    }
-
-    <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria = ?, stock = ? WHERE id = ?'</span>,
+<span class="comment">// ========== 5. ACTUALIZAR PRODUCTO (PUT - completo) ==========</span>
+app.<span class="function">put</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> { nombre, descripcion, precio, categoria, stock } = req.body;
+    <span class="keyword">const</span> { id } = req.params;
+    
+    <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria = ?, stock = ? WHERE id = ?'</span>,
       [nombre, descripcion, precio, categoria, stock, id]
     );
-
-    <span class="kw">const</span> [updated] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [id]
+    
+    <span class="keyword">const</span> [updated] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [id]
     );
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      message: <span class="str">'Producto actualizado completamente'</span>,
-      data: updated[<span class="num">0</span>]
-    });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al actualizar producto:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al actualizar producto'</span>
-    });
+    
+    res.<span class="function">json</span>(updated[<span class="number">0</span>]);
+  } <span class="keyword">catch</span> (error) {
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al actualizar producto'</span> });
   }
 });
 
-<span class="cm">// PATCH /api/v1/productos/:id - Actualizar producto parcialmente</span>
-app.<span class="fn">patch</span>(<span class="str">'/api/v1/productos/:id'</span>, authenticateToken, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { id } = req.params;
-    <span class="kw">const</span> updates = req.body;
-
-    <span class="kw">const</span> [existing] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [id]
+<span class="comment">// ========== 6. ACTUALIZAR PRODUCTO (PATCH - parcial) ==========</span>
+app.<span class="function">patch</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> { id } = req.params;
+    <span class="keyword">const</span> updates = req.body;
+    
+    <span class="keyword">const</span> campos = <span class="function">Object</span>.<span class="function">keys</span>(updates);
+    <span class="keyword">if</span> (campos.<span class="function">length</span> === <span class="number">0</span>) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'No se enviaron campos para actualizar'</span> });
+    }
+    
+    <span class="keyword">const</span> valores = <span class="function">Object</span>.<span class="function">values</span>(updates);
+    <span class="keyword">const</span> setClause = campos.<span class="function">map</span>(c => <span class="string">`${c} = ?`</span>).<span class="function">join</span>(<span class="string">', '</span>);
+    valores.<span class="function">push</span>(id);
+    
+    <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">`UPDATE productos SET ${setClause} WHERE id = ?`</span>, valores
     );
-
-    <span class="kw">if</span> (existing.<span class="fn">length</span> === <span class="num">0</span>) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Producto no encontrado'</span>
-      });
-    }
-
-    <span class="kw">const</span> allowedFields = [<span class="str">'nombre'</span>, <span class="str">'descripcion'</span>, <span class="str">'precio'</span>, <span class="str">'categoria'</span>, <span class="str">'stock'</span>];
-    <span class="kw">const</span> setClauses = [];
-    <span class="kw">const</span> values = [];
-
-    <span class="kw">for</span> (<span class="kw">const</span> [key, value] <span class="kw">of</span> <span class="fn">Object</span>.<span class="fn">entries</span>(updates)) {
-      <span class="kw">if</span> (allowedFields.<span class="fn">includes</span>(key)) {
-        setClauses.<span class="fn">push</span>(<span class="str">`${key} = ?`</span>);
-        values.<span class="fn">push</span>(value);
-      }
-    }
-
-    <span class="kw">if</span> (setClauses.<span class="fn">length</span> === <span class="num">0</span>) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'No se proporcionaron campos para actualizar'</span>
-      });
-    }
-
-    values.<span class="fn">push</span>(id);
-    <span class="kw">const</span> sql = <span class="str">`UPDATE productos SET ${setClauses.join(', ')} WHERE id = ?`</span>;
-
-    <span class="kw">await</span> promisePool.<span class="fn">execute</span>(sql, values);
-
-    <span class="kw">const</span> [updated] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [id]
+    
+    <span class="keyword">const</span> [updated] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [id]
     );
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      message: <span class="str">'Producto actualizado parcialmente'</span>,
-      data: updated[<span class="num">0</span>]
-    });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al actualizar producto:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al actualizar producto'</span>
-    });
+    
+    res.<span class="function">json</span>(updated[<span class="number">0</span>]);
+  } <span class="keyword">catch</span> (error) {
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al actualizar producto'</span> });
   }
 });
 
-<span class="cm">// DELETE /api/v1/productos/:id - Eliminar producto</span>
-app.<span class="fn">delete</span>(<span class="str">'/api/v1/productos/:id'</span>, authenticateToken, <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">const</span> { id } = req.params;
-
-    <span class="kw">const</span> [existing] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'SELECT * FROM productos WHERE id = ?'</span>,
-      [id]
-    );
-
-    <span class="kw">if</span> (existing.<span class="fn">length</span> === <span class="num">0</span>) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'Producto no encontrado'</span>
-      });
-    }
-
-    <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'DELETE FROM productos WHERE id = ?'</span>,
-      [id]
-    );
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      message: <span class="str">'Producto eliminado exitosamente'</span>
-    });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al eliminar producto:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al eliminar producto'</span>
-    });
+<span class="comment">// ========== 7. ELIMINAR PRODUCTO (protegido) ==========</span>
+app.<span class="function">delete</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="keyword">await</span> pool.<span class="function">execute</span>(<span class="string">'DELETE FROM productos WHERE id = ?'</span>, [req.params.id]);
+    res.<span class="function">json</span>({ mensaje: <span class="string">'Producto eliminado correctamente'</span> });
+  } <span class="keyword">catch</span> (error) {
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al eliminar producto'</span> });
   }
 });
 
-<span class="cm">/* ============================================================
-   ENDPOINT DE SUBIDA DE ARCHIVOS
-   ============================================================ */</span>
-
-app.<span class="fn">post</span>(<span class="str">'/api/v1/upload'</span>, authenticateToken, upload.<span class="fn">single</span>(<span class="str">'archivo'</span>), <span class="kw">async</span> (req, res) => {
-  <span class="kw">try</span> {
-    <span class="kw">if</span> (!req.file) {
-      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({
-        status: <span class="str">'error'</span>,
-        error: <span class="str">'No se ha enviado ningun archivo'</span>
-      });
-    }
-
-    <span class="kw">const</span> { originalname, filename, path: filePath, size, mimetype } = req.file;
-
-    <span class="kw">const</span> [result] = <span class="kw">await</span> promisePool.<span class="fn">execute</span>(
-      <span class="str">'INSERT INTO archivos (nombre_original, nombre_guardado, ruta, tamaño, tipo_mime, id_usuario) VALUES (?, ?, ?, ?, ?, ?)'</span>,
-      [originalname, filename, filePath, size, mimetype, req.user.id]
-    );
-
-    res.<span class="fn">json</span>({
-      status: <span class="str">'success'</span>,
-      message: <span class="str">'Archivo subido correctamente'</span>,
-      data: {
-        id: result.insertId,
-        nombre_original: originalname,
-        nombre_guardado: filename,
-        ruta: filePath,
-        tamaño: size,
-        tipo_mime: mimetype
-      }
-    });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error al subir archivo:'</span>, error);
-    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
-      status: <span class="str">'error'</span>,
-      error: <span class="str">'Error al subir archivo'</span>
-    });
+<span class="comment">// ========== 8. SUBIR ARCHIVOS (protegido) ==========</span>
+<span class="keyword">const</span> storage = multer.<span class="function">diskStorage</span>({
+  destination: <span class="string">'uploads/'</span>,
+  filename: (req, file, cb) => {
+    cb(<span class="keyword">null</span>, <span class="string">`${Date.now()}-${file.originalname}`</span>);
   }
 });
 
-<span class="cm">// Iniciar servidor</span>
-<span class="kw">const</span> PORT = process.env.PORT || <span class="num">3000</span>;
-app.<span class="fn">listen</span>(PORT, () => {
-  console.<span class="fn">log</span>(<span class="str">`Servidor ejecutandose en http://localhost:${PORT}`</span>);
+<span class="keyword">const</span> upload = multer({ 
+  storage,
+  limits: { fileSize: <span class="number">5</span> * <span class="number">1024</span> * <span class="number">1024</span> }, <span class="comment">// 5MB</span>
+  fileFilter: (req, file, cb) => {
+    <span class="keyword">const</span> allowed = [<span class="string">'image/jpeg'</span>, <span class="string">'image/png'</span>, <span class="string">'image/gif'</span>, <span class="string">'application/pdf'</span>];
+    <span class="keyword">if</span> (allowed.<span class="function">includes</span>(file.mimetype)) {
+      cb(<span class="keyword">null</span>, <span class="keyword">true</span>);
+    } <span class="keyword">else</span> {
+      cb(<span class="keyword">new</span> <span class="function">Error</span>(<span class="string">'Tipo de archivo no permitido'</span>), <span class="keyword">false</span>);
+    }
+  }
+});
+
+app.<span class="function">post</span>(<span class="string">'/api/upload'</span>, autenticar, upload.<span class="function">single</span>(<span class="string">'archivo'</span>), (req, res) => {
+  <span class="keyword">if</span> (!req.file) {
+    <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'No se envió ningún archivo'</span> });
+  }
+  res.<span class="function">json</span>({ 
+    mensaje: <span class="string">'Archivo subido correctamente'</span>,
+    archivo: req.file.originalname,
+    tamaño: req.file.size,
+    tipo: req.file.mimetype
+  });
+});
+
+<span class="comment">// ========== RUTA NO ENCONTRADA (404) ==========</span>
+app.<span class="function">use</span>((req, res) => {
+  res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ error: <span class="string">'Ruta no encontrada'</span> });
+});
+
+<span class="comment">// ========== INICIAR SERVIDOR ==========</span>
+<span class="keyword">const</span> PORT = process.env.PORT || <span class="number">3000</span>;
+app.<span class="function">listen</span>(PORT, () => {
+  console.<span class="function">log</span>(<span class="string">`🚀 Servidor en http://localhost:${PORT}`</span>);
+  console.<span class="function">log</span>(<span class="string">`📋 CORS habilitado para todos los orígenes`</span>);
+});</code></pre>
+    </div>
+
+    <!-- ========== SECCIÓN 8: CONSUMO DESDE FRONTEND ========== -->
+    <div class="card">
+      <h2><span class="num">8</span> Consumir desde el Frontend (Fetch)</h2>
+
+      <div class="alert alert-blue">
+        <strong>🌐 Nota:</strong> Gracias a CORS, tu frontend puede hacer peticiones a la API sin problemas.
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h3>Login</h3>
+          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> login = <span class="keyword">async</span> () => {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/login'</span>, {
+    method: <span class="string">'POST'</span>,
+    headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+    body: <span class="function">JSON</span>.<span class="function">stringify</span>({
+      email: <span class="string">'profe@mail.com'</span>,
+      password: <span class="string">'123456'</span>
+    })
+  });
+  <span class="keyword">const</span> data = <span class="keyword">await</span> res.<span class="function">json</span>();
+  <span class="keyword">if</span> (data.token) {
+    localStorage.<span class="function">setItem</span>(<span class="string">'token'</span>, data.token);
+    console.<span class="function">log</span>(<span class="string">'✅ Login exitoso'</span>);
+  }
+  <span class="keyword">return</span> data;
+};</code></pre>
+        </div>
+
+        <div>
+          <h3>Obtener productos</h3>
+          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> getProductos = <span class="keyword">async</span> () => {
+  <span class="keyword">const</span> token = localStorage.<span class="function">getItem</span>(<span class="string">'token'</span>);
+  
+  <span class="keyword">if</span> (!token) {
+    console.<span class="function">error</span>(<span class="string">'❌ No hay token'</span>);
+    <span class="keyword">return</span>;
+  }
+  
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/productos'</span>, {
+    headers: { <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span> }
+  });
+  
+  <span class="keyword">if</span> (res.<span class="function">status</span> === <span class="number">401</span>) {
+    console.<span class="function">log</span>(<span class="string">'⏰ Token expirado, redirigiendo al login...'</span>);
+    localStorage.<span class="function">removeItem</span>(<span class="string">'token'</span>);
+    <span class="comment">// window.location.href = '/login'</span>
+  }
+  
+  <span class="keyword">const</span> data = <span class="keyword">await</span> res.<span class="function">json</span>();
+  <span class="keyword">return</span> data;
+};</code></pre>
+        </div>
+
+        <div>
+          <h3>Crear producto</h3>
+          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> crearProducto = <span class="keyword">async</span> (producto) => {
+  <span class="keyword">const</span> token = localStorage.<span class="function">getItem</span>(<span class="string">'token'</span>);
+  
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/productos'</span>, {
+    method: <span class="string">'POST'</span>,
+    headers: {
+      <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span>,
+      <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>
+    },
+    body: <span class="function">JSON</span>.<span class="function">stringify</span>(producto)
+  });
+  
+  <span class="keyword">return</span> <span class="keyword">await</span> res.<span class="function">json</span>();
+};
+
+<span class="comment">// Uso</span>
+<span class="keyword">const</span> nuevo = <span class="keyword">await</span> <span class="function">crearProducto</span>({
+  nombre: <span class="string">'Teclado RGB'</span>,
+  precio: <span class="number">89.99</span>,
+  categoria: <span class="string">'perifericos'</span>,
+  stock: <span class="number">30</span>
 });</code></pre>
         </div>
-      </section>
 
-      <!-- SECCION 13: CONSUMO DESDE FRONTEND CON FETCH -->
-      <section id="frontend" class="section-card">
-        <div class="section-header">
-          <div class="step-number">13</div>
-          <h2 class="section-title">Consumo de Endpoints desde el Frontend con Fetch API</h2>
-        </div>
-
-        <p>La <strong>Fetch API</strong> es la interfaz nativa de JavaScript para realizar peticiones HTTP asincronas
-          desde el navegador. A continuacion se muestran ejemplos practicos de como consumir cada tipo de endpoint
-          desde el frontend:</p>
-
-        <div class="alert-box" style="border-left-color: #2563eb; background-color: #eff6ff;">
-          <div>
-            <strong>Estructura Basica de Fetch:</strong>
-            <pre style="background: transparent; padding: 0.5rem 0; color: #1e293b; font-size: 0.9rem;"><code>fetch(url, {
-  method: 'GET', <span class="cm">// o POST, PUT, DELETE, etc.</span>
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(data)
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Error:', error));</code></pre>
-          </div>
-        </div>
-
-        <div class="feature-grid">
-          <div class="feature-item">
-            <h4>1. POST - Autenticacion (Login)</h4>
-            <p>El primer paso es autenticar al usuario y obtener el token JWT:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Login para obtener token</strong><br>
-                const loginData = {<br>
-                &nbsp;&nbsp;email: 'profesor@electiva3.com',<br>
-                &nbsp;&nbsp;password: '123456'<br>
-                };<br><br>
-                fetch('http://localhost:3000/api/v1/login', {<br>
-                &nbsp;&nbsp;method: 'POST',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json'<br>
-                &nbsp;&nbsp;},<br>
-                &nbsp;&nbsp;body: JSON.stringify(loginData)<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => {<br>
-                &nbsp;&nbsp;if (data.status === 'success') {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;localStorage.setItem('token', data.token);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;localStorage.setItem('user', JSON.stringify(data.usuario));<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;console.log('Login exitoso:', data);<br>
-                &nbsp;&nbsp;}<br>
-                })<br>
-                .catch(error => console.error('Error en login:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>2. GET - Listar Productos con Filtros</h4>
-            <p>Obtener productos con filtros y paginacion:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Listar productos (GET)</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const params = new URLSearchParams({<br>
-                &nbsp;&nbsp;categoria: 'electronica',<br>
-                &nbsp;&nbsp;precioMin: 100,<br>
-                &nbsp;&nbsp;pagina: 1,<br>
-                &nbsp;&nbsp;limite: 10<br>
-                });<br><br>
-                fetch(`http://localhost:3000/api/v1/productos?${params}`, {<br>
-                &nbsp;&nbsp;method: 'GET',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`<br>
-                &nbsp;&nbsp;}<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => {<br>
-                &nbsp;&nbsp;console.log('Productos:', data);<br>
-                &nbsp;&nbsp;console.log('Paginacion:', data.paginacion);<br>
-                })<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>3. GET - Obtener Producto por ID</h4>
-            <p>Consultar un producto especifico:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Obtener producto por ID</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const productId = 1;<br><br>
-                fetch(`http://localhost:3000/api/v1/productos/${productId}`, {<br>
-                &nbsp;&nbsp;method: 'GET',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`<br>
-                &nbsp;&nbsp;}<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => console.log('Producto:', data))<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>4. POST - Crear Producto</h4>
-            <p>Crear un nuevo producto:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Crear nuevo producto (POST)</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const nuevoProducto = {<br>
-                &nbsp;&nbsp;nombre: 'Teclado Mecanico',<br>
-                &nbsp;&nbsp;descripcion: 'Teclado con switches Cherry MX',<br>
-                &nbsp;&nbsp;precio: 89.99,<br>
-                &nbsp;&nbsp;categoria: 'perifericos',<br>
-                &nbsp;&nbsp;stock: 30<br>
-                };<br><br>
-                fetch('http://localhost:3000/api/v1/productos', {<br>
-                &nbsp;&nbsp;method: 'POST',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`,<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json'<br>
-                &nbsp;&nbsp;},<br>
-                &nbsp;&nbsp;body: JSON.stringify(nuevoProducto)<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => console.log('Producto creado:', data))<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>5. PUT - Actualizacion Completa</h4>
-            <p>Reemplazar completamente un producto:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Actualizar producto completo (PUT)</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const productId = 1;<br>
-                const productoActualizado = {<br>
-                &nbsp;&nbsp;nombre: 'Laptop Pro X',<br>
-                &nbsp;&nbsp;descripcion: 'Laptop con Intel i9 y 32GB RAM',<br>
-                &nbsp;&nbsp;precio: 1599.99,<br>
-                &nbsp;&nbsp;categoria: 'electronica',<br>
-                &nbsp;&nbsp;stock: 8<br>
-                };<br><br>
-                fetch(`http://localhost:3000/api/v1/productos/${productId}`, {<br>
-                &nbsp;&nbsp;method: 'PUT',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`,<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json'<br>
-                &nbsp;&nbsp;},<br>
-                &nbsp;&nbsp;body: JSON.stringify(productoActualizado)<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => console.log('Producto actualizado:', data))<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>6. PATCH - Actualizacion Parcial</h4>
-            <p>Actualizar solo el precio y stock:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Actualizar parcialmente (PATCH)</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const productId = 1;<br>
-                const actualizacion = {<br>
-                &nbsp;&nbsp;precio: 99.99,<br>
-                &nbsp;&nbsp;stock: 25<br>
-                };<br><br>
-                fetch(`http://localhost:3000/api/v1/productos/${productId}`, {<br>
-                &nbsp;&nbsp;method: 'PATCH',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`,<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json'<br>
-                &nbsp;&nbsp;},<br>
-                &nbsp;&nbsp;body: JSON.stringify(actualizacion)<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => console.log('Producto actualizado:', data))<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>7. DELETE - Eliminar Producto</h4>
-            <p>Eliminar un producto:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Eliminar producto (DELETE)</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const productId = 10;<br><br>
-                fetch(`http://localhost:3000/api/v1/productos/${productId}`, {<br>
-                &nbsp;&nbsp;method: 'DELETE',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`<br>
-                &nbsp;&nbsp;}<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => console.log('Producto eliminado:', data))<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <h4>8. Subida de Archivos con FormData</h4>
-            <p>Enviar un archivo usando FormData:</p>
-            <div class="fetch-example">
-              <code>
-                <strong>// Subir archivo con FormData</strong><br>
-                const token = localStorage.getItem('token');<br>
-                const formData = new FormData();<br>
-                const fileInput = document.getElementById('fileInput');<br>
-                const file = fileInput.files[0];<br>
-                formData.append('archivo', file);<br><br>
-                fetch('http://localhost:3000/api/v1/upload', {<br>
-                &nbsp;&nbsp;method: 'POST',<br>
-                &nbsp;&nbsp;headers: {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;'Authorization': `Bearer ${token}`<br>
-                &nbsp;&nbsp;},<br>
-                &nbsp;&nbsp;body: formData<br>
-                })<br>
-                .then(response => response.json())<br>
-                .then(data => console.log('Archivo subido:', data))<br>
-                .catch(error => console.error('Error:', error));
-              </code>
-            </div>
-          </div>
-        </div>
-
-        <div class="alert-box" style="border-left-color: #0d9488; background-color: #f0fdf4;">
-          <div>
-            <strong>Buenas Practicas para el Frontend:</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-              <li><strong>Almacenamiento del Token:</strong> Guarde el JWT en <code>localStorage</code> o
-                <code>sessionStorage</code> para persistencia entre recargas.</li>
-              <li><strong>Manejo de Errores:</strong> Verifique el estado de la respuesta (<code>response.ok</code>)
-                antes de parsear el JSON.</li>
-              <li><strong>Token Expirado:</strong> Implemente un interceptor que detecte errores 401 y redirija al login
-                o refresh token.</li>
-              <li><strong>Abstraccion:</strong> Cree una funcion <code>apiRequest()</code> que centralice la logica de
-                autenticacion y manejo de errores.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="code-container">
-          <div class="code-header-bar">
-            <span>Ejemplo de Abstraccion para el Frontend</span>
-            <span>JavaScript</span>
-          </div>
-          <pre><code><span class="cm">// Funcion helper para todas las peticiones a la API</span>
-<span class="kw">async function</span> <span class="fn">apiRequest</span>(endpoint, options = {}) {
-  <span class="kw">const</span> token = localStorage.<span class="fn">getItem</span>(<span class="str">'token'</span>);
+        <div>
+          <h3>Actualizar parcialmente</h3>
+          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> actualizarParcial = <span class="keyword">async</span> (id, datos) => {
+  <span class="keyword">const</span> token = localStorage.<span class="function">getItem</span>(<span class="string">'token'</span>);
   
-  <span class="kw">const</span> defaultOptions = {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">`http://localhost:3000/api/productos/${id}`</span>, {
+    method: <span class="string">'PATCH'</span>,
     headers: {
-      <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
-      ...(token && { <span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span> })
-    }
-  };
-
-  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`http://localhost:3000/api/v1${endpoint}`</span>, {
-    ...defaultOptions,
-    ...options,
-    headers: { ...defaultOptions.headers, ...options.headers }
+      <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span>,
+      <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>
+    },
+    body: <span class="function">JSON</span>.<span class="function">stringify</span>(datos)
   });
+  
+  <span class="keyword">return</span> <span class="keyword">await</span> res.<span class="function">json</span>();
+};
 
-  <span class="kw">if</span> (response.<span class="fn">status</span> === <span class="num">401</span>) {
-    <span class="cm">// Token expirado - redirigir a login</span>
-    localStorage.<span class="fn">removeItem</span>(<span class="str">'token'</span>);
-    localStorage.<span class="fn">removeItem</span>(<span class="str">'user'</span>);
-    window.location.<span class="fn">href</span> = <span class="str">'/login'</span>;
-    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Sesion expirada'</span>);
-  }
-
-  <span class="kw">if</span> (!response.<span class="fn">ok</span>) {
-    <span class="kw">const</span> error = <span class="kw">await</span> response.<span class="fn">json</span>();
-    <span class="kw">throw new</span> <span class="fn">Error</span>(error.error || <span class="str">`HTTP error! status: ${response.status}`</span>);
-  }
-
-  <span class="kw">return</span> <span class="kw">await</span> response.<span class="fn">json</span>();
-}
-
-<span class="cm">// Ejemplos de uso con la abstraccion</span>
-<span class="kw">async function</span> <span class="fn">ejemplosDeUso</span>() {
-  <span class="kw">try</span> {
-    <span class="cm">// GET con parametros</span>
-    <span class="kw">const</span> productos = <span class="kw">await</span> <span class="fn">apiRequest</span>(<span class="str">'/productos?categoria=electronica&pagina=1'</span>);
-    console.<span class="fn">log</span>(<span class="str">'Productos:'</span>, productos);
-
-    <span class="cm">// POST con body</span>
-    <span class="kw">const</span> nuevo = <span class="kw">await</span> <span class="fn">apiRequest</span>(<span class="str">'/productos'</span>, {
-      method: <span class="str">'POST'</span>,
-      body: JSON.stringify({ nombre: <span class="str">'Monitor'</span>, precio: <span class="num">300</span> })
-    });
-    console.<span class="fn">log</span>(<span class="str">'Creado:'</span>, nuevo);
-
-    <span class="cm">// PUT completo</span>
-    <span class="kw">const</span> actualizado = <span class="kw">await</span> <span class="fn">apiRequest</span>(<span class="str">'/productos/1'</span>, {
-      method: <span class="str">'PUT'</span>,
-      body: JSON.stringify({ nombre: <span class="str">'Laptop Pro'</span>, descripcion: <span class="str">'Alta gama'</span>, precio: <span class="num">1999</span>, categoria: <span class="str">'electronica'</span>, stock: <span class="num">5</span> })
-    });
-
-    <span class="cm">// PATCH parcial</span>
-    <span class="kw">const</span> parcial = <span class="kw">await</span> <span class="fn">apiRequest</span>(<span class="str">'/productos/1'</span>, {
-      method: <span class="str">'PATCH'</span>,
-      body: JSON.stringify({ precio: <span class="num">1499</span>, stock: <span class="num">10</span> })
-    });
-
-    <span class="cm">// DELETE</span>
-    <span class="kw">await</span> <span class="fn">apiRequest</span>(<span class="str">'/productos/10'</span>, { method: <span class="str">'DELETE'</span> });
-
-  } <span class="kw">catch</span> (error) {
-    console.<span class="fn">error</span>(<span class="str">'Error en operacion:'</span>, error);
-  }
-}</code></pre>
+<span class="comment">// Uso - solo actualizar el precio</span>
+<span class="keyword">const</span> actualizado = <span class="keyword">await</span> <span class="function">actualizarParcial</span>(<span class="number">1</span>, { 
+  precio: <span class="number">79.99</span>,
+  stock: <span class="number">25</span>
+});</code></pre>
         </div>
-      </section>
+      </div>
 
-      <!-- SECCION 14: CONSIDERACIONES TECNICAS -->
-      <section id="tips" class="section-card">
-        <div class="section-header">
-          <div class="step-number">14</div>
-          <h2 class="section-title">Consideraciones Tecnicas y Argumentacion Academica</h2>
+      <div class="alert alert-blue">
+        <strong>💡 Tip:</strong> Guarda el token en <code>localStorage</code> después del login y envíalo en el header
+        <code>Authorization: Bearer &lt;token&gt;</code> en todas las peticiones protegidas.
+      </div>
+    </div>
+
+    <!-- ========== SECCIÓN 9: FLUJO COMPLETO ========== -->
+    <div class="card">
+      <h2><span class="num">9</span> Flujo Completo de Autenticación</h2>
+
+      <div style="background:#f8fafc; padding:1rem; border-radius:8px; font-size:0.95rem; line-height:2;">
+        <strong>1️⃣ Cliente →</strong> POST /api/login (email + password)<br>
+        <strong>2️⃣ Servidor →</strong> Verifica credenciales en MySQL<br>
+        <strong>3️⃣ Servidor →</strong> Genera JWT y lo devuelve al cliente<br>
+        <strong>4️⃣ Cliente →</strong> Guarda JWT en localStorage<br>
+        <strong>5️⃣ Cliente →</strong> GET /api/productos (con token en header)<br>
+        <strong>6️⃣ Servidor →</strong> Middleware verifica el token<br>
+        <strong>7️⃣ Servidor →</strong> Si es válido, devuelve los datos<br>
+        <strong>8️⃣ Cliente →</strong> Muestra los datos en la interfaz<br>
+      </div>
+
+      <div
+        style="background:#f8fafc; padding:1rem; border-radius:8px; margin-top:0.5rem; font-size:0.95rem; line-height:2;">
+        <strong>🌐 Con CORS incluido:</strong><br>
+        <strong>1️⃣ Frontend (http://localhost:5500)</strong> → hace petición a la API<br>
+        <strong>2️⃣ Navegador</strong> → pregunta al servidor si permite CORS (OPTIONS)<br>
+        <strong>3️⃣ Servidor</strong> → responde con <code>Access-Control-Allow-Origin: *</code><br>
+        <strong>4️⃣ Navegador</strong> → permite la petición<br>
+        <strong>5️⃣ Frontend</strong> → recibe la respuesta de la API<br>
+      </div>
+
+      <div class="alert alert-green" style="margin-top:0.5rem;">
+        <strong>🎯 Resumen:</strong> El JWT es un <strong>pase temporal</strong>. El usuario se autentica una vez y
+        recibe un token que usa en cada petición. El servidor no guarda sesiones, solo verifica el token.
+        <strong>CORS</strong> permite que tu frontend y backend hablen aunque estén en diferentes puertos.
+      </div>
+    </div>
+
+    <!-- ========== SECCIÓN 10: CONSIDERACIONES FINALES ========== -->
+    <div class="card">
+      <h2><span class="num">10</span> Consideraciones Finales</h2>
+
+      <div class="grid-2">
+        <div class="box">
+          <h4>🔐 Seguridad</h4>
+          <p>• Usa <strong>bcrypt</strong> para hashear contraseñas<br>
+            • Usa <strong>consultas preparadas</strong> contra SQL injection<br>
+            • El JWT <strong>no guarda</strong> información sensible<br>
+            • Expira el token (ej: 1 hora)<br>
+            • Configura CORS con <strong>orígenes específicos</strong> en producción</p>
         </div>
+        <div class="box box-green">
+          <h4>📦 Buenas prácticas</h4>
+          <p>• Usa <strong>variables de entorno</strong> (.env)<br>
+            • Separa el código en <strong>rutas</strong> y <strong>controladores</strong><br>
+            • Usa <strong>middlewares</strong> para autenticación<br>
+            • Valida los datos de entrada<br>
+            • <strong>CORS:</strong> en desarrollo usa <code>cors()</code>, en producción configura orígenes</p>
+        </div>
+      </div>
 
-        <ul class="checklist">
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Escalabilidad Stateless (Sin Estado):</strong> A diferencia de las sesiones basadas en Cookies y
-              Redis/Memcached, las arquitecturas basadas en JWT no requieren que el servidor persista estados de sesion
-              en memoria centralizada, lo que facilita el escalado horizontal tras un balanceador de carga. Cada
-              instancia del servidor puede validar tokens de forma independiente. Este es el principio
-              <strong>Stateless</strong>
-              de REST aplicado en la practica.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Seguridad de Contraseñas:</strong> Se utiliza <code>bcrypt</code> para hashear las contraseñas
-              antes de almacenarlas en la base de datos. Esto garantiza que incluso si la base de datos es comprometida,
-              las contraseñas originales no pueden ser recuperadas facilmente.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Inyeccion SQL:</strong> Se utilizan consultas preparadas (<i>prepared statements</i>) con
-              <code>mysql2/promise</code> para prevenir ataques de inyeccion SQL. Los parametros se pasan como un array
-              separado de la consulta SQL.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Validacion de Archivos:</strong> La configuracion de Multer incluye validacion de tipo MIME y
-              tamaño para evitar que los usuarios suban archivos maliciosos o demasiado grandes.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Estandar de Encabezados (Authorization Header):</strong> El uso del prefijo <code>Bearer</code>
-              indica que la entidad solicitante es la portadora legitima del token de autorizacion otorgado previamente.
-              Este formato esta estandarizado en RFC 6750.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Codificacion Base64URL vs Encriptacion:</strong> La codificacion Base64URL no proporciona
-              confidencialidad, sino formateo para transmision sobre HTTP. La proteccion contra alteracion de datos
-              descansa enteramente en la <strong>Signature (Firma Simetrica/Asimetrica)</strong>.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Gestion del Ciclo de Vida del Token:</strong> La propiedad <code>expiresIn</code> configurada en
-              <code>1h</code> limita la validez del token. Para sesiones largas, se recomienda implementar un sistema
-              de <strong>refresh tokens</strong> que permita renovar el token sin necesidad de reautenticar.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>CORS (Cross-Origin Resource Sharing):</strong> Para entornos de desarrollo con frontend y backend
-              separados, configure CORS en el servidor Express usando el middleware <code>cors</code>:
-              <code>npm install cors</code> y luego <code>app.use(cors())</code>.
-            </div>
-          </li>
-          <li>
-            <span class="checklist-icon">▪</span>
-            <div>
-              <strong>Variables de Entorno:</strong> Utilice <code>dotenv</code> para manejar configuraciones sensibles
-              como la clave secreta JWT y las credenciales de la base de datos. Nunca suba el archivo <code>.env</code>
-              al repositorio de control de versiones.
-            </div>
-          </li>
-        </ul>
-      </section>
+      <div class="grid-2" style="margin-top:0.5rem;">
+        <div class="box box-orange">
+          <h4>🛠️ CORS en producción</h4>
+          <pre style="font-size:0.7rem;"><code><span class="comment">// Solo permitir tu frontend en producción</span>
+app.<span class="function">use</span>(<span class="function">cors</span>({
+  origin: <span class="string">'https://tufrontend.com'</span>,
+  methods: [<span class="string">'GET'</span>, <span class="string">'POST'</span>, <span class="string">'PUT'</span>, <span class="string">'PATCH'</span>, <span class="string">'DELETE'</span>],
+  allowedHeaders: [<span class="string">'Content-Type'</span>, <span class="string">'Authorization'</span>]
+}));</code></pre>
+        </div>
+        <div class="box box-purple">
+          <h4>📚 Extras que puedes agregar</h4>
+          <p>• Refresh tokens (renovar JWT sin re-login)<br>
+            • Roles y permisos (admin, usuario, etc.)<br>
+            • Validación con Joi o express-validator<br>
+            • Logging de peticiones<br>
+            • Manejo de errores centralizado</p>
+        </div>
+      </div>
 
-    </main>
+      <div class="alert alert-blue">
+        <strong>📌 Comandos útiles:</strong><br>
+        <code>npm start</code> - Inicia el servidor<br>
+        <code>npm run dev</code> - Inicia con nodemon (auto-reload)<br>
+        <code>npm install cors</code> - Instala CORS<br>
+      </div>
+    </div>
+
   </div>
 
 </body>
