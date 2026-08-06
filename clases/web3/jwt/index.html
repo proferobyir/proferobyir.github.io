@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API REST con Express, JWT y MySQL - Gestión de Carbón</title>
+  <title>API REST con Express, JWT y MySQL - Guía Rápida</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,8 +14,8 @@
 
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: #0d1117;
+      color: #e6edf3;
       line-height: 1.6;
       padding: 2rem;
     }
@@ -26,46 +26,47 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #1a1a2e, #2d2d44, #1a1a2e);
-      color: #f8fafc;
+      background: linear-gradient(135deg, #161b22, #0d1117);
+      color: #e6edf3;
       padding: 2rem;
       border-radius: 12px;
       margin-bottom: 2rem;
-      border: 1px solid #334155;
+      border: 1px solid #30363d;
     }
 
     .header h1 {
       font-size: 2rem;
       font-weight: 700;
-    }
-
-    .header h1 span {
-      color: #f97316;
+      background: linear-gradient(135deg, #f0883e, #f6a85b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .header p {
-      opacity: 0.9;
+      opacity: 0.8;
       margin-top: 0.5rem;
+      color: #8b949e;
     }
 
     .badge {
       display: inline-block;
-      background: rgba(249, 115, 22, 0.2);
-      color: #fb923c;
+      background: rgba(240, 136, 62, 0.15);
+      color: #f0883e;
       padding: 0.2rem 0.8rem;
       border-radius: 20px;
       font-size: 0.8rem;
       margin-right: 0.5rem;
-      border: 1px solid #f97316;
+      border: 1px solid rgba(240, 136, 62, 0.3);
     }
 
     .card {
-      background: #1e293b;
+      background: #161b22;
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      border: 1px solid #334155;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      border: 1px solid #30363d;
     }
 
     .card h2 {
@@ -74,12 +75,12 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: #f97316;
+      color: #f0883e;
     }
 
     .card h2 .num {
-      background: #f97316;
-      color: #0f172a;
+      background: linear-gradient(135deg, #f0883e, #f6a85b);
+      color: #0d1117;
       width: 28px;
       height: 28px;
       border-radius: 50%;
@@ -94,7 +95,7 @@
     .card h3 {
       font-size: 1.1rem;
       margin: 1rem 0 0.5rem 0;
-      color: #fb923c;
+      color: #f6a85b;
     }
 
     .grid-2 {
@@ -112,87 +113,83 @@
     }
 
     .box {
-      background: #0f172a;
+      background: #0d1117;
       padding: 1rem;
       border-radius: 8px;
-      border-left: 4px solid #f97316;
+      border-left: 4px solid #f0883e;
     }
 
     .box-green {
-      border-left-color: #22c55e;
+      border-left-color: #3fb950;
     }
 
     .box-yellow {
-      border-left-color: #f59e0b;
+      border-left-color: #d29922;
     }
 
     .box-red {
-      border-left-color: #ef4444;
+      border-left-color: #f85149;
     }
 
     .box-purple {
-      border-left-color: #8b5cf6;
+      border-left-color: #bc8cff;
     }
 
     .box-orange {
-      border-left-color: #f97316;
-    }
-
-    .box-cyan {
-      border-left-color: #06b6d4;
+      border-left-color: #f0883e;
     }
 
     .box h4 {
       font-size: 0.95rem;
       margin-bottom: 0.25rem;
-      color: #f1f5f9;
+      color: #e6edf3;
     }
 
     .box p {
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: #8b949e;
     }
 
     code {
-      background: #0f172a;
-      color: #f8fafc;
+      background: #0d1117;
+      color: #e6edf3;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       font-size: 0.85rem;
-      border: 1px solid #334155;
+      border: 1px solid #30363d;
     }
 
     pre {
-      background: #0f172a;
-      color: #f8fafc;
+      background: #0d1117;
+      color: #e6edf3;
       padding: 1rem;
       border-radius: 8px;
       overflow-x: auto;
       font-size: 0.85rem;
       line-height: 1.5;
       margin: 0.5rem 0;
-      border: 1px solid #334155;
+      border: 1px solid #30363d;
     }
 
     .keyword {
-      color: #f472b6;
+      color: #ff7b72;
     }
 
     .string {
-      color: #4ade80;
+      color: #a5d6ff;
     }
 
     .comment {
-      color: #64748b;
+      color: #8b949e;
       font-style: italic;
     }
 
     .function {
-      color: #38bdf8;
+      color: #d2a8ff;
     }
 
     .number {
-      color: #fb923c;
+      color: #f0883e;
     }
 
     table {
@@ -202,15 +199,16 @@
     }
 
     th {
-      background: #0f172a;
+      background: #0d1117;
       text-align: left;
       padding: 0.5rem 0.75rem;
-      color: #f97316;
+      color: #f0883e;
+      border-bottom: 2px solid #30363d;
     }
 
     td {
       padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid #21262d;
     }
 
     .tag {
@@ -219,86 +217,79 @@
       border-radius: 4px;
       font-size: 0.7rem;
       font-weight: 700;
-      color: white;
+      color: #0d1117;
     }
 
     .tag-get {
-      background: #22c55e;
+      background: #3fb950;
     }
 
     .tag-post {
-      background: #3b82f6;
+      background: #58a6ff;
     }
 
     .tag-put {
-      background: #f59e0b;
+      background: #d29922;
     }
 
     .tag-patch {
-      background: #8b5cf6;
+      background: #bc8cff;
     }
 
     .tag-delete {
-      background: #ef4444;
+      background: #f85149;
     }
 
     .alert {
-      background: #1a1a2e;
-      border-left: 4px solid #f97316;
+      background: #0d1117;
+      border-left: 4px solid #f0883e;
       padding: 0.75rem 1rem;
       border-radius: 6px;
       margin: 0.5rem 0;
       font-size: 0.9rem;
+      border: 1px solid #30363d;
     }
 
     .alert-blue {
-      background: #1a2332;
-      border-left-color: #3b82f6;
+      border-left-color: #58a6ff;
     }
 
     .alert-green {
-      background: #1a2a1a;
-      border-left-color: #22c55e;
+      border-left-color: #3fb950;
     }
 
     .alert-red {
-      background: #2a1a1a;
-      border-left-color: #ef4444;
+      border-left-color: #f85149;
     }
 
     .alert-orange {
-      background: #2a1f1a;
-      border-left-color: #f97316;
+      border-left-color: #f0883e;
     }
 
     .cors-diagram {
-      background: #0f172a;
+      background: #0d1117;
       padding: 1.5rem;
       border-radius: 8px;
       text-align: center;
       font-family: monospace;
-      border: 1px solid #334155;
+      border: 1px solid #30363d;
       margin: 1rem 0;
     }
 
     .cors-diagram .arrow {
-      color: #fb923c;
+      color: #f0883e;
       font-size: 1.5rem;
       margin: 0.3rem 0;
     }
 
     .cors-diagram .blocked {
-      color: #ef4444;
+      color: #f85149;
       font-weight: bold;
     }
 
     .cors-diagram .allowed {
-      color: #22c55e;
+      color: #3fb950;
       font-weight: bold;
-    }
-
-    .carbon-icon {
-      color: #f97316;
     }
 
     @media (max-width: 768px) {
@@ -319,16 +310,14 @@
   <div class="container">
 
     <div class="header">
-      <h1>🔥 API REST con Express, JWT y MySQL</h1>
-      <h2 style="color: #f97316; margin-top: 0.25rem;">⛏️ Sistema de Gestión de Carbón</h2>
-      <p>Guía práctica para construir una API de gestión de carbón con autenticación stateless</p>
+      <h1>🚀 API REST con Express, JWT y MySQL</h1>
+      <p>Guía práctica para construir una API con autenticación stateless</p>
       <div style="margin-top: 0.75rem;">
         <span class="badge">Node.js</span>
         <span class="badge">Express</span>
         <span class="badge">JWT</span>
         <span class="badge">MySQL</span>
         <span class="badge">CORS</span>
-        <span class="badge">⛏️ Carbón</span>
       </div>
     </div>
 
@@ -349,7 +338,7 @@
         </div>
         <div class="box box-yellow">
           <h4>📌 Recursos Identificables</h4>
-          <p>Todo se accede mediante URLs: <code>/carbon</code>, <code>/minas/1</code></p>
+          <p>Todo se accede mediante URLs: <code>/productos</code>, <code>/usuarios/1</code></p>
         </div>
         <div class="box box-purple">
           <h4>📌 Cliente-Servidor</h4>
@@ -358,10 +347,10 @@
       </div>
 
       <div class="alert alert-green">
-        <strong>💡 Analogía:</strong> Una API REST es como una mina de carbón. Tú (cliente) pides del catálogo (URL +
-        verbo HTTP),
-        la mina (servidor) prepara tu pedido y te lo entrega (respuesta). No necesitas saber cómo extraen el carbón,
-        solo qué pedir.
+        <strong>💡 Analogía:</strong> Una API REST es como un restaurante. Tú (cliente) pides del menú (URL + verbo
+        HTTP),
+        la cocina (servidor) prepara tu pedido y te lo entrega (respuesta). No necesitas saber cómo cocinan, solo qué
+        pedir.
       </div>
     </div>
 
@@ -381,32 +370,32 @@
         <tbody>
           <tr>
             <td><span class="tag tag-get">GET</span></td>
-            <td>Leer datos de carbón</td>
-            <td><code>/carbon</code></td>
+            <td>Leer datos</td>
+            <td><code>/productos</code></td>
             <td>✅ Sí</td>
           </tr>
           <tr>
             <td><span class="tag tag-post">POST</span></td>
-            <td>Registrar nuevo lote de carbón</td>
-            <td><code>/carbon</code></td>
+            <td>Crear un recurso</td>
+            <td><code>/productos</code></td>
             <td>❌ No</td>
           </tr>
           <tr>
             <td><span class="tag tag-put">PUT</span></td>
-            <td>Actualizar TODO sobre un lote</td>
-            <td><code>/carbon/1</code></td>
+            <td>Actualizar TODO</td>
+            <td><code>/productos/1</code></td>
             <td>✅ Sí</td>
           </tr>
           <tr>
             <td><span class="tag tag-patch">PATCH</span></td>
-            <td>Actualizar PARTE de un lote</td>
-            <td><code>/carbon/1</code></td>
+            <td>Actualizar PARTE</td>
+            <td><code>/productos/1</code></td>
             <td>❌ No</td>
           </tr>
           <tr>
             <td><span class="tag tag-delete">DELETE</span></td>
-            <td>Eliminar registro de carbón</td>
-            <td><code>/carbon/1</code></td>
+            <td>Eliminar</td>
+            <td><code>/productos/1</code></td>
             <td>✅ Sí</td>
           </tr>
         </tbody>
@@ -414,7 +403,8 @@
 
       <div class="alert">
         <strong>⚠️ Importante:</strong> <strong>Idempotente</strong> = hacer la misma petición varias veces da el mismo
-        resultado. GET, PUT y DELETE son idempotentes. POST no lo es (cada vez crea un nuevo recurso).
+        resultado.
+        GET, PUT y DELETE son idempotentes. POST no lo es (cada vez crea un nuevo recurso).
       </div>
     </div>
 
@@ -425,29 +415,29 @@
       <pre><code><span class="comment">// Sintaxis básica</span>
 app.<span class="function">METHOD</span>(<span class="string">'/ruta'</span>, (req, res) => {
   <span class="comment">// Lógica aquí</span>
-  res.<span class="function">json</span>({ mensaje: <span class="string">'Carbón extraído exitosamente'</span> });
+  res.<span class="function">json</span>({ mensaje: <span class="string">'Hola mundo'</span> });
 });</code></pre>
 
       <div class="grid-2">
         <div class="box">
           <h4>🔹 Parámetros de Ruta</h4>
-          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">get</span>(<span class="string">'/minas/:id'</span>, (req, res) => {
+          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">get</span>(<span class="string">'/usuarios/:id'</span>, (req, res) => {
   <span class="keyword">const</span> { id } = req.params;
   <span class="comment">// id = "123"</span>
 });</code></pre>
         </div>
         <div class="box box-green">
           <h4>🔹 Query Params (filtros)</h4>
-          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">get</span>(<span class="string">'/carbon'</span>, (req, res) => {
-  <span class="keyword">const</span> { tipo, precioMin } = req.query;
-  <span class="comment">// /carbon?tipo=antracita&precioMin=100</span>
+          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">get</span>(<span class="string">'/productos'</span>, (req, res) => {
+  <span class="keyword">const</span> { categoria, precioMin } = req.query;
+  <span class="comment">// /productos?categoria=electronica&precioMin=100</span>
 });</code></pre>
         </div>
         <div class="box box-yellow">
           <h4>🔹 Body (datos en POST/PUT)</h4>
-          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">post</span>(<span class="string">'/carbon'</span>, (req, res) => {
-  <span class="keyword">const</span> { tipo, peso, calidad } = req.body;
-  <span class="comment">// body: { "tipo": "antracita", "peso": 1500, "calidad": "A" }</span>
+          <pre style="font-size:0.8rem; margin-top:0.3rem;"><code>app.<span class="function">post</span>(<span class="string">'/productos'</span>, (req, res) => {
+  <span class="keyword">const</span> { nombre, precio } = req.body;
+  <span class="comment">// body: { "nombre": "Laptop", "precio": 1200 }</span>
 });</code></pre>
         </div>
       </div>
@@ -460,7 +450,7 @@ app.<span class="function">METHOD</span>(<span class="string">'/ruta'</span>, (r
       <div class="alert alert-red">
         <strong>🚨 El problema:</strong> Por seguridad, los navegadores <strong>bloquean</strong> peticiones HTTP entre
         diferentes dominios (orígenes). Ejemplo: tu frontend en <code>http://localhost:5500</code> no puede hablar
-        con tu API de carbón en <code>http://localhost:3000</code>.
+        con tu API en <code>http://localhost:3000</code>.
       </div>
 
       <div class="cors-diagram">
@@ -468,8 +458,8 @@ app.<span class="function">METHOD</span>(<span class="string">'/ruta'</span>, (r
         <div class="arrow">⬇️</div>
         <div>🚫 <span class="blocked">BLOQUEADO por el navegador</span> ❌</div>
         <div class="arrow">⬇️</div>
-        <div>🖥️ API de Carbón (http://localhost:3000)</div>
-        <div style="margin-top: 1rem; font-size: 0.9rem; color: #94a3b8;">
+        <div>🖥️ API (http://localhost:3000)</div>
+        <div style="margin-top: 1rem; font-size: 0.9rem; color: #8b949e;">
           <strong>¿Por qué?</strong> El navegador aplica la <strong>Same-Origin Policy</strong> (Política de mismo
           origen).
         </div>
@@ -480,13 +470,13 @@ app.<span class="function">METHOD</span>(<span class="string">'/ruta'</span>, (r
         desde otros orígenes mediante cabeceras HTTP.
       </div>
 
-      <div class="cors-diagram" style="border-color: #22c55e;">
+      <div class="cors-diagram" style="border-color: #3fb950;">
         <div>🌐 Frontend (http://localhost:5500)</div>
         <div class="arrow">⬇️</div>
         <div>✅ <span class="allowed">PERMITIDO por CORS</span> ✓</div>
         <div class="arrow">⬇️</div>
-        <div>🖥️ API de Carbón (http://localhost:3000)</div>
-        <div style="margin-top: 1rem; font-size: 0.9rem; color: #94a3b8;">
+        <div>🖥️ API (http://localhost:3000)</div>
+        <div style="margin-top: 1rem; font-size: 0.9rem; color: #8b949e;">
           <strong>¿Cómo?</strong> El servidor envía la cabecera: <code>Access-Control-Allow-Origin: *</code>
         </div>
       </div>
@@ -545,13 +535,13 @@ app.<span class="function">use</span>((req, res, next) => {
 
     <!-- ========== SECCIÓN 5: BASE DE DATOS ========== -->
     <div class="card">
-      <h2><span class="num">5</span> Base de Datos MySQL - Gestión de Carbón</h2>
+      <h2><span class="num">5</span> Base de Datos MySQL</h2>
 
       <p style="margin-bottom:0.5rem;">Ejecuta este script en MySQL para crear la base de datos y sus tablas:</p>
 
       <pre><code><span class="comment">-- Crear base de datos</span>
-<span class="keyword">CREATE DATABASE</span> carbon_db;
-<span class="keyword">USE</span> carbon_db;
+<span class="keyword">CREATE DATABASE</span> electiva3_db;
+<span class="keyword">USE</span> electiva3_db;
 
 <span class="comment">-- Tabla de usuarios</span>
 <span class="keyword">CREATE TABLE</span> usuarios (
@@ -559,33 +549,31 @@ app.<span class="function">use</span>((req, res, next) => {
   nombre <span class="keyword">VARCHAR</span>(100) <span class="keyword">NOT NULL</span>,
   email <span class="keyword">VARCHAR</span>(100) <span class="keyword">UNIQUE</span> <span class="keyword">NOT NULL</span>,
   password_hash <span class="keyword">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>,
-  rol <span class="keyword">ENUM</span>(<span class="string">'admin'</span>, <span class="string">'minero'</span>, <span class="string">'supervisor'</span>) <span class="keyword">DEFAULT</span> <span class="string">'minero'</span>
+  rol <span class="keyword">ENUM</span>(<span class="string">'admin'</span>, <span class="string">'docente'</span>, <span class="string">'estudiante'</span>) <span class="keyword">DEFAULT</span> <span class="string">'estudiante'</span>
 );
 
-<span class="comment">-- Tabla de registros de carbón</span>
-<span class="keyword">CREATE TABLE</span> carbon (
+<span class="comment">-- Tabla de productos</span>
+<span class="keyword">CREATE TABLE</span> productos (
   id <span class="keyword">INT</span> <span class="keyword">AUTO_INCREMENT</span> <span class="keyword">PRIMARY KEY</span>,
-  tipo <span class="keyword">VARCHAR</span>(50) <span class="keyword">NOT NULL</span>,
+  nombre <span class="keyword">VARCHAR</span>(150) <span class="keyword">NOT NULL</span>,
   descripcion <span class="keyword">TEXT</span>,
-  peso_toneladas <span class="keyword">DECIMAL</span>(10,2) <span class="keyword">NOT NULL</span>,
-  calidad <span class="keyword">ENUM</span>(<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>) <span class="keyword">DEFAULT</span> <span class="string">'B'</span>,
-  mina_origen <span class="keyword">VARCHAR</span>(100),
-  fecha_extraccion <span class="keyword">DATE</span>,
-  precio_tonelada <span class="keyword">DECIMAL</span>(10,2)
+  precio <span class="keyword">DECIMAL</span>(10,2) <span class="keyword">NOT NULL</span>,
+  categoria <span class="keyword">VARCHAR</span>(50),
+  stock <span class="keyword">INT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>
 );
 
-<span class="comment">-- Datos de prueba - Carbón</span>
+<span class="comment">-- Datos de prueba</span>
 <span class="keyword">INSERT INTO</span> usuarios (nombre, email, password_hash, rol) <span class="keyword">VALUES</span>
-(<span class="string">'Supervisor Mina'</span>, <span class="string">'super@mina.com'</span>, <span class="string">'hash_de_123456'</span>, <span class="string">'supervisor'</span>),
-(<span class="string">'Admin Mina'</span>, <span class="string">'admin@mina.com'</span>, <span class="string">'hash_de_123456'</span>, <span class="string">'admin'</span>);
+(<span class="string">'Profesor'</span>, <span class="string">'profe@mail.com'</span>, <span class="string">'hash_de_123456'</span>, <span class="string">'docente'</span>),
+(<span class="string">'Admin'</span>, <span class="string">'admin@mail.com'</span>, <span class="string">'hash_de_123456'</span>, <span class="string">'admin'</span>);
 
-<span class="keyword">INSERT INTO</span> carbon (tipo, descripcion, peso_toneladas, calidad, mina_origen, fecha_extraccion, precio_tonelada) <span class="keyword">VALUES</span>
-(<span class="string">'Antracita'</span>, <span class="string">'Carbón de alta calidad, bajo contenido de azufre'</span>, <span class="number">150.50</span>, <span class="string">'A'</span>, <span class="string">'Mina Norte'</span>, <span class="string">'2026-01-15'</span>, <span class="number">250.00</span>),
-(<span class="string">'Bituminoso'</span>, <span class="string">'Carbón versátil para generación de energía'</span>, <span class="number">200.00</span>, <span class="string">'B'</span>, <span class="string">'Mina Sur'</span>, <span class="string">'2026-01-20'</span>, <span class="number">180.50</span>),
-(<span class="string">'Lignito'</span>, <span class="string">'Carbón de baja calidad, alto contenido de humedad'</span>, <span class="number">300.75</span>, <span class="string">'C'</span>, <span class="string">'Mina Este'</span>, <span class="string">'2026-01-25'</span>, <span class="number">95.00</span>);</code></pre>
+<span class="keyword">INSERT INTO</span> productos (nombre, precio, categoria, stock) <span class="keyword">VALUES</span>
+(<span class="string">'Laptop Pro'</span>, <span class="number">1299.99</span>, <span class="string">'electronica'</span>, <span class="number">15</span>),
+(<span class="string">'Mouse Inalambrico'</span>, <span class="number">29.99</span>, <span class="string">'perifericos'</span>, <span class="number">50</span>),
+(<span class="string">'Monitor 4K'</span>, <span class="number">499.99</span>, <span class="string">'electronica'</span>, <span class="number">10</span>);</code></pre>
 
       <div class="alert alert-green" style="margin-top:0.5rem;">
-        <strong>🔑 Credenciales de prueba:</strong> super@mina.com / 123456 | admin@mina.com / 123456
+        <strong>🔑 Credenciales de prueba:</strong> profe@mail.com / 123456 | admin@mail.com / 123456
       </div>
     </div>
 
@@ -593,8 +581,8 @@ app.<span class="function">use</span>((req, res, next) => {
     <div class="card">
       <h2><span class="num">6</span> JWT - JSON Web Tokens</h2>
 
-      <p style="margin-bottom:0.5rem;">Un JWT es como un <strong>pase VIP</strong> que le das al minero después de que
-        inicia sesión en el sistema.</p>
+      <p style="margin-bottom:0.5rem;">Un JWT es como un <strong>pase VIP</strong> que le das al usuario después de que
+        inicia sesión.</p>
 
       <div class="grid-3">
         <div class="box box-red">
@@ -605,7 +593,7 @@ app.<span class="function">use</span>((req, res, next) => {
         <div class="box box-purple">
           <h4>Payload</h4>
           <p style="font-size:0.8rem;">Datos del usuario</p>
-          <code style="font-size:0.7rem;">{"id":1,"rol":"supervisor"}</code>
+          <code style="font-size:0.7rem;">{"id":1,"rol":"docente"}</code>
         </div>
         <div class="box box-yellow">
           <h4>Signature</h4>
@@ -667,11 +655,11 @@ app.<span class="function">use</span>(express.<span class="function">urlencoded<
   host: <span class="string">'localhost'</span>,
   user: <span class="string">'root'</span>,
   password: <span class="string">'tu_contraseña'</span>,
-  database: <span class="string">'carbon_db'</span>
+  database: <span class="string">'electiva3_db'</span>
 });
 
 <span class="comment">// ========== CONFIGURACIÓN JWT ==========</span>
-<span class="keyword">const</span> JWT_SECRET = <span class="string">'mi_clave_super_secreta_carbon'</span>;
+<span class="keyword">const</span> JWT_SECRET = <span class="string">'mi_clave_super_secreta'</span>;
 
 <span class="comment">// ========== MIDDLEWARE DE AUTENTICACIÓN ==========</span>
 <span class="keyword">function</span> <span class="function">autenticar</span>(req, res, next) {
@@ -721,7 +709,7 @@ app.<span class="function">post</span>(<span class="string">'/api/login'</span>,
     );
     
     res.<span class="function">json</span>({ 
-      mensaje: <span class="string">'Login exitoso - Bienvenido a la mina'</span>, 
+      mensaje: <span class="string">'Login exitoso'</span>, 
       token,
       usuario: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol }
     });
@@ -731,30 +719,35 @@ app.<span class="function">post</span>(<span class="string">'/api/login'</span>,
   }
 });
 
-<span class="comment">// ========== 2. LISTAR REGISTROS DE CARBÓN (protegido) ==========</span>
-app.<span class="function">get</span>(<span class="string">'/api/carbon'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+<span class="comment">// ========== 2. LISTAR PRODUCTOS (protegido) ==========</span>
+app.<span class="function">get</span>(<span class="string">'/api/productos'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
   <span class="keyword">try</span> {
-    <span class="keyword">const</span> { tipo, calidad, mina, pagina = <span class="number">1</span>, limite = <span class="number">10</span> } = req.query;
+    <span class="keyword">const</span> { categoria, precioMin, precioMax, busqueda, pagina = <span class="number">1</span>, limite = <span class="number">10</span> } = req.query;
     <span class="keyword">const</span> offset = (pagina - <span class="number">1</span>) * limite;
     
-    <span class="keyword">let</span> sql = <span class="string">'SELECT * FROM carbon WHERE 1=1'</span>;
+    <span class="keyword">let</span> sql = <span class="string">'SELECT * FROM productos WHERE 1=1'</span>;
     <span class="keyword">const</span> params = [];
     
-    <span class="keyword">if</span> (tipo) { sql += <span class="string">' AND tipo = ?'</span>; params.<span class="function">push</span>(tipo); }
-    <span class="keyword">if</span> (calidad) { sql += <span class="string">' AND calidad = ?'</span>; params.<span class="function">push</span>(calidad); }
-    <span class="keyword">if</span> (mina) { sql += <span class="string">' AND mina_origen LIKE ?'</span>; params.<span class="function">push</span>(<span class="string">`%${mina}%`</span>); }
+    <span class="keyword">if</span> (categoria) { sql += <span class="string">' AND categoria = ?'</span>; params.<span class="function">push</span>(categoria); }
+    <span class="keyword">if</span> (precioMin) { sql += <span class="string">' AND precio >= ?'</span>; params.<span class="function">push</span>(<span class="function">parseFloat</span>(precioMin)); }
+    <span class="keyword">if</span> (precioMax) { sql += <span class="string">' AND precio <= ?'</span>; params.<span class="function">push</span>(<span class="function">parseFloat</span>(precioMax)); }
+    <span class="keyword">if</span> (busqueda) { 
+      sql += <span class="string">' AND (nombre LIKE ? OR descripcion LIKE ?)'</span>; 
+      params.<span class="function">push</span>(<span class="string">`%${busqueda}%`</span>, <span class="string">`%${busqueda}%`</span>); 
+    }
     
+    <span class="comment">// Contar total</span>
     <span class="keyword">const</span> [totalRows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
       <span class="string">`SELECT COUNT(*) as total FROM (${sql}) as sub`</span>, params
     );
     
-    sql += <span class="string">' ORDER BY fecha_extraccion DESC LIMIT ? OFFSET ?'</span>;
+    sql += <span class="string">' LIMIT ? OFFSET ?'</span>;
     params.<span class="function">push</span>(<span class="function">parseInt</span>(limite), <span class="function">parseInt</span>(offset));
     
     <span class="keyword">const</span> [rows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(sql, params);
     
     res.<span class="function">json</span>({ 
-      carbon: rows, 
+      productos: rows, 
       pagina: <span class="function">parseInt</span>(pagina), 
       limite: <span class="function">parseInt</span>(limite),
       total: totalRows[<span class="number">0</span>].total,
@@ -762,74 +755,74 @@ app.<span class="function">get</span>(<span class="string">'/api/carbon'</span>,
     });
   } <span class="keyword">catch</span> (error) {
     console.<span class="function">error</span>(error);
-    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al obtener registros de carbón'</span> });
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al obtener productos'</span> });
   }
 });
 
-<span class="comment">// ========== 3. OBTENER UN REGISTRO DE CARBÓN (protegido) ==========</span>
-app.<span class="function">get</span>(<span class="string">'/api/carbon/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+<span class="comment">// ========== 3. OBTENER UN PRODUCTO (protegido) ==========</span>
+app.<span class="function">get</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
   <span class="keyword">try</span> {
     <span class="keyword">const</span> [rows] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">'SELECT * FROM carbon WHERE id = ?'</span>, [req.params.id]
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [req.params.id]
     );
     
     <span class="keyword">if</span> (rows.<span class="function">length</span> === <span class="number">0</span>) {
-      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ error: <span class="string">'Registro de carbón no encontrado'</span> });
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ error: <span class="string">'Producto no encontrado'</span> });
     }
     
     res.<span class="function">json</span>(rows[<span class="number">0</span>]);
   } <span class="keyword">catch</span> (error) {
-    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al obtener el registro'</span> });
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al obtener producto'</span> });
   }
 });
 
-<span class="comment">// ========== 4. REGISTRAR NUEVO LOTE DE CARBÓN (protegido) ==========</span>
-app.<span class="function">post</span>(<span class="string">'/api/carbon'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+<span class="comment">// ========== 4. CREAR PRODUCTO (protegido) ==========</span>
+app.<span class="function">post</span>(<span class="string">'/api/productos'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
   <span class="keyword">try</span> {
-    <span class="keyword">const</span> { tipo, descripcion, peso_toneladas, calidad, mina_origen, fecha_extraccion, precio_tonelada } = req.body;
+    <span class="keyword">const</span> { nombre, descripcion, precio, categoria, stock } = req.body;
     
-    <span class="keyword">if</span> (!tipo || !peso_toneladas) {
-      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'Tipo y peso del carbón son requeridos'</span> });
+    <span class="keyword">if</span> (!nombre || !precio) {
+      <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'Nombre y precio requeridos'</span> });
     }
     
     <span class="keyword">const</span> [result] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">'INSERT INTO carbon (tipo, descripcion, peso_toneladas, calidad, mina_origen, fecha_extraccion, precio_tonelada) VALUES (?, ?, ?, ?, ?, ?, ?)'</span>,
-      [tipo, descripcion || <span class="string">''</span>, peso_toneladas, calidad || <span class="string">'B'</span>, mina_origen || <span class="string">'Mina Principal'</span>, fecha_extraccion || <span class="function">new Date</span>().<span class="function">toISOString</span>().<span class="function">split</span>(<span class="string">'T'</span>)[<span class="number">0</span>], precio_tonelada || <span class="number">0</span>]
+      <span class="string">'INSERT INTO productos (nombre, descripcion, precio, categoria, stock) VALUES (?, ?, ?, ?, ?)'</span>,
+      [nombre, descripcion || <span class="string">''</span>, precio, categoria || <span class="string">'general'</span>, stock || <span class="number">0</span>]
     );
     
-    <span class="keyword">const</span> [newRecord] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">'SELECT * FROM carbon WHERE id = ?'</span>, [result.insertId]
+    <span class="keyword">const</span> [newProduct] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [result.insertId]
     );
     
-    res.<span class="function">status</span>(<span class="number">201</span>).<span class="function">json</span>(newRecord[<span class="number">0</span>]);
+    res.<span class="function">status</span>(<span class="number">201</span>).<span class="function">json</span>(newProduct[<span class="number">0</span>]);
   } <span class="keyword">catch</span> (error) {
-    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al registrar lote de carbón'</span> });
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al crear producto'</span> });
   }
 });
 
-<span class="comment">// ========== 5. ACTUALIZAR LOTE DE CARBÓN (PUT - completo) ==========</span>
-app.<span class="function">put</span>(<span class="string">'/api/carbon/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+<span class="comment">// ========== 5. ACTUALIZAR PRODUCTO (PUT - completo) ==========</span>
+app.<span class="function">put</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
   <span class="keyword">try</span> {
-    <span class="keyword">const</span> { tipo, descripcion, peso_toneladas, calidad, mina_origen, fecha_extraccion, precio_tonelada } = req.body;
+    <span class="keyword">const</span> { nombre, descripcion, precio, categoria, stock } = req.body;
     <span class="keyword">const</span> { id } = req.params;
     
     <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">'UPDATE carbon SET tipo = ?, descripcion = ?, peso_toneladas = ?, calidad = ?, mina_origen = ?, fecha_extraccion = ?, precio_tonelada = ? WHERE id = ?'</span>,
-      [tipo, descripcion, peso_toneladas, calidad, mina_origen, fecha_extraccion, precio_tonelada, id]
+      <span class="string">'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria = ?, stock = ? WHERE id = ?'</span>,
+      [nombre, descripcion, precio, categoria, stock, id]
     );
     
     <span class="keyword">const</span> [updated] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">'SELECT * FROM carbon WHERE id = ?'</span>, [id]
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [id]
     );
     
     res.<span class="function">json</span>(updated[<span class="number">0</span>]);
   } <span class="keyword">catch</span> (error) {
-    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al actualizar lote de carbón'</span> });
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al actualizar producto'</span> });
   }
 });
 
-<span class="comment">// ========== 6. ACTUALIZAR LOTE (PATCH - parcial) ==========</span>
-app.<span class="function">patch</span>(<span class="string">'/api/carbon/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+<span class="comment">// ========== 6. ACTUALIZAR PRODUCTO (PATCH - parcial) ==========</span>
+app.<span class="function">patch</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
   <span class="keyword">try</span> {
     <span class="keyword">const</span> { id } = req.params;
     <span class="keyword">const</span> updates = req.body;
@@ -844,26 +837,26 @@ app.<span class="function">patch</span>(<span class="string">'/api/carbon/:id'</
     valores.<span class="function">push</span>(id);
     
     <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">`UPDATE carbon SET ${setClause} WHERE id = ?`</span>, valores
+      <span class="string">`UPDATE productos SET ${setClause} WHERE id = ?`</span>, valores
     );
     
     <span class="keyword">const</span> [updated] = <span class="keyword">await</span> pool.<span class="function">execute</span>(
-      <span class="string">'SELECT * FROM carbon WHERE id = ?'</span>, [id]
+      <span class="string">'SELECT * FROM productos WHERE id = ?'</span>, [id]
     );
     
     res.<span class="function">json</span>(updated[<span class="number">0</span>]);
   } <span class="keyword">catch</span> (error) {
-    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al actualizar lote de carbón'</span> });
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al actualizar producto'</span> });
   }
 });
 
-<span class="comment">// ========== 7. ELIMINAR LOTE DE CARBÓN (protegido) ==========</span>
-app.<span class="function">delete</span>(<span class="string">'/api/carbon/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
+<span class="comment">// ========== 7. ELIMINAR PRODUCTO (protegido) ==========</span>
+app.<span class="function">delete</span>(<span class="string">'/api/productos/:id'</span>, autenticar, <span class="keyword">async</span> (req, res) => {
   <span class="keyword">try</span> {
-    <span class="keyword">await</span> pool.<span class="function">execute</span>(<span class="string">'DELETE FROM carbon WHERE id = ?'</span>, [req.params.id]);
-    res.<span class="function">json</span>({ mensaje: <span class="string">'Lote de carbón eliminado correctamente'</span> });
+    <span class="keyword">await</span> pool.<span class="function">execute</span>(<span class="string">'DELETE FROM productos WHERE id = ?'</span>, [req.params.id]);
+    res.<span class="function">json</span>({ mensaje: <span class="string">'Producto eliminado correctamente'</span> });
   } <span class="keyword">catch</span> (error) {
-    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al eliminar lote de carbón'</span> });
+    res.<span class="function">status</span>(<span class="number">500</span>).<span class="function">json</span>({ error: <span class="string">'Error al eliminar producto'</span> });
   }
 });
 
@@ -871,13 +864,13 @@ app.<span class="function">delete</span>(<span class="string">'/api/carbon/:id'<
 <span class="keyword">const</span> storage = multer.<span class="function">diskStorage</span>({
   destination: <span class="string">'uploads/'</span>,
   filename: (req, file, cb) => {
-    cb(<span class="keyword">null</span>, <span class="string">`carbon-${Date.now()}-${file.originalname}`</span>);
+    cb(<span class="keyword">null</span>, <span class="string">`${Date.now()}-${file.originalname}`</span>);
   }
 });
 
 <span class="keyword">const</span> upload = multer({ 
   storage,
-  limits: { fileSize: <span class="number">5</span> * <span class="number">1024</span> * <span class="number">1024</span> },
+  limits: { fileSize: <span class="number">5</span> * <span class="number">1024</span> * <span class="number">1024</span> }, <span class="comment">// 5MB</span>
   fileFilter: (req, file, cb) => {
     <span class="keyword">const</span> allowed = [<span class="string">'image/jpeg'</span>, <span class="string">'image/png'</span>, <span class="string">'image/gif'</span>, <span class="string">'application/pdf'</span>];
     <span class="keyword">if</span> (allowed.<span class="function">includes</span>(file.mimetype)) {
@@ -893,7 +886,7 @@ app.<span class="function">post</span>(<span class="string">'/api/upload'</span>
     <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({ error: <span class="string">'No se envió ningún archivo'</span> });
   }
   res.<span class="function">json</span>({ 
-    mensaje: <span class="string">'Archivo de registro de carbón subido correctamente'</span>,
+    mensaje: <span class="string">'Archivo subido correctamente'</span>,
     archivo: req.file.originalname,
     tamaño: req.file.size,
     tipo: req.file.mimetype
@@ -902,13 +895,13 @@ app.<span class="function">post</span>(<span class="string">'/api/upload'</span>
 
 <span class="comment">// ========== RUTA NO ENCONTRADA (404) ==========</span>
 app.<span class="function">use</span>((req, res) => {
-  res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ error: <span class="string">'Ruta no encontrada en el sistema de carbón'</span> });
+  res.<span class="function">status</span>(<span class="number">404</span>).<span class="function">json</span>({ error: <span class="string">'Ruta no encontrada'</span> });
 });
 
 <span class="comment">// ========== INICIAR SERVIDOR ==========</span>
 <span class="keyword">const</span> PORT = process.env.PORT || <span class="number">3000</span>;
 app.<span class="function">listen</span>(PORT, () => {
-  console.<span class="function">log</span>(<span class="string">`⛏️  Servidor de Carbón en http://localhost:${PORT}`</span>);
+  console.<span class="function">log</span>(<span class="string">`🚀 Servidor en http://localhost:${PORT}`</span>);
   console.<span class="function">log</span>(<span class="string">`📋 CORS habilitado para todos los orígenes`</span>);
 });</code></pre>
     </div>
@@ -918,47 +911,48 @@ app.<span class="function">listen</span>(PORT, () => {
       <h2><span class="num">8</span> Consumir desde el Frontend (Fetch)</h2>
 
       <div class="alert alert-blue">
-        <strong>🌐 Nota:</strong> Gracias a CORS, tu frontend puede hacer peticiones a la API de carbón sin problemas.
+        <strong>🌐 Nota:</strong> Gracias a CORS, tu frontend puede hacer peticiones a la API sin problemas.
       </div>
 
       <div class="grid-2">
         <div>
-          <h3>Login - Acceso a la Mina</h3>
+          <h3>Login</h3>
           <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> login = <span class="keyword">async</span> () => {
   <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/login'</span>, {
     method: <span class="string">'POST'</span>,
     headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
     body: <span class="function">JSON</span>.<span class="function">stringify</span>({
-      email: <span class="string">'super@mina.com'</span>,
+      email: <span class="string">'profe@mail.com'</span>,
       password: <span class="string">'123456'</span>
     })
   });
   <span class="keyword">const</span> data = <span class="keyword">await</span> res.<span class="function">json</span>();
   <span class="keyword">if</span> (data.token) {
     localStorage.<span class="function">setItem</span>(<span class="string">'token'</span>, data.token);
-    console.<span class="function">log</span>(<span class="string">'⛏️ Acceso a la mina concedido'</span>);
+    console.<span class="function">log</span>(<span class="string">'✅ Login exitoso'</span>);
   }
   <span class="keyword">return</span> data;
 };</code></pre>
         </div>
 
         <div>
-          <h3>Obtener registros de carbón</h3>
-          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> getCarbon = <span class="keyword">async</span> () => {
+          <h3>Obtener productos</h3>
+          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> getProductos = <span class="keyword">async</span> () => {
   <span class="keyword">const</span> token = localStorage.<span class="function">getItem</span>(<span class="string">'token'</span>);
   
   <span class="keyword">if</span> (!token) {
-    console.<span class="function">error</span>(<span class="string">'❌ No hay token de acceso'</span>);
+    console.<span class="function">error</span>(<span class="string">'❌ No hay token'</span>);
     <span class="keyword">return</span>;
   }
   
-  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/carbon'</span>, {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/productos'</span>, {
     headers: { <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span> }
   });
   
   <span class="keyword">if</span> (res.<span class="function">status</span> === <span class="number">401</span>) {
     console.<span class="function">log</span>(<span class="string">'⏰ Token expirado, redirigiendo al login...'</span>);
     localStorage.<span class="function">removeItem</span>(<span class="string">'token'</span>);
+    <span class="comment">// window.location.href = '/login'</span>
   }
   
   <span class="keyword">const</span> data = <span class="keyword">await</span> res.<span class="function">json</span>();
@@ -967,38 +961,37 @@ app.<span class="function">listen</span>(PORT, () => {
         </div>
 
         <div>
-          <h3>Registrar nuevo lote de carbón</h3>
-          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> registrarCarbon = <span class="keyword">async</span> (lote) => {
+          <h3>Crear producto</h3>
+          <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> crearProducto = <span class="keyword">async</span> (producto) => {
   <span class="keyword">const</span> token = localStorage.<span class="function">getItem</span>(<span class="string">'token'</span>);
   
-  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/carbon'</span>, {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'http://localhost:3000/api/productos'</span>, {
     method: <span class="string">'POST'</span>,
     headers: {
       <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span>,
       <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>
     },
-    body: <span class="function">JSON</span>.<span class="function">stringify</span>(lote)
+    body: <span class="function">JSON</span>.<span class="function">stringify</span>(producto)
   });
   
   <span class="keyword">return</span> <span class="keyword">await</span> res.<span class="function">json</span>();
 };
 
 <span class="comment">// Uso</span>
-<span class="keyword">const</span> nuevoLote = <span class="keyword">await</span> <span class="function">registrarCarbon</span>({
-  tipo: <span class="string">'Antracita'</span>,
-  peso_toneladas: <span class="number">175.50</span>,
-  calidad: <span class="string">'A'</span>,
-  mina_origen: <span class="string">'Mina Noroeste'</span>,
-  precio_tonelada: <span class="number">270.00</span>
+<span class="keyword">const</span> nuevo = <span class="keyword">await</span> <span class="function">crearProducto</span>({
+  nombre: <span class="string">'Teclado RGB'</span>,
+  precio: <span class="number">89.99</span>,
+  categoria: <span class="string">'perifericos'</span>,
+  stock: <span class="number">30</span>
 });</code></pre>
         </div>
 
         <div>
-          <h3>Actualizar parcialmente un lote</h3>
+          <h3>Actualizar parcialmente</h3>
           <pre style="font-size:0.8rem;"><code><span class="keyword">const</span> actualizarParcial = <span class="keyword">async</span> (id, datos) => {
   <span class="keyword">const</span> token = localStorage.<span class="function">getItem</span>(<span class="string">'token'</span>);
   
-  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">`http://localhost:3000/api/carbon/${id}`</span>, {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">`http://localhost:3000/api/productos/${id}`</span>, {
     method: <span class="string">'PATCH'</span>,
     headers: {
       <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span>,
@@ -1010,40 +1003,40 @@ app.<span class="function">listen</span>(PORT, () => {
   <span class="keyword">return</span> <span class="keyword">await</span> res.<span class="function">json</span>();
 };
 
-<span class="comment">// Uso - actualizar solo el precio</span>
+<span class="comment">// Uso - solo actualizar el precio</span>
 <span class="keyword">const</span> actualizado = <span class="keyword">await</span> <span class="function">actualizarParcial</span>(<span class="number">1</span>, { 
-  precio_tonelada: <span class="number">285.50</span>,
-  calidad: <span class="string">'A'</span>
+  precio: <span class="number">79.99</span>,
+  stock: <span class="number">25</span>
 });</code></pre>
         </div>
       </div>
 
       <div class="alert alert-blue">
         <strong>💡 Tip:</strong> Guarda el token en <code>localStorage</code> después del login y envíalo en el header
-        <code>Authorization: Bearer &lt;token&gt;</code> en todas las peticiones protegidas al sistema de carbón.
+        <code>Authorization: Bearer &lt;token&gt;</code> en todas las peticiones protegidas.
       </div>
     </div>
 
     <!-- ========== SECCIÓN 9: FLUJO COMPLETO ========== -->
     <div class="card">
-      <h2><span class="num">9</span> Flujo Completo de Autenticación - Sistema de Carbón</h2>
+      <h2><span class="num">9</span> Flujo Completo de Autenticación</h2>
 
       <div
-        style="background:#0f172a; padding:1rem; border-radius:8px; font-size:0.95rem; line-height:2; border:1px solid #334155;">
-        <strong>1️⃣ Minero →</strong> POST /api/login (email + password)<br>
+        style="background:#0d1117; padding:1rem; border-radius:8px; font-size:0.95rem; line-height:2; border:1px solid #30363d;">
+        <strong>1️⃣ Cliente →</strong> POST /api/login (email + password)<br>
         <strong>2️⃣ Servidor →</strong> Verifica credenciales en MySQL<br>
-        <strong>3️⃣ Servidor →</strong> Genera JWT y lo devuelve al minero<br>
-        <strong>4️⃣ Minero →</strong> Guarda JWT en localStorage<br>
-        <strong>5️⃣ Minero →</strong> GET /api/carbon (con token en header)<br>
+        <strong>3️⃣ Servidor →</strong> Genera JWT y lo devuelve al cliente<br>
+        <strong>4️⃣ Cliente →</strong> Guarda JWT en localStorage<br>
+        <strong>5️⃣ Cliente →</strong> GET /api/productos (con token en header)<br>
         <strong>6️⃣ Servidor →</strong> Middleware verifica el token<br>
-        <strong>7️⃣ Servidor →</strong> Si es válido, devuelve los datos de carbón<br>
-        <strong>8️⃣ Minero →</strong> Muestra los datos en la interfaz<br>
+        <strong>7️⃣ Servidor →</strong> Si es válido, devuelve los datos<br>
+        <strong>8️⃣ Cliente →</strong> Muestra los datos en la interfaz<br>
       </div>
 
       <div
-        style="background:#0f172a; padding:1rem; border-radius:8px; margin-top:0.5rem; font-size:0.95rem; line-height:2; border:1px solid #334155;">
+        style="background:#0d1117; padding:1rem; border-radius:8px; margin-top:0.5rem; font-size:0.95rem; line-height:2; border:1px solid #30363d;">
         <strong>🌐 Con CORS incluido:</strong><br>
-        <strong>1️⃣ Frontend (http://localhost:5500)</strong> → hace petición a la API de carbón<br>
+        <strong>1️⃣ Frontend (http://localhost:5500)</strong> → hace petición a la API<br>
         <strong>2️⃣ Navegador</strong> → pregunta al servidor si permite CORS (OPTIONS)<br>
         <strong>3️⃣ Servidor</strong> → responde con <code>Access-Control-Allow-Origin: *</code><br>
         <strong>4️⃣ Navegador</strong> → permite la petición<br>
@@ -1051,8 +1044,7 @@ app.<span class="function">listen</span>(PORT, () => {
       </div>
 
       <div class="alert alert-green" style="margin-top:0.5rem;">
-        <strong>🎯 Resumen:</strong> El JWT es un <strong>pase temporal</strong> para la mina. El minero se autentica
-        una vez y
+        <strong>🎯 Resumen:</strong> El JWT es un <strong>pase temporal</strong>. El usuario se autentica una vez y
         recibe un token que usa en cada petición. El servidor no guarda sesiones, solo verifica el token.
         <strong>CORS</strong> permite que tu frontend y backend hablen aunque estén en diferentes puertos.
       </div>
@@ -1060,23 +1052,23 @@ app.<span class="function">listen</span>(PORT, () => {
 
     <!-- ========== SECCIÓN 10: CONSIDERACIONES FINALES ========== -->
     <div class="card">
-      <h2><span class="num">10</span> Consideraciones Finales - Gestión de Carbón</h2>
+      <h2><span class="num">10</span> Consideraciones Finales</h2>
 
       <div class="grid-2">
         <div class="box">
-          <h4>🔐 Seguridad en la Mina</h4>
+          <h4>🔐 Seguridad</h4>
           <p>• Usa <strong>bcrypt</strong> para hashear contraseñas<br>
             • Usa <strong>consultas preparadas</strong> contra SQL injection<br>
-            • El JWT <strong>no guarda</strong> información sensible de la mina<br>
+            • El JWT <strong>no guarda</strong> información sensible<br>
             • Expira el token (ej: 1 hora)<br>
             • Configura CORS con <strong>orígenes específicos</strong> en producción</p>
         </div>
         <div class="box box-green">
-          <h4>📦 Buenas prácticas mineras</h4>
+          <h4>📦 Buenas prácticas</h4>
           <p>• Usa <strong>variables de entorno</strong> (.env)<br>
             • Separa el código en <strong>rutas</strong> y <strong>controladores</strong><br>
             • Usa <strong>middlewares</strong> para autenticación<br>
-            • Valida los datos de entrada (peso, tipo, calidad)<br>
+            • Valida los datos de entrada<br>
             • <strong>CORS:</strong> en desarrollo usa <code>cors()</code>, en producción configura orígenes</p>
         </div>
       </div>
@@ -1091,19 +1083,19 @@ app.<span class="function">use</span>(<span class="function">cors</span>({
   allowedHeaders: [<span class="string">'Content-Type'</span>, <span class="string">'Authorization'</span>]
 }));</code></pre>
         </div>
-        <div class="box box-cyan">
+        <div class="box box-purple">
           <h4>📚 Extras que puedes agregar</h4>
           <p>• Refresh tokens (renovar JWT sin re-login)<br>
-            • Roles y permisos (admin, supervisor, minero)<br>
+            • Roles y permisos (admin, usuario, etc.)<br>
             • Validación con Joi o express-validator<br>
-            • Logging de operaciones mineras<br>
+            • Logging de peticiones<br>
             • Manejo de errores centralizado</p>
         </div>
       </div>
 
       <div class="alert alert-blue">
         <strong>📌 Comandos útiles:</strong><br>
-        <code>npm start</code> - Inicia el servidor de la mina<br>
+        <code>npm start</code> - Inicia el servidor<br>
         <code>npm run dev</code> - Inicia con nodemon (auto-reload)<br>
         <code>npm install cors</code> - Instala CORS<br>
       </div>
