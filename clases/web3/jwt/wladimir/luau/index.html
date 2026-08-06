@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luau desde cero · Tutorial para principiantes (Sugerido por Wladimir Loreto)</title>
+    <!-- Carbon CSS (estilo minimalista y responsive) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/carbon-components@10.58.8/css/carbon-components.min.css">
+    <!-- Fuente IBM Plex Mono para el código -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <style>
+        /* Ajustes responsivos y tema oscuro tipo Carbon */
+        body {
+            background: #f4f4f4;
+            font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+            padding: 2rem 1rem;
+            margin: 0;
+        }
+
+        .tutorial-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            padding: 2rem 2rem 3rem;
+        }
+
+        h1 {
+            font-weight: 300;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+            border-left: 6px solid #0f62fe;
+            padding-left: 1.2rem;
+            margin-top: 0.2rem;
+            color: #161616;
+        }
+
+        .subhead {
+            color: #525252;
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            padding-left: 1.8rem;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 0.75rem;
+        }
+
+        .card-concept {
+            background: #f9f9fb;
+            border-radius: 8px;
+            padding: 1.6rem 1.8rem;
+            margin-bottom: 2.2rem;
+            border-left: 4px solid #0f62fe;
+            transition: background 0.2s;
+        }
+
+        .card-concept:hover {
+            background: #f2f4f8;
+        }
+
+        .card-concept h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #161616;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-concept h2 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #6f6f6f;
+            background: #e8e8ec;
+            padding: 0.15rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .card-concept p {
+            color: #333;
+            line-height: 1.6;
+            margin: 0.6rem 0 0.8rem;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 1.2rem 1.5rem;
+            font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 1rem 0 0.2rem;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        .code-block .keyword {
+            color: #c586c0;
+        }
+
+        .code-block .string {
+            color: #ce9178;
+        }
+
+        .code-block .func {
+            color: #dcdcaa;
+        }
+
+        .code-block .number {
+            color: #b5cea8;
+        }
+
+        .code-block .variable {
+            color: #9cdcfe;
+        }
+
+        .output-demo {
+            background: #eef1f5;
+            padding: 0.8rem 1.2rem;
+            border-radius: 6px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #d2d8e0;
+            margin: 0.5rem 0 0;
+            color: #1a1a1a;
+        }
+
+        .output-demo span {
+            background: #d0d7e5;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .badge {
+            background: #0f62fe;
+            color: white;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #d0d7e0;
+            margin: 2.2rem 0 1.8rem;
+        }
+
+        footer {
+            text-align: center;
+            color: #6f6f6f;
+            font-size: 0.9rem;
+            margin-top: 2.5rem;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 2rem;
+        }
+
+        /* responsive */
+        @media (max-width: 640px) {
+            .tutorial-container {
+                padding: 1rem;
+            }
+
+            .card-concept {
+                padding: 1.2rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* simular interfaz Luau */
+        .luau-tag {
+            background: #d0e0ff;
+            color: #0043ce;
+            padding: 0.1rem 0.6rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tutorial-container">
+
+        <h1>⬡ Luau · de cero a experto</h1>
+        <div class="subhead">
+            <span class="badge">interactivo</span> &nbsp; variables · funciones · tablas · cuerpos · colisiones · nodos
+            · señales
+        </div>
+
+        <!-- 1. Variables -->
+        <div class="card-concept">
+            <h2>📦 1. Variables y tipos <small>fundamentos</small></h2>
+            <p>En Luau usamos <code>local</code> para ámbito. Tipos dinámicos: <strong>nil, boolean, number, string,
+                    table, function, thread, userdata</strong>.</p>
+            <div class="code-block">
+                <span class="comment">-- Variables básicas</span>
+                <span class="keyword">local</span> nombre = <span class="string">"Ana"</span>
+                <span class="keyword">local</span> edad = <span class="number">28</span>
+                <span class="keyword">local</span> activo = <span class="keyword">true</span>
+                <span class="keyword">local</span> lista = { <span class="string">"Luau"</span>, <span
+                    class="number">2025</span>, <span class="keyword">false</span> }
+
+                <span class="comment">-- interpolación con .. (concatenación)</span>
+                <span class="keyword">local</span> mensaje = <span class="string">"Hola, "</span> .. nombre .. <span
+                    class="string">" tienes "</span> .. edad
+                <span class="keyword">print</span>(mensaje) <span class="comment">-- Hola, Ana tienes 28</span>
+            </div>
+            <div class="output-demo">
+                ▶ <span>Hola, Ana tienes 28</span> &nbsp;|&nbsp; lista[1] = <span>Luau</span>
+            </div>
+        </div>
+
+        <!-- 2. Funciones y tablas -->
+        <div class="card-concept">
+            <h2>⚙️ 2. Funciones & tablas <small>estructuras</small></h2>
+            <p>Las funciones son ciudadanas de primera clase. Las tablas son el pilar de Luau: arrays, diccionarios y
+                objetos.</p>
+            <div class="code-block">
+                <span class="comment">-- función que retorna múltiples valores</span>
+                <span class="keyword">local function</span> <span class="func">saludar</span>(nombre, edad)
+                <span class="keyword">return</span> <span class="string">"Hola "</span> .. nombre, edad + <span
+                    class="number">1</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">local</span> persona = {
+                nombre = <span class="string">"Carlos"</span>,
+                edad = <span class="number">32</span>,
+                saludar = <span class="keyword">function</span>(self)
+                <span class="keyword">return</span> <span class="string">"Soy "</span> .. self.nombre
+                <span class="keyword">end</span>
+                }
+                <span class="keyword">local</span> msg, nuevaEdad = saludar(persona.nombre, persona.edad)
+                <span class="keyword">print</span>(msg, nuevaEdad) <span class="comment">-- Hola Carlos 33</span>
+            </div>
+            <div class="output-demo">
+                ▶ <span>Hola Carlos 33</span> &nbsp;|&nbsp; persona:saludar() → <span>"Soy Carlos"</span>
+            </div>
+        </div>
+
+        <!-- 3. Cuerpos (Body) y colisiones (simulación conceptual) -->
+        <div class="card-concept">
+            <h2>🧊 3. Cuerpos (Body) y colisiones <small>física</small></h2>
+            <p>En entornos como Roblox, un <strong>Body</strong> representa un objeto físico con masa, velocidad,
+                posición. Las <strong>colisiones</strong> ocurren cuando dos cuerpos se intersectan.</p>
+            <div class="code-block">
+                <span class="comment">-- Simulación de un cuerpo simple</span>
+                <span class="keyword">local</span> Body = {}
+                Body.__index = Body
+
+                <span class="keyword">function</span> Body:<span class="func">new</span>(x, y, vx, vy)
+                <span class="keyword">local</span> self = setmetatable({}, Body)
+                self.x = x <span class="keyword">or</span> <span class="number">0</span>
+                self.y = y <span class="keyword">or</span> <span class="number">0</span>
+                self.vx = vx <span class="keyword">or</span> <span class="number">0</span>
+                self.vy = vy <span class="keyword">or</span> <span class="number">0</span>
+                self.masa = <span class="number">1</span>
+                <span class="keyword">return</span> self
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> Body:<span class="func">actualizar</span>(dt)
+                self.x = self.x + self.vx * dt
+                self.y = self.y + self.vy * dt
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> Body:<span class="func">colisionaCon</span>(otro)
+                <span class="comment">-- distancia simple (círculos)</span>
+                <span class="keyword">local</span> dx = self.x - otro.x
+                <span class="keyword">local</span> dy = self.y - otro.y
+                <span class="keyword">local</span> dist = math.sqrt(dx*dx + dy*dy)
+                <span class="keyword">return</span> dist < <span class="number">2.0</span> <span class="comment">--
+                        umbral de colisión</span>
+                    <span class="keyword">end</span>
+
+                    <span class="keyword">local</span> cuerpoA = Body:<span class="func">new</span>(<span
+                        class="number">0</span>, <span class="number">0</span>, <span class="number">0.5</span>, <span
+                        class="number">0.3</span>)
+                    <span class="keyword">local</span> cuerpoB = Body:<span class="func">new</span>(<span
+                        class="number">1.2</span>, <span class="number">0.8</span>, <span class="number">-0.2</span>,
+                    <span class="number">0.1</span>)
+                    cuerpoA:<span class="func">actualizar</span>(<span class="number">0.5</span>) <span
+                        class="comment">-- avanza</span>
+                    <span class="keyword">local</span> choque = cuerpoA:<span class="func">colisionaCon</span>(cuerpoB)
+                    <span class="keyword">print</span>(<span class="string">"¿Colisión? "</span> .. tostring(choque))
+            </div>
+            <div class="output-demo">
+                ▶ <span>¿Colisión? false</span> &nbsp; (cuerpoA en (0.25, 0.15) , cuerpoB en (1.2,0.8) → distancia > 2)
+            </div>
+        </div>
+
+        <!-- 4. Nodos (Node) → representación jerárquica -->
+        <div class="card-concept">
+            <h2>🌳 4. Nodos (Nodes) <small>jerarquía</small></h2>
+            <p>Un <strong>nodo</strong> es un elemento en un árbol o escena. Puede tener hijos y propiedades como
+                posición, rotación, etc. Usamos tablas para simularlo.</p>
+            <div class="code-block">
+                <span class="comment">-- Definición de Nodo con herencia</span>
+                <span class="keyword">local</span> Node = {}
+                Node.__index = Node
+
+                <span class="keyword">function</span> Node:<span class="func">new</span>(nombre, parent)
+                <span class="keyword">local</span> self = setmetatable({}, Node)
+                self.nombre = nombre <span class="keyword">or</span> <span class="string">"nodo"</span>
+                self.hijos = {}
+                self.parent = parent <span class="keyword">or</span> <span class="keyword">nil</span>
+                <span class="keyword">if</span> parent <span class="keyword">then</span> parent:<span
+                    class="func">addHijo</span>(self) <span class="keyword">end</span>
+                <span class="keyword">return</span> self
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> Node:<span class="func">addHijo</span>(hijo)
+                table.insert(self.hijos, hijo)
+                hijo.parent = self
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> Node:<span class="func">obtenerRuta</span>()
+                <span class="keyword">if</span> self.parent <span class="keyword">then</span>
+                <span class="keyword">return</span> self.parent:<span class="func">obtenerRuta</span>() .. <span
+                    class="string">"/"</span> .. self.nombre
+                <span class="keyword">else</span>
+                <span class="keyword">return</span> self.nombre
+                <span class="keyword">end</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">local</span> raiz = Node:<span class="func">new</span>(<span
+                    class="string">"raiz"</span>)
+                <span class="keyword">local</span> hijo1 = Node:<span class="func">new</span>(<span
+                    class="string">"nivel1"</span>, raiz)
+                <span class="keyword">local</span> hijo2 = Node:<span class="func">new</span>(<span
+                    class="string">"nivel2"</span>, hijo1)
+                <span class="keyword">print</span>(hijo2:<span class="func">obtenerRuta</span>()) <span
+                    class="comment">-- raiz/nivel1/nivel2</span>
+            </div>
+            <div class="output-demo">
+                ▶ <span>raiz/nivel1/nivel2</span> &nbsp; (jerarquía de nodos)
+            </div>
+        </div>
+
+        <!-- 5. Señales (Signal) → sistema de eventos -->
+        <div class="card-concept">
+            <h2>📡 5. Señales (Signals) <small>eventos</small></h2>
+            <p>Las <strong>señales</strong> permiten comunicación desacoplada. Un objeto emite una señal y otros se
+                suscriben (patrón observer).</p>
+            <div class="code-block">
+                <span class="comment">-- Implementación mínima de Signal</span>
+                <span class="keyword">local</span> Signal = {}
+                Signal.__index = Signal
+
+                <span class="keyword">function</span> Signal:<span class="func">new</span>()
+                <span class="keyword">local</span> self = setmetatable({}, Signal)
+                self._escuchas = {}
+                <span class="keyword">return</span> self
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> Signal:<span class="func">conectar</span>(callback)
+                table.insert(self._escuchas, callback)
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> Signal:<span class="func">emitir</span>(...)
+                <span class="keyword">for</span> _, cb <span class="keyword">in</span> ipairs(self._escuchas) <span
+                    class="keyword">do</span>
+                cb(...)
+                <span class="keyword">end</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">local</span> evento = Signal:<span class="func">new</span>()
+                evento:<span class="func">conectar</span>(<span class="keyword">function</span>(msg) <span
+                    class="keyword">print</span>(<span class="string">"📨 "</span> .. msg) <span
+                    class="keyword">end</span>)
+                evento:<span class="func">conectar</span>(<span class="keyword">function</span>() <span
+                    class="keyword">print</span>(<span class="string">"⚡ señal recibida"</span>) <span
+                    class="keyword">end</span>)
+                evento:<span class="func">emitir</span>(<span class="string">"Hola desde Luau"</span>)
+            </div>
+            <div class="output-demo">
+                ▶ <span>📨 Hola desde Luau</span> <br>
+                ▶ <span>⚡ señal recibida</span>
+            </div>
+        </div>
+
+        <!-- 6. Integración: Cuerpo + Nodo + Señal (colisión) -->
+        <div class="card-concept" style="border-left-color: #8a3ffc;">
+            <h2>🔗 6. Todo junto: cuerpo, nodo, señal <small>colisión con evento</small></h2>
+            <p>Un <strong>cuerpo</strong> se convierte en un <strong>nodo</strong> y emite una <strong>señal</strong>
+                cuando colisiona. Demostración de conceptos integrados.</p>
+            <div class="code-block">
+                <span class="comment">-- CuerpoNodo que hereda de Body y Node (mixin)</span>
+                <span class="keyword">local</span> BodyNode = {}
+                BodyNode.__index = <span class="keyword">function</span>(t, k)
+                <span class="keyword">return</span> Body[k] <span class="keyword">or</span> Node[k] <span
+                    class="keyword">or</span> BodyNode[k]
+                <span class="keyword">end</span>
+
+                <span class="keyword">function</span> BodyNode:<span class="func">new</span>(nombre, x, y)
+                <span class="keyword">local</span> self = setmetatable({}, BodyNode)
+                <span class="comment">-- inicializar partes</span>
+                <span class="keyword">for</span> k,v <span class="keyword">in</span> pairs(Body:<span
+                    class="func">new</span>(x, y, <span class="number">0</span>, <span class="number">0</span>)) <span
+                    class="keyword">do</span> self[k] = v <span class="keyword">end</span>
+                <span class="keyword">for</span> k,v <span class="keyword">in</span> pairs(Node:<span
+                    class="func">new</span>(nombre)) <span class="keyword">do</span> self[k] = v <span
+                    class="keyword">end</span>
+                self.onColision = Signal:<span class="func">new</span>() <span class="comment">-- señal propia</span>
+                <span class="keyword">return</span> self
+                <span class="keyword">end</span>
+
+                <span class="comment">-- sobrescribir colisionaCon para emitir señal</span>
+                <span class="keyword">function</span> BodyNode:<span class="func">colisionaCon</span>(otro)
+                <span class="keyword">local</span> dx = self.x - otro.x
+                <span class="keyword">local</span> dy = self.y - otro.y
+                <span class="keyword">local</span> dist = math.sqrt(dx*dx + dy*dy)
+                <span class="keyword">if</span> dist < <span class="number">1.8</span> <span class="keyword">then</span>
+                    self.onColision:<span class="func">emitir</span>(self, otro)
+                    <span class="keyword">return</span> <span class="keyword">true</span>
+                    <span class="keyword">end</span>
+                    <span class="keyword">return</span> <span class="keyword">false</span>
+                    <span class="keyword">end</span>
+
+                    <span class="keyword">local</span> a = BodyNode:<span class="func">new</span>(<span
+                        class="string">"A"</span>, <span class="number">0</span>, <span class="number">0</span>)
+                    <span class="keyword">local</span> b = BodyNode:<span class="func">new</span>(<span
+                        class="string">"B"</span>, <span class="number">1.5</span>, <span class="number">1.5</span>)
+                    a.onColision:<span class="func">conectar</span>(<span class="keyword">function</span>(self, otro)
+                    <span class="keyword">print</span>(<span class="string">"💥 Colisión entre "</span> .. self.nombre
+                    .. <span class="string">" y "</span> .. otro.nombre)
+                    <span class="keyword">end</span>)
+                    <span class="keyword">local</span> chocan = a:<span class="func">colisionaCon</span>(b)
+                    <span class="keyword">print</span>(<span class="string">"¿Chocan? "</span> .. tostring(chocan))
+            </div>
+            <div class="output-demo">
+                ▶ <span>💥 Colisión entre A y B</span> <br>
+                ▶ <span>¿Chocan? true</span> &nbsp; (distancia ~2.12, umbral 1.8 → <strong>true</strong>)
+            </div>
+        </div>
+
+        <hr>
+
+        <div
+            style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; background: #f2f4f8; padding: 1.2rem 1.8rem; border-radius: 10px;">
+            <div><span style="font-weight: 500;">✅ Conceptos cubiertos:</span> variables, funciones, tablas, cuerpos,
+                colisiones, nodos, señales.</div>
+            <div><span class="luau-tag">Luau</span> <span style="color: #2d2d2d; margin-left: 0.5rem;">¡sigue
+                    practicando!</span></div>
+        </div>
+
+        <footer>
+            Tutorial interactivo Luau · Diseño con Carbon · Todos los ejemplos son ejecutables en tu mente 🧠
+        </footer>
+
+    </div>
+</body>
+
+</html>
