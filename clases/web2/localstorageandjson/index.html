@@ -408,10 +408,13 @@ function borrarTextoSimple() {
     &lt;button type="submit"&gt;Guardar Perfil Completo&lt;/button&gt;
     &lt;button type="button" onclick="borrarPerfil()"&gt;Borrar Datos Almacenados&lt;/button&gt;
   &lt;/div&gt;
+                 &lt;div id="perfilEstado"&gt;&nbsp;
+  &lt;/div&gt;
 &lt;/form&gt;</code></pre>
 
             <h3>Código JavaScript:</h3>
-            <pre><code>let cadenaImagenBase64 = "";
+            <pre><code> 
+               let cadenaImagenBase64 = "";
 
 function procesarVistaPrevia(event) {
   /*
@@ -453,7 +456,71 @@ function procesarVistaPrevia(event) {
      */
     lector.readAsDataURL(archivo);
   }
-}</code></pre>
+}
+
+function guardarPerfil() {
+            const nombre = document.getElementById('nombreUsuario').value.trim();
+            if (!nombre) {
+                alert("Por favor ingresa un nombre");
+                return;
+            }
+
+            const perfilExistente = localStorage.getItem('demo_perfil_usuario');
+            let avatarFinal = cadenaImagenBase64;
+
+            if (!avatarFinal && perfilExistente) {
+                avatarFinal = JSON.parse(perfilExistente).avatar;
+            }
+
+            const perfil = {
+                nombre: nombre,
+                avatar: avatarFinal,
+                actualizadoEl: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('demo_perfil_usuario', JSON.stringify(perfil));
+            cargarPerfilGuardado();
+            alert("¡Perfil guardado correctamente en localStorage!");
+        }
+
+        function cargarPerfilGuardado() {
+            const datosGuardados = localStorage.getItem('demo_perfil_usuario');
+            const perfilEstado = document.getElementById('perfilEstado');
+            const imgPreview = document.getElementById('imgPreview');
+            const placeholderText = document.getElementById('placeholderText');
+            const inputNombre = document.getElementById('nombreUsuario');
+
+            if (datosGuardados) {
+                const perfil = JSON.parse(datosGuardados);
+                inputNombre.value = perfil.nombre;
+
+                if (perfil.avatar) {
+                    imgPreview.src = perfil.avatar;
+                    imgPreview.style.display = 'block';
+                    placeholderText.style.display = 'none';
+                    cadenaImagenBase64 = perfil.avatar;
+                }
+
+                perfilEstado.innerHTML = `
+                                      <strong>Perfil Cargado desde LocalStorage:</strong><br>
+                                      Usuario: <code>${perfil.nombre}</code><br>
+                                      Última actualización: <code>${perfil.actualizadoEl}</code>
+                                    `;
+                                        } else {
+                                            perfilEstado.innerHTML = "<strong>Estado de la Sesión:</strong> No hay perfil guardado en este navegador.";
+                                        }
+                                    }
+
+                                    function borrarPerfil() {
+                                        localStorage.removeItem('demo_perfil_usuario');
+                                        cadenaImagenBase64 = "";
+                                        document.getElementById('nombreUsuario').value = "";
+                                        document.getElementById('inputAvatar').value = "";
+                                        document.getElementById('imgPreview').style.display = "none";
+                                        document.getElementById('placeholderText').style.display = "block";
+                                        cargarPerfilGuardado();
+                                    }
+            </code></pre>
 
             <h3>Demostración Interactiva con Vista Previa de Imagen:</h3>
             <div class="demo-box">
