@@ -4,293 +4,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electiva I - Tablas Semánticas y Responsivas en HTML5</title>
+    <meta property="og:title" content="Guía Visual de HTML & CSS" />
+    <meta property="og:description" content="Se explican el tema de tablas semánticas en HTML5." />
+    <meta property="og:image" content="https://proferobyir.github.io/pictures/tux.png" />
+    <meta property="og:url" content="https://proferobyir.github.io" />
+    <title>Clase Magistral: Tablas Semánticas en HTML5</title>
     <style>
         /* =========================================================
-           VARIABLES Y TEMA CARBÓN (DARK THEME)
+           ESTILOS GENERALES - TEMA CARBÓN
            ========================================================= */
         :root {
-            --bg-primary: #121212;
-            --bg-surface: #1e1e1e;
-            --bg-card: #252526;
-            --bg-accent: #2d2d30;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --accent-cyan: #38bdf8;
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-header: #2d2d30;
+            --border-color: #3f3f46;
+            --text-main: #e0e0e0;
+            --text-muted: #a1a1aa;
+            --accent-blue: #38bdf8;
             --accent-green: #4ade80;
             --accent-yellow: #facc15;
-            --accent-red: #f87171;
-            --border-color: #3f3f46;
+            --code-bg: #141414;
         }
 
-        *,
-        *::before,
-        *::after {
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             line-height: 1.6;
-            margin: 0;
             padding: 20px;
         }
 
-        .container {
-            max-width: 1000px;
+        header,
+        main,
+        footer {
+            max-width: 900px;
             margin: 0 auto;
         }
 
-        /* Banner de Encabezado */
         header {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-top: 4px solid var(--accent-cyan);
-            padding: 24px;
-            border-radius: 8px;
-            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         h1 {
-            margin: 0 0 8px 0;
-            font-size: 1.8rem;
-            color: #ffffff;
+            color: var(--accent-blue);
+            font-size: 2rem;
+            margin-bottom: 8px;
         }
 
-        .badge {
-            display: inline-block;
-            background-color: rgba(56, 189, 248, 0.15);
-            color: var(--accent-cyan);
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            margin-top: 8px;
-        }
-
-        /* Tarjetas de Contenido */
-        .card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        h2 {
-            color: var(--accent-cyan);
-            font-size: 1.3rem;
-            margin-top: 0;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .alert-box {
-            background-color: rgba(248, 113, 113, 0.1);
-            border-left: 4px solid var(--accent-red);
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            padding: 14px;
-            border-radius: 4px;
-            margin: 16px 0;
-        }
-
-        .alert-box h3 {
-            margin: 0 0 6px 0;
-            color: var(--accent-red);
-            font-size: 1rem;
+        p.intro {
+            color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
         /* =========================================================
-           TÉCNICA RESPONSIVA PARA TABLAS EN MÓVILES
+           TARJETAS DE CONCEPTOS Y CÓDIGO
            ========================================================= */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            /* Permite desplazamiento horizontal en pantallas pequeñas */
-            -webkit-overflow-scrolling: touch;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin: 20px 0;
-        }
-
-        .carbon-table {
-            width: 100%;
-            border-collapse: collapse;
+        .concept-card {
             background-color: var(--bg-card);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            text-align: left;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 25px;
+            overflow: hidden;
         }
 
-        .carbon-table caption {
-            background-color: var(--bg-surface);
-            color: var(--text-secondary);
-            font-weight: bold;
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        .carbon-table th,
-        .carbon-table td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-            /* Evita que el texto de las celdas se rompa en móviles */
-        }
-
-        .carbon-table thead th {
-            background-color: var(--bg-accent);
+        .card-title {
+            background-color: var(--bg-card-header);
+            padding: 12px 20px;
+            font-size: 1.2rem;
             color: #ffffff;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .carbon-table tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.03);
+        .card-body {
+            padding: 20px;
         }
 
-        .carbon-table tbody th[scope="row"] {
-            background-color: rgba(255, 255, 255, 0.02);
-            color: var(--accent-cyan);
-            font-weight: 600;
+        .card-body p {
+            margin-bottom: 15px;
         }
 
-        /* Etiquetas para las materias */
-        .tag {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
         }
 
-        .tag-lab {
-            background-color: rgba(56, 189, 248, 0.2);
-            color: var(--accent-cyan);
-        }
-
-        .tag-theory {
-            background-color: rgba(250, 204, 21, 0.2);
-            color: var(--accent-yellow);
-        }
-
-        .tag-break {
-            background-color: rgba(160, 160, 160, 0.15);
-            color: var(--text-secondary);
-        }
-
-        /* Estilos de Código */
-        code,
-        pre {
-            font-family: 'Consolas', 'Courier New', monospace;
-            background-color: #1a1a1a;
-            color: var(--accent-green);
-            border-radius: 4px;
+        li {
+            margin-bottom: 8px;
         }
 
         code {
+            background-color: #2a2a2a;
+            color: var(--accent-blue);
             padding: 2px 6px;
-            font-size: 0.9em;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.95rem;
         }
 
         pre {
-            padding: 14px;
-            overflow-x: auto;
+            background-color: var(--code-bg);
             border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            color: #d4d4d4;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* =========================================================
+           ESTILOS DE LA TABLA DEMOSTRATIVA & RESPONSIVE
+           ========================================================= */
+        .table-responsive-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            min-width: 600px;
+            /* Garantiza scroll horizontal en móviles muy pequeños */
+        }
+
+        caption {
+            caption-side: top;
+            text-align: left;
+            padding: 12px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            background-color: var(--bg-card-header);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        thead th {
+            background-color: #252526;
+            color: #ffffff;
+        }
+
+        tbody th[scope="row"] {
+            background-color: #202023;
+            color: var(--accent-blue);
+            text-align: left;
+        }
+
+        tfoot td {
+            background-color: #202023;
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+
+        footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Electiva I: Tablas Semánticas y Responsivas</h1>
-            <p style="margin: 0; color: var(--text-secondary);">Guía demostrativa y estructura HTML5 / CSS3 en Tema
-                Carbón.</p>
-            <span class="badge">Material Docente • GitHub Ready</span>
-        </header>
+    <header>
+        <h1>Guía de Estudio: Tablas Semánticas en HTML5</h1>
+        <p class="intro">Conceptos teóricos, sintaxis y estructura práctica para desarrollo web moderno.</p>
+    </header>
 
-        <section class="card">
-            <h2>1. Aclaratoria Pedagógica: Semántica HTML</h2>
-            <p>Las tablas en HTML5 deben utilizarse <strong>únicamente para datos tabulares</strong> (información
-                estructurada en filas y columnas). Nunca deben usarse para la maquetación de la interfaz o la estructura
-                del sitio web.</p>
+    <main>
 
-            <div class="alert-box">
-                <h3>⚠️ Regla de Oro en Desarrollo Web</h3>
-                <p style="margin: 0; color: var(--text-primary);">Utilizar <code>&lt;table&gt;</code> para crear el
-                    diseño o maquetación general destruye la accesibilidad para lectores de pantalla y empeora el
-                    rendimiento. La estructura general se maqueta con <strong>Flexbox</strong> o <strong>CSS
-                        Grid</strong>.</p>
+        <!-- SECCIÓN 1: INTRODUCCIÓN Y BLOQUES BÁSICOS -->
+        <section class="concept-card">
+            <h2 class="card-title">1. Bloques Básicos e Intención Semántica</h2>
+            <div class="card-body">
+                <p>Las tablas en HTML se construyen <strong>fila por fila</strong>, de arriba a abajo y de izquierda a
+                    derecha. Se utilizan únicamente para representar datos estructurados en dos dimensiones.</p>
+                <ul>
+                    <li><code>&lt;table&gt;</code>: Es el contenedor principal que encierra toda la tabla.</li>
+                    <li><code>&lt;tr&gt;</code> (Table Row): Define una fila horizontal de datos.</li>
+                    <li><code>&lt;td&gt;</code> (Table Data): Define una celda estándar de contenido (texto, números,
+                        imágenes).</li>
+                    <li><code>&lt;th&gt;</code> (Table Header): Define una celda de encabezado o título (se muestra en
+                        negrita y centrada por defecto).</li>
+                </ul>
+
+                <p><strong>Estructura básica en código:</strong></p>
+                <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Título Columna 1&lt;/th&gt;
+    &lt;th&gt;Título Columna 2&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Dato 1&lt;/td&gt;
+    &lt;td&gt;Dato 2&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
             </div>
         </section>
 
-        <section class="card">
-            <h2>2. Demostración Práctica Responsiva</h2>
-            <p>Si abres este archivo en tu teléfono móvil, verás cómo el contenedor <code>.table-responsive</code>
-                habilita un desplazamiento horizontal suave sin romper la cuadrícula ni desestructurar el resto del
-                sitio web.</p>
+        <!-- SECCIÓN 2: SECCIONES SEMÁNTICAS -->
+        <section class="concept-card">
+            <h2 class="card-title">2. Estructura Semántica Avanzada (Partes de la Tabla)</h2>
+            <div class="card-body">
+                <p>Para mejorar la accesibilidad y permitir aplicar estilos estructurados, HTML5 divide la tabla en
+                    cuatro secciones clave:</p>
+                <ul>
+                    <li><code>&lt;caption&gt;</code>: Proporciona un título explícito o descripción corta a la tabla.
+                        Debe ir justo después de abrir <code>&lt;table&gt;</code>.</li>
+                    <li><code>&lt;thead&gt;</code> (Table Head): Agrupa las filas <code>&lt;tr&gt;</code> que contienen
+                        los títulos superiores de las columnas.</li>
+                    <li><code>&lt;tbody&gt;</code> (Table Body): Agrupa el bloque de datos principales de la tabla.</li>
+                    <li><code>&lt;tfoot&gt;</code> (Table Footer): Agrupa las filas de cierre dedicadas a sumatorias,
+                        promedios o notas aclaratorias.</li>
+                </ul>
 
-            <!-- CONTENEDOR CONTROLA EL RESPONSIVE CON SCROLL HORIZONTAL -->
-            <div class="table-responsive">
-                <table class="carbon-table">
-                    <caption>Matriz de Programación Académica - Electiva I</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Bloque Horario</th>
-                            <th scope="col">Lunes</th>
-                            <th scope="col">Miércoles</th>
-                            <th scope="col">Viernes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">07:30 - 09:00</th>
-                            <td><span class="tag tag-theory">Teoría</span> HTML5 Semántico</td>
-                            <!-- Combinación de columnas con colspan -->
-                            <td colspan="2"><span class="tag tag-lab">Laboratorio</span> CSS Grid & Flexbox</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">09:00 - 09:30</th>
-                            <td colspan="3" style="text-align: center;"><span class="tag tag-break">Receso
-                                    Académico</span></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">09:30 - 11:00</th>
-                            <td><span class="tag tag-lab">Práctica</span> Formularios & A11y</td>
-                            <td><span class="tag tag-theory">Teoría</span> JavaScript ES6+</td>
-                            <td><span class="tag tag-lab">Taller</span> Lógica de Programación</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p><strong>Sintaxis semántica:</strong></p>
+                <pre><code>&lt;table&gt;
+  &lt;caption&gt;Título de la Tabla&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;Encabezado&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Cuerpo de Datos&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;&lt;td&gt;Pie / Total&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tfoot&gt;
+&lt;/table&gt;</code></pre>
             </div>
         </section>
 
-        <section class="card">
-            <h2>3. ¿Cómo hacer la Tabla Responsiva con CSS?</h2>
-            <p>El truco profesional para mantener tablas accesibles y responsivas en cualquier pantalla consiste en
-                envolver la tabla en un elemento contenedor y aplicar:</p>
-            <pre><code>/* 1. Envolver la tabla en un div responsivo */
-                        .table-responsive {
-                            width: 100%;
-                            overflow-x: auto; /* Permite scroll horizontal en móviles */
-                            -webkit-overflow-scrolling: touch;
-                        }
+        <!-- SECCIÓN 3: ATRIBUTOS DE COMBINACIÓN Y ACCESIBILIDAD -->
+        <section class="concept-card">
+            <h2 class="card-title">3. Atributos Especiales: colspan, rowspan y scope</h2>
+            <div class="card-body">
+                <p>Permiten expandir celdas para abarcar múltiples espacios dentro de la cuadrícula:</p>
+                <ul>
+                    <li><code>colspan="n"</code> (Column Span): Expande una celda de forma horizontal a lo largo de
+                        <strong>"n" columnas</strong> hacia la derecha.
+                        <br><em>Efecto:</em> Debes eliminar celdas <code>&lt;td&gt;</code> en esa misma fila para
+                        mantener el equilibrio.
+                    </li>
+                    <li><code>rowspan="n"</code> (Row Span): Expande una celda de forma vertical hacia abajo abarcando
+                        <strong>"n" filas</strong>.
+                        <br><em>Efecto:</em> Debes omitir esa celda en las filas inferiores donde la celda combinada ya
+                        ocupa espacio.
+                    </li>
+                    <li><code>scope="col | row"</code>: Atributo de accesibilidad usado en <code>&lt;th&gt;</code> para
+                        indicar si el título aplica a toda la <code>col</code> (columna) o a toda la <code>row</code>
+                        (fila).</li>
+                </ul>
 
-                        /* 2. Mantener las celdas firmes */
-                        .carbon-table th, .carbon-table td {
-                            white-space: nowrap; /* Evita deformación de texto */
-                        }</code></pre>
+                <p><strong>Ejemplo de sintaxis:</strong></p>
+                <pre><code>&lt;!-- Fusión de 2 columnas --&gt;
+&lt;td colspan="2"&gt;Esta celda ocupa 2 columnas&lt;/td&gt;
+
+&lt;!-- Fusión de 2 filas --&gt;
+&lt;td rowspan="2"&gt;Esta celda se expande 2 filas hacia abajo&lt;/td&gt;
+
+&lt;!-- Especificación de alcance accesible --&gt;
+&lt;th scope="col"&gt;Título de Columna&lt;/th&gt;</code></pre>
+            </div>
         </section>
-    </div>
+
+        <!-- SECCIÓN 4: EJEMPLO PRÁCTICO INTEGRADOR -->
+        <section class="concept-card">
+            <h2 class="card-title">4. Ejemplo Práctico Integrador</h2>
+            <div class="card-body">
+                <p>A continuación se muestra el resultado final renderizado donde se aplican <strong>todos los conceptos
+                        explicados arriba</strong> dentro de una interfaz adaptada a dispositivos móviles:</p>
+
+                <!-- CONTENEDOR RESPONSIVE CON SCROLL HORIZONTAL -->
+                <div class="table-responsive-container">
+                    <table>
+                        <!-- CAPTION -->
+                        <caption>Reporte Evaluativo - Electiva I</caption>
+
+                        <!-- THEAD -->
+                        <thead>
+                            <tr>
+                                <th scope="col">Módulo</th>
+                                <th scope="col">Estudiante</th>
+                                <th scope="col">Evaluación 1</th>
+                                <th scope="col">Evaluación 2</th>
+                            </tr>
+                        </thead>
+
+                        <!-- TBODY -->
+                        <tbody>
+                            <tr>
+                                <!-- ROWSPAN: Abarca 2 filas -->
+                                <th scope="row" rowspan="2">Módulo 1: HTML5 & CSS3</th>
+                                <td>Carlos Mendoza</td>
+                                <td>18</td>
+                                <td>19</td>
+                            </tr>
+                            <tr>
+                                <!-- Se omite la primera celda por el rowspan superior -->
+                                <td>María Delgado</td>
+                                <td>20</td>
+                                <td>17</td>
+                            </tr>
+                            <tr>
+                                <!-- COLSPAN: Abarca las 4 columnas -->
+                                <td colspan="4" style="background-color: #2d2d30; color: var(--accent-yellow);">
+                                    Cierre de Entregas - Primer Corte
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <!-- TFOOT -->
+                        <tfoot>
+                            <tr>
+                                <!-- COLSPAN: Abarca 2 columnas para el texto -->
+                                <td colspan="2">Promedio General de la Sección</td>
+                                <td>19.0</td>
+                                <td>18.0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Elaborado por Profesor: Ing.Robyir Loreto & Gemini- Construcción de Interfaces Web Semánticas</p>
+    </footer>
 
 </body>
 
