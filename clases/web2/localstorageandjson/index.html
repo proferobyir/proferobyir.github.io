@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase Magistral: LocalStorage, FileReader API y Manipulación de Objetos JSON</title>
+    <style>
+        /* ==========================================================================
+       ESTILOS BASE Y TIPOGRAFÍA (Tema Claro / Minimalista Académico)
+       ========================================================================== */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --border-color: #cccccc;
+            --code-bg: #f7f7f7;
+            --accent-color: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* ==========================================================================
+       ENCABEZADOS Y SECCIONES
+       ========================================================================== */
+        header {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #555555;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p,
+        ul,
+        ol {
+            margin-bottom: 1rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.3rem;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            background: var(--code-bg);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* ==========================================================================
+       BLOQUES DE CÓDIGO Y PRE
+       ========================================================================== */
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        /* ==========================================================================
+       COMPONENTES INTERACTIVOS Y FORMULARIOS
+       ========================================================================== */
+        .demo-box {
+            border: 1px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row input,
+        .form-row select {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        input[type="file"] {
+            padding: 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            width: 100%;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: 1px solid var(--accent-color);
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #333333;
+        }
+
+        button.btn-outline {
+            background-color: transparent;
+            color: var(--accent-color);
+        }
+
+        button.btn-outline:hover {
+            background-color: #f0f0f0;
+        }
+
+        .preview-container {
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px dashed var(--border-color);
+            padding: 1rem;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-display {
+            margin-top: 1rem;
+            background: var(--code-bg);
+            padding: 1rem;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        /* ==========================================================================
+       ESTILOS PARA IMPRESIÓN (Guía Académica)
+       ========================================================================== */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 11pt;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .demo-box {
+                page-break-inside: avoid;
+            }
+
+            button {
+                display: none;
+            }
+
+            pre {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>Guía Académica: Persistencia Local, Archivos y Operaciones JSON Avanzadas</h1>
+            <p class="subtitle">Dominando <code>localStorage</code>, la API <code>FileReader</code> y estructuras de
+                objetos en JavaScript Vanilla</p>
+        </header>
+
+        <!-- SECCIÓN 1 -->
+        <section>
+            <h2>1. Introducción a LocalStorage</h2>
+            <p>
+                <strong>Web Storage API</strong> proporciona un almacenamiento clave-valor en el navegador. A diferencia
+                de <code>sessionStorage</code>, los datos en <code>localStorage</code> <strong>no expiran</strong> al
+                cerrar el navegador o apagar el equipo.
+            </p>
+
+            <blockquote>
+                <strong>Regla fundamental:</strong> <code>localStorage</code> <strong>solo almacena cadenas de texto
+                    (Strings)</strong>. Todo dato almacenado es convertido implícitamente a texto si no se serializa
+                correctamente.
+            </blockquote>
+
+            <h3>Métodos Base de la API:</h3>
+            <pre><code>// 1. setItem(clave, valor): Guarda o actualiza un dato tipo String asociado a una clave
+localStorage.setItem('clave', 'valor');
+
+// 2. getItem(clave): Retorna el valor en texto guardado con esa clave. Retorna null si no existe
+const dato = localStorage.getItem('clave');
+
+// 3. removeItem(clave): Elimina del almacenamiento la clave especificada y su valor
+localStorage.removeItem('clave');
+
+// 4. clear(): Borra completamente todos los registros de localStorage asociados al dominio actual
+localStorage.clear();</code></pre>
+        </section>
+
+        <!-- SECCIÓN 2 -->
+        <section>
+            <h2>2. Ejemplo Práctico Base: CRUD Básico de Texto</h2>
+            <p>
+                A continuación se detalla la estructura HTML y la lógica en JavaScript para escribir, leer y eliminar
+                datos simples tipo String.
+            </p>
+
+            <h3>Código HTML del Formulario:</h3>
+            <pre><code>&lt;div class="form-group"&gt;
+  &lt;label for="simpleText"&gt;Texto a almacenar:&lt;/label&gt;
+  &lt;input type="text" id="simpleText" placeholder="Escribe un dato..."&gt;
+&lt;/div&gt;
+
+&lt;button onclick="guardarTextoSimple()"&gt;Guardar&lt;/button&gt;
+&lt;button onclick="leerTextoSimple()"&gt;Leer&lt;/button&gt;
+&lt;button onclick="borrarTextoSimple()"&gt;Eliminar&lt;/button&gt;
+
+&lt;div id="resultadoSimple"&gt;Resultado: (Esperando acción)&lt;/div&gt;</code></pre>
+
+            <h3>Código JavaScript:</h3>
+            <pre><code>function guardarTextoSimple() {
+  const input = document.getElementById('simpleText');
+
+  /*
+   * .trim(): Método de las cadenas de texto (String) que remueve los espacios
+   * en blanco al inicio y al final del texto. Evita que el usuario guarde
+   * una cadena vacía o compuesta unicamente por espacios ("   ").
+   */
+  const valor = input.value.trim();
+
+  if (valor === "") {
+    alert("Por favor escribe un texto válido.");
+    return;
+  }
+
+  // Guardar en localStorage bajo la clave 'demo_texto_simple'
+  localStorage.setItem('demo_texto_simple', valor);
+
+  // Actualizar la interfaz y limpiar el input
+  document.getElementById('resultadoSimple').innerText = `Guardado: "${valor}"`;
+  input.value = '';
+}
+
+function leerTextoSimple() {
+  // Lectura del almacenamiento local
+  const valorGuardado = localStorage.getItem('demo_texto_simple');
+
+  /*
+   * Evaluamos si el valor no es null.
+   * getItem() retorna null si la clave consultada no ha sido creada previamente.
+   */
+  if (valorGuardado !== null) {
+    document.getElementById('resultadoSimple').innerText = `Recuperado: "${valorGuardado}"`;
+  } else {
+    document.getElementById('resultadoSimple').innerText = "No existe la clave 'demo_texto_simple'.";
+  }
+}
+
+function borrarTextoSimple() {
+  // Eliminación explícita de la clave seleccionada
+  localStorage.removeItem('demo_texto_simple');
+  document.getElementById('resultadoSimple').innerText = "Clave eliminada correctamente.";
+}</code></pre>
+
+            <h3>Demostración Interactiva del Ejemplo Base:</h3>
+            <div class="demo-box">
+                <div class="form-group">
+                    <label for="simpleText">Texto a almacenar:</label>
+                    <input type="text" id="simpleText" placeholder="Escribe algo aquí...">
+                </div>
+                <div class="button-group">
+                    <button onclick="guardarTextoSimple()">Guardar</button>
+                    <button class="btn-outline" onclick="leerTextoSimple()">Leer</button>
+                    <button class="btn-outline" onclick="borrarTextoSimple()">Eliminar</button>
+                </div>
+                <div class="data-display" id="resultadoSimple">Resultado: (Esperando acción)</div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: FILEREADER -->
+        <section>
+            <h2>3. Integración FileReader API y Vistas Previas</h2>
+            <p>
+                La API <code>FileReader</code> lee archivos de forma asíncrona. Mediante el método
+                <code>readAsDataURL()</code> podemos convertir una imagen cargada localmente en una cadena Base64,
+                permitiendo renderizar una vista previa e insertarla en <code>localStorage</code>.
+            </p>
+
+            <h3>Código HTML del Formulario:</h3>
+            <pre><code>&lt;form id="perfilForm" onsubmit="event.preventDefault(); guardarPerfil();"&gt;
+  &lt;div class="form-group"&gt;
+    &lt;label for="nombreUsuario"&gt;Nombre del Usuario:&lt;/label&gt;
+    &lt;input type="text" id="nombreUsuario" placeholder="Ej. María López"&gt;
+  &lt;/div&gt;
+
+  &lt;div class="form-group"&gt;
+    &lt;label for="inputAvatar"&gt;Seleccionar Fotografía de Perfil:&lt;/label&gt;
+    &lt;input type="file" id="inputAvatar" accept="image/*" onchange="procesarVistaPrevia(event)"&gt;
+  &lt;/div&gt;
+
+  &lt;div class="preview-container" id="previewArea"&gt;
+    &lt;p id="placeholderText"&gt;Sin imagen seleccionada&lt;/p&gt;
+    &lt;img id="imgPreview" class="preview-img" style="display: none;" alt="Vista previa"&gt;
+  &lt;/div&gt;
+
+  &lt;div class="button-group"&gt;
+    &lt;button type="submit"&gt;Guardar Perfil Completo&lt;/button&gt;
+    &lt;button type="button" onclick="borrarPerfil()"&gt;Borrar Datos Almacenados&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;</code></pre>
+
+            <h3>Código JavaScript:</h3>
+            <pre><code>let cadenaImagenBase64 = "";
+
+function procesarVistaPrevia(event) {
+  /*
+   * event.target.files: Arreglo (FileList) con los archivos seleccionados.
+   * [0] indica que tomamos el primer archivo elegido por el usuario.
+   */
+  const archivo = event.target.files[0];
+  const imgPreview = document.getElementById('imgPreview');
+  const placeholderText = document.getElementById('placeholderText');
+
+  if (archivo) {
+    /*
+     * FileReader(): Constructor que crea un nuevo objeto lector para inspeccionar
+     * archivos en el sistema local de forma asíncrona.
+     */
+    const lector = new FileReader();
+
+    /*
+     * .onload: Manejador de eventos (Event Handler) que se ejecuta cuando
+     * la operación de lectura del archivo ha finalizado exitosamente.
+     */
+    lector.onload = function(e) {
+      /*
+       * e.target.result: Contiene los datos del archivo expresados como
+       * un Data URL (cadena codificada en Base64).
+       */
+      cadenaImagenBase64 = e.target.result;
+      
+      // Asignar el Data URL al atributo src de la imagen para vista previa
+      imgPreview.src = cadenaImagenBase64;
+      imgPreview.style.display = 'block';
+      placeholderText.style.display = 'none';
+    };
+
+    /*
+     * .readAsDataURL(archivo): Método que inicia la lectura del archivo.
+     * Una vez finalizado, el atributo result contendrá una URL con los datos
+     * del archivo codificados en Base64.
+     */
+    lector.readAsDataURL(archivo);
+  }
+}</code></pre>
+
+            <h3>Demostración Interactiva con Vista Previa de Imagen:</h3>
+            <div class="demo-box">
+                <form id="perfilForm" onsubmit="event.preventDefault(); guardarPerfil();">
+                    <div class="form-group">
+                        <label for="nombreUsuario">Nombre del Usuario:</label>
+                        <input type="text" id="nombreUsuario" placeholder="Ej. María López">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputAvatar">Seleccionar Fotografía de Perfil:</label>
+                        <input type="file" id="inputAvatar" accept="image/*" onchange="procesarVistaPrevia(event)">
+                    </div>
+
+                    <div class="preview-container" id="previewArea">
+                        <p id="placeholderText">Sin imagen seleccionada</p>
+                        <img id="imgPreview" class="preview-img" style="display: none;" alt="Vista previa">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit">Guardar Perfil Completo</button>
+                        <button type="button" class="btn-outline" onclick="borrarPerfil()">Borrar Datos
+                            Almacenados</button>
+                    </div>
+                </form>
+
+                <div class="data-display" id="perfilEstado">
+                    <strong>Estado de la Sesión:</strong> Sin datos recuperados.
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: 10 EJERCICIOS ACADÉMICOS CON OBJETOS Y ARREGLOS JSON -->
+        <section>
+            <h2>4. 10 Ejercicios Académicos Paso a Paso con Objetos y Arreglos JSON</h2>
+            <p>
+                A continuación se presentan 10 patrones prácticos de manipulación de estructuras complejas (Objetos y
+                Arreglos) combinadas con la persistencia en <code>localStorage</code>, mostrando el <strong>código HTML
+                    del formulario</strong> y su respectivo <strong>código JavaScript</strong>.
+            </p>
+
+            <!-- EJERCICIO 1 -->
+            <h3>Ejercicio 1: Inserción y Persistencia de Colecciones (Método <code>push</code>)</h3>
+            <p>Añade nuevos objetos a un arreglo y los guarda en <code>localStorage</code> mediante
+                <code>JSON.stringify()</code>.</p>
+
+            <h4>Código HTML del Formulario:</h4>
+            <pre><code>&lt;form onsubmit="event.preventDefault(); ej1_ejecutar();"&gt;
+  &lt;div class="form-row"&gt;
+    &lt;input type="text" id="ej1_nombre" placeholder="Nombre Estudiante" required&gt;
+    &lt;input type="number" id="ej1_nota" placeholder="Nota (0 - 20)" step="0.1" required&gt;
+  &lt;/div&gt;
+  &lt;div class="button-group"&gt;
+    &lt;button type="submit"&gt;Agregar a Colección&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;pre&gt;&lt;code id="ej1_display"&gt;[]&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej1_ejecutar() {
+  const nombreInput = document.getElementById('ej1_nombre');
+  const notaInput = document.getElementById('ej1_nota');
+
+  // 1. Obtener los datos existentes o inicializar un arreglo vacío
+  const raw = localStorage.getItem('ej1_estudiantes');
+
+  /*
+   * JSON.parse(cadena): Convierte el String guardado a un Arreglo de Objetos real.
+   */
+  const estudiantes = raw ? JSON.parse(raw) : [];
+
+  /*
+   * .push(objeto): Método de Array que añade una nueva estructura al final.
+   * parseFloat(): Convierte la cadena numérica recibida a un número decimal flotante.
+   * .trim(): Remueve espacios en blanco iniciales y finales.
+   */
+  estudiantes.push({
+    id: Date.now(), // Identificador único por marca de tiempo
+    nombre: nombreInput.value.trim(),
+    nota: parseFloat(notaInput.value)
+  });
+
+  /*
+   * JSON.stringify(objeto): Serializa la estructura a String para guardarla en localStorage.
+   */
+  localStorage.setItem('ej1_estudiantes', JSON.stringify(estudiantes));
+
+  // Renderizar la lista
+  document.getElementById('ej1_display').innerText = JSON.stringify(estudiantes, null, 2);
+  nombreInput.value = '';
+  notaInput.value = '';
+}</code></pre>
+
+            <div class="demo-box">
+                <form onsubmit="event.preventDefault(); ej1_ejecutar();">
+                    <div class="form-row">
+                        <input type="text" id="ej1_nombre" placeholder="Nombre Estudiante" required>
+                        <input type="number" id="ej1_nota" placeholder="Nota (0 - 20)" step="0.1" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit">Agregar a Colección</button>
+                    </div>
+                </form>
+                <pre><code id="ej1_display">[]</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 2 -->
+            <h3>Ejercicio 2: Filtrado Dinámico de Objetos (Método <code>filter</code>)</h3>
+            <p>Filtra una lista de objetos almacenados en <code>localStorage</code> según una condición lógica (ej.
+                productos en stock).</p>
+
+            <h4>Código HTML del Formulario y Controles:</h4>
+            <pre><code>&lt;div class="button-group"&gt;
+  &lt;button onclick="ej2_cargarDemo()"&gt;Cargar Productos Demo&lt;/button&gt;
+  &lt;button class="btn-outline" onclick="ej2_mostrarFiltrados()"&gt;Filtrar Con Stock (stock &gt; 0)&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code id="ej2_display"&gt;Haz clic para interactuar...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej2_cargarDemo() {
+  const demo = [
+    { id: 1, producto: "Lápiz", stock: 15 },
+    { id: 2, producto: "Borrador", stock: 0 },
+    { id: 3, producto: "Regla", stock: 5 }
+  ];
+  localStorage.setItem('ej2_inventario', JSON.stringify(demo));
+  document.getElementById('ej2_display').innerText = "Inventario Inicial Guardado:\n" + JSON.stringify(demo, null, 2);
+}
+
+function ej2_mostrarFiltrados() {
+  const raw = localStorage.getItem('ej2_inventario');
+  const productos = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Array.prototype.filter(callback): Crea un nuevo arreglo que contiene únicamente
+   * los elementos que cumplan la condición del retorno (evaluada en true).
+   */
+  const disponibles = productos.filter(item => item.stock > 0);
+
+  document.getElementById('ej2_display').innerText = "Resultado de .filter(stock > 0):\n" + JSON.stringify(disponibles, null, 2);
+}</code></pre>
+
+            <div class="demo-box">
+                <div class="button-group">
+                    <button onclick="ej2_cargarDemo()">Cargar Productos Demo</button>
+                    <button class="btn-outline" onclick="ej2_mostrarFiltrados()">Filtrar Con Stock (stock > 0)</button>
+                </div>
+                <pre><code id="ej2_display">Haz clic para interactuar...</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 3 -->
+            <h3>Ejercicio 3: Búsqueda de Único Elemento por ID (Método <code>find</code>)</h3>
+            <p>Busca un registro específico dentro del arreglo almacenado mediante un formulario de consulta por ID.</p>
+
+            <h4>Código HTML del Formulario:</h4>
+            <pre><code>&lt;form onsubmit="event.preventDefault(); ej3_ejecutarBusqueda();"&gt;
+  &lt;div class="form-row"&gt;
+    &lt;input type="number" id="ej3_idInput" placeholder="Ingrese ID (Ej. 101, 102, 103)" required&gt;
+  &lt;/div&gt;
+  &lt;div class="button-group"&gt;
+    &lt;button type="button" onclick="ej3_cargarDemo()"&gt;Generar Usuarios Demo&lt;/button&gt;
+    &lt;button type="submit" class="btn-outline"&gt;Buscar por ID&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;div class="data-display" id="ej3_display"&gt;Esperando búsqueda...&lt;/div&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej3_cargarDemo() {
+  const usuarios = [
+    { id: 101, nombre: "Ana", rol: "Admin" },
+    { id: 102, nombre: "Carlos", rol: "Editor" },
+    { id: 103, nombre: "Beatriz", rol: "Usuario" }
+  ];
+  localStorage.setItem('ej3_usuarios', JSON.stringify(usuarios));
+  document.getElementById('ej3_display').innerText = "Usuarios base cargados: IDs 101, 102, 103.";
+}
+
+function ej3_ejecutarBusqueda() {
+  const idBuscado = document.getElementById('ej3_idInput').value;
+  const raw = localStorage.getItem('ej3_usuarios');
+  const usuarios = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Array.prototype.find(callback): Recorre el arreglo y devuelve el PRIMER elemento
+   * que cumpla la condición especificada, o 'undefined' si no lo encuentra.
+   * Number(idBuscado): Asegura la comparación entre datos del mismo tipo numérico.
+   */
+  const encontrado = usuarios.find(usuario => usuario.id === Number(idBuscado));
+
+  document.getElementById('ej3_display').innerText = encontrado 
+    ? `Encontrado: ${JSON.stringify(encontrado)}` 
+    : "Usuario no encontrado.";
+}</code></pre>
+
+            <div class="demo-box">
+                <form onsubmit="event.preventDefault(); ej3_ejecutarBusqueda();">
+                    <div class="form-row">
+                        <input type="number" id="ej3_idInput" placeholder="Ingrese ID (Ej. 101, 102, 103)" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" onclick="ej3_cargarDemo()">Generar Usuarios Demo</button>
+                        <button type="submit" class="btn-outline">Buscar por ID</button>
+                    </div>
+                </form>
+                <div class="data-display" id="ej3_display">Esperando búsqueda...</div>
+            </div>
+
+
+            <!-- EJERCICIO 4 -->
+            <h3>Ejercicio 4: Transformación e Incrementos (Método <code>map</code>)</h3>
+            <p>Aplica un ajuste de precio o transformación masiva sobre el arreglo guardado y actualiza el
+                <code>localStorage</code>.</p>
+
+            <h4>Código HTML del Formulario:</h4>
+            <pre><code>&lt;form onsubmit="event.preventDefault(); ej4_ejecutarAumento();"&gt;
+  &lt;div class="form-row"&gt;
+    &lt;input type="number" id="ej4_porcentajeInput" placeholder="Porcentaje % (Ej. 10)" required&gt;
+  &lt;/div&gt;
+  &lt;div class="button-group"&gt;
+    &lt;button type="button" onclick="ej4_cargarDemo()"&gt;Cargar Lista Inicial&lt;/button&gt;
+    &lt;button type="submit" class="btn-outline"&gt;Aplicar Aumento (%)&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;pre&gt;&lt;code id="ej4_display"&gt;Sin datos cargados...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej4_cargarDemo() {
+  const lista = [
+    { producto: "Cuaderno", precio: 10 },
+    { producto: "Mochila", precio: 50 }
+  ];
+  localStorage.setItem('ej4_precios', JSON.stringify(lista));
+  document.getElementById('ej4_display').innerText = JSON.stringify(lista, null, 2);
+}
+
+function ej4_ejecutarAumento() {
+  const porcentaje = parseFloat(document.getElementById('ej4_porcentajeInput').value);
+  const raw = localStorage.getItem('ej4_precios');
+  const lista = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Array.prototype.map(callback): Retorna un nuevo arreglo transformando
+   * cada uno de los elementos según lo retornado por la función pasada por parámetro.
+   * .toFixed(2): Método numérico que redondea el resultado a 2 decimales y lo devuelve como string.
+   */
+  const listaActualizada = lista.map(producto => {
+    return {
+      ...producto, // Operador Spread: Copia las propiedades existentes
+      precio: Number((producto.precio * (1 + porcentaje / 100)).toFixed(2))
+    };
+  });
+
+  // Guardar la versión transformada
+  localStorage.setItem('ej4_precios', JSON.stringify(listaActualizada));
+  document.getElementById('ej4_display').innerText = JSON.stringify(listaActualizada, null, 2);
+}</code></pre>
+
+            <div class="demo-box">
+                <form onsubmit="event.preventDefault(); ej4_ejecutarAumento();">
+                    <div class="form-row">
+                        <input type="number" id="ej4_porcentajeInput" placeholder="Porcentaje % (Ej. 10)" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" onclick="ej4_cargarDemo()">Cargar Lista Inicial</button>
+                        <button type="submit" class="btn-outline">Aplicar Aumento (%)</button>
+                    </div>
+                </form>
+                <pre><code id="ej4_display">Sin datos cargados...</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 5 -->
+            <h3>Ejercicio 5: Eliminación de Registros por Índice (Método <code>splice</code>)</h3>
+            <p>Busca la posición de un elemento con <code>findIndex()</code> y lo elimina de la colección local con
+                <code>splice()</code>.</p>
+
+            <h4>Código HTML del Formulario:</h4>
+            <pre><code>&lt;form onsubmit="event.preventDefault(); ej5_ejecutarEliminar();"&gt;
+  &lt;div class="form-row"&gt;
+    &lt;input type="number" id="ej5_idEliminar" placeholder="ID de tarea a eliminar (Ej. 1, 2, 3)" required&gt;
+  &lt;/div&gt;
+  &lt;div class="button-group"&gt;
+    &lt;button type="button" onclick="ej5_cargarDemo()"&gt;Cargar Tareas Demo&lt;/button&gt;
+    &lt;button type="submit" class="btn-outline"&gt;Eliminar Tarea&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;pre&gt;&lt;code id="ej5_display"&gt;Lista vacía&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej5_cargarDemo() {
+  const tareas = [
+    { id: 1, tarea: "Estudiar LocalStorage" },
+    { id: 2, tarea: "Practicar FileReader" },
+    { id: 3, tarea: "Hacer Ejercicios JSON" }
+  ];
+  localStorage.setItem('ej5_tareas', JSON.stringify(tareas));
+  document.getElementById('ej5_display').innerText = JSON.stringify(tareas, null, 2);
+}
+
+function ej5_ejecutarEliminar() {
+  const idAEliminar = document.getElementById('ej5_idEliminar').value;
+  const raw = localStorage.getItem('ej5_tareas');
+  const tareas = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Array.prototype.findIndex(callback): Retorna la posición (índice 0-based) del elemento
+   * dentro del arreglo. Devuelve -1 si el elemento no coincide con la condición.
+   */
+  const indice = tareas.findIndex(item => item.id === Number(idAEliminar));
+
+  if (indice !== -1) {
+    /*
+     * Array.prototype.splice(posicionInicio, cantidadAEliminar):
+     * Modifica el arreglo original eliminando la cantidad de elementos especificada.
+     */
+    tareas.splice(indice, 1);
+
+    // Sobrescribimos el localStorage con el arreglo modificado
+    localStorage.setItem('ej5_tareas', JSON.stringify(tareas));
+    document.getElementById('ej5_display').innerText = JSON.stringify(tareas, null, 2);
+  } else {
+    alert("ID no encontrado");
+  }
+}</code></pre>
+
+            <div class="demo-box">
+                <form onsubmit="event.preventDefault(); ej5_ejecutarEliminar();">
+                    <div class="form-row">
+                        <input type="number" id="ej5_idEliminar" placeholder="ID de tarea a eliminar (Ej. 1, 2, 3)"
+                            required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" onclick="ej5_cargarDemo()">Cargar Tareas Demo</button>
+                        <button type="submit" class="btn-outline">Eliminar Tarea</button>
+                    </div>
+                </form>
+                <pre><code id="ej5_display">Lista vacía</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 6 -->
+            <h3>Ejercicio 6: Acumulación y Cálculos Estadísticos (Método <code>reduce</code>)</h3>
+            <p>Calcula el total general o suma de propiedades de una lista de compras alojada en el navegador.</p>
+
+            <h4>Código HTML de Controles:</h4>
+            <pre><code>&lt;div class="button-group"&gt;
+  &lt;button onclick="ej6_cargarDemo()"&gt;Cargar Carrito Demo&lt;/button&gt;
+  &lt;button class="btn-outline" onclick="ej6_ejecutarCalculo()"&gt;Calcular Total Acumulado&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div class="data-display" id="ej6_display"&gt;Presione para calcular total...&lt;/div&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej6_cargarDemo() {
+  const carrito = [
+    { articulo: "Libro", precio: 15, cantidad: 2 },
+    { articulo: "Bolígrafo", precio: 1.5, cantidad: 10 }
+  ];
+  localStorage.setItem('ej6_carrito', JSON.stringify(carrito));
+  document.getElementById('ej6_display').innerText = "Carrito Demo Cargado:\n" + JSON.stringify(carrito, null, 2);
+}
+
+function ej6_ejecutarCalculo() {
+  const raw = localStorage.getItem('ej6_carrito');
+  const carrito = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Array.prototype.reduce(callback, valorInicial):
+   * Procesa cada elemento del arreglo para resumirlo a un único valor acumulado.
+   * acumulador: Variable que retiene las sumas de cada iteración.
+   * item: Elemento iterado actual.
+   */
+  const total = carrito.reduce((acumulador, item) => {
+    return acumulador + (item.precio * item.cantidad);
+  }, 0); // 0 es el valorInicial de 'acumulador'
+
+  document.getElementById('ej6_display').innerHTML = `&lt;strong&gt;Total Calculado mediante .reduce():&lt;/strong&gt; $${total.toFixed(2)}`;
+}</code></pre>
+
+            <div class="demo-box">
+                <div class="button-group">
+                    <button onclick="ej6_cargarDemo()">Cargar Carrito Demo</button>
+                    <button class="btn-outline" onclick="ej6_ejecutarCalculo()">Calcular Total Acumulado</button>
+                </div>
+                <div class="data-display" id="ej6_display">Presione para calcular total...</div>
+            </div>
+
+
+            <!-- EJERCICIO 7 -->
+            <h3>Ejercicio 7: Edición Parcial de Propiedades (Actualizar Objeto)</h3>
+            <p>Modifica el estado o valor de un objeto guardado identificándolo dentro del arreglo y re-guardando la
+                colección.</p>
+
+            <h4>Código HTML del Formulario:</h4>
+            <pre><code>&lt;form onsubmit="event.preventDefault(); ej7_ejecutarActualizacion();"&gt;
+  &lt;div class="form-row"&gt;
+    &lt;input type="number" id="ej7_idInput" placeholder="ID Proyecto (Ej. 1 o 2)" required&gt;
+    &lt;select id="ej7_estadoSelect"&gt;
+      &lt;option value="true"&gt;Completado (true)&lt;/option&gt;
+      &lt;option value="false"&gt;Pendiente (false)&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/div&gt;
+  &lt;div class="button-group"&gt;
+    &lt;button type="button" onclick="ej7_cargarDemo()"&gt;Cargar Proyectos&lt;/button&gt;
+    &lt;button type="submit" class="btn-outline"&gt;Actualizar Estado&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;pre&gt;&lt;code id="ej7_display"&gt;Esperando interacción...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej7_cargarDemo() {
+  const proyectos = [
+    { id: 1, titulo: "Módulo Login", completado: false },
+    { id: 2, titulo: "Módulo Reportes", completado: false }
+  ];
+  localStorage.setItem('ej7_proyectos', JSON.stringify(proyectos));
+  document.getElementById('ej7_display').innerText = JSON.stringify(proyectos, null, 2);
+}
+
+function ej7_ejecutarActualizacion() {
+  const idTarea = document.getElementById('ej7_idInput').value;
+  const nuevoEstado = document.getElementById('ej7_estadoSelect').value === "true";
+  const raw = localStorage.getItem('ej7_proyectos');
+  const proyectos = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Se combina .map() para iterar y modificar únicamente el objeto con el ID coincidente.
+   */
+  const actualizados = proyectos.map(item => {
+    if (item.id === Number(idTarea)) {
+      // Retornamos el objeto clonado pero actualizando la propiedad 'completado'
+      return { ...item, completado: nuevoEstado };
+    }
+    return item; // Los demás objetos se mantienen intactos
+  });
+
+  localStorage.setItem('ej7_proyectos', JSON.stringify(actualizados));
+  document.getElementById('ej7_display').innerText = JSON.stringify(actualizados, null, 2);
+}</code></pre>
+
+            <div class="demo-box">
+                <form onsubmit="event.preventDefault(); ej7_ejecutarActualizacion();">
+                    <div class="form-row">
+                        <input type="number" id="ej7_idInput" placeholder="ID Proyecto (1 o 2)" required>
+                        <select id="ej7_estadoSelect">
+                            <option value="true">Completado (true)</option>
+                            <option value="false">Pendiente (false)</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" onclick="ej7_cargarDemo()">Cargar Proyectos</button>
+                        <button type="submit" class="btn-outline">Actualizar Estado</button>
+                    </div>
+                </form>
+                <pre><code id="ej7_display">Esperando interacción...</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 8 -->
+            <h3>Ejercicio 8: Ordenamiento de Colecciones JSON (Método <code>sort</code>)</h3>
+            <p>Ordena alfabéticamente o numéricamente un arreglo de objetos recuperado de <code>localStorage</code>.</p>
+
+            <h4>Código HTML de Controles:</h4>
+            <pre><code>&lt;div class="button-group"&gt;
+  &lt;button onclick="ej8_cargarDemo()"&gt;Cargar Alumnos Demo&lt;/button&gt;
+  &lt;button class="btn-outline" onclick="ej8_ejecutarOrden(true)"&gt;Ordenar Ascendente&lt;/button&gt;
+  &lt;button class="btn-outline" onclick="ej8_ejecutarOrden(false)"&gt;Ordenar Descendente&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code id="ej8_display"&gt;Sin datos cargados...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej8_cargarDemo() {
+  const alumnos = [
+    { nombre: "Pedro", nota: 14 },
+    { nombre: "Maria", nota: 19 },
+    { nombre: "Luis", nota: 11 }
+  ];
+  localStorage.setItem('ej8_alumnos', JSON.stringify(alumnos));
+  document.getElementById('ej8_display').innerText = JSON.stringify(alumnos, null, 2);
+}
+
+function ej8_ejecutarOrden(ascendente = true) {
+  const raw = localStorage.getItem('ej8_alumnos');
+  const alumnos = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Array.prototype.sort(callback): Ordena el arreglo original según el criterio.
+   * (a, b) => a.nota - b.nota: Si da resultado negativo, 'a' se posiciona antes que 'b'.
+   */
+  alumnos.sort((a, b) => {
+    return ascendente ? a.nota - b.nota : b.nota - a.nota;
+  });
+
+  localStorage.setItem('ej8_alumnos', JSON.stringify(alumnos));
+  document.getElementById('ej8_display').innerText = JSON.stringify(alumnos, null, 2);
+}</code></pre>
+
+            <div class="demo-box">
+                <div class="button-group">
+                    <button onclick="ej8_cargarDemo()">Cargar Alumnos Demo</button>
+                    <button class="btn-outline" onclick="ej8_ejecutarOrden(true)">Ordenar Ascendente</button>
+                    <button class="btn-outline" onclick="ej8_ejecutarOrden(false)">Ordenar Descendente</button>
+                </div>
+                <pre><code id="ej8_display">Sin datos cargados...</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 9 -->
+            <h3>Ejercicio 9: Agrupación por Categorías (Objetos Dinámicos)</h3>
+            <p>Agrupa elementos de un arreglo en un objeto cuyos atributos representan categorías.</p>
+
+            <h4>Código HTML de Controles:</h4>
+            <pre><code>&lt;div class="button-group"&gt;
+  &lt;button onclick="ej9_cargarDemo()"&gt;Cargar Artículos Demo&lt;/button&gt;
+  &lt;button class="btn-outline" onclick="ej9_ejecutarAgrupado()"&gt;Agrupar por Categoría&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code id="ej9_display"&gt;Haga clic en cargar demo...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej9_cargarDemo() {
+  const articulos = [
+    { nombre: "Manzana", categoria: "Víveres" },
+    { nombre: "Jabón", categoria: "Limpieza" },
+    { nombre: "Pera", categoria: "Víveres" }
+  ];
+  localStorage.setItem('ej9_articulos', JSON.stringify(articulos));
+  document.getElementById('ej9_display').innerText = JSON.stringify(articulos, null, 2);
+}
+
+function ej9_ejecutarAgrupado() {
+  const raw = localStorage.getItem('ej9_articulos');
+  const articulos = raw ? JSON.parse(raw) : [];
+
+  /*
+   * Construimos un objeto dinámico donde las claves serán los nombres de categorías
+   * y los valores serán arreglos de artículos pertenecientes a ellas.
+   */
+  const agrupado = articulos.reduce((acumulador, item) => {
+    // Si la categoría aún no existe en el objeto acumulador, la inicializamos como arreglo
+    if (!acumulador[item.categoria]) {
+      acumulador[item.categoria] = [];
+    }
+    // Agregamos el item al arreglo de la categoría correspondiente
+    acumulador[item.categoria].push(item);
+    return acumulador;
+  }, {});
+
+  document.getElementById('ej9_display').innerText = JSON.stringify(agrupado, null, 2);
+}</code></pre>
+
+            <div class="demo-box">
+                <div class="button-group">
+                    <button onclick="ej9_cargarDemo()">Cargar Artículos Demo</button>
+                    <button class="btn-outline" onclick="ej9_ejecutarAgrupado()">Agrupar por Categoría</button>
+                </div>
+                <pre><code id="ej9_display">Haga clic en cargar demo...</code></pre>
+            </div>
+
+
+            <!-- EJERCICIO 10 -->
+            <h3>Ejercicio 10: Fusión y Sincronización de Objetos (Método <code>Object.assign</code>)</h3>
+            <p>Combina opciones por defecto con la configuración guardada por el usuario en un único objeto JSON.</p>
+
+            <h4>Código HTML de Controles:</h4>
+            <pre><code>&lt;div class="button-group"&gt;
+  &lt;button onclick="ej10_cargarPorDefecto()"&gt;Configuración por Defecto&lt;/button&gt;
+  &lt;button class="btn-outline" onclick="ej10_actualizarTemaOscuro()"&gt;Guardar Tema Oscuro e Idioma 'en'&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code id="ej10_display"&gt;Sin datos...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+            <h4>Código JavaScript:</h4>
+            <pre><code>function ej10_cargarPorDefecto() {
+  localStorage.removeItem('ej10_config');
+  const configDefecto = { tema: 'claro', idioma: 'es', notificaciones: true, fuenteTamano: 14 };
+  document.getElementById('ej10_display').innerText = JSON.stringify(configDefecto, null, 2);
+}
+
+function ej10_actualizarTemaOscuro() {
+  // Configuración predeterminada
+  const configDefecto = { tema: 'claro', idioma: 'es', notificaciones: true, fuenteTamano: 14 };
+
+  const raw = localStorage.getItem('ej10_config');
+  const configGuardada = raw ? JSON.parse(raw) : {};
+
+  // Nuevas opciones solicitadas por el usuario
+  const nuevasOpciones = { tema: 'oscuro', idioma: 'en' };
+
+  /*
+   * Object.assign(destino, ...fuentes): Copia todas las propiedades sobrescribiendo
+   * las coincidentes de izquierda a derecha. Permite fusionar estados.
+   */
+  const configFinal = Object.assign({}, configDefecto, configGuardada, nuevasOpciones);
+
+  // Guardar configuración consolidada
+  localStorage.setItem('ej10_config', JSON.stringify(configFinal));
+  document.getElementById('ej10_display').innerText = JSON.stringify(configFinal, null, 2);
+}</code></pre>
+
+            <div class="demo-box">
+                <div class="button-group">
+                    <button onclick="ej10_cargarPorDefecto()">Configuración por Defecto</button>
+                    <button class="btn-outline" onclick="ej10_actualizarTemaOscuro()">Guardar Tema Oscuro e Idioma
+                        'en'</button>
+                </div>
+                <pre><code id="ej10_display">Sin datos...</code></pre>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- ==========================================================================
+       LÓGICA JAVASCRIPT EJECUTABLE DE LA PÁGINA
+       ========================================================================== -->
+    <script>
+        /* --- SECCIÓN 2: EJEMPLO BASE --- */
+        function guardarTextoSimple() {
+            const input = document.getElementById('simpleText');
+            const valor = input.value.trim();
+            if (valor === "") {
+                alert("Escribe un texto válido");
+                return;
+            }
+            localStorage.setItem('demo_texto_simple', valor);
+            document.getElementById('resultadoSimple').innerText = `Guardado con éxito: "${valor}"`;
+            input.value = '';
+        }
+
+        function leerTextoSimple() {
+            const valorGuardado = localStorage.getItem('demo_texto_simple');
+            if (valorGuardado !== null) {
+                document.getElementById('resultadoSimple').innerText = `Dato recuperado: "${valorGuardado}"`;
+            } else {
+                document.getElementById('resultadoSimple').innerText = "No hay ningún dato almacenado bajo la clave 'demo_texto_simple'.";
+            }
+        }
+
+        function borrarTextoSimple() {
+            localStorage.removeItem('demo_texto_simple');
+            document.getElementById('resultadoSimple').innerText = "Clave 'demo_texto_simple' eliminada.";
+        }
+
+        /* --- SECCIÓN 3: FILEREADER --- */
+        let cadenaImagenBase64 = "";
+
+        function procesarVistaPrevia(event) {
+            const archivo = event.target.files[0];
+            const imgPreview = document.getElementById('imgPreview');
+            const placeholderText = document.getElementById('placeholderText');
+
+            if (archivo) {
+                const lector = new FileReader();
+                lector.onload = function (e) {
+                    cadenaImagenBase64 = e.target.result;
+                    imgPreview.src = cadenaImagenBase64;
+                    imgPreview.style.display = 'block';
+                    placeholderText.style.display = 'none';
+                };
+                lector.readAsDataURL(archivo);
+            }
+        }
+
+        function guardarPerfil() {
+            const nombre = document.getElementById('nombreUsuario').value.trim();
+            if (!nombre) {
+                alert("Por favor ingresa un nombre");
+                return;
+            }
+
+            const perfilExistente = localStorage.getItem('demo_perfil_usuario');
+            let avatarFinal = cadenaImagenBase64;
+
+            if (!avatarFinal && perfilExistente) {
+                avatarFinal = JSON.parse(perfilExistente).avatar;
+            }
+
+            const perfil = {
+                nombre: nombre,
+                avatar: avatarFinal,
+                actualizadoEl: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('demo_perfil_usuario', JSON.stringify(perfil));
+            cargarPerfilGuardado();
+            alert("¡Perfil guardado correctamente en localStorage!");
+        }
+
+        function cargarPerfilGuardado() {
+            const datosGuardados = localStorage.getItem('demo_perfil_usuario');
+            const perfilEstado = document.getElementById('perfilEstado');
+            const imgPreview = document.getElementById('imgPreview');
+            const placeholderText = document.getElementById('placeholderText');
+            const inputNombre = document.getElementById('nombreUsuario');
+
+            if (datosGuardados) {
+                const perfil = JSON.parse(datosGuardados);
+                inputNombre.value = perfil.nombre;
+
+                if (perfil.avatar) {
+                    imgPreview.src = perfil.avatar;
+                    imgPreview.style.display = 'block';
+                    placeholderText.style.display = 'none';
+                    cadenaImagenBase64 = perfil.avatar;
+                }
+
+                perfilEstado.innerHTML = `
+          <strong>Perfil Cargado desde LocalStorage:</strong><br>
+          Usuario: <code>${perfil.nombre}</code><br>
+          Última actualización: <code>${perfil.actualizadoEl}</code>
+        `;
+            } else {
+                perfilEstado.innerHTML = "<strong>Estado de la Sesión:</strong> No hay perfil guardado en este navegador.";
+            }
+        }
+
+        function borrarPerfil() {
+            localStorage.removeItem('demo_perfil_usuario');
+            cadenaImagenBase64 = "";
+            document.getElementById('nombreUsuario').value = "";
+            document.getElementById('inputAvatar').value = "";
+            document.getElementById('imgPreview').style.display = "none";
+            document.getElementById('placeholderText').style.display = "block";
+            cargarPerfilGuardado();
+        }
+
+        /* --- SECCIÓN 4: EJECUTABLES DE LOS 10 EJERCICIOS --- */
+
+        // Ejercicio 1
+        function ej1_ejecutar() {
+            const nombreInput = document.getElementById('ej1_nombre');
+            const notaInput = document.getElementById('ej1_nota');
+            if (!nombreInput.value || !notaInput.value) return alert("Complete ambos campos");
+
+            const raw = localStorage.getItem('ej1_estudiantes');
+            const estudiantes = raw ? JSON.parse(raw) : [];
+
+            estudiantes.push({
+                id: Date.now(),
+                nombre: nombreInput.value.trim(),
+                nota: parseFloat(notaInput.value)
+            });
+
+            localStorage.setItem('ej1_estudiantes', JSON.stringify(estudiantes));
+            document.getElementById('ej1_display').innerText = JSON.stringify(estudiantes, null, 2);
+            nombreInput.value = '';
+            notaInput.value = '';
+        }
+
+        // Ejercicio 2
+        function ej2_cargarDemo() {
+            const demo = [
+                { id: 1, producto: "Lápiz", stock: 15 },
+                { id: 2, producto: "Borrador", stock: 0 },
+                { id: 3, producto: "Regla", stock: 5 }
+            ];
+            localStorage.setItem('ej2_inventario', JSON.stringify(demo));
+            document.getElementById('ej2_display').innerText = "Inventario Inicial Guardado:\n" + JSON.stringify(demo, null, 2);
+        }
+
+        function ej2_mostrarFiltrados() {
+            const raw = localStorage.getItem('ej2_inventario');
+            const productos = raw ? JSON.parse(raw) : [];
+            const disponibles = productos.filter(item => item.stock > 0);
+            document.getElementById('ej2_display').innerText = "Resultado de .filter(stock > 0):\n" + JSON.stringify(disponibles, null, 2);
+        }
+
+        // Ejercicio 3
+        function ej3_cargarDemo() {
+            const usuarios = [
+                { id: 101, nombre: "Ana", rol: "Admin" },
+                { id: 102, nombre: "Carlos", rol: "Editor" },
+                { id: 103, nombre: "Beatriz", rol: "Usuario" }
+            ];
+            localStorage.setItem('ej3_usuarios', JSON.stringify(usuarios));
+            document.getElementById('ej3_display').innerText = "Usuarios base cargados: IDs 101, 102, 103.";
+        }
+
+        function ej3_ejecutarBusqueda() {
+            const idInput = document.getElementById('ej3_idInput').value;
+            const raw = localStorage.getItem('ej3_usuarios');
+            const usuarios = raw ? JSON.parse(raw) : [];
+            const encontrado = usuarios.find(u => u.id === Number(idInput));
+
+            document.getElementById('ej3_display').innerText = encontrado
+                ? `Encontrado: ${JSON.stringify(encontrado)}`
+                : "Usuario no encontrado.";
+        }
+
+        // Ejercicio 4
+        function ej4_cargarDemo() {
+            const lista = [
+                { producto: "Cuaderno", precio: 10 },
+                { producto: "Mochila", precio: 50 }
+            ];
+            localStorage.setItem('ej4_precios', JSON.stringify(lista));
+            document.getElementById('ej4_display').innerText = JSON.stringify(lista, null, 2);
+        }
+
+        function ej4_ejecutarAumento() {
+            const porcentaje = parseFloat(document.getElementById('ej4_porcentajeInput').value);
+            if (isNaN(porcentaje)) return alert("Ingresa un porcentaje válido");
+
+            const raw = localStorage.getItem('ej4_precios');
+            const lista = raw ? JSON.parse(raw) : [];
+            const actualizada = lista.map(p => ({
+                ...p,
+                precio: Number((p.precio * (1 + porcentaje / 100)).toFixed(2))
+            }));
+            localStorage.setItem('ej4_precios', JSON.stringify(actualizada));
+            document.getElementById('ej4_display').innerText = JSON.stringify(actualizada, null, 2);
+        }
+
+        // Ejercicio 5
+        function ej5_cargarDemo() {
+            const tareas = [
+                { id: 1, tarea: "Estudiar LocalStorage" },
+                { id: 2, tarea: "Practicar FileReader" },
+                { id: 3, tarea: "Hacer Ejercicios JSON" }
+            ];
+            localStorage.setItem('ej5_tareas', JSON.stringify(tareas));
+            document.getElementById('ej5_display').innerText = JSON.stringify(tareas, null, 2);
+        }
+
+        function ej5_ejecutarEliminar() {
+            const id = document.getElementById('ej5_idEliminar').value;
+            const raw = localStorage.getItem('ej5_tareas');
+            const tareas = raw ? JSON.parse(raw) : [];
+
+            const index = tareas.findIndex(t => t.id === Number(id));
+            if (index !== -1) {
+                tareas.splice(index, 1);
+                localStorage.setItem('ej5_tareas', JSON.stringify(tareas));
+                document.getElementById('ej5_display').innerText = JSON.stringify(tareas, null, 2);
+            } else {
+                alert("ID no encontrado");
+            }
+        }
+
+        // Ejercicio 6
+        function ej6_cargarDemo() {
+            const carrito = [
+                { articulo: "Libro", precio: 15, cantidad: 2 },
+                { articulo: "Bolígrafo", precio: 1.5, cantidad: 10 }
+            ];
+            localStorage.setItem('ej6_carrito', JSON.stringify(carrito));
+            document.getElementById('ej6_display').innerText = "Carrito Demo Cargado:\n" + JSON.stringify(carrito, null, 2);
+        }
+
+        function ej6_ejecutarCalculo() {
+            const raw = localStorage.getItem('ej6_carrito');
+            const carrito = raw ? JSON.parse(raw) : [];
+            const total = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+            document.getElementById('ej6_display').innerHTML = `<strong>Total Calculado mediante .reduce():</strong> $${total.toFixed(2)}`;
+        }
+
+        // Ejercicio 7
+        function ej7_cargarDemo() {
+            const proyectos = [
+                { id: 1, titulo: "Módulo Login", completado: false },
+                { id: 2, titulo: "Módulo Reportes", completado: false }
+            ];
+            localStorage.setItem('ej7_proyectos', JSON.stringify(proyectos));
+            document.getElementById('ej7_display').innerText = JSON.stringify(proyectos, null, 2);
+        }
+
+        function ej7_ejecutarActualizacion() {
+            const id = document.getElementById('ej7_idInput').value;
+            const estado = document.getElementById('ej7_estadoSelect').value === "true";
+            const raw = localStorage.getItem('ej7_proyectos');
+            const proyectos = raw ? JSON.parse(raw) : [];
+
+            const actualizados = proyectos.map(p => p.id === Number(id) ? { ...p, completado: estado } : p);
+            localStorage.setItem('ej7_proyectos', JSON.stringify(actualizados));
+            document.getElementById('ej7_display').innerText = JSON.stringify(actualizados, null, 2);
+        }
+
+        // Ejercicio 8
+        function ej8_cargarDemo() {
+            const alumnos = [
+                { nombre: "Pedro", nota: 14 },
+                { nombre: "Maria", nota: 19 },
+                { nombre: "Luis", nota: 11 }
+            ];
+            localStorage.setItem('ej8_alumnos', JSON.stringify(alumnos));
+            document.getElementById('ej8_display').innerText = JSON.stringify(alumnos, null, 2);
+        }
+
+        function ej8_ejecutarOrden(ascendente) {
+            const raw = localStorage.getItem('ej8_alumnos');
+            const alumnos = raw ? JSON.parse(raw) : [];
+            alumnos.sort((a, b) => ascendente ? a.nota - b.nota : b.nota - a.nota);
+            localStorage.setItem('ej8_alumnos', JSON.stringify(alumnos));
+            document.getElementById('ej8_display').innerText = JSON.stringify(alumnos, null, 2);
+        }
+
+        // Ejercicio 9
+        function ej9_cargarDemo() {
+            const articulos = [
+                { nombre: "Manzana", categoria: "Víveres" },
+                { nombre: "Jabón", categoria: "Limpieza" },
+                { nombre: "Pera", categoria: "Víveres" }
+            ];
+            localStorage.setItem('ej9_articulos', JSON.stringify(articulos));
+            document.getElementById('ej9_display').innerText = JSON.stringify(articulos, null, 2);
+        }
+
+        function ej9_ejecutarAgrupado() {
+            const raw = localStorage.getItem('ej9_articulos');
+            const articulos = raw ? JSON.parse(raw) : [];
+            const agrupado = articulos.reduce((acc, item) => {
+                if (!acc[item.categoria]) acc[item.categoria] = [];
+                acc[item.categoria].push(item);
+                return acc;
+            }, {});
+            document.getElementById('ej9_display').innerText = JSON.stringify(agrupado, null, 2);
+        }
+
+        // Ejercicio 10
+        function ej10_cargarPorDefecto() {
+            localStorage.removeItem('ej10_config');
+            const configDefecto = { tema: 'claro', idioma: 'es', notificaciones: true, fuenteTamano: 14 };
+            document.getElementById('ej10_display').innerText = JSON.stringify(configDefecto, null, 2);
+        }
+
+        function ej10_actualizarTemaOscuro() {
+            const raw = localStorage.getItem('ej10_config');
+            const actual = raw ? JSON.parse(raw) : { tema: 'claro', idioma: 'es', notificaciones: true, fuenteTamano: 14 };
+            const fusionado = Object.assign({}, actual, { tema: 'oscuro', idioma: 'en' });
+            localStorage.setItem('ej10_config', JSON.stringify(fusionado));
+            document.getElementById('ej10_display').innerText = JSON.stringify(fusionado, null, 2);
+        }
+
+        // Evento inicial
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarPerfilGuardado();
+        });
+    </script>
+</body>
+
+</html>
