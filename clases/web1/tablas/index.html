@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electiva I - Tablas Semánticas y Responsivas en HTML5</title>
+    <style>
+        /* =========================================================
+           VARIABLES Y TEMA CARBÓN (DARK THEME)
+           ========================================================= */
+        :root {
+            --bg-primary: #121212;
+            --bg-surface: #1e1e1e;
+            --bg-card: #252526;
+            --bg-accent: #2d2d30;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-cyan: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-yellow: #facc15;
+            --accent-red: #f87171;
+            --border-color: #3f3f46;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Banner de Encabezado */
+        header {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--accent-cyan);
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            margin-top: 8px;
+        }
+
+        /* Tarjetas de Contenido */
+        .card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            color: var(--accent-cyan);
+            font-size: 1.3rem;
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .alert-box {
+            background-color: rgba(248, 113, 113, 0.1);
+            border-left: 4px solid var(--accent-red);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            padding: 14px;
+            border-radius: 4px;
+            margin: 16px 0;
+        }
+
+        .alert-box h3 {
+            margin: 0 0 6px 0;
+            color: var(--accent-red);
+            font-size: 1rem;
+        }
+
+        /* =========================================================
+           TÉCNICA RESPONSIVA PARA TABLAS EN MÓVILES
+           ========================================================= */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            /* Permite desplazamiento horizontal en pantallas pequeñas */
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        .carbon-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        .carbon-table caption {
+            background-color: var(--bg-surface);
+            color: var(--text-secondary);
+            font-weight: bold;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .carbon-table th,
+        .carbon-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+            /* Evita que el texto de las celdas se rompa en móviles */
+        }
+
+        .carbon-table thead th {
+            background-color: var(--bg-accent);
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .carbon-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .carbon-table tbody th[scope="row"] {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* Etiquetas para las materias */
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tag-lab {
+            background-color: rgba(56, 189, 248, 0.2);
+            color: var(--accent-cyan);
+        }
+
+        .tag-theory {
+            background-color: rgba(250, 204, 21, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .tag-break {
+            background-color: rgba(160, 160, 160, 0.15);
+            color: var(--text-secondary);
+        }
+
+        /* Estilos de Código */
+        code,
+        pre {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: var(--accent-green);
+            border-radius: 4px;
+        }
+
+        code {
+            padding: 2px 6px;
+            font-size: 0.9em;
+        }
+
+        pre {
+            padding: 14px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Electiva I: Tablas Semánticas y Responsivas</h1>
+            <p style="margin: 0; color: var(--text-secondary);">Guía demostrativa y estructura HTML5 / CSS3 en Tema
+                Carbón.</p>
+            <span class="badge">Material Docente • GitHub Ready</span>
+        </header>
+
+        <section class="card">
+            <h2>1. Aclaratoria Pedagógica: Semántica HTML</h2>
+            <p>Las tablas en HTML5 deben utilizarse <strong>únicamente para datos tabulares</strong> (información
+                estructurada en filas y columnas). Nunca deben usarse para la maquetación de la interfaz o la estructura
+                del sitio web.</p>
+
+            <div class="alert-box">
+                <h3>⚠️ Regla de Oro en Desarrollo Web</h3>
+                <p style="margin: 0; color: var(--text-primary);">Utilizar <code>&lt;table&gt;</code> para crear el
+                    diseño o maquetación general destruye la accesibilidad para lectores de pantalla y empeora el
+                    rendimiento. La estructura general se maqueta con <strong>Flexbox</strong> o <strong>CSS
+                        Grid</strong>.</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>2. Demostración Práctica Responsiva</h2>
+            <p>Si abres este archivo en tu teléfono móvil, verás cómo el contenedor <code>.table-responsive</code>
+                habilita un desplazamiento horizontal suave sin romper la cuadrícula ni desestructurar el resto del
+                sitio web.</p>
+
+            <!-- CONTENEDOR CONTROLA EL RESPONSIVE CON SCROLL HORIZONTAL -->
+            <div class="table-responsive">
+                <table class="carbon-table">
+                    <caption>Matriz de Programación Académica - Electiva I</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Bloque Horario</th>
+                            <th scope="col">Lunes</th>
+                            <th scope="col">Miércoles</th>
+                            <th scope="col">Viernes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">07:30 - 09:00</th>
+                            <td><span class="tag tag-theory">Teoría</span> HTML5 Semántico</td>
+                            <!-- Combinación de columnas con colspan -->
+                            <td colspan="2"><span class="tag tag-lab">Laboratorio</span> CSS Grid & Flexbox</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">09:00 - 09:30</th>
+                            <td colspan="3" style="text-align: center;"><span class="tag tag-break">Receso
+                                    Académico</span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">09:30 - 11:00</th>
+                            <td><span class="tag tag-lab">Práctica</span> Formularios & A11y</td>
+                            <td><span class="tag tag-theory">Teoría</span> JavaScript ES6+</td>
+                            <td><span class="tag tag-lab">Taller</span> Lógica de Programación</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>3. ¿Cómo hacer la Tabla Responsiva con CSS?</h2>
+            <p>El truco profesional para mantener tablas accesibles y responsivas en cualquier pantalla consiste en
+                envolver la tabla en un elemento contenedor y aplicar:</p>
+            <pre><code>/* 1. Envolver la tabla en un div responsivo */
+                        .table-responsive {
+                            width: 100%;
+                            overflow-x: auto; /* Permite scroll horizontal en móviles */
+                            -webkit-overflow-scrolling: touch;
+                        }
+
+                        /* 2. Mantener las celdas firmes */
+                        .carbon-table th, .carbon-table td {
+                            white-space: nowrap; /* Evita deformación de texto */
+                        }</code></pre>
+        </section>
+    </div>
+
+</body>
+
+</html>
