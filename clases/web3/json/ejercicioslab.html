@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Práctica: Manipulación de JSON en JavaScript</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --border-color: #cccccc;
+            --code-bg: #f5f5f5;
+            --heading-color: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--heading-color);
+            margin-bottom: 5px;
+        }
+
+        p.intro {
+            font-size: 0.95rem;
+            color: #444444;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--text-color);
+            padding-bottom: 5px;
+        }
+
+        .guide-box {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #ffffff;
+        }
+
+        .guide-item {
+            margin-bottom: 20px;
+        }
+
+        .guide-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .guide-item h3 {
+            font-size: 1.05rem;
+            color: var(--heading-color);
+            margin-bottom: 5px;
+        }
+
+        .guide-item p {
+            font-size: 0.9rem;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+
+        .exercise {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #ffffff;
+        }
+
+        .exercise h2 {
+            font-size: 1.2rem;
+            color: var(--heading-color);
+            margin-bottom: 8px;
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 5px;
+        }
+
+        .objective {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333333;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: "Consolas", "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            color: #000000;
+        }
+
+        code {
+            font-family: "Consolas", "Courier New", Courier, monospace;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .exercise,
+            .guide-box {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            pre {
+                font-size: 0.85rem;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Guía de Práctica: Manipulación de Estructuras JSON en JavaScript</h1>
+        <p class="intro">Instrucciones: Revise la referencia de funciones al inicio. Luego, copie el código de cada
+            ejercicio en VSCode para resolver la consigna indicada.</p>
+    </header>
+
+    <main>
+        <!-- SECCIÓN DE CONCEPTOS Y FUNCIONES -->
+        <section class="guide-box">
+            <h2 class="section-title">Referencia Rápida de Métodos y Funciones</h2>
+
+            <div class="guide-item">
+                <h3>1. Conversión JSON (`JSON.parse` / `JSON.stringify`)</h3>
+                <p>Permiten convertir cadenas de texto en formato JSON a objetos de JavaScript y viceversa.</p>
+                <pre><code>// Convertir texto JSON a Objeto JS
+const obj = JSON.parse('{"id": 1, "nombre": "Ana"}');
+
+// Convertir Objeto JS a texto JSON
+const jsonTexto = JSON.stringify(obj);</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>2. Recorrido (`forEach`)</h3>
+                <p>Ejecuta una función sobre cada elemento del arreglo sin retornar un nuevo valor.</p>
+                <pre><code>const datos = [1, 2, 3];
+datos.forEach(n => console.log(n * 2));</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>3. Transformación (`map`)</h3>
+                <p>Crea un nuevo arreglo transformando cada uno de los elementos originales.</p>
+                <pre><code>const nums = [1, 2, 3];
+const dobles = nums.map(n => n * 2); // [2, 4, 6]</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>4. Filtrado (`filter`)</h3>
+                <p>Retorna un nuevo arreglo con los elementos que cumplan una condición lógica.</p>
+                <pre><code>const nums = [10, 15, 20];
+const mayores = nums.filter(n => n > 12); // [15, 20]</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>5. Acumulación (`reduce`)</h3>
+                <p>Reduce los elementos del arreglo a un único valor (ejemplo: suma total).</p>
+                <pre><code>const precios = [10, 20, 30];
+const total = precios.reduce((acc, p) => acc + p, 0); // 60</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>6. Búsqueda (`find`)</h3>
+                <p>Devuelve el primer elemento que cumpla con la condición dada.</p>
+                <pre><code>const lista = [{ id: 1 }, { id: 2 }];
+const encontrado = lista.find(item => item.id === 2); // { id: 2 }</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>7. Validaciones (`some` / `every`)</h3>
+                <p>`some` verifica si al menos un elemento cumple la condición. `every` verifica si todos la cumplen.
+                </p>
+                <pre><code>const nums = [2, 4, 5];
+const hayImpar = nums.some(n => n % 2 !== 0); // true
+const todosPares = nums.every(n => n % 2 === 0); // false</code></pre>
+            </div>
+
+            <div class="guide-item">
+                <h3>8. Aplanamiento (`flatMap`)</h3>
+                <p>Mapea los elementos y aplana el resultado en un arreglo unidimensional.</p>
+                <pre><code>const listas = [[1], [2, 3]];
+const plano = listas.flatMap(x => x); // [1, 2, 3]</code></pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE EJERCICIOS -->
+        <h2 class="section-title">Ejercicios Prácticos</h2>
+
+        <!-- Ejercicio 1 -->
+        <article class="exercise">
+            <h2>Ejercicio 1: Recorrido y Lectura de Datos (`forEach`)</h2>
+            <p class="objective">Objetivo: Iterar sobre un arreglo de objetos y formatear la salida por consola.</p>
+            <pre><code>const usuarios = [
+  { id: 101, nombre: "Ana Silva", estado: "activo" },
+  { id: 102, nombre: "Luis Ramos", estado: "inactivo" },
+  { id: 103, nombre: "Carla Gómez", estado: "activo" }
+];
+
+// Instrucción:
+// Utilice el método forEach para recorrer el arreglo de usuarios e imprimir
+// en consola un mensaje con la estructura:
+// "El usuario [nombre] (ID: [id]) se encuentra [estado]."</code></pre>
+        </article>
+
+        <!-- Ejercicio 2 -->
+        <article class="exercise">
+            <h2>Ejercicio 2: Transformación de Proyecciones (`map`)</h2>
+            <p class="objective">Objetivo: Modificar la estructura de un arreglo creando nuevos objetos con datos
+                transformados.</p>
+            <pre><code>const productos = [
+  { codigo: "P01", descripcion: "Teclado mecánico", precio: 45 },
+  { codigo: "P02", descripcion: "Monitor 24 pulgadas", precio: 180 },
+  { codigo: "P03", descripcion: "Mouse óptico", precio: 15 }
+];
+
+// Instrucción:
+// Utilice el método map para generar un nuevo arreglo de objetos donde la
+// descripción esté completamente en mayúsculas y se agregue un campo 'iva' (16% del precio).
+// Resultado esperado: { codigo: 'P01', descripcion: 'TECLADO MECÁNICO', precio: 45, iva: 7.2 }</code></pre>
+        </article>
+
+        <!-- Ejercicio 3 -->
+        <article class="exercise">
+            <h2>Ejercicio 3: Filtrado Condicional (`filter`)</h2>
+            <p class="objective">Objetivo: Extraer un subconjunto de elementos que cumplan con criterios específicos.
+            </p>
+            <pre><code>const inventario = [
+  { item: "Servidor Blade", stock: 12, disponible: true },
+  { item: "Switch Óptico", stock: 0, disponible: true },
+  { item: "Router Gateway", stock: 5, disponible: false },
+  { item: "Rack 42U", stock: 3, disponible: true }
+];
+
+// Instrucción:
+// Obtenga un nuevo arreglo únicamente con los productos que estén marcados
+// como disponibles (disponible: true) Y cuya cantidad en stock sea mayor a 0.</code></pre>
+        </article>
+
+        <!-- Ejercicio 4 -->
+        <article class="exercise">
+            <h2>Ejercicio 4: Acumulación e Agregación (`reduce`)</h2>
+            <p class="objective">Objetivo: Calcular valores acumulados a partir de un arreglo de objetos.</p>
+            <pre><code>const factura = [
+  { concepto: "Licencia de Software", cantidad: 2, precioUnitario: 150 },
+  { concepto: "Soporte Técnico", cantidad: 5, precioUnitario: 40 },
+  { concepto: "Cableado Estructurado", cantidad: 1, precioUnitario: 200 }
+];
+
+// Instrucción:
+// Utilice el método reduce para calcular el monto total acumulado de la factura.
+// Tome en cuenta que cada ítem debe multiplicarse por su cantidad.</code></pre>
+        </article>
+
+        <!-- Ejercicio 5 -->
+        <article class="exercise">
+            <h2>Ejercicio 5: Búsqueda de Registros Únicos (`find`)</h2>
+            <p class="objective">Objetivo: Localizar un objeto específico dentro de un arreglo mediante su
+                identificador.</p>
+            <pre><code>const catalogo = [
+  { sku: "A101", equipo: "Camara IP", ubicacion: "Sector Norte" },
+  { sku: "B202", equipo: "Sensor Biométrico", ubicacion: "Acceso Principal" },
+  { sku: "C303", equipo: "Panel de Control", ubicacion: "Sala de Mando" }
+];
+
+// Instrucción:
+// Mediante el método find, busque y almacene en una variable el objeto
+// completo correspondiente al sku "B202" e imprímalo en consola.</code></pre>
+        </article>
+
+        <!-- Ejercicio 6 -->
+        <article class="exercise">
+            <h2>Ejercicio 6: Manejo de Valores Nulos y Fallbacks (`map`)</h2>
+            <p class="objective">Objetivo: Asignar valores por defecto a propiedades nulas o no definidas.</p>
+            <pre><code>const personal = [
+  { nombre: "Carlos", email: "carlos@empresa.com" },
+  { nombre: "Elena", email: null },
+  { nombre: "Mateo", email: "mateo@empresa.com" }
+];
+
+// Instrucción:
+// Mapee el arreglo de personal. Si la propiedad 'email' es null o undefined,
+// debe asignarle el valor por defecto: "correo.no.registrado@empresa.com".</code></pre>
+        </article>
+
+        <!-- Ejercicio 7 -->
+        <article class="exercise">
+            <h2>Ejercicio 7: Aplanamiento de Colecciones Anidadas (`flatMap`)</h2>
+            <p class="objective">Objetivo: Desestructurar colecciones con niveles de anidamiento simples.</p>
+            <pre><code>const departamentos = [
+  { nombre: "Sistemas", tecnologias: ["Node.js", "React"] },
+  { nombre: "Seguridad", tecnologias: ["Python", "Wireshark"] },
+  { nombre: "Redes", tecnologias: ["Cisco iOS"] }
+];
+
+// Instrucción:
+// Genere un único arreglo unidimensional que contenga la lista consolidada
+// de todas las tecnologías mencionadas en los departamentos.</code></pre>
+        </article>
+
+        <!-- Ejercicio 8 -->
+        <article class="exercise">
+            <h2>Ejercicio 8: Comprobación Lógica de Colecciones (`some` / `every`)</h2>
+            <p class="objective">Objetivo: Validar estados condicionales sobre colecciones de datos.</p>
+            <pre><code>const servidores = [
+  { nombre: "Srv-DB", cpuUso: 45, activo: true },
+  { nombre: "Srv-Web", cpuUso: 88, activo: true },
+  { nombre: "Srv-Backup", cpuUso: 12, activo: false }
+];
+
+// Instrucción:
+// 1. Evalúe con 'some' si existe al menos un servidor inactivo (activo: false).
+// 2. Evalúe con 'every' si todos los servidores tienen un porcentaje de cpuUso menor a 90.
+// Muestre ambos resultados booleanos en la consola.</code></pre>
+        </article>
+
+        <!-- Ejercicio 9 -->
+        <article class="exercise">
+            <h2>Ejercicio 9: Parsing y Deserialización de JSON (`JSON.parse`)</h2>
+            <p class="objective">Objetivo: Convertir cadenas en formato JSON a objetos manipulables en JavaScript.</p>
+            <pre><code>const respuestaHTTP = '[{"id":1,"modulo":"Autenticación","estado":"OK"},{"id":2,"modulo":"Pagos","estado":"ERROR"}]';
+
+// Instrucción:
+// 1. Convierta la cadena JSON 'respuestaHTTP' a una estructura de datos nativa en JS.
+// 2. Modifique el estado del módulo con ID 2 a "RESUELTO".
+// 3. Imprima el arreglo actualizado.</code></pre>
+        </article>
+
+        <!-- Ejercicio 10 -->
+        <article class="exercise">
+            <h2>Ejercicio 10: Combinación de Métodos (`filter` + `map`)</h2>
+            <p class="objective">Objetivo: Encadenar operaciones de filtrado y transformación sobre un conjunto de
+                datos.</p>
+            <pre><code>const evaluaciones = [
+  { estudiante: "Gabriel", nota: 16, materia: "Programación" },
+  { estudiante: "Mariana", nota: 9, materia: "Programación" },
+  { estudiante: "Roberto", nota: 14, materia: "Base de Datos" },
+  { estudiante: "Sofia", nota: 18, materia: "Programación" }
+];
+
+// Instrucción:
+// Mediante el encadenamiento de métodos (method chaining):
+// 1. Filtre los estudiantes pertenecientes a la materia "Programación" con nota mayor o igual a 10.
+// 2. Mapee el resultado para obtener un arreglo que contenga únicamente los nombres de los estudiantes aprobados.</code></pre>
+        </article>
+    </main>
+
+</body>
+
+</html>
