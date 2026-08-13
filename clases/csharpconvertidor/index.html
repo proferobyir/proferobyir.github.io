@@ -12,21 +12,21 @@
         }
 
         body {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+            background-color: #ffffff;
+            color: #1a1a1a;
             padding: 20px;
             margin: 0;
         }
 
         h2 {
-            color: #569cd6;
+            color: #0066cc;
             text-align: center;
             margin-bottom: 5px;
         }
 
         p.subtitle {
             text-align: center;
-            color: #858585;
+            color: #666666;
             margin-top: 0;
             font-size: 14px;
         }
@@ -47,23 +47,31 @@
         label {
             font-weight: bold;
             margin-bottom: 8px;
-            color: #9cdcfe;
+            color: #1a1a1a;
         }
 
-        textarea {
+        /* --- ESTILO TEMA CARBON PARA LOS BLOQUES DE CÓDIGO --- */
+        textarea,
+        pre,
+        code {
             flex: 1;
-            background-color: #252526;
-            color: #dcdcdc;
-            border: 1px solid #3c3c3c;
-            padding: 12px;
-            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #141414;
+            /* Carbon Dark BG */
+            color: #f8f8f2;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
             font-size: 14px;
+            line-height: 1.5;
             resize: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            outline: none;
         }
 
         textarea:focus {
-            outline: 1px solid #007acc;
+            border-color: #10B981;
+            /* Carbon accent green */
         }
 
         .controls {
@@ -76,24 +84,36 @@
 
         select,
         button {
-            background-color: #2d2d2d;
-            color: #dcdcdc;
-            border: 1px solid #3c3c3c;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            border: 1px solid #cccccc;
             padding: 10px 16px;
             font-size: 15px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
         }
 
         button {
-            background-color: #0e639c;
-            color: white;
+            background-color: #0066cc;
+            color: #ffffff;
             border: none;
             font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         button:hover {
-            background-color: #1177bb;
+            background-color: #0052a3;
+        }
+
+        .info-box {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #f4f4f5;
+            border-left: 4px solid #0066cc;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333333;
         }
     </style>
 </head>
@@ -116,22 +136,22 @@
     </div>
 
     <div class="controls">
-        <label for="modeSelect" style="color:#dcdcdc; margin:0;">Modo de conversión:</label>
+        <label for="modeSelect" style="color:#1a1a1a; margin:0;">Modo de conversión:</label>
         <select id="modeSelect">
             <option value="toLegacy"> Moderno (2022/2026) ➔ Legacy (VS 2012)</option>
             <option value="toModern"> Legacy (VS 2012) ➔ Moderno (2022/2026)</option>
         </select>
         <button id="btnConvert">Procesar Código</button>
     </div>
-    <!-- Fila informativa sobre compatibilidad -->
-    <div
-        style="max-width: 1000px; margin: 20px auto; padding: 15px; background: #252526; border-left: 4px solid #007acc; border-radius: 4px; font-size: 13px; color: #cccccc;">
+
+    <div class="info-box">
         <strong>💡 Recuerda:</strong> Visual Studio 2012 utiliza <strong>C# 5 (.NET Framework 4.5)</strong>.
         Si traes un proyecto de casa (VS 2022/2026), utiliza el modo <em>"Moderno ➔ Legacy"</em> para adaptar funciones
-        como
-        <code>Primary Constructors</code>, <code>Collection Expressions []</code> o <code>File-Scoped Namespaces</code>
+        como <code>Primary Constructors</code>, <code>Collection Expressions []</code> o
+        <code>File-Scoped Namespaces</code>
         antes de compilar en el laboratorio.
     </div>
+
     <script>
         class CSharpLabAdapter {
 
@@ -140,12 +160,15 @@
                 if (!code) return '';
                 let result = code;
 
-                // 1. Revertir Collection Expressions: [1, 2, 3] => new List<int> { 1, 2, 3 } o arrays
-                // Detecta asignaciones de colecciones inline vacías [] => new List<string>()
-                result = result.replace(/=\s*\[\];/g, '= new List<string>(); // Revisa el tipo explícito');
+                // 1. Revertir File-scoped namespace: namespace App; => namespace App { ... }
+                if (/^namespace\s+([A-Za-z0-9_.]+);/m.test(result)) {
+                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
+                    result += '\n}';
+                }
 
-                // 2. Revertir Primary Constructors: class User(string name, int age) { ... }
-                result = result.replace(/public\s+class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)\s*\{([\s\S]*?)\}/g, (match, className, params, body) => {
+                // 2. Revertir Primary Constructors: public class User(string name, int age) => class con ctor estándar
+                result = result.replace(/(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)/g, (match, vis, className, params) => {
+                    const access = vis ? vis + ' ' : '';
                     const paramList = params.split(',').map(p => p.trim());
                     let fields = '';
                     let assignments = '';
@@ -161,17 +184,13 @@
                     });
 
                     const constructor = `\n    public ${className}(${params})\n    {\n${assignments}    }\n`;
-                    return `public class ${className}\n{\n${fields}${constructor}${body}\n}`;
+                    return `${access}class ${className}\n{\n${fields}${constructor}`;
                 });
 
-                // 3. Revertir File-scoped namespace: namespace App; => namespace App { ... }
-                if (/^namespace\s+([A-Za-z0-9_.]+);/m.test(result)) {
-                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
-                    result += '\n}';
-                }
+                // 3. Revertir Collection Expressions: = [] => = new List<string>()
+                result = result.replace(/=\s*\[\];/g, '= new List<string>(); // Revisa el tipo si es necesario');
 
-                // 4. Revertir Interpolación de strings básica: $"{x}" => string.Format("{0}", x)
-                // Nota: Si usan $"", les recordará cambiar a string.Format o concatenación
+                // 4. Revertir Interpolación de cadenas simple: $"Texto {variable}" => string.Format("Texto {0}", variable)
                 result = result.replace(/\$"([^"{}]*)\{([^{}]+)\}([^"{}]*)"/g, 'string.Format("$1{0}$3", $2)');
 
                 return result;
@@ -188,7 +207,7 @@
                 // 2. Reemplazar Array.Empty<T>() por []
                 result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
 
-                // 3. File-scoped namespaces
+                // 3. Convertir Namespace bloque a File-scoped namespace
                 result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
                     return `namespace ${ns};\n${body.replace(/^  /gm, '').trimEnd()}`;
                 });
@@ -204,7 +223,7 @@
             const selectEl = document.getElementById('modeSelect');
             const btn = document.getElementById('btnConvert');
 
-            // Ejemplo para probar la conversión de lo que traen de casa a VS2012
+            // Ejemplo de prueba inicial
             inputEl.value =
                 `namespace MiProyecto;
 
