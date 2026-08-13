@@ -4,75 +4,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Experiencia WebAR sin Marcadores</title>
-
-    <!-- Componente oficial de Google para WebAR -->
+    <title>Prueba WebAR con Diagnóstico</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
-
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
+            margin: 0;
             font-family: sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
         }
 
         .container {
-            width: 100%;
-            max-width: 600px;
-            height: 80vh;
-            position: relative;
+            width: 100vw;
+            height: 70vh;
         }
 
         model-viewer {
             width: 100%;
             height: 100%;
-            --poster-color: transparent;
         }
 
-        /* Estilo del botón personalizado para activar la cámara en AR */
         .ar-button {
-            background-color: #007bff;
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 25px;
-            padding: 12px 24px;
+            padding: 14px 28px;
             font-size: 16px;
             font-weight: bold;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+        }
+
+        #status {
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+            background: #333;
+            font-size: 14px;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <!-- Componente 3D / AR -->
-        <model-viewer src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Modelo 3D para AR" ar
-            ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1">
+    <h2>Prueba de WebAR</h2>
 
-            <!-- Botón que activa la cámara para proyectar el objeto en el entorno -->
+    <div class="container">
+        <model-viewer id="viewer" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Astronauta 3D"
+            ar ar-modes="scene-viewer webxr quick-look" camera-controls auto-rotate>
+
             <button slot="ar-button" class="ar-button">
                 📷 Ver en tu espacio
             </button>
 
         </model-viewer>
     </div>
+
+    <div id="status">Verificando compatibilidad de AR...</div>
+
+    <script>
+        const viewer = document.getElementById('viewer');
+        const status = document.getElementById('status');
+
+        viewer.addEventListener('load', () => {
+            if (viewer.canActivateAR) {
+                status.innerHTML = "✅ **Tu teléfono soporta AR.** Presiona el botón verde.";
+                status.style.color = "#85e085";
+            } else {
+                status.innerHTML = "❌ **Este dispositivo / navegador NO soporta AR sin marcador.**<br>Verifica tener 'Servicios de Google para RA' instalados y usar Chrome.";
+                status.style.color = "#ff6666";
+            }
+        });
+    </script>
 
 </body>
 
