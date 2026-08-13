@@ -1,38 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratorio WebAR - Marcador Hiro</title>
-    <!-- Librerías necesarias -->
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Laboratorio de WebAR - Clase de Realidad Aumentada</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
 
-<body style="margin: 0px; overflow: hidden;">
-
-    <!-- Escena AR -->
-    <a-scene embedded arjs="sourceType: webcam; sourceWidth: 1280; sourceHeight: 720; debugUIEnabled: false;">
-
+        h1, h2 { color: #000; border-bottom: 2px solid #eee; padding-bottom: 10px;}
+        .resources { background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px;}
         
-        <!-- Aquí definimos el marcador Hiro -->
-        <a-marker preset="hiro">
+        /* Estilo Carbon para el bloque de código */
+        .carbon-code {
+            background-color: #1e1e1e;
+            color: #dcdcdc;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #333;
+        }
+
+        /* Estilo para ajustar el video de la cámara en pantalla completa sin deformar */
+        #arjs-video {
+            object-fit: cover !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            top: 0 !important;
+            left: 0 !important;
+            margin: 0 !important;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenido al Laboratorio de WebAR</h1>
+    
+    <p>Hoy vamos a aprender a traer objetos 3D al mundo real usando Realidad Aumentada (AR).</p>
+
+    <h2>¿Cómo es posible esto? (El poder de las librerías)</h2>
+    <p>Usamos <strong>librerías</strong> especializadas que resuelven las matemáticas por nosotros:</p>
+    <ul>
+        <li><strong>A-Frame:</strong> Crea el entorno 3D donde vive el modelo.</li>
+        <li><strong>AR.js:</strong> Rastrea el marcador usando la cámara de tu teléfono.</li>
+    </ul>
+
+    <h2>¿Qué es el Marcador Hiro?</h2>
+    <p>Es nuestro punto de referencia visual (el "GPS"). Cuando la cámara reconoce el patrón visual del marcador Hiro, proyecta el archivo 3D en ese punto exacto.</p>
+    <p>Puedes abrir el marcador para probar aquí: <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/HIRO.jpg" target="_blank">Ver Marcador Hiro</a>.</p>
+
+    <h2>Recursos para la clase</h2>
+    <div class="resources">
+        <p>Descarga modelos 3D en formato <strong>.glb</strong> en:</p>
+        <ul>
+            <li><a href="https://sketchfab.com/" target="_blank">Sketchfab</a></li>
+            <li><a href="https://poly.pizza/" target="_blank">Poly.pizza</a></li>
+        </ul>
+    </div>
+
+    <h2>Código de la Clase</h2>
+    <p>Copia este código en un archivo <code>index.html</code> para ejecutar tu laboratorio:</p>
+
+    <pre class="carbon-code"><code>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"&gt;
+    &lt;!-- Importamos las librerías necesarias --&gt;
+    &lt;script src="https://aframe.io/releases/1.3.0/aframe.min.js"&gt;&lt;/script&gt;
+    &lt;script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body style="margin: 0px; overflow: hidden;"&gt;
+
+    &lt;!-- arjs con detección optimizada y resoluciones dinámicas --&gt;
+    &lt;a-scene 
+        embedded 
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3;"&gt;
+        
+        &lt;!-- Marcador "Hiro" --&gt;
+        &lt;a-marker preset="hiro" smooth="true" smoothCount="5"&gt;
             
-            <!-- MODELO 3D: Aquí cargamos el zapato -->
-            <!-- scale: ajusta el tamaño (si se ve gigante, baja los números a 0.5) -->
-            <!-- position: mueve el objeto sobre el marcador -->
-            <a-entity 
+            &lt;!-- Modelo 3D del zapato --&gt;
+            &lt;a-entity 
                 gltf-model="https://raw.githack.com/KhronosGroup/glTF-Sample-Models/master/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb"
-                scale="2 2 2"
+                scale="1.5 1.5 1.5"
                 position="0 0 0"
-                rotation="0 0 0">
-            </a-entity>
+                rotation="0 0 0"&gt;
+            &lt;/a-entity&gt;
 
-        </a-marker>
+        &lt;/a-marker&gt;
 
-        <!-- Cámara -->
-        <a-entity camera></a-entity>
-    </a-scene>
+        &lt;a-entity camera&gt;&lt;/a-entity&gt;
+    &lt;/a-scene&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+    </code></pre>
 
 </body>
 </html>
