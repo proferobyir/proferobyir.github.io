@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integración Full-Stack n8n + JavaScript</title>
+    <style>
+        /* Estilos base: Tema Carbon Dark */
+        :root {
+            --bg-color: #161616;
+            --card-bg: #262626;
+            --field-bg: #393939;
+            --text-primary: #f4f4f4;
+            --text-secondary: #c6c6c6;
+            --accent-blue: #0f62fe;
+            --accent-blue-hover: #0353e9;
+            --border-color: #393939;
+            --success-color: #42be65;
+            --error-color: #da1e28;
+            --warning-color: #f1c21b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 4px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"] {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--field-bg);
+            border: none;
+            border-bottom: 1px solid #6f6f6f;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            border-radius: 2px 2px 0 0;
+            outline: none;
+        }
+
+        input:focus {
+            border-bottom-color: var(--accent-blue);
+            box-shadow: inset 0 -1px 0 0 var(--accent-blue);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            padding: 14px 16px;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .cors-notice {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background-color: #2a2415;
+            border-left: 3px solid var(--warning-color);
+            font-size: 0.8125rem;
+            color: #f1c21b;
+        }
+
+        /* Tarjeta de Respuesta Renderizada en el DOM */
+        .response-container {
+            margin-top: 28px;
+        }
+
+        .card-response {
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-left: 4px solid var(--accent-blue);
+            font-size: 0.875rem;
+        }
+
+        .card-response.success {
+            border-left-color: var(--success-color);
+        }
+
+        .card-response.error {
+            border-left-color: var(--error-color);
+        }
+
+        .card-response h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .card-response p {
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .card-response small {
+            display: block;
+            margin-top: 10px;
+            color: #8d8d8d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registro de Estudiantes</h2>
+    <p class="subtitle">Envía datos al Webhook de n8n y manipula la respuesta devuelta en el Frontend</p>
+
+    <form id="registroForm">
+        <div class="form-group">
+            <label for="webhookUrl">URL Endpoint (Nodo Webhook de n8n):</label>
+            <input type="url" id="webhookUrl" value="http://localhost:5678/webhook-test/registrar-estudiante" required>
+        </div>
+
+        <div class="form-group">
+            <label for="nombre">Nombre Completo:</label>
+            <input type="text" id="nombre" placeholder="Ej: Roberto Loreto" required>
+        </div>
+
+        <div class="form-group">
+            <label for="correo">Correo Electrónico:</label>
+            <input type="email" id="correo" placeholder="profesor@universidad.edu" required>
+        </div>
+
+        <button type="submit">Enviar Petición a n8n</button>
+
+        <!-- ACOTACIÓN TÉCNICA VISIBLE SOBRE CORS Y ENTORNOS DE LABORATORIO -->
+        <div class="cors-notice">
+            <strong>Nota de entorno / CORS:</strong> Si la aplicación cliente corre en un puerto distinto al de n8n (ej. Live Server en <code>:5500</code> o GitHub Pages) hacia <code>localhost:5678</code>, asegúrate de habilitar la variable de entorno <code>N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true</code> o los encabezados HTTP CORS correspondientes en n8n para permitir peticiones de orígenes cruzados.
+        </div>
+    </form>
+
+    <!-- Contenedor dinámico donde el DOM inyectará la respuesta de n8n -->
+    <div id="resultadoFront" class="response-container"></div>
+</div>
+
+<script>
+    document.getElementById('registroForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Referencias a los inputs y al contenedor de salida
+        const webhookUrl = document.getElementById('webhookUrl').value;
+        const contenedorRespuesta = document.getElementById('resultadoFront');
+
+        const payload = {
+            nombre: document.getElementById('nombre').value,
+            correo: document.getElementById('correo').value,
+            fechaEnvio: new Date().toISOString()
+        };
+
+        // Indicador visual previo al procesamiento
+        contenedorRespuesta.innerHTML = `
+            <div class="card-response">
+                <p>Enviando petición HTTP a n8n...</p>
+            </div>
+        `;
+
+        try {
+            // 1. Enviamos la petición asíncrona mediante POST
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer token_de_seguridad'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            // 2. DESEMPAQUETAMOS LA DATA DE N8N: Convertimos el cuerpo de la respuesta en objeto JS
+            const dataFromN8N = await response.json();
+
+            if (response.ok) {
+                // 3. CAPTURA Y MANIPULACIÓN DEL DOM EN EL FRONTEND
+                contenedorRespuesta.innerHTML = `
+                    <div class="card-response success">
+                        <h3 style="color: var(--success-color);">✓ ¡Respuesta Recibida de n8n!</h3>
+                        <p><strong>Estado:</strong> ${dataFromN8N.status || 'OK'}</p>
+                        <p><strong>Mensaje del Servidor:</strong> ${dataFromN8N.mensaje || 'Procesado con éxito'}</p>
+                        <p><strong>ID Generado en BD:</strong> ${dataFromN8N.idInsertado || 'N/A'}</p>
+                        <small>Fecha/Hora de respuesta: ${dataFromN8N.timestamp || new Date().toLocaleTimeString()}</small>
+                    </div>
+                `;
+
+                // Limpiamos el formulario tras completar el proceso
+                document.getElementById('registroForm').reset();
+
+            } else {
+                // Manejo de errores de negocio que envíe n8n (HTTP Status 400, 500, etc.)
+                contenedorRespuesta.innerHTML = `
+                    <div class="card-response error">
+                        <h3 style="color: var(--error-color);">✗ Error en el Flujo de n8n</h3>
+                        <p><strong>Detalle:</strong> ${dataFromN8N.mensaje || 'Error procesando la solicitud'}</p>
+                    </div>
+                `;
+            }
+
+        } catch (error) {
+            // Manejo de errores de red o fallo de conexión con la instancia n8n
+            console.error('Error al conectar con n8n:', error);
+
+            /* 
+             * ACOTACIÓN TÉCNICA:
+             * Este bloque atrapa bloqueos de CORS (Cross-Origin Resource Sharing).
+             * Si ejecutas el HTML en un servidor local (ej: http://127.0.0.1:5500) y n8n está en http://localhost:5678, 
+             * el navegador bloqueará la respuesta a menos que la instancia de n8n envíe los encabezados:
+             * Access-Control-Allow-Origin: *
+             * Access-Control-Allow-Headers: Content-Type, Authorization
+             */
+            contenedorRespuesta.innerHTML = `
+                <div class="card-response error">
+                    <h3 style="color: var(--error-color);">✗ Error de Conexión / CORS</h3>
+                    <p>No se pudo conectar con el Webhook de n8n.</p>
+                    <small>Asegúrate de que la instancia n8n esté activa y con encabezados CORS habilitados si ejecutas desde orígenes distintos.</small>
+                </div>
+            `;
+        }
+    });
+</script>
+
+</body>
+</html>
+
