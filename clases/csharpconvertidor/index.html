@@ -211,18 +211,27 @@
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir Namespace en bloque a File-scoped namespace
+                // 1. Convertir Namespace en bloque a File-scoped namespace (Elimina la { inicial y el } final del bloque)
                 result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
-                    const unindentedBody = body.replace(/^    /gm, '').trim();
+                    // Quita la sangría base de 4 espacios que tenía el bloque interno
+                    const unindentedBody = body.replace(/^    /gm, '').replace(/^\t/gm, '').trim();
                     return `namespace ${ns};\n\n${unindentedBody}`;
                 });
 
-                // 2. Reemplazar instanciación tradicional por Collection Expressions []
-                result = result.replace(/new\s+(?:List<[^>]+>|ArrayList|HashSet<[^>]+>)\s*\(\s*\)/g, '[]');
+                // 2. Convertir Constructor Tradicional a Primary Constructor (C# 12)
+                // Detecta: public class X { propiedades... public X(params) { assignaciones... } }
+                const classRegex = /(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)\s*\{[\s\S]*?public\s+\2\(([^)]+)\)\s*\{[\s\S]*?\}\s*/g;
+                result = result.replace(classRegex, (match, vis, className, params) => {
+                    const access = vis ? vis + ' ' : '';
+                    return `${access}class ${className}(${params})\n{\n`;
+                });
+
+                // 3. Reemplazar instanciación tradicional por Collection Expressions []
+                result = result.replace(/new\s+(?:List<[^>]+>|ArrayList|HashSet<[^>]+>)\s*\(\s*\)(?:\s*\/\/[^\r\n]*)?/g, '[]');
                 result = result.replace(/new\s+(?:[A-Za-z0-9_.]+(?:<[^>]+>)?|(?:[A-Za-z0-9_.]+)?\[\])\s*\{([^}]*)\}/g, '[$1]');
                 result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
 
-                // 3. Convertir string.Format a Interpolación de Cadenas ($"...")
+                // 4. Convertir string.Format a Interpolación de Cadenas ($"...")
                 result = result.replace(/string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g, (match, str, args) => {
                     const argList = args.split(',').map(a => a.trim());
                     let interpolatedStr = str;
