@@ -4,56 +4,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba WebAR con Diagnóstico</title>
+    <title>Prueba WebAR Android</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: sans-serif;
-            background-color: #1a1a1a;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
             color: white;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin: 15px 0 5px 0;
+            font-size: 1.2rem;
         }
 
         .container {
-            width: 100vw;
-            height: 70vh;
+            width: 100%;
+            height: 65vh;
+            position: relative;
         }
 
         model-viewer {
             width: 100%;
             height: 100%;
+            --poster-color: transparent;
         }
 
         .ar-button {
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 14px 28px;
+            padding: 14px 24px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 30px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            z-index: 10;
         }
 
         #status {
-            padding: 15px;
-            margin: 10px;
+            padding: 12px 20px;
+            margin: 15px;
             border-radius: 8px;
-            background: #333;
-            font-size: 14px;
+            background: #222;
+            font-size: 13px;
+            max-width: 90%;
+            line-height: 1.4;
         }
     </style>
 </head>
 
 <body>
 
-    <h2>Prueba de WebAR</h2>
+    <h2>Prueba WebAR (Optimizado para Android)</h2>
 
     <div class="container">
-        <model-viewer id="viewer" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Astronauta 3D"
-            ar ar-modes="scene-viewer webxr quick-look" camera-controls auto-rotate>
+        <model-viewer id="viewer" 
+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+            alt="Astronauta 3D"
+            ar 
+            ar-modes="webxr scene-viewer quick-look" 
+            ar-scale="auto"
+            camera-controls 
+            auto-rotate>
 
             <button slot="ar-button" class="ar-button">
                 📷 Ver en tu espacio
@@ -62,7 +90,7 @@
         </model-viewer>
     </div>
 
-    <div id="status">Verificando compatibilidad de AR...</div>
+    <div id="status">Cargando modelo 3D...</div>
 
     <script>
         const viewer = document.getElementById('viewer');
@@ -70,11 +98,18 @@
 
         viewer.addEventListener('load', () => {
             if (viewer.canActivateAR) {
-                status.innerHTML = "✅ **Tu teléfono soporta AR.** Presiona el botón verde.";
+                status.innerHTML = "✅ **Tu teléfono soporta AR.** Presiona el botón verde para activar la cámara.";
                 status.style.color = "#85e085";
             } else {
-                status.innerHTML = "❌ **Este dispositivo / navegador NO soporta AR sin marcador.**<br>Verifica tener 'Servicios de Google para RA' instalados y usar Chrome.";
+                status.innerHTML = "❌ **Este navegador no activó la AR.**<br>Asegúrate de abrir la página desde **Google Chrome** en tu teléfono Android.";
                 status.style.color = "#ff6666";
+            }
+        });
+
+        viewer.addEventListener('ar-status', (event) => {
+            if (event.detail.status === 'failed') {
+                status.innerHTML = "⚠️ No se pudo iniciar la cámara AR. Verifica los permisos de cámara en Chrome.";
+                status.style.color = "#ffcc00";
             }
         });
     </script>
