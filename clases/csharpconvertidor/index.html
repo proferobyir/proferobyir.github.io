@@ -152,52 +152,64 @@
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir File-scoped namespace a Namespace de bloque con llaves { }
-                const hasFileScoped = /^namespace\s+([A-Za-z0-9_.]+);/m.test(result);
-                if (hasFileScoped) {
-                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
-                    // Agrega la llave de cierre al final con sangría adecuada
+                // 1. Convertir File-scoped namespace a Namespace de bloque
+                result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
+
+                // Asegurar llave de cierre del namespace
+                if (!result.trim().endsWith('}')) {
                     result += '\n}';
                 }
 
-                // 2. Revertir Primary Constructors en clases
-                // Solo busca la firma class NombreClass(params) y la reemplaza sin alterar las llaves internas
-                result = result.replace(/(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)\s*\{/g, (match, vis, className, params) => {
-                    const access = vis ? vis + ' ' : '';
-                    const paramList = params.split(',').map(p => p.trim());
-                    let fields = '';
-                    let assignments = '';
+                // 2. Convertir Primary Constructors a tradicionales
+                // Buscar: class Nombre(parametros) { ... }
+                const primaryCtorRegex = /(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
+                let match;
+                let converted = result;
 
-                    paramList.forEach(p => {
-                        const parts = p.split(/\s+/);
-                        const type = parts[0];
-                        const name = parts[parts.length - 1];
-                        const propName = name.charAt(0).toUpperCase() + name.slice(1);
+                while ((match = primaryCtorRegex.exec(result)) !== null) {
+                    const fullMatch = match[0];
+                    const access = match[1] || '';
+                    const className = match[2];
+                    const params = match[3].trim();
 
-                        fields += `        public ${type} ${propName} { get; private set; }\n`;
-                        assignments += `            this.${propName} = ${name};\n`;
-                    });
+                    if (params) {
+                        const paramList = params.split(',').map(p => p.trim()).filter(p => p);
+                        let fields = '';
+                        let assignments = '';
+                        let ctorParams = [];
 
-                    const constructor = `        public ${className}(${params})\n        {\n${assignments}        }`;
+                        paramList.forEach((p) => {
+                            const parts = p.split(/\s+/);
+                            if (parts.length >= 2) {
+                                const type = parts.slice(0, -1).join(' ');
+                                const name = parts[parts.length - 1];
+                                const propName = name.charAt(0).toUpperCase() + name.slice(1);
 
-                    return `${access}class ${className}\n    {\n${fields}\n${constructor}\n`;
-                });
+                                fields += `        public ${type} ${propName} { get; private set; }\n`;
+                                assignments += `            this.${propName} = ${name};\n`;
+                                ctorParams.push(p);
+                            }
+                        });
 
-                // 3. Convertir Collection Expressions [] a new List<string>()
+                        const newClassDecl = `${access}class ${className}\n    {\n${fields}\n        public ${className}(${ctorParams.join(', ')})\n        {\n${assignments}        }`;
+                        converted = converted.replace(fullMatch, newClassDecl);
+                    }
+                }
+                result = converted;
+
+                // 3. Convertir [] a new List<string>()
                 result = result.replace(/=\s*\[\];/g, '= new List<string>();');
+                result = result.replace(/=\s*\[\]/g, '= new List<string>()');
 
-                // 4. Convertir Interpolación $"..." a string.Format
-                result = result.replace(/\$"([^"\r\n]*)"/g, (match, content) => {
+                // 4. Convertir interpolación a string.Format
+                result = result.replace(/\$"([^"\r\n]*?)"/g, (match, content) => {
                     let index = 0;
                     const vars = [];
-                    const formattedString = content.replace(/\{([^{}]+)\}/g, (m, expr) => {
+                    const formatted = content.replace(/\{([^{}]+)\}/g, (m, expr) => {
                         vars.push(expr.trim());
                         return `{${index++}}`;
                     });
-
-                    return vars.length > 0
-                        ? `string.Format("${formattedString}", ${vars.join(', ')})`
-                        : `"${content}"`;
+                    return vars.length > 0 ? `string.Format("${formatted}", ${vars.join(', ')})` : `"${content}"`;
                 });
 
                 return result;
@@ -208,52 +220,72 @@
                 if (!code) return '';
                 let result = code;
 
-                // 1. Detectar y extraer el Constructor Tradicional para reensamblar el Primary Constructor
-                let extractedParams = '';
-                const ctorRegex = /public\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)\s*\{[\s\S]*?this\.[A-Za-z0-9_]+\s*=\s*[A-Za-z0-9_]+;[\s\S]*?\}/;
-                const matchCtor = result.match(ctorRegex);
-
-                if (matchCtor) {
-                    extractedParams = matchCtor[2];
-                    // Remueve la definición del constructor tradicional
-                    result = result.replace(ctorRegex, '');
-                }
-
-                // Si encontramos parámetros, los reinyectamos a la declaración de la clase
-                if (extractedParams) {
-                    result = result.replace(/(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)/, `$1 class $2(${extractedParams})`);
-                    // Limpia las propiedades automáticas 'get; private set;' creadas por toLegacy
-                    result = result.replace(/\s*public\s+[A-Za-z0-9_.]+\s+[A-Za-z0-9_]+\s*\{\s*get;\s*private\s+set;\s*\}\s*/g, '\n');
-                }
-
-                // 2. Convertir Namespace de bloque a File-scoped namespace
-                if (/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m.test(result)) {
-                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m, 'namespace $1;\n');
-                    // Elimina únicamente la última llave de cierre del archivo (que correspondía al namespace)
-                    const lastBrace = result.lastIndexOf('}');
-                    if (lastBrace !== -1) {
-                        result = result.substring(0, lastBrace) + result.substring(lastBrace + 1);
+                // 1. Convertir namespace con llaves a file-scoped
+                const namespaceMatch = result.match(/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m);
+                if (namespaceMatch) {
+                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m, 'namespace $1;');
+                    // Eliminar la llave de cierre del namespace
+                    const lines = result.split('\n');
+                    if (lines[lines.length - 1].trim() === '}') {
+                        lines.pop();
+                        result = lines.join('\n');
                     }
                 }
 
-                // 3. Convertir instanciaciones tradicionales a Collection Expressions []
-                result = result.replace(/new\s+(?:List<[^>]+>|ArrayList|HashSet<[^>]+>)\s*\(\s*\)(?:\s*\/\/[^\r\n]*)?/g, '[]');
+                // 2. Buscar constructores tradicionales y convertirlos a Primary Constructors
+                const classMatch = result.match(/(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\{/);
+                if (classMatch) {
+                    const className = classMatch[2];
 
-                // 4. Convertir string.Format a Interpolación $"..."
-                result = result.replace(/string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g, (match, str, args) => {
-                    const argList = args.split(',').map(a => a.trim());
-                    let interpolatedStr = str;
+                    // Buscar el constructor
+                    const ctorRegex = new RegExp(
+                        `public\\s+${className}\\s*\\(([^)]*)\\)\\s*\\{[\\s\\S]*?\\}`,
+                        'g'
+                    );
+                    const ctorMatch = ctorRegex.exec(result);
 
-                    argList.forEach((arg, index) => {
-                        const regExp = new RegExp(`\\{${index}\\}`, 'g');
-                        interpolatedStr = interpolatedStr.replace(regExp, `{${arg}}`);
-                    });
+                    if (ctorMatch) {
+                        const params = ctorMatch[1].trim();
+                        if (params) {
+                            // Verificar que el constructor asigna propiedades
+                            const hasAssignments = /this\.[A-Za-z0-9_]+\s*=\s*[A-Za-z0-9_]+;/.test(ctorMatch[0]);
+                            if (hasAssignments) {
+                                // Eliminar campos y constructor
+                                result = result.replace(/public\s+[A-Za-z0-9_.]+\s+[A-Za-z0-9_]+\s*\{\s*get;\s*private\s+set;\s*\}/g, '');
+                                result = result.replace(ctorRegex, '');
 
-                    return `$"${interpolatedStr}"`;
-                });
+                                // Actualizar declaración de clase
+                                result = result.replace(
+                                    /(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\{/,
+                                    `$1 class $2(${params})\n{`
+                                );
+                            }
+                        }
+                    }
+                }
 
-                // 5. Normalizar espacios y líneas en blanco sobrantes
-                result = result.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
+                // 3. Convertir new List<T>() a []
+                result = result.replace(/new\s+List<[^>]+>\s*\(\s*\)/g, '[]');
+
+                // 4. Convertir string.Format a interpolación
+                result = result.replace(
+                    /string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g,
+                    (match, format, args) => {
+                        const argList = args.split(',').map(a => a.trim());
+                        let interpolated = format;
+                        argList.forEach((arg, index) => {
+                            interpolated = interpolated.replace(
+                                new RegExp(`\\{${index}\\}`, 'g'),
+                                `{${arg}}`
+                            );
+                        });
+                        return `$"${interpolated}"`;
+                    }
+                );
+
+                // 5. Limpiar espacios
+                result = result.replace(/\n\s*\n\s*\n/g, '\n\n');
+                result = result.trim();
 
                 return result;
             }
@@ -266,9 +298,8 @@
             const selectEl = document.getElementById('modeSelect');
             const btn = document.getElementById('btnConvert');
 
-            // Código base inicial
-            inputEl.value =
-                `namespace MiProyecto;
+            // Código de ejemplo mejorado
+            inputEl.value = `namespace MiProyecto;
 
 public class Estudiante(string nombre, int edad)
 {
@@ -276,16 +307,29 @@ public class Estudiante(string nombre, int edad)
     {
         var notas = [];
         var mensaje = $"Hola {nombre}, tu edad es {edad}";
+        Console.WriteLine(mensaje);
     }
 }`;
 
             btn.addEventListener('click', () => {
-                if (selectEl.value === 'toLegacy') {
-                    outputEl.value = adapter.toLegacy(inputEl.value);
-                } else {
-                    outputEl.value = adapter.toModern(inputEl.value);
+                try {
+                    if (selectEl.value === 'toLegacy') {
+                        outputEl.value = adapter.toLegacy(inputEl.value);
+                    } else {
+                        outputEl.value = adapter.toModern(inputEl.value);
+                    }
+                } catch (error) {
+                    outputEl.value = '❌ Error en la conversión: ' + error.message;
                 }
             });
+
+            // Auto-convertir al cambiar el modo
+            selectEl.addEventListener('change', () => {
+                btn.click();
+            });
+
+            // Ejecutar conversión inicial
+            setTimeout(() => btn.click(), 100);
         });
     </script>
 </body>
