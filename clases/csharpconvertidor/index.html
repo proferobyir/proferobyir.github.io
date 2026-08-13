@@ -50,10 +50,7 @@
             color: #1a1a1a;
         }
 
-        /* --- ESTILO TEMA CARBON PARA LOS BLOQUES DE CÓDIGO --- */
-        textarea,
-        pre,
-        code {
+        textarea {
             flex: 1;
             background-color: #141414;
             color: #f8f8f2;
@@ -145,9 +142,8 @@
     <div class="info-box">
         <strong>💡 Recuerda:</strong> Visual Studio 2012 utiliza <strong>C# 5 (.NET Framework 4.5)</strong>.
         Si traes un proyecto de casa (VS 2022/2026), utiliza el modo <em>"Moderno ➔ Legacy"</em> para adaptar funciones
-        como <code>Primary Constructors</code>, <code>Collection Expressions []</code>,
-        <code>Interpolación de Cadenas</code> o
-        <code>File-Scoped Namespaces</code> antes de compilar en el laboratorio.
+        como <code>Primary Constructors</code>, <code>Collection Expressions []</code> o
+        <code>File-Scoped Namespaces</code>.
     </div>
 
     <script>
@@ -211,26 +207,28 @@
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir Namespace en bloque a File-scoped namespace
+                // 1. Convertir Namespace bloque a File-scoped namespace
                 result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
-                    // Limpiamos sangría y quitamos la última llave del bloque
-                    const unindentedBody = body.replace(/^    /gm, '').replace(/^\t/gm, '').trim();
-                    return `namespace ${ns};\n\n${unindentedBody}`;
+                    // Limpia sangrías desalineadas y remueve la última llave de cierre del namespace
+                    const cleanedBody = body
+                        .replace(/^ {4}/gm, '')
+                        .replace(/^\t/gm, '')
+                        .trim();
+                    return `namespace ${ns};\n\n${cleanedBody}`;
                 });
 
-                // 2. Extraer constructor y convertir a Primary Constructor (sin duplicar llaves)
-                // Busca: public Estudiante(params) { asignaciones... } y lo mueve al encabezado de la clase
+                // 2. Extraer el constructor tradicional y fusionarlo como Primary Constructor
                 let ctorParams = '';
                 result = result.replace(/public\s+[A-Za-z0-9_]+\s*\(([^)]+)\)\s*\{[\s\S]*?\}/, (match, params) => {
                     ctorParams = params;
-                    return ''; // Remueve el constructor tradicional del cuerpo
+                    return ''; // Elimina la definición del constructor del cuerpo
                 });
 
                 if (ctorParams) {
-                    // Aplica los parámetros al nombre de la clase
+                    // Agrega los parámetros a la clase
                     result = result.replace(/(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)/, `$1 class $2(${ctorParams})`);
 
-                    // Limpia las propiedades automáticas y asignaciones redundantes que generó toLegacy
+                    // Remueve autopropiedades y asignaciones this.X redundantes que genera toLegacy
                     result = result.replace(/public\s+[A-Za-z0-9_.]+\s+[A-Za-z0-9_]+\s*\{\s*get;\s*private\s+set;\s*\}\s*/g, '');
                     result = result.replace(/this\.[A-Za-z0-9_]+\s*=\s*[A-Za-z0-9_]+;\s*/g, '');
                 }
@@ -253,7 +251,8 @@
                     return `$"${interpolatedStr}"`;
                 });
 
-                // 5. Limpieza final de saltos de línea dobles/vacíos
+                // 5. Limpieza general de llaves huérfanas y saltos de línea vacíos
+                result = result.replace(/\n\s*\{\s*\n\s*\{/g, '\n{'); // Elimina llaves { { duplicadas
                 result = result.replace(/\n\s*\n\s*\n/g, '\n\n');
 
                 return result;
@@ -269,14 +268,24 @@
 
             // Ejemplo inicial editable
             inputEl.value =
-                `namespace MiProyecto;
-
-public class Estudiante(string nombre, int edad)
+                `namespace MiProyecto
 {
-    public void Mostrar()
+    public class Estudiante
     {
-        var notas = [];
-        var mensaje = $"Hola {nombre}, tu edad es {edad}";
+        public string Nombre { get; private set; }
+        public int Edad { get; private set; }
+
+        public Estudiante(string nombre, int edad)
+        {
+            this.Nombre = nombre;
+            this.Edad = edad;
+        }
+
+        public void Mostrar()
+        {
+            var notas = new List<string>();
+            var mensaje = string.Format("Hola {0}, tu edad es {1}", nombre, edad);
+        }
     }
 }`;
 
