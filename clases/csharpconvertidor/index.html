@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adaptador C# - Compatibilidad VS2012 / VS2026</title>
+    <title>Adaptador C# - Laboratorio (VS2012 vs VS2026)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -34,7 +34,7 @@
         .container {
             display: flex;
             gap: 20px;
-            height: 70vh;
+            height: 68vh;
             margin-top: 20px;
         }
 
@@ -102,8 +102,8 @@
 
         .info-box {
             max-width: 1000px;
-            margin: 20px auto;
-            padding: 15px;
+            margin: 15px auto;
+            padding: 12px 15px;
             background: #f4f4f5;
             border-left: 4px solid #0066cc;
             border-radius: 4px;
@@ -115,8 +115,8 @@
 
 <body>
 
-    <h2>Adaptador C# para el Laboratorio</h2>
-    <p class="subtitle">Puente entre Visual Studio 2012 (C# 5) y VS 2022 / 2026 (C# 10–13)</p>
+    <h2>Adaptador C# para Laboratorio</h2>
+    <p class="subtitle">Compatibilidad entre VS 2012 (C# 5) y VS 2022 / 2026 (C# 10–13)</p>
 
     <div class="container">
         <div class="panel">
@@ -131,38 +131,35 @@
     </div>
 
     <div class="controls">
-        <label for="modeSelect" style="color:#1a1a1a; margin:0;">Modo de conversión:</label>
+        <label for="modeSelect" style="color:#1a1a1a; margin:0;">Dirección:</label>
         <select id="modeSelect">
             <option value="toLegacy"> Moderno (2022/2026) ➔ Legacy (VS 2012)</option>
             <option value="toModern"> Legacy (VS 2012) ➔ Moderno (2022/2026)</option>
         </select>
-        <button id="btnConvert">Procesar Código</button>
+        <button id="btnConvert">Convertir Código</button>
     </div>
 
     <div class="info-box">
-        <strong>💡 Recuerda:</strong> Visual Studio 2012 utiliza <strong>C# 5 (.NET Framework 4.5)</strong>.
-        Si traes un proyecto de casa (VS 2022/2026), utiliza el modo <em>"Moderno ➔ Legacy"</em> para adaptar funciones
-        como <code>Primary Constructors</code>, <code>Collection Expressions []</code> o
-        <code>File-Scoped Namespaces</code>.
+        <strong>💡 Utilidad de laboratorio:</strong> Convierte la sintaxis rápida que usas en casa para que compile en
+        el **.NET Framework 4.5 / C# 5** de las máquinas del laboratorio sin lanzar errores de sintaxis.
     </div>
 
     <script>
         class CSharpLabAdapter {
 
-            // --- MODO: Moderno (C# 10-13) ➔ Legacy (VS 2012 / C# 5) ---
+            // --- DE MODERNO A LEGACY (VS 2012) ---
             toLegacy(code) {
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir File-scoped namespace a Namespace bloque
-                const hasFileScopedNs = /^namespace\s+([A-Za-z0-9_.]+);/m.test(result);
-                if (hasFileScopedNs) {
+                // 1. File-scoped namespace -> Bloque con { }
+                if (/^namespace\s+([A-Za-z0-9_.]+);/m.test(result)) {
                     result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
                     result += '\n}';
                 }
 
-                // 2. Revertir Primary Constructors en clases
-                result = result.replace(/(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)/g, (match, vis, className, params) => {
+                // 2. Primary Constructors -> Clase con campos y constructor tradicional
+                result = result.replace(/(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)/g, (match, vis, className, params) => {
                     const access = vis ? vis + ' ' : '';
                     const paramList = params.split(',').map(p => p.trim());
                     let fields = '';
@@ -178,14 +175,13 @@
                         assignments += `        this.${propName} = ${name};\n`;
                     });
 
-                    const constructor = `\n    public ${className}(${params})\n    {\n${assignments}    }\n`;
-                    return `${access}class ${className}\n{\n${fields}${constructor}`;
+                    return `${access}class ${className}\n{\n${fields}\n    public ${className}(${params})\n    {\n${assignments}    }`;
                 });
 
-                // 3. Revertir Collection Expressions []
-                result = result.replace(/=\s*\[\];/g, '= new List<string>(); // Ajustar tipo según corresponda');
+                // 3. Collection expressions [] -> new List<string>()
+                result = result.replace(/=\s*\[\];/g, '= new List<string>();');
 
-                // 4. Revertir Interpolación de Cadenas ($"...") a string.Format
+                // 4. Interpolación $"..." -> string.Format(...)
                 result = result.replace(/\$"([^"\r\n]*)"/g, (match, content) => {
                     let index = 0;
                     const vars = [];
@@ -202,43 +198,16 @@
                 return result;
             }
 
-            // --- MODO: Legacy (VS 2012 / C# 5) ➔ Moderno (C# 10-13) ---
+            // --- DE LEGACY (VS 2012) A MODERNO ---
             toModern(code) {
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir Namespace bloque a File-scoped namespace
-                result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
-                    // Limpia sangrías desalineadas y remueve la última llave de cierre del namespace
-                    const cleanedBody = body
-                        .replace(/^ {4}/gm, '')
-                        .replace(/^\t/gm, '')
-                        .trim();
-                    return `namespace ${ns};\n\n${cleanedBody}`;
-                });
-
-                // 2. Extraer el constructor tradicional y fusionarlo como Primary Constructor
-                let ctorParams = '';
-                result = result.replace(/public\s+[A-Za-z0-9_]+\s*\(([^)]+)\)\s*\{[\s\S]*?\}/, (match, params) => {
-                    ctorParams = params;
-                    return ''; // Elimina la definición del constructor del cuerpo
-                });
-
-                if (ctorParams) {
-                    // Agrega los parámetros a la clase
-                    result = result.replace(/(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)/, `$1 class $2(${ctorParams})`);
-
-                    // Remueve autopropiedades y asignaciones this.X redundantes que genera toLegacy
-                    result = result.replace(/public\s+[A-Za-z0-9_.]+\s+[A-Za-z0-9_]+\s*\{\s*get;\s*private\s+set;\s*\}\s*/g, '');
-                    result = result.replace(/this\.[A-Za-z0-9_]+\s*=\s*[A-Za-z0-9_]+;\s*/g, '');
-                }
-
-                // 3. Reemplazar instanciaciones por Collection Expressions []
+                // 1. Instanciaciones tradicionales -> []
                 result = result.replace(/new\s+(?:List<[^>]+>|ArrayList|HashSet<[^>]+>)\s*\(\s*\)(?:\s*\/\/[^\r\n]*)?/g, '[]');
-                result = result.replace(/new\s+(?:[A-Za-z0-9_.]+(?:<[^>]+>)?|(?:[A-Za-z0-9_.]+)?\[\])\s*\{([^}]*)\}/g, '[$1]');
                 result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
 
-                // 4. Convertir string.Format a Interpolación ($"...")
+                // 2. string.Format(...) -> Interpolación $"..."
                 result = result.replace(/string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g, (match, str, args) => {
                     const argList = args.split(',').map(a => a.trim());
                     let interpolatedStr = str;
@@ -251,11 +220,17 @@
                     return `$"${interpolatedStr}"`;
                 });
 
-                // 5. Limpieza general de llaves huérfanas y saltos de línea vacíos
-                result = result.replace(/\n\s*\{\s*\n\s*\{/g, '\n{'); // Elimina llaves { { duplicadas
-                result = result.replace(/\n\s*\n\s*\n/g, '\n\n');
+                // 3. Bloque namespace -> File-scoped namespace
+                if (/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m.test(result)) {
+                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m, 'namespace $1;\n');
+                    // Quita el último '}' del archivo
+                    const lastBrace = result.lastIndexOf('}');
+                    if (lastBrace !== -1) {
+                        result = result.substring(0, lastBrace) + result.substring(lastBrace + 1);
+                    }
+                }
 
-                return result;
+                return result.trim();
             }
         }
 
@@ -266,26 +241,16 @@
             const selectEl = document.getElementById('modeSelect');
             const btn = document.getElementById('btnConvert');
 
-            // Ejemplo inicial editable
+            // Ejemplo inicial
             inputEl.value =
-                `namespace MiProyecto
+                `namespace MiProyecto;
+
+public class Estudiante(string nombre, int edad)
 {
-    public class Estudiante
+    public void Mostrar()
     {
-        public string Nombre { get; private set; }
-        public int Edad { get; private set; }
-
-        public Estudiante(string nombre, int edad)
-        {
-            this.Nombre = nombre;
-            this.Edad = edad;
-        }
-
-        public void Mostrar()
-        {
-            var notas = new List<string>();
-            var mensaje = string.Format("Hola {0}, tu edad es {1}", nombre, edad);
-        }
+        var notas = [];
+        var mensaje = $"Hola {nombre}, tu edad es {edad}";
     }
 }`;
 
