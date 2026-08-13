@@ -211,27 +211,36 @@
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir Namespace en bloque a File-scoped namespace (Elimina la { inicial y el } final del bloque)
+                // 1. Convertir Namespace en bloque a File-scoped namespace
                 result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
-                    // Quita la sangría base de 4 espacios que tenía el bloque interno
+                    // Limpiamos sangría y quitamos la última llave del bloque
                     const unindentedBody = body.replace(/^    /gm, '').replace(/^\t/gm, '').trim();
                     return `namespace ${ns};\n\n${unindentedBody}`;
                 });
 
-                // 2. Convertir Constructor Tradicional a Primary Constructor (C# 12)
-                // Detecta: public class X { propiedades... public X(params) { assignaciones... } }
-                const classRegex = /(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)\s*\{[\s\S]*?public\s+\2\(([^)]+)\)\s*\{[\s\S]*?\}\s*/g;
-                result = result.replace(classRegex, (match, vis, className, params) => {
-                    const access = vis ? vis + ' ' : '';
-                    return `${access}class ${className}(${params})\n{\n`;
+                // 2. Extraer constructor y convertir a Primary Constructor (sin duplicar llaves)
+                // Busca: public Estudiante(params) { asignaciones... } y lo mueve al encabezado de la clase
+                let ctorParams = '';
+                result = result.replace(/public\s+[A-Za-z0-9_]+\s*\(([^)]+)\)\s*\{[\s\S]*?\}/, (match, params) => {
+                    ctorParams = params;
+                    return ''; // Remueve el constructor tradicional del cuerpo
                 });
 
-                // 3. Reemplazar instanciación tradicional por Collection Expressions []
+                if (ctorParams) {
+                    // Aplica los parámetros al nombre de la clase
+                    result = result.replace(/(public|private|internal)?\s*class\s+([A-Za-z0-9_]+)/, `$1 class $2(${ctorParams})`);
+
+                    // Limpia las propiedades automáticas y asignaciones redundantes que generó toLegacy
+                    result = result.replace(/public\s+[A-Za-z0-9_.]+\s+[A-Za-z0-9_]+\s*\{\s*get;\s*private\s+set;\s*\}\s*/g, '');
+                    result = result.replace(/this\.[A-Za-z0-9_]+\s*=\s*[A-Za-z0-9_]+;\s*/g, '');
+                }
+
+                // 3. Reemplazar instanciaciones por Collection Expressions []
                 result = result.replace(/new\s+(?:List<[^>]+>|ArrayList|HashSet<[^>]+>)\s*\(\s*\)(?:\s*\/\/[^\r\n]*)?/g, '[]');
                 result = result.replace(/new\s+(?:[A-Za-z0-9_.]+(?:<[^>]+>)?|(?:[A-Za-z0-9_.]+)?\[\])\s*\{([^}]*)\}/g, '[$1]');
                 result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
 
-                // 4. Convertir string.Format a Interpolación de Cadenas ($"...")
+                // 4. Convertir string.Format a Interpolación ($"...")
                 result = result.replace(/string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g, (match, str, args) => {
                     const argList = args.split(',').map(a => a.trim());
                     let interpolatedStr = str;
@@ -243,6 +252,9 @@
 
                     return `$"${interpolatedStr}"`;
                 });
+
+                // 5. Limpieza final de saltos de línea dobles/vacíos
+                result = result.replace(/\n\s*\n\s*\n/g, '\n\n');
 
                 return result;
             }
