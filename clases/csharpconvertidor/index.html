@@ -56,7 +56,6 @@
         code {
             flex: 1;
             background-color: #141414;
-            /* Carbon Dark BG */
             color: #f8f8f2;
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 16px;
@@ -71,7 +70,6 @@
 
         textarea:focus {
             border-color: #10B981;
-            /* Carbon accent green */
         }
 
         .controls {
@@ -147,26 +145,27 @@
     <div class="info-box">
         <strong>💡 Recuerda:</strong> Visual Studio 2012 utiliza <strong>C# 5 (.NET Framework 4.5)</strong>.
         Si traes un proyecto de casa (VS 2022/2026), utiliza el modo <em>"Moderno ➔ Legacy"</em> para adaptar funciones
-        como <code>Primary Constructors</code>, <code>Collection Expressions []</code> o
-        <code>File-Scoped Namespaces</code>
-        antes de compilar en el laboratorio.
+        como <code>Primary Constructors</code>, <code>Collection Expressions []</code>,
+        <code>Interpolación de Cadenas</code> o
+        <code>File-Scoped Namespaces</code> antes de compilar en el laboratorio.
     </div>
 
     <script>
         class CSharpLabAdapter {
 
-            // --- MODO: Convertir sintaxis moderna a VS 2012 (C# 5) ---
+            // --- MODO: Moderno (C# 10-13) ➔ Legacy (VS 2012 / C# 5) ---
             toLegacy(code) {
                 if (!code) return '';
                 let result = code;
 
-                // 1. Revertir File-scoped namespace: namespace App; => namespace App { ... }
-                if (/^namespace\s+([A-Za-z0-9_.]+);/m.test(result)) {
+                // 1. Convertir File-scoped namespace a Namespace bloque
+                const hasFileScopedNs = /^namespace\s+([A-Za-z0-9_.]+);/m.test(result);
+                if (hasFileScopedNs) {
                     result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
                     result += '\n}';
                 }
 
-                // 2. Revertir Primary Constructors: public class User(string name, int age) => class con ctor estándar
+                // 2. Revertir Primary Constructors en clases
                 result = result.replace(/(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)/g, (match, vis, className, params) => {
                     const access = vis ? vis + ' ' : '';
                     const paramList = params.split(',').map(p => p.trim());
@@ -187,29 +186,53 @@
                     return `${access}class ${className}\n{\n${fields}${constructor}`;
                 });
 
-                // 3. Revertir Collection Expressions: = [] => = new List<string>()
-                result = result.replace(/=\s*\[\];/g, '= new List<string>(); // Revisa el tipo si es necesario');
+                // 3. Revertir Collection Expressions []
+                result = result.replace(/=\s*\[\];/g, '= new List<string>(); // Ajustar tipo según corresponda');
 
-                // 4. Revertir Interpolación de cadenas simple: $"Texto {variable}" => string.Format("Texto {0}", variable)
-                result = result.replace(/\$"([^"{}]*)\{([^{}]+)\}([^"{}]*)"/g, 'string.Format("$1{0}$3", $2)');
+                // 4. Revertir Interpolación de Cadenas ($"...") a string.Format
+                result = result.replace(/\$"([^"\r\n]*)"/g, (match, content) => {
+                    let index = 0;
+                    const vars = [];
+                    const formattedString = content.replace(/\{([^{}]+)\}/g, (m, expr) => {
+                        vars.push(expr.trim());
+                        return `{${index++}}`;
+                    });
+
+                    return vars.length > 0
+                        ? `string.Format("${formattedString}", ${vars.join(', ')})`
+                        : `"${content}"`;
+                });
 
                 return result;
             }
 
-            // --- MODO: Convertir VS 2012 a Moderno (2022/2026) ---
+            // --- MODO: Legacy (VS 2012 / C# 5) ➔ Moderno (C# 10-13) ---
             toModern(code) {
                 if (!code) return '';
                 let result = code;
 
-                // 1. Reemplazar new List<T> { ... } por [ ... ]
-                result = result.replace(/new\s+(?:[A-Za-z0-9_.]+(?:<[^>]+>)?|(?:[A-Za-z0-9_.]+)?\[\])\s*\{([^}]*)\}/g, '[$1]');
+                // 1. Convertir Namespace en bloque a File-scoped namespace
+                result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
+                    const unindentedBody = body.replace(/^    /gm, '').trim();
+                    return `namespace ${ns};\n\n${unindentedBody}`;
+                });
 
-                // 2. Reemplazar Array.Empty<T>() por []
+                // 2. Reemplazar instanciación tradicional por Collection Expressions []
+                result = result.replace(/new\s+(?:List<[^>]+>|ArrayList|HashSet<[^>]+>)\s*\(\s*\)/g, '[]');
+                result = result.replace(/new\s+(?:[A-Za-z0-9_.]+(?:<[^>]+>)?|(?:[A-Za-z0-9_.]+)?\[\])\s*\{([^}]*)\}/g, '[$1]');
                 result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
 
-                // 3. Convertir Namespace bloque a File-scoped namespace
-                result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
-                    return `namespace ${ns};\n${body.replace(/^  /gm, '').trimEnd()}`;
+                // 3. Convertir string.Format a Interpolación de Cadenas ($"...")
+                result = result.replace(/string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g, (match, str, args) => {
+                    const argList = args.split(',').map(a => a.trim());
+                    let interpolatedStr = str;
+
+                    argList.forEach((arg, index) => {
+                        const regExp = new RegExp(`\\{${index}\\}`, 'g');
+                        interpolatedStr = interpolatedStr.replace(regExp, `{${arg}}`);
+                    });
+
+                    return `$"${interpolatedStr}"`;
                 });
 
                 return result;
@@ -223,7 +246,7 @@
             const selectEl = document.getElementById('modeSelect');
             const btn = document.getElementById('btnConvert');
 
-            // Ejemplo de prueba inicial
+            // Ejemplo inicial editable
             inputEl.value =
                 `namespace MiProyecto;
 
@@ -232,6 +255,7 @@ public class Estudiante(string nombre, int edad)
     public void Mostrar()
     {
         var notas = [];
+        var mensaje = $"Hola {nombre}, tu edad es {edad}";
     }
 }`;
 
