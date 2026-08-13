@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptador C# - Compatibilidad VS2012 / VS2026</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h2 {
+            color: #569cd6;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #858585;
+            margin-top: 0;
+            font-size: 14px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            height: 70vh;
+            margin-top: 20px;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #9cdcfe;
+        }
+
+        textarea {
+            flex: 1;
+            background-color: #252526;
+            color: #dcdcdc;
+            border: 1px solid #3c3c3c;
+            padding: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+            border-radius: 6px;
+        }
+
+        textarea:focus {
+            outline: 1px solid #007acc;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        select,
+        button {
+            background-color: #2d2d2d;
+            color: #dcdcdc;
+            border: 1px solid #3c3c3c;
+            padding: 10px 16px;
+            font-size: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #1177bb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Adaptador C# para el Laboratorio</h2>
+    <p class="subtitle">Puente entre Visual Studio 2012 (C# 5) y VS 2022 / 2026 (C# 10–13)</p>
+
+    <div class="container">
+        <div class="panel">
+            <label for="inputCode">Código de Entrada:</label>
+            <textarea id="inputCode" placeholder="Pega el código aquí..."></textarea>
+        </div>
+
+        <div class="panel">
+            <label for="outputCode">Código Convertido:</label>
+            <textarea id="outputCode" readonly placeholder="El resultado compatible aparecerá aquí..."></textarea>
+        </div>
+    </div>
+
+    <div class="controls">
+        <label for="modeSelect" style="color:#dcdcdc; margin:0;">Modo de conversión:</label>
+        <select id="modeSelect">
+            <option value="toLegacy"> Moderno (2022/2026) ➔ Legacy (VS 2012)</option>
+            <option value="toModern"> Legacy (VS 2012) ➔ Moderno (2022/2026)</option>
+        </select>
+        <button id="btnConvert">Procesar Código</button>
+    </div>
+
+    <script>
+        class CSharpLabAdapter {
+
+            // --- MODO: Convertir sintaxis moderna a VS 2012 (C# 5) ---
+            toLegacy(code) {
+                if (!code) return '';
+                let result = code;
+
+                // 1. Revertir Collection Expressions: [1, 2, 3] => new List<int> { 1, 2, 3 } o arrays
+                // Detecta asignaciones de colecciones inline vacías [] => new List<string>()
+                result = result.replace(/=\s*\[\];/g, '= new List<string>(); // Revisa el tipo explícito');
+
+                // 2. Revertir Primary Constructors: class User(string name, int age) { ... }
+                result = result.replace(/public\s+class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)\s*\{([\s\S]*?)\}/g, (match, className, params, body) => {
+                    const paramList = params.split(',').map(p => p.trim());
+                    let fields = '';
+                    let assignments = '';
+
+                    paramList.forEach(p => {
+                        const parts = p.split(/\s+/);
+                        const type = parts[0];
+                        const name = parts[parts.length - 1];
+                        const propName = name.charAt(0).toUpperCase() + name.slice(1);
+
+                        fields += `    public ${type} ${propName} { get; private set; }\n`;
+                        assignments += `        this.${propName} = ${name};\n`;
+                    });
+
+                    const constructor = `\n    public ${className}(${params})\n    {\n${assignments}    }\n`;
+                    return `public class ${className}\n{\n${fields}${constructor}${body}\n}`;
+                });
+
+                // 3. Revertir File-scoped namespace: namespace App; => namespace App { ... }
+                if (/^namespace\s+([A-Za-z0-9_.]+);/m.test(result)) {
+                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
+                    result += '\n}';
+                }
+
+                // 4. Revertir Interpolación de strings básica: $"{x}" => string.Format("{0}", x)
+                // Nota: Si usan $"", les recordará cambiar a string.Format o concatenación
+                result = result.replace(/\$"([^"{}]*)\{([^{}]+)\}([^"{}]*)"/g, 'string.Format("$1{0}$3", $2)');
+
+                return result;
+            }
+
+            // --- MODO: Convertir VS 2012 a Moderno (2022/2026) ---
+            toModern(code) {
+                if (!code) return '';
+                let result = code;
+
+                // 1. Reemplazar new List<T> { ... } por [ ... ]
+                result = result.replace(/new\s+(?:[A-Za-z0-9_.]+(?:<[^>]+>)?|(?:[A-Za-z0-9_.]+)?\[\])\s*\{([^}]*)\}/g, '[$1]');
+
+                // 2. Reemplazar Array.Empty<T>() por []
+                result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
+
+                // 3. File-scoped namespaces
+                result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
+                    return `namespace ${ns};\n${body.replace(/^  /gm, '').trimEnd()}`;
+                });
+
+                return result;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const adapter = new CSharpLabAdapter();
+            const inputEl = document.getElementById('inputCode');
+            const outputEl = document.getElementById('outputCode');
+            const selectEl = document.getElementById('modeSelect');
+            const btn = document.getElementById('btnConvert');
+
+            // Ejemplo para probar la conversión de lo que traen de casa a VS2012
+            inputEl.value =
+                `namespace MiProyecto;
+
+public class Estudiante(string nombre, int edad)
+{
+    public void Mostrar()
+    {
+        var notas = [];
+    }
+}`;
+
+            btn.addEventListener('click', () => {
+                if (selectEl.value === 'toLegacy') {
+                    outputEl.value = adapter.toLegacy(inputEl.value);
+                } else {
+                    outputEl.value = adapter.toModern(inputEl.value);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
