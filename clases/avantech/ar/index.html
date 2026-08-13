@@ -3,39 +3,76 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>WebAR - Prueba de Detección</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiencia WebAR sin Marcadores</title>
 
-    <!-- Librerías estables vía CDN oficial -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <!-- Componente oficial de Google para WebAR -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
-            overflow: hidden;
+            padding: 0;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            position: relative;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            --poster-color: transparent;
+        }
+
+        /* Estilo del botón personalizado para activar la cámara en AR */
+        .ar-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
         }
     </style>
 </head>
 
-<body style="margin: 0px; overflow: hidden;">
+<body>
 
-    <!-- Agregamos detectionMode y matrixCodeType para mejor reconocimiento -->
-    <a-scene embedded
-        arjs="sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-        vr-mode-ui="enabled: false">
+    <div class="container">
+        <!-- Componente 3D / AR -->
+        <model-viewer src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Modelo 3D para AR" ar
+            ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1">
 
-        <!-- Marcador HIRO -->
-        <a-marker preset="hiro">
-            <!-- Objeto 3D más grande (1x1x1 metro) y elevado para asegurarse de que se vea -->
-            <a-box position="0 0.5 0" material="color: red; opacity: 0.8;"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
-        </a-marker>
+            <!-- Botón que activa la cámara para proyectar el objeto en el entorno -->
+            <button slot="ar-button" class="ar-button">
+                📷 Ver en tu espacio
+            </button>
 
-        <!-- Cámara AR -->
-        <a-entity camera></a-entity>
-
-    </a-scene>
+        </model-viewer>
+    </div>
 
 </body>
 
