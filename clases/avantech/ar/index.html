@@ -4,57 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VR Cardboard Android - Modo Resiliente</title>
+    <title>WebAR - Realidad Aumentada en Android</title>
 
-    <!-- 1. Polyfill para habilitar Cardboard/Giroscopio en WebXR -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webxr-polyfill/2.0.3/webxr-polyfill.min.js"></script>
-    <script>
-        // Inicializar el Polyfill antes de A-Frame para forzar visión estereoscópica en Android
-        if (typeof WebXRPolyfill !== 'undefined') {
-            window.polyfill = new WebXRPolyfill();
-        }
-    </script>
-
-    <!-- 2. A-Frame (Versión Estable y ligera) -->
+    <!-- 1. A-Frame (Versión compatible) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+
+    <!-- 2. AR.js para A-Frame (Habilita la cámara del teléfono) -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #000;
-            /* Fondo negro por si la red tarda en renderizar */
         }
     </style>
 </head>
 
-<body>
+<body style="margin: 0px; overflow: hidden;">
 
-    <!-- Escena básica sin assets pesados externos -->
-    <a-scene loading-screen="dotsColor: white; backgroundColor: #111">
+    <!-- Escena configurada para usar la cámara web/móvil con AR.js -->
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
 
-        <!-- Cielo con color sólido en lugar de foto 360° pesada -->
-        <a-sky color="#1A1A2E"></a-sky>
+        <!-- Marcador HIRO: Los objetos 3D aparecerán justo sobre esta marca -->
+        <a-marker preset="hiro">
 
-        <!-- Terreno / Piso de referencia -->
-        <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#16213E"></a-plane>
+            <!-- Cubo giratorio -->
+            <a-box position="-0.5 0.5 0" scale="0.5 0.5 0.5" color="#E94560"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 4000"></a-box>
 
-        <!-- Objetos 3D livianos en escena -->
-        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#E94560"
-            animation="property: rotation; to: 0 405 0; loop: true; dur: 5000"></a-box>
-        <a-sphere position="1 1 -3" radius="0.7" color="#0F3460"></a-sphere> <a-cylinder position="0 0.75 -2"
-            radius="0.3" height="1.5" color="#533E85"></a-cylinder>
+            <!-- Esfera -->
+            <a-sphere position="0.5 0.5 0" radius="0.3" color="#0F3460"></a-sphere>
 
-        <!-- Iluminación básica -->
-        <a-light type="ambient" color="#BBB"></a-light>
-        <a-light type="directional" color="#FFF" intensity="0.6" position="-1 2 1"></a-light>
+            <!-- Cilindro -->
+            <a-cylinder position="0 0.5 -0.5" radius="0.2" height="0.6" color="#533E85"></a-cylinder>
 
-        <!-- Cámara con control de mirada (Cursor/Gaze) útil para Cardboard sin control de mano -->
-        <a-entity id="rig" position="0 1.6 0">
-            <a-camera look-controls>
-                <a-cursor color="#E94560" fuse="true" fuse-timeout="1500" length="10"></a-cursor>
-            </a-camera>
-        </a-entity>
+        </a-marker>
+
+        <!-- Cámara de la escena (apunta a la cámara real del teléfono) -->
+        <a-entity camera></a-entity>
 
     </a-scene>
 
