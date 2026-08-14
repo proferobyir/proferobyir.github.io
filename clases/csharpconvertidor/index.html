@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adaptador C# - Laboratorio (VS2012 / VS2026)</title>
+    <title>Adaptador C# - Compatibilidad VS2012 / VS2026</title>
     <style>
         * {
             box-sizing: border-box;
@@ -34,7 +34,7 @@
         .container {
             display: flex;
             gap: 20px;
-            height: 68vh;
+            height: 65vh;
             margin-top: 20px;
         }
 
@@ -102,8 +102,8 @@
 
         .info-box {
             max-width: 1000px;
-            margin: 15px auto;
-            padding: 12px 15px;
+            margin: 20px auto;
+            padding: 15px;
             background: #f4f4f5;
             border-left: 4px solid #0066cc;
             border-radius: 4px;
@@ -115,8 +115,8 @@
 
 <body>
 
-    <h2>Adaptador C# para Laboratorio</h2>
-    <p class="subtitle">Puente Bidireccional Simétrico entre VS 2012 (C# 5) y VS 2022/2026 (C# 10–13)</p>
+    <h2>Adaptador C# para el Laboratorio</h2>
+    <p class="subtitle">Puente entre Visual Studio 2012 (C# 5) y VS 2022 / 2026 (C# 10–13)</p>
 
     <div class="container">
         <div class="panel">
@@ -140,152 +140,82 @@
     </div>
 
     <div class="info-box">
-        <strong>💡 Conversión Bidireccional:</strong> Ahora puedes convertir de Moderno a Legacy y viceversa sin pérdida
-        de estructura ni llaves mal cerradas.
+        <strong>💡 Recuerda:</strong> Visual Studio 2012 utiliza <strong>C# 5 (.NET Framework 4.5)</strong>.
+        Si traes un proyecto de casa (VS 2022/2026), utiliza el modo <em>"Moderno ➔ Legacy"</em> para adaptar funciones
+        como <code>Primary Constructors</code>, <code>Collection Expressions []</code> o
+        <code>File-Scoped Namespaces</code> antes de compilar en el laboratorio.
     </div>
 
     <script>
         class CSharpLabAdapter {
 
-            // --- DE MODERNO A LEGACY (VS 2012 / C# 5) ---
+            // --- MODO: Convertir sintaxis moderna a VS 2012 (C# 5) ---
             toLegacy(code) {
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir File-scoped namespace a Namespace de bloque
-                result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
-
-                // Asegurar llave de cierre del namespace
-                if (!result.trim().endsWith('}')) {
-                    result += '\n}';
-                }
-
-                // 2. Convertir Primary Constructors a tradicionales
-                // Buscar: class Nombre(parametros) { ... }
-                const primaryCtorRegex = /(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
-                let match;
-                let converted = result;
-
-                while ((match = primaryCtorRegex.exec(result)) !== null) {
-                    const fullMatch = match[0];
-                    const access = match[1] || '';
-                    const className = match[2];
-                    const params = match[3].trim();
-
-                    if (params) {
-                        const paramList = params.split(',').map(p => p.trim()).filter(p => p);
-                        let fields = '';
-                        let assignments = '';
-                        let ctorParams = [];
-
-                        paramList.forEach((p) => {
-                            const parts = p.split(/\s+/);
-                            if (parts.length >= 2) {
-                                const type = parts.slice(0, -1).join(' ');
-                                const name = parts[parts.length - 1];
-                                const propName = name.charAt(0).toUpperCase() + name.slice(1);
-
-                                fields += `        public ${type} ${propName} { get; private set; }\n`;
-                                assignments += `            this.${propName} = ${name};\n`;
-                                ctorParams.push(p);
-                            }
-                        });
-
-                        const newClassDecl = `${access}class ${className}\n    {\n${fields}\n        public ${className}(${ctorParams.join(', ')})\n        {\n${assignments}        }`;
-                        converted = converted.replace(fullMatch, newClassDecl);
-                    }
-                }
-                result = converted;
-
-                // 3. Convertir [] a new List<string>()
-                result = result.replace(/=\s*\[\];/g, '= new List<string>();');
-                result = result.replace(/=\s*\[\]/g, '= new List<string>()');
-
-                // 4. Convertir interpolación a string.Format
-                result = result.replace(/\$"([^"\r\n]*?)"/g, (match, content) => {
+                // 1. Convertir Interpolación de cadenas: $"Hola {nombre}, tienes {edad} años" => string.Format("Hola {0}, tienes {1} años", nombre, edad)
+                result = result.replace(/\$"([^"]*)"/g, (match, content) => {
+                    let vars = [];
                     let index = 0;
-                    const vars = [];
-                    const formatted = content.replace(/\{([^{}]+)\}/g, (m, expr) => {
+                    let newContent = content.replace(/\{([^{}]+)\}/g, (m, expr) => {
                         vars.push(expr.trim());
                         return `{${index++}}`;
                     });
-                    return vars.length > 0 ? `string.Format("${formatted}", ${vars.join(', ')})` : `"${content}"`;
+                    if (vars.length === 0) return `"${content}"`;
+                    return `string.Format("${newContent}", ${vars.join(', ')})`;
                 });
+
+                // 2. Revertir Primary Constructors en clases
+                result = result.replace(/(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\(([^)]+)\)\s*\{/g, (match, vis, className, params) => {
+                    const access = vis ? vis + ' ' : '';
+                    const paramList = params.split(',').map(p => p.trim());
+                    let fields = '';
+                    let assignments = '';
+
+                    paramList.forEach(p => {
+                        const parts = p.split(/\s+/);
+                        const type = parts[0];
+                        const name = parts[parts.length - 1];
+                        const propName = name.charAt(0).toUpperCase() + name.slice(1);
+
+                        fields += `    public ${type} ${propName} { get; private set; }\n`;
+                        assignments += `        this.${propName} = ${name};\n`;
+                    });
+
+                    const constructor = `\n    public ${className}(${params})\n    {\n${assignments}    }`;
+                    return `${access}class ${className}\n{\n${fields}${constructor}`;
+                });
+
+                // 3. Revertir Collection Expressions: = [] => = new List<dynamic>()
+                result = result.replace(/=\s*\[\];/g, '= new List<dynamic>(); // Adapta el tipo genérico si es necesario');
+
+                // 4. Revertir File-scoped namespace: namespace App;
+                if (/^namespace\s+([A-Za-z0-9_.]+);/m.test(result)) {
+                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+);/m, 'namespace $1\n{');
+                    // Indentar el contenido restando el namespace
+                    let lines = result.split('\n');
+                    result = lines.map((line, idx) => idx > 1 ? '    ' + line : line).join('\n') + '\n}';
+                }
 
                 return result;
             }
 
-            // --- DE LEGACY (VS 2012 / C# 5) A MODERNO ---
+            // --- MODO: Convertir VS 2012 a Moderno (2022/2026) ---
             toModern(code) {
                 if (!code) return '';
                 let result = code;
 
-                // 1. Convertir namespace con llaves a file-scoped
-                const namespaceMatch = result.match(/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m);
-                if (namespaceMatch) {
-                    result = result.replace(/^namespace\s+([A-Za-z0-9_.]+)\s*\{/m, 'namespace $1;');
-                    // Eliminar la llave de cierre del namespace
-                    const lines = result.split('\n');
-                    if (lines[lines.length - 1].trim() === '}') {
-                        lines.pop();
-                        result = lines.join('\n');
-                    }
-                }
+                // 1. Reemplazar instanciaciones vacías por []
+                result = result.replace(/new\s+List<[^>]+>\(\)/g, '[]');
+                result = result.replace(/(?:Array|Enumerable)\.Empty<[^>]+>\(\)/g, '[]');
 
-                // 2. Buscar constructores tradicionales y convertirlos a Primary Constructors
-                const classMatch = result.match(/(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\{/);
-                if (classMatch) {
-                    const className = classMatch[2];
-
-                    // Buscar el constructor
-                    const ctorRegex = new RegExp(
-                        `public\\s+${className}\\s*\\(([^)]*)\\)\\s*\\{[\\s\\S]*?\\}`,
-                        'g'
-                    );
-                    const ctorMatch = ctorRegex.exec(result);
-
-                    if (ctorMatch) {
-                        const params = ctorMatch[1].trim();
-                        if (params) {
-                            // Verificar que el constructor asigna propiedades
-                            const hasAssignments = /this\.[A-Za-z0-9_]+\s*=\s*[A-Za-z0-9_]+;/.test(ctorMatch[0]);
-                            if (hasAssignments) {
-                                // Eliminar campos y constructor
-                                result = result.replace(/public\s+[A-Za-z0-9_.]+\s+[A-Za-z0-9_]+\s*\{\s*get;\s*private\s+set;\s*\}/g, '');
-                                result = result.replace(ctorRegex, '');
-
-                                // Actualizar declaración de clase
-                                result = result.replace(
-                                    /(public|private|internal|protected)?\s*class\s+([A-Za-z0-9_]+)\s*\{/,
-                                    `$1 class $2(${params})\n{`
-                                );
-                            }
-                        }
-                    }
-                }
-
-                // 3. Convertir new List<T>() a []
-                result = result.replace(/new\s+List<[^>]+>\s*\(\s*\)/g, '[]');
-
-                // 4. Convertir string.Format a interpolación
-                result = result.replace(
-                    /string\.Format\(\s*"([^"]+)"\s*,\s*([^)]+)\)/g,
-                    (match, format, args) => {
-                        const argList = args.split(',').map(a => a.trim());
-                        let interpolated = format;
-                        argList.forEach((arg, index) => {
-                            interpolated = interpolated.replace(
-                                new RegExp(`\\{${index}\\}`, 'g'),
-                                `{${arg}}`
-                            );
-                        });
-                        return `$"${interpolated}"`;
-                    }
-                );
-
-                // 5. Limpiar espacios
-                result = result.replace(/\n\s*\n\s*\n/g, '\n\n');
-                result = result.trim();
+                // 2. Convertir Namespace de bloque a File-scoped namespace
+                result = result.replace(/namespace\s+([A-Za-z0-9_.]+)\s*\{([\s\S]*)\}\s*$/, (m, ns, body) => {
+                    // Remover un nivel de indentación
+                    const unindentedBody = body.replace(/^    /gm, '').trim();
+                    return `namespace ${ns};\n\n${unindentedBody}`;
+                });
 
                 return result;
             }
@@ -298,38 +228,26 @@
             const selectEl = document.getElementById('modeSelect');
             const btn = document.getElementById('btnConvert');
 
-            // Código de ejemplo mejorado
-            inputEl.value = `namespace MiProyecto;
+            // Ejemplo de prueba inicial
+            inputEl.value =
+                `namespace MiProyecto;
 
 public class Estudiante(string nombre, int edad)
 {
     public void Mostrar()
     {
         var notas = [];
-        var mensaje = $"Hola {nombre}, tu edad es {edad}";
-        Console.WriteLine(mensaje);
+        var mensaje = $"Nombre: {nombre}, Edad: {edad}";
     }
 }`;
 
             btn.addEventListener('click', () => {
-                try {
-                    if (selectEl.value === 'toLegacy') {
-                        outputEl.value = adapter.toLegacy(inputEl.value);
-                    } else {
-                        outputEl.value = adapter.toModern(inputEl.value);
-                    }
-                } catch (error) {
-                    outputEl.value = '❌ Error en la conversión: ' + error.message;
+                if (selectEl.value === 'toLegacy') {
+                    outputEl.value = adapter.toLegacy(inputEl.value);
+                } else {
+                    outputEl.value = adapter.toModern(inputEl.value);
                 }
             });
-
-            // Auto-convertir al cambiar el modo
-            selectEl.addEventListener('change', () => {
-                btn.click();
-            });
-
-            // Ejecutar conversión inicial
-            setTimeout(() => btn.click(), 100);
         });
     </script>
 </body>
