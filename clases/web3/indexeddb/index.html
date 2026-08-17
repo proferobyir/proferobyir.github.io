@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Académico: Dominando IndexedDB</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #000;
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #1a1a1a;
+        }
+
+        .theory-box {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-left: 5px solid #27c93f;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .carbon-box {
+            background-color: #1a1a1a;
+            color: #d1d1d1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .carbon-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        code {
+            color: #f8f8f2;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            pre {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Guía Académica Completa: IndexedDB para PWAs</h1>
+
+        <div class="theory-box">
+            <h2>¿Qué es IndexedDB y qué es un ObjectStore?</h2>
+            <p><strong>IndexedDB</strong> es una base de datos NoSQL transaccional del lado del cliente integrada en el
+                navegador. Permite almacenar grandes volúmenes de datos estructurados de forma asíncrona.</p>
+            <p>Un <strong>ObjectStore</strong> actúa de forma similar a una "tabla" en bases de datos relacionales. Es
+                el contenedor donde se organizan los registros (objetos JavaScript) dentro de la base de datos.</p>
+        </div>
+
+        <h2>Sección 1: Inicialización y Conexión Base</h2>
+        <p>Abre una solicitud a la base de datos y maneja eventos clave como <code>onupgradeneeded</code>.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>const request = indexedDB.open("EscuelaDB", 1);
+let db;
+
+request.onupgradeneeded = (e) => {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains("alumnos")) {
+    db.createObjectStore("alumnos", { keyPath: "id" });
+  }
+};
+
+request.onsuccess = (e) => {
+  db = e.target.result;
+  console.log("1. Conexión exitosa a IndexedDB");
+};</code></pre>
+        </div>
+
+        <h2>Sección 2: Inserción de Datos (Método .add)</h2>
+        <p>Inserta un nuevo registro asegurando que no se sobrescriba uno existente.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function agregarAlumno(alumno) {
+  const trans = db.transaction(["alumnos"], "readwrite");
+  const store = trans.objectStore("alumnos");
+  const req = store.add(alumno); // Falla si el id ya existe
+
+  req.onsuccess = () => console.log("2. Alumno agregado correctamente");
+  req.onerror = (e) => console.error("Error al agregar:", e.target.error);
+}</code></pre>
+        </div>
+
+        <h2>Sección 3: Inserción o Actualización (Método .put)</h2>
+        <p>Inserta un registro nuevo o lo actualiza si la clave primaria ya existe.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function guardarOActualizar(alumno) {
+  const trans = db.transaction(["alumnos"], "readwrite");
+  const store = trans.objectStore("alumnos");
+  store.put(alumno); // Inserta o actualiza automáticamente
+
+  trans.oncomplete = () => console.log("3. Operación .put completada con éxito");
+}</code></pre>
+        </div>
+
+        <h2>Sección 4: Lectura de un Registro por Clave (.get)</h2>
+        <p>Recupera un objeto específico usando su clave primaria única.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function obtenerAlumno(id) {
+  const trans = db.transaction(["alumnos"], "readonly");
+  const store = trans.objectStore("alumnos");
+  const req = store.get(id);
+
+  req.onsuccess = (e) => {
+    const resultado = e.target.result;
+    if (resultado) {
+      console.log("4. Alumno encontrado:", resultado);
+    } else {
+      console.log("4. No existe un registro con ese ID");
+    }
+  };
+}</code></pre>
+        </div>
+
+        <h2>Sección 5: Listar Todos los Registros (.getAll)</h2>
+        <p>Obtiene una copia completa de todos los elementos almacenados en el ObjectStore.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function listarTodos() {
+  const trans = db.transaction(["alumnos"], "readonly");
+  const store = trans.objectStore("alumnos");
+  const req = store.getAll();
+
+  req.onsuccess = (e) => {
+    console.log("5. Listado completo de alumnos:", e.target.result);
+  };
+}</code></pre>
+        </div>
+
+        <h2>Sección 6: Eliminación de un Registro (.delete)</h2>
+        <p>Borra un registro individual utilizando su identificador único.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function eliminarAlumno(id) {
+  const trans = db.transaction(["alumnos"], "readwrite");
+  const store = trans.objectStore("alumnos");
+  const req = store.delete(id);
+
+  req.onsuccess = () => console.log(`6. Alumno con ID ${id} eliminado con éxito`);
+}</code></pre>
+        </div>
+
+        <h2>Sección 7: Uso de Cursores para Iterar Registros</h2>
+        <p>Recorre los elementos uno a uno de forma eficiente sin cargar todo en memoria a la vez.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function iterarConCursor() {
+  const trans = db.transaction(["alumnos"], "readonly");
+  const store = trans.objectStore("alumnos");
+  const request = store.openCursor();
+
+  request.onsuccess = (e) => {
+    const cursor = e.target.result;
+    if (cursor) {
+      console.log("7. Cursor leyendo ID:", cursor.key, "Datos:", cursor.value);
+      cursor.continue(); // Avanza al siguiente registro
+    } else {
+      console.log("7. Fin del recorrido con cursor.");
+    }
+  };
+}</code></pre>
+        </div>
+
+        <h2>Sección 8: Creación y Consulta por Índices</h2>
+        <p>Permite buscar registros mediante propiedades secundarias (por ejemplo, el campo <code>email</code>).</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>// Nota: El índice se crea en onupgradeneeded:
+// store.createIndex("email_idx", "email", { unique: true });
+
+function buscarPorEmail(emailBuscado) {
+  const trans = db.transaction(["alumnos"], "readonly");
+  const store = trans.objectStore("alumnos");
+  const index = store.index("email_idx");
+  const req = index.get(emailBuscado);
+
+  req.onsuccess = (e) => {
+    console.log("8. Búsqueda por índice de email:", e.target.result);
+  };
+}</code></pre>
+        </div>
+
+        <h2>Sección 9: Limpiar Todo el ObjectStore (.clear)</h2>
+        <p>Elimina masivamente todos los registros contenidos dentro del almacén.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function vaciarBaseDeDatos() {
+  const trans = db.transaction(["alumnos"], "readwrite");
+  const store = trans.objectStore("alumnos");
+  const req = store.clear();
+
+  req.onsuccess = () => console.log("9. Todos los registros han sido borrados.");
+}</code></pre>
+        </div>
+
+        <h2>Sección 10: Manejo de Errores y Eventos de Transacción</h2>
+        <p>Monitorea cuando una transacción finaliza por completo o si ocurre algún fallo global.</p>
+        <div class="carbon-box">
+            <div class="carbon-header">
+                <div class="dot" style="background-color: #ff5f56;"></div>
+                <div class="dot" style="background-color: #ffbd2e;"></div>
+                <div class="dot" style="background-color: #27c93f;"></div>
+            </div>
+            <pre><code>function transaccionSegura(nuevoAlumno) {
+  const trans = db.transaction(["alumnos"], "readwrite");
+  const store = trans.objectStore("alumnos");
+
+  store.put(nuevoAlumno);
+
+  trans.oncomplete = () => {
+    console.log("10. Transacción completada con éxito en la capa de persistencia.");
+  };
+
+  trans.onerror = (e) => {
+    console.error("10. Error crítico en la transacción:", e.target.error);
+  };
+}</code></pre>
+        </div>
+    </div>
+</body>
+
+</html>
