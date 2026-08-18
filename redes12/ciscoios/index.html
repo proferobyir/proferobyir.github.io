@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+            background-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #000000;
+            line-height: 1.6;
+        }
+
+        h1 {
+            border-bottom: 2px solid #000;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        .carbon-box {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Estilos de tabla centrada y con bordes negros */
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            border: 2px solid #000;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #e0e0e0;
+            border-bottom: 2px solid #000;
+        }
+
+        .explanation {
+            background-color: #e7f3fe;
+            padding: 15px;
+            border-left: 5px solid #2196F3;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Guía Introductoria: Cisco IOS</h1>
+
+    <h2>¿Qué es Cisco IOS?</h2>
+    <p>Cisco IOS es el sistema operativo que ejecutan dispositivos Cisco como routers y switches, basado en una
+        <strong>Línea de Comandos (CLI)</strong>.</p>
+
+    <ul>
+        <li><strong>Modo Usuario (<code>Router></code>):</strong> Solo lectura.</li>
+        <li><strong>Modo Privilegiado (<code>Router#</code>):</strong> Diagnósticos (<code>enable</code>).</li>
+        <li><strong>Modo de Configuración Global (<code>Router(config)#</code>):</strong> Cambios
+            (<code>configure terminal</code>).</li>
+    </ul>
+
+    <h2>Configuración de Routers</h2>
+    <div class="carbon-box">
+        <pre>Router# configure terminal
+Router(config)# interface GigabitEthernet 0/0
+R1(config-if)# ip address 192.168.1.1 255.255.255.0
+R1(config-if)# no shutdown
+R1(config-if)# exit</pre>
+    </div>
+
+    <h2>VLANs en Switches: Concepto de Acceso</h2>
+    <div class="explanation">
+        <p><strong>¿Cómo "sabe" el switch a qué VLAN pertenece un puerto?</strong></p>
+        <p>Para asignar un puerto a una VLAN, el switch utiliza dos comandos clave:</p>
+        <ul>
+            <li><code>switchport mode access</code>: Indica que el puerto se conectará a un dispositivo final.</li>
+            <li><code>switchport access vlan X</code>: Es la "etiqueta" que le ponemos al puerto.</li>
+        </ul>
+        <p>El switch almacena en su memoria interna una tabla que asocia el número de puerto físico con el ID de la
+            VLAN.</p>
+    </div>
+
+    <h2>Configuración de 3 VLANs y Asignación de Puertos</h2>
+    <div class="carbon-box">
+        <pre>! 1. Crear las VLANs
+Switch(config)# vlan 10
+Switch(config-vlan)# name VENTAS
+Switch(config-vlan)# exit
+Switch(config)# vlan 20
+Switch(config-vlan)# name RRHH
+Switch(config-vlan)# exit
+Switch(config)# vlan 30
+Switch(config-vlan)# name IT
+Switch(config-vlan)# exit
+
+! 2. Asignar los rangos de puertos
+Switch(config)# interface range fastEthernet 0/1 - 8
+Switch(config-if-range)# switchport mode access
+Switch(config-if-range)# switchport access vlan 10
+Switch(config-if-range)# exit
+
+Switch(config)# interface range fastEthernet 0/9 - 16
+Switch(config-if-range)# switchport mode access
+Switch(config-if-range)# switchport access vlan 20
+Switch(config-if-range)# exit
+
+Switch(config)# interface range fastEthernet 0/17 - 24
+Switch(config-if-range)# switchport mode access
+Switch(config-if-range)# switchport access vlan 30
+Switch(config-if-range)# exit</pre>
+    </div>
+
+    <h2>Resumen de Comandos Frecuentes</h2>
+    <table>
+        <tr>
+            <th>Comando</th>
+            <th>Descripción</th>
+        </tr>
+        <tr>
+            <td><code>enable</code></td>
+            <td>Accede al modo privilegiado.</td>
+        </tr>
+        <tr>
+            <td><code>configure terminal</code></td>
+            <td>Entra al modo de configuración global.</td>
+        </tr>
+        <tr>
+            <td><code>show ip interface brief</code></td>
+            <td>Muestra el estado de las interfaces.</td>
+        </tr>
+        <tr>
+            <td><code>show vlan brief</code></td>
+            <td>Lista las VLANs creadas y sus puertos asignados.</td>
+        </tr>
+        <tr>
+            <td><code>copy running-config startup-config</code></td>
+            <td>Guarda la configuración actual en la memoria NVRAM (evita pérdida al reiniciar).</td>
+        </tr>
+        <tr>
+            <td><code>no shutdown</code></td>
+            <td>Activa una interfaz que está apagada.</td>
+        </tr>
+    </table>
+</body>
+
+</html>
