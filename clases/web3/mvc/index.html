@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,8 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      font-size: 1.25rem; /* ~20px para excelente legibilidad en mayores de 45 años */
+      font-size: 1.25rem;
+      /* ~20px para excelente legibilidad */
       line-height: 1.6;
       padding: 1rem;
       max-width: 900px;
@@ -46,7 +48,8 @@
       margin-bottom: 1rem;
     }
 
-    ul, ol {
+    ul,
+    ol {
       margin-left: 1.5rem;
       margin-bottom: 1rem;
     }
@@ -55,17 +58,15 @@
       margin-bottom: 0.5rem;
     }
 
-    /* Bloques destacados con borde de 3px a la izquierda y border-radius de 20px */
     .callout {
       border-left: 3px solid var(--border-color);
       border-radius: 20px;
       padding: 1.25rem;
       margin: 1.5rem 0;
       background-color: #fdfdfd;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    /* Estilo de bloques de código (Tema Carbon) */
     .code-block {
       background-color: var(--code-bg);
       color: var(--code-text);
@@ -93,7 +94,6 @@
       word-break: break-word;
     }
 
-    /* Tabla responsiva */
     .table-container {
       overflow-x: auto;
       margin: 1.5rem 0;
@@ -106,7 +106,8 @@
       font-size: 1.1rem;
     }
 
-    th, td {
+    th,
+    td {
       padding: 0.75rem;
       border: 1px solid #ddd;
     }
@@ -117,13 +118,12 @@
       font-weight: bold;
     }
 
-    /* Adaptación específica para pantallas pequeñas */
     @media (max-width: 600px) {
       body {
         font-size: 1.15rem;
         padding: 0.75rem;
       }
-      
+
       h1 {
         font-size: 1.6rem;
       }
@@ -138,18 +138,20 @@
     }
   </style>
 </head>
+
 <body>
 
   <h1>Tutorial: API RESTful con Node.js, Express y MySQL (Patrón MVC)</h1>
 
   <div class="callout">
-    <p><strong>Objetivo:</strong> Construir una API estructurada profesionalmente con separación de responsabilidades usando el patrón Modelo-Vista-Controlador.</p>
+    <p><strong>Objetivo:</strong> Construir una API estructurada profesionalmente con separación de responsabilidades
+      usando el patrón Modelo-Vista-Controlador y módulos ES.</p>
   </div>
 
   <h2>Requisitos Previos</h2>
   <ul>
     <li>Node.js instalado en el sistema.</li>
-    <li>Servidor MySQL activo (XAMPP, workbench o contenedor).</li>
+    <li>Servidor MySQL activo (XAMPP, Workbench o contenedor).</li>
   </ul>
 
   <h2>Paso 1: Configuración del Proyecto</h2>
@@ -157,21 +159,34 @@
 
   <div class="code-block">
     <div class="code-header">Terminal / Bash</div>
-<pre>mkdir api-express-mysql
+    <pre>mkdir api-express-mysql
 cd api-express-mysql
 npm init -y
 npm install express mysql2 dotenv cors
 npm install --save-dev nodemon</pre>
   </div>
 
-  <p>Configura el archivo <code>package.json</code> para habilitar la recarga automática:</p>
+  <p>Configura el archivo <code>package.json</code> añadiendo <code>"type": "module"</code> para habilitar los imports
+    modernos:</p>
 
   <div class="code-block">
     <div class="code-header">JSON (package.json)</div>
-<pre>{
+    <pre>{
+  "name": "api-express-mysql",
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.23.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }</pre>
   </div>
@@ -181,7 +196,7 @@ npm install --save-dev nodemon</pre>
 
   <div class="code-block">
     <div class="code-header">SQL</div>
-<pre>CREATE DATABASE IF NOT EXISTS tienda_db;
+    <pre>CREATE DATABASE IF NOT EXISTS tienda_db;
 USE tienda_db;
 
 CREATE TABLE IF NOT EXISTS productos (
@@ -215,19 +230,22 @@ api-express-mysql/
 
   <div class="code-block">
     <div class="code-header">Variables de Entorno (.env)</div>
-<pre>PORT=3000
+    <pre>PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
 DB_NAME=tienda_db</pre>
   </div>
 
-  <p>Configura el conector de MySQL con promesas en <code>src/config/db.js</code>:</p>
+  <p>Configura el conector de MySQL con promesas en <code>src/config/db.js</code> usando <code>export default</code>:
+  </p>
 
   <div class="code-block">
     <div class="code-header">JavaScript (src/config/db.js)</div>
-<pre>const mysql = require('mysql2/promise');
-require('dotenv').config();
+    <pre>import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -239,19 +257,20 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-module.exports = pool;</pre>
+export default pool;</pre>
   </div>
 
   <h2>Paso 4: Capa de Modelo</h2>
   <div class="callout">
-    <p>El <strong>Modelo</strong> maneja de forma exclusiva las consultas de lectura y escritura directo en la base de datos MySQL.</p>
+    <p>El <strong>Modelo</strong> maneja de forma exclusiva las consultas de lectura y escritura directo en la base de
+      datos MySQL.</p>
   </div>
 
   <div class="code-block">
     <div class="code-header">JavaScript (src/models/productModel.js)</div>
-<pre>const db = require('../config/db');
+    <pre>import db from '../config/db.js';
 
-const ProductModel = {
+export const ProductModel = {
   findAll: async () => {
     const [rows] = await db.query('SELECT * FROM productos');
     return rows;
@@ -284,21 +303,20 @@ const ProductModel = {
     const [result] = await db.query('DELETE FROM productos WHERE id = ?', [id]);
     return result.affectedRows > 0;
   }
-};
-
-module.exports = ProductModel;</pre>
+};</pre>
   </div>
 
   <h2>Paso 5: Capa de Controlador</h2>
   <div class="callout">
-    <p>El <strong>Controlador</strong> procesa las peticiones, valida entradas, invoca al Modelo y devuelve el código de estado HTTP adecuado.</p>
+    <p>El <strong>Controlador</strong> procesa las peticiones, valida entradas, invoca al Modelo y devuelve el código de
+      estado HTTP adecuado.</p>
   </div>
 
   <div class="code-block">
     <div class="code-header">JavaScript (src/controllers/productController.js)</div>
-<pre>const ProductModel = require('../models/productModel');
+    <pre>import { ProductModel } from '../models/productModel.js';
 
-const getProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   try {
     const products = await ProductModel.findAll();
     res.status(200).json({ success: true, data: products });
@@ -307,7 +325,7 @@ const getProducts = async (req, res) => {
   }
 };
 
-const getProductById = async (req, res) => {
+export const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await ProductModel.findById(id);
@@ -322,7 +340,7 @@ const getProductById = async (req, res) => {
   }
 };
 
-const createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
     const { nombre, precio } = req.body;
 
@@ -337,7 +355,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre, precio } = req.body;
@@ -354,7 +372,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await ProductModel.delete(id);
@@ -367,14 +385,6 @@ const deleteProduct = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error al eliminar' });
   }
-};
-
-module.exports = {
-  getProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct
 };</pre>
   </div>
 
@@ -382,28 +392,36 @@ module.exports = {
 
   <div class="code-block">
     <div class="code-header">JavaScript (src/routes/productRoutes.js)</div>
-<pre>const express = require('express');
-const router = express.Router();
-const productController = require('../controllers/productController');
+    <pre>import { Router } from 'express';
+import { 
+  getProducts, 
+  getProductById, 
+  createProduct, 
+  updateProduct, 
+  deleteProduct 
+} from '../controllers/productController.js';
 
-router.get('/', productController.getProducts);
-router.get('/:id', productController.getProductById);
-router.post('/', productController.createProduct);
-router.put('/:id', productController.updateProduct);
-router.delete('/:id', productController.deleteProduct);
+const router = Router();
 
-module.exports = router;</pre>
+router.get('/', getProducts);
+router.get('/:id', getProductById);
+router.post('/', createProduct);
+router.put('/:id', updateProduct);
+router.delete('/:id', deleteProduct);
+
+export default router;</pre>
   </div>
 
   <h2>Paso 7: Servidor Principal</h2>
 
   <div class="code-block">
     <div class="code-header">JavaScript (src/app.js)</div>
-<pre>const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+    <pre>import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import productRoutes from './routes/productRoutes.js';
 
-const productRoutes = require('./routes/productRoutes');
+dotenv.config();
 
 const app = express();
 
@@ -464,4 +482,5 @@ app.listen(PORT, () => {
   </div>
 
 </body>
+
 </html>
