@@ -4,16 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modelo TCP/IP - Guía Didáctica</title>
+    <title>Modelo TCP/IP - Guía Didáctica e Interactiva</title>
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #111111;
-            --card-bg: #f9f9f9;
-            --border-color: #e0e0e0;
-            --accent-color: #0056b3;
-            --carbon-bg: #1c1c1c;
-            --carbon-text: #f8f8f2;
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --accent-color: #2563eb;
+            --carbon-bg: #0f172a;
+            --carbon-text: #f8fafc;
+
+            /* Colores temáticos por capa para facilitar el aprendizaje visual */
+            --layer-app: #e0f2fe;
+            --layer-app-border: #0284c7;
+            --layer-trans: #f0fdf4;
+            --layer-trans-border: #16a34a;
+            --layer-net: #fff7ed;
+            --layer-net-border: #ea580c;
+            --layer-access: #fef2f2;
+            --layer-access-border: #dc2626;
         }
 
         * {
@@ -33,17 +43,21 @@
         header {
             text-align: center;
             margin-bottom: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         header h1 {
             font-size: 2.2rem;
             margin-bottom: 0.5rem;
             font-weight: 800;
+            color: #1e293b;
         }
 
         header p {
             font-size: 1.1rem;
-            color: #555555;
+            color: #64748b;
         }
 
         .container {
@@ -60,6 +74,7 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .info-block h2 {
@@ -68,11 +83,14 @@
             color: var(--text-color);
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .info-block p {
             font-size: 1rem;
-            color: #333333;
+            color: #334155;
             margin-bottom: 1rem;
         }
 
@@ -84,19 +102,28 @@
         .info-block li {
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
+            color: #334155;
         }
 
         /* Tarjetas de Capa */
         .layer-card {
             background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             padding: 1.75rem;
             display: flex;
             flex-direction: column;
             gap: 1.25rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Identificadores visuales específicos por capa */
+        .layer-card.app { border-left: 8px solid var(--layer-app-border); }
+        .layer-card.trans { border-left: 8px solid var(--layer-trans-border); }
+        .layer-card.net { border-left: 8px solid var(--layer-net-border); }
+        .layer-card.access { border-left: 8px solid var(--layer-access-border); }
 
         .layer-top {
             display: flex;
@@ -106,46 +133,46 @@
 
         .layer-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         .layer-icon {
             flex-shrink: 0;
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #ffffff;
-            border-radius: 10px;
+            background: #f1f5f9;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
         }
 
         .layer-icon svg {
-            width: 28px;
-            height: 28px;
-            fill: var(--text-color);
+            width: 30px;
+            height: 30px;
+            fill: #334155;
         }
 
         .layer-content h2 {
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             margin-bottom: 0.3rem;
             color: var(--text-color);
         }
 
         .layer-content .layer-number {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #666666;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            letter-spacing: 1.2px;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
             display: block;
         }
 
         .layer-content p {
             font-size: 0.98rem;
-            color: #333333;
+            color: #475569;
             margin-bottom: 0.75rem;
         }
 
@@ -165,18 +192,33 @@
         }
 
         .protocol-tag {
-            background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 0.25rem 0.65rem;
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 0.3rem 0.7rem;
             border-radius: 6px;
             font-size: 0.82rem;
             font-weight: 600;
-            color: #222222;
+            color: #1e293b;
+        }
+
+        /* Analogía Didáctica (Badges informativos) */
+        .analogy-box {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--accent-color);
+            padding: 0.8rem 1rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: #334155;
+            margin-top: 0.5rem;
+        }
+
+        .analogy-box strong {
+            color: var(--accent-color);
         }
 
         /* Estilo para desglose de estándares */
         .standards-detail {
-            background-color: #ffffff;
+            background-color: #f8fafc;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.25rem;
@@ -197,31 +239,71 @@
         .standards-detail li {
             font-size: 0.9rem;
             margin-bottom: 0.6rem;
-            color: #444444;
+            color: #475569;
         }
 
         .standards-detail li:last-child {
             margin-bottom: 0;
         }
 
-        /* Estilo Tema Carbon */
+        /* Estilo Tema Carbon / Terminal */
         .carbon-code {
             background-color: var(--carbon-bg);
             color: var(--carbon-text);
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            font-size: 0.88rem;
+            font-family: 'Consolas', 'Fira Code', 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
             padding: 1.25rem;
             border-radius: 8px;
             margin: 1rem 0;
             white-space: pre-wrap;
             word-break: break-all;
-            border: 1px solid #2d2d2d;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            line-height: 1.5;
         }
 
-        .carbon-code .comment { color: #75715e; font-style: italic; }
-        .carbon-code .cmd { color: #a6e22e; font-weight: bold; }
-        .carbon-code .flag { color: #66d9ef; }
+        .carbon-code .comment { color: #64748b; font-style: italic; }
+        .carbon-code .cmd { color: #38bdf8; font-weight: bold; }
+        .carbon-code .flag { color: #f43f5e; }
+        .carbon-code .output { color: #a3e635; }
+
+        /* Esquema Didáctico de Encapsulamiento */
+        .pdu-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .pdu-step {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pdu-header {
+            padding: 0.6rem 0.8rem;
+            color: #ffffff;
+            text-align: center;
+            min-width: 110px;
+        }
+
+        .pdu-body {
+            padding: 0.6rem 1rem;
+            background-color: #f1f5f9;
+            flex-grow: 1;
+            color: #334155;
+        }
+
+        .bg-app { background-color: var(--layer-app-border); }
+        .bg-trans { background-color: var(--layer-trans-border); }
+        .bg-net { background-color: var(--layer-net-border); }
+        .bg-access { background-color: var(--layer-access-border); }
 
         @media (max-width: 600px) {
             .layer-top {
@@ -233,6 +315,15 @@
             .protocols {
                 justify-content: center;
             }
+
+            .pdu-step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .pdu-header {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -241,24 +332,24 @@
 
     <header>
         <h1>Modelo TCP/IP: Arquitectura y Protocolos</h1>
-        <p>Estructura de la pila de comunicación, flujo de datos y comandos de diagnóstico</p>
+        <p>Guía de aprendizaje interactiva sobre la pila de comunicación, el viaje de los datos y diagnósticos de red</p>
     </header>
 
     <main class="container">
 
         <!-- Contexto Histórico -->
         <section class="info-block">
-            <h2>1. Origen y Necesidad del Modelo TCP/IP</h2>
-            <p>A finales de la década de 1960, la agencia <strong>DARPA</strong> creó <strong>ARPANET</strong> para resolver la interoperabilidad de redes:</p>
+            <h2>🌐 1. Origen y Necesidad del Modelo TCP/IP</h2>
+            <p>A finales de la década de 1960, la agencia <strong>DARPA</strong> (Departamento de Defensa de EE. UU.) financió la creación de <strong>ARPANET</strong> para resolver dos grandes problemas de la época:</p>
             <ul>
-                <li><strong>Incompatibilidad de fabricantes:</strong> Los sistemas propietarios no podían comunicarse entre sí.</li>
-                <li><strong>Vulnerabilidad de redes centralizadas:</strong> La conmutación de circuitos requería una ruta fija susceptible a cortes.</li>
+                <li><strong>Incompatibilidad de fabricantes:</strong> Los computadores de distintas marcas no podían intercambiar datos porque usaban arquitecturas cerradas y propietarias.</li>
+                <li><strong>Vulnerabilidad de redes centralizadas:</strong> La conmutación de circuitos antigua requería un canal de comunicación fijo; si un nodo caía, toda la red colapsaba.</li>
             </ul>
-            <p><strong>Conmutación de paquetes:</strong> La información se divide en unidades independientes que buscan dinámicamente la mejor ruta hacia el destino.</p>
+            <p><strong>La solución: Conmutación de paquetes.</strong> La información se fragmenta en trozos independientes (paquetes). Cada uno viaja de forma dinámica por la red buscando la mejor ruta y se reensamblan al llegar al destino.</p>
         </section>
 
         <!-- Capa 4: Aplicación -->
-        <div class="layer-card">
+        <div class="layer-card app">
             <div class="layer-top">
                 <div class="layer-icon">
                     <svg viewBox="0 0 24 24">
@@ -266,44 +357,50 @@
                     </svg>
                 </div>
                 <div class="layer-content">
-                    <span class="layer-number">Capa 4 — Datos</span>
-                    <h2>Aplicación</h2>
-                    <p>Interfaces y servicios de red directos para las aplicaciones de usuario.</p>
+                    <span class="layer-number">Capa 4 — Unidad de Datos: Datos Puros</span>
+                    <h2>Capa de Aplicación</h2>
+                    <p>Proporciona la interfaz de acceso a la red directamente a los programas de software que utiliza el usuario final.</p>
                     <div class="protocols">
                         <span class="protocol-tag">HTTP (80)</span>
                         <span class="protocol-tag">HTTPS (443)</span>
-                        <span class="protocol-tag">MySQL (3306)</span>
                         <span class="protocol-tag">DNS (53)</span>
                         <span class="protocol-tag">SSH (22)</span>
+                        <span class="protocol-tag">MySQL (3306)</span>
+                    </div>
+                    <div class="analogy-box">
+                        <strong>💡 Analogía Postal:</strong> Es el contenido de la carta que escribes (el mensaje que quieres enviar).
                     </div>
                 </div>
             </div>
-            <img src="./imagenes/aplicacion.jpg" alt="Capa Aplicación">
+            <img src="./imagenes/aplicacion.jpg" alt="Capa Aplicación - Interfaz de Usuario">
         </div>
 
         <!-- Capa 3: Transporte -->
-        <div class="layer-card">
+        <div class="layer-card trans">
             <div class="layer-top">
                 <div class="layer-icon">
                     <svg viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                        <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
                     </svg>
                 </div>
                 <div class="layer-content">
-                    <span class="layer-number">Capa 3 — Segmentos / Datagramas</span>
-                    <h2>Transporte</h2>
-                    <p>Comunicación extremo a extremo entre procesos de software mediante puertos lógicos.</p>
+                    <span class="layer-number">Capa 3 — Unidad de Datos: Segmento (TCP) / Datagrama (UDP)</span>
+                    <h2>Capa de Transporte</h2>
+                    <p>Gestiona la comunicación extremo a extremo entre procesos de software mediante <strong>puertos lógicos</strong> (ej. puerto 80 para web, 22 para terminal).</p>
                     <div class="protocols">
-                        <span class="protocol-tag">TCP (Orientado a conexión / Fiable)</span>
-                        <span class="protocol-tag">UDP (Sin conexión / Rápido)</span>
+                        <span class="protocol-tag">TCP (Orientado a conexión / Confiable)</span>
+                        <span class="protocol-tag">UDP (Sin conexión / Ultra rápido)</span>
+                    </div>
+                    <div class="analogy-box">
+                        <strong>💡 Analogía Postal:</strong> Meter la carta dentro de un sobre etiquetado con el número de departamento exacto (Puerto).
                     </div>
                 </div>
             </div>
-            <img src="./imagenes/transporte.jpg" alt="Capa Transporte">
+            <img src="./imagenes/transporte.jpg" alt="Capa Transporte - Puertos y Conexión">
         </div>
 
         <!-- Capa 2: Internet -->
-        <div class="layer-card">
+        <div class="layer-card net">
             <div class="layer-top">
                 <div class="layer-icon">
                     <svg viewBox="0 0 24 24">
@@ -311,22 +408,25 @@
                     </svg>
                 </div>
                 <div class="layer-content">
-                    <span class="layer-number">Capa 2 — Paquetes</span>
-                    <h2>Internet</h2>
-                    <p>Direccionamiento lógico IP y determinación de rutas a través de routers.</p>
+                    <span class="layer-number">Capa 2 — Unidad de Datos: Paquete</span>
+                    <h2>Capa de Internet</h2>
+                    <p>Asigna las direcciones lógicas origen y destino (<strong>IP</strong>) y determina la mejor ruta para atravesar distintas redes intermedias (Enrutamiento).</p>
                     <div class="protocols">
                         <span class="protocol-tag">IPv4</span>
                         <span class="protocol-tag">IPv6</span>
-                        <span class="protocol-tag">ICMP</span>
-                        <span class="protocol-tag">ARP</span>
+                        <span class="protocol-tag">ICMP (Diagnóstico)</span>
+                        <span class="protocol-tag">ARP (Traducción IP a MAC)</span>
+                    </div>
+                    <div class="analogy-box">
+                        <strong>💡 Analogía Postal:</strong> Escribir la dirección postal de origen y destino global en el sobre (Dirección IP).
                     </div>
                 </div>
             </div>
-            <img src="./imagenes/internet.jpg" alt="Capa Internet">
+            <img src="./imagenes/internet.jpg" alt="Capa Internet - Direccionamiento IP y Routers">
         </div>
 
         <!-- Capa 1: Acceso a la Red -->
-        <div class="layer-card">
+        <div class="layer-card access">
             <div class="layer-top">
                 <div class="layer-icon">
                     <svg viewBox="0 0 24 24">
@@ -334,59 +434,77 @@
                     </svg>
                 </div>
                 <div class="layer-content">
-                    <span class="layer-number">Capa 1 — Tramas / Bits</span>
-                    <h2>Acceso a la Red</h2>
-                    <p>Direccionamiento físico MAC y transmisión mediante impulsos en el medio físico.</p>
+                    <span class="layer-number">Capa 1 — Unidad de Datos: Trama / Impulsos Binarios (Bits)</span>
+                    <h2>Capa de Acceso a la Red</h2>
+                    <p>Controla el hardware físico (tarjetas de red, cables, Wi-Fi) y gestiona la entrega local mediante direccionamiento físico <strong>MAC</strong>.</p>
                     <div class="protocols">
-                        <span class="protocol-tag">Ethernet (802.3)</span>
-                        <span class="protocol-tag">Wi-Fi (802.11)</span>
-                        <span class="protocol-tag">Direcciones MAC</span>
+                        <span class="protocol-tag">Ethernet (IEEE 802.3)</span>
+                        <span class="protocol-tag">Wi-Fi (IEEE 802.11)</span>
+                        <span class="protocol-tag">Dirección Física MAC</span>
+                    </div>
+                    <div class="analogy-box">
+                        <strong>💡 Analogía Postal:</strong> El camión de correo físico o el avión que transporta físicamente el sobre de una oficina a otra.
                     </div>
                 </div>
             </div>
-            <img src="./imagenes/accesoalared.jpg" alt="Capa Acceso a la Red">
+            <img src="./imagenes/accesoalared.jpg" alt="Capa Acceso a la Red - Medios Físicos y Direcciones MAC">
 
             <!-- Explicación de los estándares físicos/enlace -->
             <div class="standards-detail">
-                <h3>Desglose de Estándares de Transmisión:</h3>
+                <h3>🔍 Desglose Técnico de Estándares de Transmisión:</h3>
                 <ul>
-                    <li><strong>IEEE 802.3 (Ethernet):</strong> Regula la comunicación mediante cableado físico (UTP, Fibra). Emplea el método <strong>CSMA/CD</strong> para detectar colisiones en el medio compartido.</li>
-                    <li><strong>IEEE 802.11 (Wi-Fi):</strong> Define la transmisión inalámbrica mediante ondas de radiofrecuencia (2.4 GHz, 5 GHz, 6 GHz). Utiliza el método <strong>CSMA/CA</strong> para evitar colisiones antes de transmitir.</li>
-                    <li><strong>Direcciones MAC:</strong> Identificador físico único de 48 bits grabado en la tarjeta de red (NIC) para gestionar la entrega de tramas localmente.</li>
+                    <li><strong>IEEE 802.3 (Ethernet):</strong> Regula la comunicación mediante cables (UTP, Par trenzado, Fibra Óptica). Emplea el método <strong>CSMA/CD</strong> (Detección de colisiones) para administrar el uso compartido del canal.</li>
+                    <li><strong>IEEE 802.11 (Wi-Fi):</strong> Define la comunicación inalámbrica por radiofrecuencia (2.4 GHz, 5 GHz, 6 GHz). Utiliza el algoritmo <strong>CSMA/CA</strong> (Evitación de colisiones) antes de emitir ondas en el aire.</li>
+                    <li><strong>Direcciones MAC:</strong> Identificador hexadecimal único de 48 bits (ejemplo: <code>00:1A:2B:3C:4D:5E</code>) grabado de fábrica en la tarjeta de red (NIC). Un router la usa para entregar la trama al equipo exacto en la red local.</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Práctica en Laboratorio -->
+        <!-- Cuadro Resumen Encapsulamiento -->
         <section class="info-block">
-            <h2>2. Práctica de Diagnóstico en Terminal</h2>
-            <p>Comandos para inspección de la pila de red:</p>
-
-            <div class="carbon-code">
-<span class="comment">:: Conectividad y pruebas ICMP</span>
-<span class="cmd">ping</span> 127.0.0.1
-<span class="cmd">ping</span> google.com
-
-<span class="comment">:: Tabla ARP (Mapeo IP - MAC)</span>
-<span class="cmd">arp</span> <span class="flag">-a</span>
-
-<span class="comment">:: Conexiones TCP activas y puertos en escucha</span>
-<span class="cmd">netstat</span> <span class="flag">-an</span>
-
-<span class="comment">:: Rastreo de ruta punto a punto (Trazado de paquetes)</span>
-<span class="cmd">tracert</span> google.com
+            <h2>📦 3. El Viaje de los Datos: Encapsulamiento</h2>
+            <p>A medida que la información desciende por las capas del emisor, cada capa agrega su propia cabecera de control (Header). Al llegar al receptor, el proceso se invierte (Desencapsulamiento):</p>
+            
+            <div class="pdu-visual">
+                <div class="pdu-step">
+                    <div class="pdu-header bg-app">4. Aplicación</div>
+                    <div class="pdu-body">[ Datos de la Aplicación ]</div>
+                </div>
+                <div class="pdu-step">
+                    <div class="pdu-header bg-trans">3. Transporte</div>
+                    <div class="pdu-body">[ Header TCP/UDP | Datos ] &rarr; <strong>Segmento</strong></div>
+                </div>
+                <div class="pdu-step">
+                    <div class="pdu-header bg-net">2. Internet</div>
+                    <div class="pdu-body">[ Header IP | Header TCP | Datos ] &rarr; <strong>Paquete</strong></div>
+                </div>
+                <div class="pdu-step">
+                    <div class="pdu-header bg-access">1. Acceso a Red</div>
+                    <div class="pdu-body">[ Header Ethernet | Header IP | Header TCP | Datos | Trailer FCS ] &rarr; <strong>Trama / Bits (01101)</strong></div>
+                </div>
             </div>
         </section>
 
-        <!-- Cuadro Resumen Encapsulamiento -->
+        <!-- Práctica en Laboratorio -->
         <section class="info-block">
-            <h2>3. Encapsulamiento de Datos (PDU)</h2>
-            <ul>
-                <li><strong>Capa 4 (Aplicación):</strong> [ Datos ]</li>
-                <li><strong>Capa 3 (Transporte):</strong> [ Header TCP/UDP | Datos ] → <i>Segmento</i></li>
-                <li><strong>Capa 2 (Internet):</strong> [ Header IP | Header TCP | Datos ] → <i>Paquete</i></li>
-                <li><strong>Capa 1 (Acceso a Red):</strong> [ Header Ethernet / 802.11 | Header IP | Header TCP | Datos | Trailer ] → <i>Trama / Bits</i></li>
-            </ul>
+            <h2>💻 4. Laboratorio Práctico de Terminal (Diagnóstico)</h2>
+            <p>Usa la consola de comandos de tu sistema operativo para inspeccionar el estado del modelo TCP/IP en tiempo real:</p>
+
+            <div class="carbon-code">
+<span class="comment">:: 1. Comprobar la pila TCP/IP local y conexión externa (Capa de Internet - ICMP)</span>
+<span class="cmd">ping</span> 127.0.0.1       <span class="comment">:: Prueba la tarjeta de red local (Loopback)</span>
+<span class="cmd">ping</span> google.com     <span class="comment">:: Evalúa latencia y pérdida de paquetes con un servidor remoto</span>
+
+<span class="comment">:: 2. Consultar la tabla de resolución de direcciones IP a MAC (Capa de Acceso a Red)</span>
+<span class="cmd">arp</span> <span class="flag">-a</span>
+
+<span class="comment">:: 3. Inspeccionar conexiones TCP activas y puertos a la escucha (Capa de Transporte)</span>
+<span class="cmd">netstat</span> <span class="flag">-an</span>
+
+<span class="comment">:: 4. Rastrear la ruta salto a salto indicando routers intermediarios</span>
+<span class="cmd">tracert</span> google.com   <span class="comment">:: Comando para Windows</span>
+<span class="cmd">traceroute</span> google.com<span class="comment">:: Comando equivalente en Linux / macOS</span>
+            </div>
         </section>
 
     </main>
