@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fundamentos de Redes · Presentación mejorada</title>
+    <style>
+        /* ----------------------------------------------------------------
+           VARIABLES Y RESET
+           ---------------------------------------------------------------- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --fondo: #ffffff;
+            --texto: #1e1e2f;
+            --sombra: rgba(0, 0, 0, 0.08);
+            --borde: #d0d7de;
+            --card-fondo: #f6f8fa;
+            --azul: #0969da;
+            --verde: #1a7f37;
+            --ambar: #9a6700;
+            --gris-claro: #f0f2f5;
+            --gris-medio: #57606a;
+            --carbon-bg: #1e1e2f;
+            --carbon-text: #f0f0f0;
+            --carbon-borde: #3d3d5c;
+        }
+
+        body {
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            font-size: 17px;
+            padding: 2rem 1.5rem 90px 1.5rem;
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        /* ----------------------------------------------------------------
+           DIAPOSITIVAS
+           ---------------------------------------------------------------- */
+        .slide {
+            background: var(--fondo);
+            border: 1px solid var(--borde);
+            border-radius: 20px;
+            padding: 2.2rem 2.5rem;
+            margin-bottom: 2.8rem;
+            box-shadow: 0 8px 24px var(--sombra);
+            position: relative;
+            transition: box-shadow 0.2s;
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+        }
+
+        /* Banda lateral decorativa */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--azul), var(--verde));
+            border-radius: 20px 0 0 20px;
+        }
+
+        .slide-header {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--azul);
+            font-weight: 700;
+            border-bottom: 1px solid var(--borde);
+            padding-bottom: 0.6rem;
+            margin-bottom: 1.4rem;
+        }
+
+        h2 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 0 0 0.8rem 0;
+            color: #0d1117;
+        }
+
+        p,
+        li {
+            color: #24292f;
+            margin-bottom: 0.6rem;
+        }
+
+        strong {
+            color: var(--azul);
+            font-weight: 600;
+        }
+
+        ul {
+            padding-left: 1.6rem;
+            margin: 0.4rem 0 1rem 0;
+        }
+
+        li::marker {
+            color: var(--azul);
+        }
+
+        /* ----------------------------------------------------------------
+           TARJETAS (grid)
+           ---------------------------------------------------------------- */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin: 0.8rem 0 0.4rem 0;
+        }
+
+        .card {
+            background: var(--card-fondo);
+            border: 1px solid var(--borde);
+            border-radius: 14px;
+            padding: 1.4rem 1.6rem;
+            transition: border 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--azul);
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--verde);
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.98rem;
+            color: #24292f;
+        }
+
+        /* ----------------------------------------------------------------
+           ESTILO CARBON PARA CÓDIGO / EJEMPLOS
+           ---------------------------------------------------------------- */
+        .carbon-block {
+            background: var(--carbon-bg);
+            color: var(--carbon-text);
+            border-radius: 12px;
+            padding: 1rem 1.4rem;
+            border: 1px solid var(--carbon-borde);
+            font-family: ui-monospace, 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin: 0.8rem 0 0.4rem 0;
+            overflow-x: auto;
+        }
+
+        .carbon-block code {
+            background: transparent;
+            color: #b3b3d9;
+            padding: 0;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* Para inline code dentro de texto normal (fondo claro) */
+        code {
+            background: #eef2f6;
+            color: #1a1a3a;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-family: ui-monospace, 'Fira Code', monospace;
+            font-size: 0.9em;
+            border: 1px solid #d0d7de;
+        }
+
+        /* ----------------------------------------------------------------
+           CAJA DE PREGUNTA (sin emojis)
+           ---------------------------------------------------------------- */
+        .question-box {
+            background: #faf3e0;
+            border-left: 5px solid var(--ambar);
+            padding: 0.9rem 1.4rem;
+            border-radius: 0 10px 10px 0;
+            margin: 1rem 0 0.8rem 0;
+            font-weight: 500;
+            color: #2d2a1e;
+        }
+
+        /* ----------------------------------------------------------------
+           CONTENEDOR DE IMÁGENES
+           ---------------------------------------------------------------- */
+        .slide-img-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 0.6rem;
+        }
+
+        .slide-img {
+            position: relative;
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--borde);
+            background: var(--card-fondo);
+            transition: transform 0.2s, box-shadow 0.2s;
+            max-width: 340px;
+            display: inline-block;
+        }
+
+        .slide-img:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(9, 105, 218, 0.15);
+            border-color: var(--azul);
+        }
+
+        .slide-img img {
+            display: block;
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #f0f2f5;
+        }
+
+        /* Lupa sutil (sin emoji) */
+        .slide-img::after {
+            content: "Ampliar";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(1px);
+            letter-spacing: 0.5px;
+        }
+
+        .slide-img:hover::after {
+            opacity: 1;
+        }
+
+        .img-caption {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--gris-medio);
+            margin-top: 0.4rem;
+            text-align: center;
+        }
+
+        /* ----------------------------------------------------------------
+           MODAL (ampliación de imagen)
+           ---------------------------------------------------------------- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content-wrapper {
+            position: relative;
+            max-width: 92%;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 14px;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            object-fit: contain;
+            background: #1a1a2e;
+        }
+
+        .modal-caption {
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.4rem 1.4rem;
+            border-radius: 30px;
+            margin-top: 1rem;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -16px;
+            right: -16px;
+            background: #ffffff;
+            color: #1a1a2e;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            transition: transform 0.15s, background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.08);
+            background: #eaeef2;
+        }
+
+        /* ----------------------------------------------------------------
+           NAVEGACIÓN FLOTANTE
+           ---------------------------------------------------------------- */
+        .nav-bar {
+            position: fixed;
+            bottom: 1.6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--borde);
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--texto);
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .nav-btn:hover {
+            background: #eef2f6;
+            color: var(--azul);
+        }
+
+        .nav-counter {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gris-medio);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ----------------------------------------------------------------
+           RESPONSIVE
+           ---------------------------------------------------------------- */
+        @media (max-width: 700px) {
+            body {
+                padding: 1rem 0.8rem 90px 0.8rem;
+                font-size: 15px;
+            }
+
+            .slide {
+                padding: 1.5rem 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .grid-2col {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .slide-img img {
+                height: 120px;
+            }
+
+            .close-btn {
+                top: -10px;
+                right: -8px;
+                width: 32px;
+                height: 32px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+                padding: 0.2in;
+            }
+
+            .slide {
+                border: 1px solid #aaa;
+                box-shadow: none;
+                background: #fff;
+                color: #000;
+                page-break-after: always;
+                margin-bottom: 0.1in;
+            }
+
+            .slide::before {
+                background: #888;
+            }
+
+            .nav-bar {
+                display: none;
+            }
+
+            .modal {
+                display: none !important;
+            }
+
+            .slide-img::after {
+                display: none;
+            }
+
+            .carbon-block {
+                background: #f0f0f0;
+                color: #1a1a1a;
+                border: 1px solid #999;
+            }
+
+            .carbon-block code {
+                color: #1a1a3a;
+            }
+
+            code {
+                background: #eaeaea;
+                border: 1px solid #aaa;
+                color: #000;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+    DIAPOSITIVA 1
+    ============================================================ -->
+    <div class="slide" id="slide-1">
+        <div>
+            <div class="slide-header">Bloque 1 · El Mapa de la Conectividad (Parte 1)</div>
+            <h2>Nodo y dispositivos de red</h2>
+            <ul>
+                <li><strong>Nodo:</strong> cualquier equipo conectado a la red que pueda enviar, recibir o procesar
+                    datos (PC, servidor, teléfono, impresora).</li>
+                <li><strong>Router:</strong> encamina el tráfico entre redes distintas; conecta la red local con
+                    Internet.</li>
+                <li><strong>Switch:</strong> interconecta los equipos dentro de una misma red local (LAN) a alta
+                    velocidad.</li>
+            </ul>
+            <div class="carbon-block">
+                <code>Router → Switch → dispositivos finales (nodos)</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/routerswitch.jpg" alt="Router y Switch" />
+            </div>
+            <div class="img-caption">Infraestructura básica de red</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 2
+    ============================================================ -->
+    <div class="slide" id="slide-2">
+        <div>
+            <div class="slide-header">Bloque 1 · El Mapa de la Conectividad (Parte 2)</div>
+            <h2>Redes LAN y WAN</h2>
+            <ul>
+                <li><strong>LAN (Local Area Network):</strong> red de alcance local, dentro de un espacio físico
+                    delimitado (laboratorio, oficina, vivienda).</li>
+                <li><strong>WAN (Wide Area Network):</strong> red de gran cobertura geográfica que interconecta
+                    múltiples LAN a nivel regional o mundial. <em>Internet es la WAN por excelencia.</em></li>
+            </ul>
+            <div class="carbon-block">
+                <code>LAN ↔ Router ↔ WAN (Internet)</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/lanvsman.jpg" alt="LAN vs WAN" />
+            </div>
+            <div class="img-caption">De la red local a la red mundial</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 3
+    ============================================================ -->
+    <div class="slide" id="slide-3">
+        <div>
+            <div class="slide-header">Bloque 1 · El Mapa de la Conectividad (Parte 3)</div>
+            <h2>Topología en estrella</h2>
+            <p>Define la disposición de los equipos. En las redes modernas predomina la <strong>topología en
+                    estrella</strong>: todos los nodos se conectan directamente a un switch central.</p>
+            <div class="question-box">
+                Pregunta para el grupo: ¿qué ocurre si se desconecta el cable de una computadora frente a si se apaga el
+                switch principal?
+            </div>
+            <div class="carbon-block">
+                <code>Nodo1 ──┐<br>Nodo2 ──┼── Switch ── Router<br>Nodo3 ──┘</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/topologias.jpg" alt="Topologías de red" />
+            </div>
+            <div class="img-caption">Esquema de topologías</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 4
+    ============================================================ -->
+    <div class="slide" id="slide-4">
+        <div>
+            <div class="slide-header">Bloque 2 · La Infraestructura Invisible (Parte 1)</div>
+            <h2>Redes inalámbricas y dirección MAC</h2>
+            <ul>
+                <li>Del medio físico (cables) a las ondas de radio electromagnéticas (Wi-Fi).</li>
+                <li><strong>Dirección MAC (Media Access Control):</strong> identificador físico único de 48 bits,
+                    grabado de fábrica en la tarjeta de red (NIC).</li>
+            </ul>
+            <div class="carbon-block">
+                <code>MAC: 00:1A:2B:3C:4D:5E  (6 octetos hexadecimales)</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/macaddress.jpg" alt="Dirección MAC" />
+            </div>
+            <div class="img-caption">Estructura de una dirección MAC</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 5
+    ============================================================ -->
+    <div class="slide" id="slide-5">
+        <div>
+            <div class="slide-header">Bloque 2 · La Infraestructura Invisible (Parte 2)</div>
+            <h2>Evolución de Ethernet y medios de transmisión</h2>
+            <ul>
+                <li>Desde cables coaxiales hasta par trenzado (Cat5e, Cat6, Cat6a) y fibra óptica de alta velocidad.
+                </li>
+                <li>Cada medio impone límites de velocidad, alcance y tolerancia a interferencias.</li>
+            </ul>
+            <div class="carbon-block">
+                <code>Cobre (Cat6) → 1 Gbps / 100 m &nbsp;|&nbsp; Fibra óptica → 10 Gbps / 40 km</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/cablesethernet.jpg" alt="Cables Ethernet" />
+            </div>
+            <div class="img-caption">Medios guiados de transmisión</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 6
+    ============================================================ -->
+    <div class="slide" id="slide-6">
+        <div>
+            <div class="slide-header">Bloque 3 · Las Reglas del Tránsito Digital (Parte 1)</div>
+            <h2>Direccionamiento lógico: IP y octeto</h2>
+            <p><strong>Dirección IP:</strong> identificación lógica (Capa 3) asignada a cada dispositivo para enrutar
+                entre redes.</p>
+            <div class="grid-2col">
+                <div class="card">
+                    <h3>Estructura IPv4</h3>
+                    <p>32 bits divididos en 4 bloques de 8 bits (octetos) separados por puntos.<br />Ejemplo:
+                        <code>192.168.1.10</code></p>
+                </div>
+                <div class="card">
+                    <h3>El octeto</h3>
+                    <p>Grupo de 8 bits que representa un valor decimal entre <code>0</code> y <code>255</code>
+                        (2<sup>8</sup> = 256 combinaciones).</p>
+                </div>
+            </div>
+            <div class="carbon-block">
+                <code>192.168.1.10  →  octeto1=192  octeto2=168  octeto3=1  octeto4=10</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 7
+    ============================================================ -->
+    <div class="slide" id="slide-7">
+        <div>
+            <div class="slide-header">Bloque 3 · Las Reglas del Tránsito Digital (Parte 2)</div>
+            <h2>DHCP: el repartidor automático de IPs</h2>
+            <p>El servidor <strong>DHCP</strong> asigna automáticamente dirección IP, máscara de red y gateway a los
+                dispositivos, sin intervención manual.</p>
+            <div class="carbon-block">
+                <code>Cliente → DHCP Discover → DHCP Offer → DHCP Request → DHCP Ack</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/dhcp.jpg" alt="Servidor DHCP" />
+            </div>
+            <div class="img-caption">Proceso de asignación DHCP</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 8
+    ============================================================ -->
+    <div class="slide" id="slide-8">
+        <div>
+            <div class="slide-header">Bloque 3 · Las Reglas del Tránsito Digital (Parte 3)</div>
+            <h2>DNS: la guía telefónica de Internet</h2>
+            <p>Escribimos <code>google.com</code> en lugar de <code>142.250.190.46</code>. El sistema
+                <strong>DNS</strong> traduce nombres de dominio a direcciones IP numéricas.</p>
+            <div class="carbon-block">
+                <code>google.com  →  DNS  →  142.250.190.46</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/dns.jpg" alt="Proceso DNS" />
+            </div>
+            <div class="img-caption">Resolución de nombres DNS</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 9
+    ============================================================ -->
+    <div class="slide" id="slide-9">
+        <div>
+            <div class="slide-header">Bloque 4 · Rendimiento, Privacidad y Cierre (Parte 1)</div>
+            <h2>Métricas de red: ancho de banda y latencia</h2>
+            <div class="grid-2col">
+                <div class="card">
+                    <h3>Ancho de banda</h3>
+                    <p>Capacidad máxima de transferencia de datos por unidad de tiempo (Mbps / Gbps). Es el
+                        <strong>ancho</strong> de la autopista.</p>
+                </div>
+                <div class="card">
+                    <h3>Latencia (ping)</h3>
+                    <p>Tiempo que tarda un paquete en ir y volver (milisegundos, ms). Es el <strong>tiempo de
+                            respuesta</strong>.</p>
+                </div>
+            </div>
+            <div class="carbon-block">
+                <code>Ancho de banda = 100 Mbps &nbsp;·&nbsp; Latencia = 12 ms</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/bandwidth.jpg" alt="Ancho de banda y Latencia" />
+            </div>
+            <div class="img-caption">Diferencia entre capacidad y velocidad</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    DIAPOSITIVA 10
+    ============================================================ -->
+    <div class="slide" id="slide-10">
+        <div>
+            <div class="slide-header">Bloque 4 · Rendimiento, Privacidad y Cierre (Parte 2)</div>
+            <h2>Redes seguras, VPN y modelo OSI</h2>
+            <ul>
+                <li><strong>Red interna vs. externa:</strong> perímetro privado protegido frente a red pública
+                    (Internet).</li>
+                <li><strong>VPN (Red Privada Virtual):</strong> túnel cifrado para conectar de forma segura la red
+                    interna desde el exterior.</li>
+                <li><strong>Conclusión:</strong> todos estos conceptos se integran en el marco de 7 capas del
+                    <strong>Modelo OSI</strong>.</li>
+            </ul>
+            <div class="carbon-block">
+                <code>VPN → encapsula y cifra el tráfico (capa 2/3)</code>
+            </div>
+        </div>
+        <div class="slide-img-container">
+            <div class="slide-img">
+                <img src="./pictures/vpn.jpg" alt="Túnel VPN" />
+            </div>
+            <div class="img-caption">Funcionamiento de un túnel cifrado VPN</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    NAVEGACIÓN FLOTANTE
+    ============================================================ -->
+    <div class="nav-bar">
+        <button class="nav-btn" id="prevBtn" title="Diapositiva anterior">◀</button>
+        <span class="nav-counter" id="slideCounter">1 / 10</span>
+        <button class="nav-btn" id="nextBtn" title="Diapositiva siguiente">▶</button>
+    </div>
+
+    <!-- ============================================================
+    MODAL PARA AMPLIAR IMAGEN
+    ============================================================ -->
+    <div class="modal" id="imageModal" aria-hidden="true">
+        <div class="modal-content-wrapper">
+            <button class="close-btn" id="closeModalBtn" aria-label="Cerrar">✕</button>
+            <img class="modal-img" id="modalImage" src="" alt="Imagen ampliada" />
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // ---- Modal de imagen ----
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            const clickableImages = document.querySelectorAll('.slide-img');
+            clickableImages.forEach(container => {
+                container.addEventListener('click', function () {
+                    const img = this.querySelector('img');
+                    const captionEl = this.nextElementSibling;
+                    const captionText = captionEl ? captionEl.innerText : img.alt;
+
+                    modalImg.src = img.src;
+                    modalImg.alt = img.alt;
+                    modalCaption.innerText = captionText || img.alt;
+
+                    modal.classList.add('show');
+                    modal.setAttribute('aria-hidden', 'false');
+                });
+            });
+
+            function closeModal() {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeModal();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+
+            // ---- Navegación de diapositivas ----
+            const slides = document.querySelectorAll('.slide');
+            const slideCounter = document.getElementById('slideCounter');
+            let currentIndex = 0;
+
+            function updateCounter() {
+                slideCounter.innerText = (currentIndex + 1) + ' / ' + slides.length;
+            }
+
+            function scrollToSlide(index) {
+                if (index < 0) index = 0;
+                if (index >= slides.length) index = slides.length - 1;
+                currentIndex = index;
+                slides[currentIndex].scrollIntoView({ behavior: 'smooth' });
+                updateCounter();
+            }
+
+            document.getElementById('prevBtn').addEventListener('click', function () {
+                scrollToSlide(currentIndex - 1);
+            });
+            document.getElementById('nextBtn').addEventListener('click', function () {
+                scrollToSlide(currentIndex + 1);
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    scrollToSlide(currentIndex + 1);
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    scrollToSlide(currentIndex - 1);
+                }
+            });
+
+            // Intersection Observer para actualizar el contador al hacer scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const idx = Array.from(slides).indexOf(entry.target);
+                        if (idx !== -1) {
+                            currentIndex = idx;
+                            updateCounter();
+                        }
+                    }
+                });
+            }, { threshold: 0.45 });
+
+            slides.forEach(slide => observer.observe(slide));
+
+            // Inicializar contador
+            updateCounter();
+        });
+    </script>
+</body>
+
+</html>
