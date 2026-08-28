@@ -246,16 +246,48 @@
             <ol>
                 <li><strong>Búsqueda Local:</strong> Host A verifica su memoria caché ARP local buscando la IP
                     destinataria.</li>
-                <li><strong>Emisión de ARP Request:</strong> Si la IP no está mapeada, construye un paquete ARP pidiendo
-                    la MAC de `192.168.1.20`. Encapsula el paquete en una trama Ethernet con dirección MAC de destino en
-                    difusión (<code>FF:FF:FF:FF:FF:FF</code>).</li>
-                <li><strong>Procesamiento de Difusión:</strong> Todos los nodos del dominio de broadcast reciben la
-                    trama. Aquellos cuya IP no coincida la descartan en hardware.</li>
-                <li><strong>Respuesta ARP Reply:</strong> Host B identifica su dirección IP en la petición y responde
-                    directamente (Unicast) al Host A adjuntando su dirección MAC física.</li>
+                <li><strong>Generación del Broadcast (Host A / NIC Origen):</strong> Si la IP no está mapeada, la
+                    tarjeta de red (NIC) del Host A construye la trama Ethernet estableciendo la dirección MAC de
+                    destino en difusión (<code>FF:FF:FF:FF:FF:FF</code>) y la transmite hacia el conmutador (switch).
+                </li>
+                <li><strong>Retransmisión por el Switch (Flooding):</strong> El switch recibe la trama, detecta la
+                    dirección de
+                    difusión y la <strong>retransmite por todos sus puertos activos</strong> dentro de la misma VLAN,
+                    excepto por el puerto de origen por donde llegó la solicitud.</li>
+                <li><strong>Procesamiento e Inspección en los Nodos Destino:</strong>
+                    La NIC de cada equipo conectado acepta la trama al identificar la MAC de broadcast. La pasa al
+                    sistema
+                    operativo, pero <strong>solo el Host B</strong> (cuya IP coincide con la petición) procesa la
+                    solicitud;
+                    los demás equipos la descartan silenciosamente.</li>
+                <li><strong>Respuesta Unicast (Host B):</strong> Host B responde directamente al Host A mediante un
+                    mensaje
+                    <strong>Unicast</strong> (con la MAC del Host A como destino explícito). El switch reenvía esta
+                    respuesta
+                    únicamente al puerto del Host A.
+                </li>
                 <li><strong>Actualización de Caché:</strong> Host A almacena la relación IP-MAC en su tabla ARP y envía
-                    la trama de datos retenida.</li>
+                    la trama de datos que tenía retenida.</li>
             </ol>
+
+            <div class="carbon-container">
+                <div class="carbon-header">
+                    <span>mecanica_broadcast_vs_unicast.txt</span>
+                    <button class="copy-btn" onclick="copyCode('code-flow-example')">Copiar</button>
+                </div>
+                <pre id="code-flow-example"><code><span class="c-cm">/* Detalle del Proceso de Difusión y Retorno en el Switch */</span>
+
+<span class="c-kw">[PASO 1: ARP Request - BROADCAST]</span>
+  Host A (NIC) ----> [Trama MAC Destino: FF:FF:FF:FF:FF:FF] ----> Switch
+  Switch       ----> Retransmite a todos los puertos (excepto el de Host A)
+                     ├── Host B (192.168.1.20) -> ¡Coincide IP! Acepta y procesa.
+                     └── Host C (192.168.1.30) -> No coincide IP. Descarta.
+
+<span class="c-kw">[PASO 2: ARP Reply - UNICAST]</span>
+  Host B (NIC) ----> [Trama MAC Destino: 00:11:22:AA:BB:CC (Host A)] ----> Switch
+  Switch       ----> Consulta tabla CAM y reenvía ÚNICAMENTE al puerto de Host A.
+  Host A       ----> Recibe la MAC de B y actualiza su caché ARP.</code></pre>
+            </div>
         </section>
 
         <section>
@@ -379,26 +411,26 @@
     </div>
 
     <script>
-    function copyCode(elementId) {
-      const element = document.getElementById(elementId);
-      const textToCopy = element.innerText;
+        function copyCode(elementId) {
+            const element = document.getElementById(elementId);
+            const textToCopy = element.innerText;
 
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        const button = element.parentElement.querySelector('.copy-btn');
-        const originalText = button.innerText;
-        button.innerText = '¡Copiado!';
-        button.style.backgroundColor = '#3dd68c';
-        button.style.color = '#161616';
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const button = element.parentElement.querySelector('.copy-btn');
+                const originalText = button.innerText;
+                button.innerText = '¡Copiado!';
+                button.style.backgroundColor = '#3dd68c';
+                button.style.color = '#161616';
 
-        setTimeout(() => {
-          button.innerText = originalText;
-          button.style.backgroundColor = 'transparent';
-          button.style.color = 'var(--carbon-text)';
-        }, 2000);
-      }).catch(err => {
-        console.error('Error al copiar el texto: ', err);
-      });
-    }
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.backgroundColor = 'transparent';
+                    button.style.color = 'var(--carbon-text)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar el texto: ', err);
+            });
+        }
     </script>
 </body>
 
