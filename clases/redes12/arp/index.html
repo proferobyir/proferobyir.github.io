@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo ARP: Guía de Referencia Técnica</title>
+    <style>
+        /* VARIABLES DE ESTILO Y TEMAS */
+        :root {
+            /* Estilo Global Principal (Fondo blanco, texto negro) */
+            --bg-main: #ffffff;
+            --text-main: #161616;
+            --text-muted: #525252;
+            --border-color: #e0e0e0;
+            --accent-color: #0f62fe;
+
+            /* Estilo Carbon Dark (Para bloques de código y datos técnicos) */
+            --carbon-bg: #161616;
+            --carbon-card-bg: #262626;
+            --carbon-text: #f4f4f4;
+            --carbon-comment: #8d8d8d;
+            --carbon-keyword: #3dd68c;
+            --carbon-var: #78a9ff;
+            --carbon-string: #ee5396;
+            --carbon-border: #393939;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* CONTENEDOR RESPONSIVE */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* ENCABEZADOS Y TEXTO */
+        header {
+            border-bottom: 2px solid var(--text-main);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul,
+        ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* TABLA ESTILIZADA */
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: 600;
+        }
+
+        /* BLOQUES DE CÓDIGO TEMA CARBON */
+        .carbon-container {
+            background-color: var(--carbon-bg);
+            color: var(--carbon-text);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 25px 0;
+            border: 1px solid var(--carbon-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .carbon-header {
+            background-color: var(--carbon-card-bg);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--carbon-border);
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--carbon-comment);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--carbon-comment);
+            color: var(--carbon-text);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--carbon-text);
+            color: var(--carbon-bg);
+        }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* SINTAXIS CARBON */
+        .c-kw {
+            color: var(--carbon-keyword);
+        }
+
+        .c-var {
+            color: var(--carbon-var);
+        }
+
+        .c-str {
+            color: var(--carbon-string);
+        }
+
+        .c-cm {
+            color: var(--carbon-comment);
+        }
+
+        /* NOTAS HIGHLIGHT */
+        .note {
+            background-color: #f4f4f4;
+            border-left: 4px solid var(--text-main);
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* DISEÑO RESPONSIVE */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            pre {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>Address Resolution Protocol (ARP)</h1>
+            <p class="subtitle">Especificación del RFC 826 y Mecanismos de Mapeo IP/MAC en Redes Ethernet</p>
+        </header>
+
+        <section>
+            <h2>1. ¿Qué es el Protocolo ARP?</h2>
+            <p>
+                El <strong>Address Resolution Protocol (ARP)</strong> es un protocolo de red de capa de acceso a la
+                red/enlace (Capa 2/3 en el modelo TCP/IP) responsable de asociar una dirección de capa de red lógica
+                (dirección IP) con una dirección de capa de enlace física (dirección MAC) en redes de difusión como
+                Ethernet.
+            </p>
+        </section>
+
+        <section>
+            <h2>2. ¿Por qué se inventó?</h2>
+            <p>
+                El protocolo IP opera a nivel lógico para resolver el enrutamiento a través de interredes complejas. Sin
+                embargo, las tarjetas de interfaz de red (NIC) en un segmento de red local no entienden direcciones IP;
+                únicamente pueden transmitir tramas utilizando direcciones de hardware grabadas de fábrica (MAC).
+            </p>
+            <p>
+                ARP fue introducido para eliminar la necesidad de configurar manualmente las tablas de mapeo de hardware
+                en cada host, proporcionando un mecanismo de descubrimiento dinámico, transparente y escalable para
+                redes LAN.
+            </p>
+        </section>
+
+        <section>
+            <h2>3. Comunicación entre Nodos (Flujo Paso a Paso)</h2>
+            <p>
+                Cuando el <strong>Host A (192.168.1.10)</strong> requiere transmitir datos al <strong>Host B
+                    (192.168.1.20)</strong> dentro de la misma subred:
+            </p>
+            <ol>
+                <li><strong>Búsqueda Local:</strong> Host A verifica su memoria caché ARP local buscando la IP
+                    destinataria.</li>
+                <li><strong>Emisión de ARP Request:</strong> Si la IP no está mapeada, construye un paquete ARP pidiendo
+                    la MAC de `192.168.1.20`. Encapsula el paquete en una trama Ethernet con dirección MAC de destino en
+                    difusión (<code>FF:FF:FF:FF:FF:FF</code>).</li>
+                <li><strong>Procesamiento de Difusión:</strong> Todos los nodos del dominio de broadcast reciben la
+                    trama. Aquellos cuya IP no coincida la descartan en hardware.</li>
+                <li><strong>Respuesta ARP Reply:</strong> Host B identifica su dirección IP en la petición y responde
+                    directamente (Unicast) al Host A adjuntando su dirección MAC física.</li>
+                <li><strong>Actualización de Caché:</strong> Host A almacena la relación IP-MAC en su tabla ARP y envía
+                    la trama de datos retenida.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. Estructura del Petición/Respuesta (Campos ARP)</h2>
+            <p>A continuación se muestra la estructura del encabezado ARP estandarizado (28 bytes para IPv4/Ethernet):
+            </p>
+
+            <div class="carbon-container">
+                <div class="carbon-header">
+                    <span>arp_header_spec.txt</span>
+                    <button class="copy-btn" onclick="copyCode('code-arp-spec')">Copiar</button>
+                </div>
+                <pre id="code-arp-spec"><code><span class="c-cm">/* Estructura Trama ARP (RFC 826) */</span>
++-----------------------------------+-----------------------------------+
+| <span class="c-kw">Hardware Type (HTYPE)</span>: 0x0001     | <span class="c-kw">Protocol Type (PTYPE)</span>: 0x0800     |
++-----------------------------------+-----------------------------------+
+| <span class="c-var">Hardware Length (HLEN)</span>: 6         | <span class="c-var">Protocol Length (PLEN)</span>: 4         |
++-----------------------------------+-----------------------------------+
+| <span class="c-kw">Operation Code (OPER)</span>: 1 (Req) / 2 (Reply)                             |
++-----------------------------------------------------------------------+
+| <span class="c-str">Sender Hardware Address (SHA) - [MAC Origen: 6 Bytes]</span>                 |
++-----------------------------------------------------------------------+
+| <span class="c-str">Sender Protocol Address (SPA) - [IP Origen: 4 Bytes]</span>                  |
++-----------------------------------------------------------------------+
+| <span class="c-str">Target Hardware Address (THA) - [MAC Destino: 6 Bytes]</span>                |
++-----------------------------------------------------------------------+
+| <span class="c-str">Target Protocol Address (TPA) - [IP Destino: 4 Bytes]</span>                 |
++-----------------------------------------------------------------------+</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>5. Variaciones del Protocolo ARP</h2>
+            <ul>
+                <li><strong>Gratuitous ARP (GARP):</strong> Petición/respuesta no solicitada. Utilizada para actualizar
+                    tablas de nodos tras un cambio de MAC (ej. Failover de clúster) y detectar direccionamiento IP
+                    duplicado.</li>
+                <li><strong>Proxy ARP:</strong> Un router responde a solicitudes ARP destinadas a un host fuera de la
+                    red local, ofreciendo su propia MAC para interceptar y enrutar el tráfico.</li>
+                <li><strong>Reverse ARP (RARP):</strong> Obsoleto. Permitía a clientes sin disco solicitar su IP
+                    conociendo únicamente su MAC (reemplazado por DHCP).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Comandos de Inspección y Manipulación de Caché</h2>
+            <p>Bloques de código para auditar y modificar la tabla de vecinos ARP desde consola de comandos:</p>
+
+            <div class="carbon-container">
+                <div class="carbon-header">
+                    <span>Windows Command Prompt / PowerShell</span>
+                    <button class="copy-btn" onclick="copyCode('code-win')">Copiar</button>
+                </div>
+                <pre
+                    id="code-win"><code><span class="c-cm"># Mostrar la tabla ARP dinámica y estática</span>
+<span class="c-kw">arp</span> -a
+
+<span class="c-cm"># Borrar la caché ARP (requiere privilegios de Administrador)</span>
+<span class="c-kw">arp</span> -d *
+
+<span class="c-cm"># Agregar una entrada estática (IP MAC)</span>
+<span class="c-kw">netsh</span> interface ip add neighbor <span class="c-str">"Ethernet"</span> <span class="c-var">192.168.1.1</span> <span class="c-var">00-11-22-33-44-55</span></code></pre>
+            </div>
+
+            <div class="carbon-container">
+                <div class="carbon-header">
+                    <span>Linux (iproute2)</span>
+                    <button class="copy-btn" onclick="copyCode('code-linux')">Copiar</button>
+                </div>
+                <pre
+                    id="code-linux"><code><span class="c-cm"># Ver las entradas de vecinos ARP</span>
+<span class="c-kw">ip</span> neighbor show
+
+<span class="c-cm"># Limpiar completamente la tabla ARP de la interfaz</span>
+<span class="c-kw">sudo</span> <span class="c-kw">ip</span> neigh flush dev eth0
+
+<span class="c-cm"># Añadir entrada estática ARP</span>
+<span class="c-kw">sudo</span> <span class="c-kw">ip</span> neigh add <span class="c-var">192.168.1.1</span> lladdr <span class="c-var">00:11:22:33:44:55</span> dev eth0</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>7. Vulnerabilidades de Seguridad y Mitigación</h2>
+            <p>
+                Debido a que ARP es un protocolo sin estado ni mecanismo de autenticación nativo, es vulnerable a
+                ataques de <strong>ARP Poisoning / ARP Spoofing</strong>, donde un atacante inyecta respuestas falsas
+                para posicionarse como un punto Man-In-The-Middle (MITM).
+            </p>
+
+            <p>Mecanismos de protección estándares a nivel empresarial:</p>
+            <ul>
+                <li><strong>Dynamic ARP Inspection (DAI):</strong> Función de switches administrables que contrasta los
+                    paquetes ARP contra la tabla de vinculación de DHCP Snooping.</li>
+                <li><strong>802.1X:</strong> Control de acceso basado en puertos para impedir nodos no autorizados.</li>
+            </ul>
+
+            <div class="carbon-container">
+                <div class="carbon-header">
+                    <span>Cisco IOS - Configuración Básica DAI</span>
+                    <button class="copy-btn" onclick="copyCode('code-cisco')">Copiar</button>
+                </div>
+                <pre id="code-cisco"><code><span class="c-cm">! Habilitar DHCP Snooping globalmente y en la VLAN</span>
+<span class="c-kw">ip dhcp snooping</span>
+<span class="c-kw">ip dhcp snooping vlan</span> <span class="c-var">10</span>
+
+<span class="c-cm"># Habilitar Dynamic ARP Inspection en la VLAN 10</span>
+<span class="c-kw">ip arp inspection vlan</span> <span class="c-var">10</span>
+
+<span class="c-cm">! Configurar la interfaz del uplink hacia el router como confiable</span>
+<span class="c-kw">interface</span> GigabitEthernet0/1
+ <span class="c-kw">ip arp inspection trust</span></code></pre>
+            </div>
+        </section>
+
+        <div class="note">
+            <strong>Nota sobre IPv6:</strong> En redes IPv6, el protocolo ARP ha sido reemplazado por <strong>Neighbor
+                Discovery Protocol (NDP)</strong>, el cual funciona mediante mensajes ICMPv6 utilizando direcciones
+            Multicast en lugar de Broadcast.
+        </div>
+
+    </div>
+
+    <script>
+    function copyCode(elementId) {
+      const element = document.getElementById(elementId);
+      const textToCopy = element.innerText;
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const button = element.parentElement.querySelector('.copy-btn');
+        const originalText = button.innerText;
+        button.innerText = '¡Copiado!';
+        button.style.backgroundColor = '#3dd68c';
+        button.style.color = '#161616';
+
+        setTimeout(() => {
+          button.innerText = originalText;
+          button.style.backgroundColor = 'transparent';
+          button.style.color = 'var(--carbon-text)';
+        }, 2000);
+      }).catch(err => {
+        console.error('Error al copiar el texto: ', err);
+      });
+    }
+    </script>
+</body>
+
+</html>
