@@ -224,50 +224,92 @@
         </section>
 
         <section>
-            <h2>2. ¿Por qué se inventó?</h2>
+            <h2>2. ¿Por qué se inventó y cuál es el Rol de la NIC?</h2>
             <p>
                 El protocolo IP opera a nivel lógico para resolver el enrutamiento a través de interredes complejas. Sin
-                embargo, las tarjetas de interfaz de red (NIC) en un segmento de red local no entienden direcciones IP;
-                únicamente pueden transmitir tramas utilizando direcciones de hardware grabadas de fábrica (MAC).
+                embargo, las <strong>Tarjetas de Interfaz de Red (NIC)</strong> en un segmento de red local no entienden
+                direcciones IP;
+                únicamente pueden transmitir y recibir tramas utilizando direcciones de hardware grabadas de fábrica
+                (MAC / BIA).
             </p>
             <p>
                 ARP fue introducido para eliminar la necesidad de configurar manualmente las tablas de mapeo de hardware
                 en cada host, proporcionando un mecanismo de descubrimiento dinámico, transparente y escalable para
                 redes LAN.
             </p>
+            <p>
+                <strong>Interacción con la NIC:</strong> La NIC funciona como un filtro físico de hardware. Solamente
+                pasa tramas a la CPU y al sistema operativo si la dirección MAC de destino de la trama coincide con su
+                propia MAC grabada, o si la trama está dirigida a la dirección de difusión de Capa 2
+                (<code>FF:FF:FF:FF:FF:FF</code>).
+            </p>
         </section>
 
         <section>
-            <h2>3. Comunicación entre Nodos (Flujo Paso a Paso)</h2>
+            <h2>3. La Tabla ARP (Caché ARP)</h2>
+            <p>
+                Para evitar enviar una solicitud ARP por broadcast cada vez que se transmite un paquete, cada
+                dispositivo de red mantiene una estructura de almacenamiento temporal en memoria RAM denominada
+                <strong>Tabla ARP</strong> o <strong>Caché ARP</strong>.
+            </p>
+            <p>
+                Esta tabla asocia direcciones IP de la red local con las correspondientes direcciones físicas MAC de los
+                dispositivos adyacentes.
+            </p>
+
+            <ul>
+                <li><strong>Entradas Dinámicas:</strong> Creadas automáticamente mediante solicitudes y respuestas ARP.
+                    Tienen un tiempo de vida (*TTL* / *timeout*) de unos pocos minutos (ej. 2 a 20 minutos según el SO).
+                    Si no hay tráfico con esa IP, la entrada expira y se elimina para liberar memoria.</li>
+                <li><strong>Entradas Estáticas:</strong> Asignadas manualmente por el administrador. Permanecen fijas en
+                    la tabla hasta que el sistema se reinicia o se eliminan explícitamente mediante comandos.</li>
+            </ul>
+
+            <div class="carbon-container">
+                <div class="carbon-header">
+                    <span>estructura_tabla_arp_cache.txt</span>
+                    <button class="copy-btn" onclick="copyCode('code-arp-table-spec')">Copiar</button>
+                </div>
+                <pre id="code-arp-table-spec"><code><span class="c-cm">/* Representación Interna de la Caché ARP en Memoria RAM */</span>
+
++------------------+-------------------+---------------+------------+
+| <span class="c-kw">Dirección IP</span>     | <span class="c-kw">Dirección MAC</span>     | <span class="c-var">Tipo</span>          | <span class="c-str">TTL / Estado</span>|
++------------------+-------------------+---------------+------------+
+| 192.168.1.1      | 00-11-22-33-44-55 | Estática      | Permanente |
+| 192.168.1.20     | 00-11-22-AA-BB-CC | Dinámica      | 240 seg    |
+| 192.168.1.30     | 3C-D9-2B-10-4F-A2 | Dinámica      | 115 seg    |
+| 255.255.255.255  | FF-FF-FF-FF-FF-FF | Estática      | Permanente |
++------------------+-------------------+---------------+------------+</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Comunicación entre Nodos (Flujo Paso a Paso)</h2>
             <p>
                 Cuando el <strong>Host A (192.168.1.10)</strong> requiere transmitir datos al <strong>Host B
                     (192.168.1.20)</strong> dentro de la misma subred:
             </p>
             <ol>
-                <li><strong>Búsqueda Local:</strong> Host A verifica su memoria caché ARP local buscando la IP
-                    destinataria.</li>
-                <li><strong>Generación del Broadcast (Host A / NIC Origen):</strong> Si la IP no está mapeada, la
-                    tarjeta de red (NIC) del Host A construye la trama Ethernet estableciendo la dirección MAC de
-                    destino en difusión (<code>FF:FF:FF:FF:FF:FF</code>) y la transmite hacia el conmutador (switch).
+                <li><strong>Búsqueda Local (Tabla ARP):</strong> Host A verifica su memoria caché ARP local buscando la
+                    IP destinataria para obtener su MAC.</li>
+                <li><strong>Generación del Broadcast (Host A / NIC Origen):</strong> Si la IP no está mapeada en la
+                    tabla ARP, la tarjeta de red (NIC) del Host A construye la trama Ethernet estableciendo la dirección
+                    MAC de destino en difusión (<code>FF:FF:FF:FF:FF:FF</code>) y la transmite hacia el conmutador
+                    (switch).
                 </li>
                 <li><strong>Retransmisión por el Switch (Flooding):</strong> El switch recibe la trama, detecta la
-                    dirección de
-                    difusión y la <strong>retransmite por todos sus puertos activos</strong> dentro de la misma VLAN,
-                    excepto por el puerto de origen por donde llegó la solicitud.</li>
-                <li><strong>Procesamiento e Inspección en los Nodos Destino:</strong>
+                    dirección de difusión y la <strong>retransmite por todos sus puertos activos</strong> dentro de la
+                    misma VLAN, excepto por el puerto de origen por donde llegó la solicitud.</li>
+                <li><strong>Procesamiento e Inspección en la NIC de los Nodos Destino:</strong>
                     La NIC de cada equipo conectado acepta la trama al identificar la MAC de broadcast. La pasa al
-                    sistema
-                    operativo, pero <strong>solo el Host B</strong> (cuya IP coincide con la petición) procesa la
-                    solicitud;
-                    los demás equipos la descartan silenciosamente.</li>
+                    sistema operativo, pero <strong>solo el Host B</strong> (cuya IP coincide con la petición) procesa
+                    la solicitud; los demás equipos la descartan silenciosamente a nivel de pila IP.</li>
                 <li><strong>Respuesta Unicast (Host B):</strong> Host B responde directamente al Host A mediante un
-                    mensaje
-                    <strong>Unicast</strong> (con la MAC del Host A como destino explícito). El switch reenvía esta
-                    respuesta
-                    únicamente al puerto del Host A.
+                    mensaje <strong>Unicast</strong> (con la MAC del Host A como destino explícito). El switch reenvía
+                    esta respuesta únicamente al puerto del Host A.
                 </li>
-                <li><strong>Actualización de Caché:</strong> Host A almacena la relación IP-MAC en su tabla ARP y envía
-                    la trama de datos que tenía retenida.</li>
+                <li><strong>Actualización de la Tabla ARP:</strong> Host A almacena la relación IP-MAC en su tabla ARP y
+                    transmite de inmediato la trama de datos IP que tenía retenida en buffer.</li>
             </ol>
 
             <div class="carbon-container">
@@ -286,12 +328,12 @@
 <span class="c-kw">[PASO 2: ARP Reply - UNICAST]</span>
   Host B (NIC) ----> [Trama MAC Destino: 00:11:22:AA:BB:CC (Host A)] ----> Switch
   Switch       ----> Consulta tabla CAM y reenvía ÚNICAMENTE al puerto de Host A.
-  Host A       ----> Recibe la MAC de B y actualiza su caché ARP.</code></pre>
+  Host A       ----> Recibe la MAC de B y actualiza su tabla ARP.</code></pre>
             </div>
         </section>
 
         <section>
-            <h2>4. Estructura del Petición/Respuesta (Campos ARP)</h2>
+            <h2>5. Estructura del Petición/Respuesta (Campos ARP)</h2>
             <p>A continuación se muestra la estructura del encabezado ARP estandarizado (28 bytes para IPv4/Ethernet):
             </p>
 
@@ -320,20 +362,20 @@
         </section>
 
         <section>
-            <h2>5. Variaciones del Protocolo ARP</h2>
+            <h2>6. Variaciones del Protocolo ARP</h2>
             <ul>
                 <li><strong>Gratuitous ARP (GARP):</strong> Petición/respuesta no solicitada. Utilizada para actualizar
-                    tablas de nodos tras un cambio de MAC (ej. Failover de clúster) y detectar direccionamiento IP
-                    duplicado.</li>
+                    tablas ARP de los nodos tras un cambio de MAC (ej. Failover de clúster) y detectar direccionamiento
+                    IP duplicado en la red.</li>
                 <li><strong>Proxy ARP:</strong> Un router responde a solicitudes ARP destinadas a un host fuera de la
                     red local, ofreciendo su propia MAC para interceptar y enrutar el tráfico.</li>
                 <li><strong>Reverse ARP (RARP):</strong> Obsoleto. Permitía a clientes sin disco solicitar su IP
-                    conociendo únicamente su MAC (reemplazado por DHCP).</li>
+                    conociendo únicamente la MAC de su NIC (reemplazado por BOOTP y posteriormente DHCP).</li>
             </ul>
         </section>
 
         <section>
-            <h2>6. Comandos de Inspección y Manipulación de Caché</h2>
+            <h2>7. Comandos de Inspección y Manipulación de la Tabla ARP</h2>
             <p>Bloques de código para auditar y modificar la tabla de vecinos ARP desde consola de comandos:</p>
 
             <div class="carbon-container">
@@ -348,7 +390,7 @@
 <span class="c-cm"># Borrar la caché ARP (requiere privilegios de Administrador)</span>
 <span class="c-kw">arp</span> -d *
 
-<span class="c-cm"># Agregar una entrada estática (IP MAC)</span>
+<span class="c-cm"># Agregar una entrada estática en la tabla ARP (IP MAC)</span>
 <span class="c-kw">netsh</span> interface ip add neighbor <span class="c-str">"Ethernet"</span> <span class="c-var">192.168.1.1</span> <span class="c-var">00-11-22-33-44-55</span></code></pre>
             </div>
 
@@ -358,23 +400,23 @@
                     <button class="copy-btn" onclick="copyCode('code-linux')">Copiar</button>
                 </div>
                 <pre
-                    id="code-linux"><code><span class="c-cm"># Ver las entradas de vecinos ARP</span>
+                    id="code-linux"><code><span class="c-cm"># Ver las entradas de vecinos de la tabla ARP</span>
 <span class="c-kw">ip</span> neighbor show
 
 <span class="c-cm"># Limpiar completamente la tabla ARP de la interfaz</span>
 <span class="c-kw">sudo</span> <span class="c-kw">ip</span> neigh flush dev eth0
 
-<span class="c-cm"># Añadir entrada estática ARP</span>
+<span class="c-cm"># Añadir entrada estática en la tabla ARP</span>
 <span class="c-kw">sudo</span> <span class="c-kw">ip</span> neigh add <span class="c-var">192.168.1.1</span> lladdr <span class="c-var">00:11:22:33:44:55</span> dev eth0</code></pre>
             </div>
         </section>
 
         <section>
-            <h2>7. Vulnerabilidades de Seguridad y Mitigación</h2>
+            <h2>8. Vulnerabilidades de Seguridad y Mitigación</h2>
             <p>
                 Debido a que ARP es un protocolo sin estado ni mecanismo de autenticación nativo, es vulnerable a
                 ataques de <strong>ARP Poisoning / ARP Spoofing</strong>, donde un atacante inyecta respuestas falsas
-                para posicionarse como un punto Man-In-The-Middle (MITM).
+                para alterar las tablas ARP de las víctimas y posicionarse como un punto Man-In-The-Middle (MITM).
             </p>
 
             <p>Mecanismos de protección estándares a nivel empresarial:</p>
