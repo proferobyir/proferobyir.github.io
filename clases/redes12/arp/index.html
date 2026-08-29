@@ -176,46 +176,28 @@
         </header>
 
         <section>
-            <h2>1. Fundamentos: Los Tres Tipos de Comunicación en Red</h2>
-            <p>Para comprender cómo opera ARP, primero debemos entender los tres métodos con los que un host transmite
-                información dentro de una red:</p>
+            <h2>1. Fundamentos: Tipos de Comunicación en Red</h2>
+            <p>Métodos de transmisión de un host en una red local:</p>
             <ul>
-                <li><strong>Unicast:</strong> Comunicación de un único host a otro único host específico.</li>
-                <li><strong>Multicast:</strong> Comunicación de un host a un grupo seleccionado de hosts.</li>
-                <li><strong>Broadcast (Difusión):</strong> Método de envío donde un host emite un paquete dirigido a
-                    <strong>todos los dispositivos</strong> de la misma red física al mismo tiempo.</li>
-            </ul>
-
-            <div class="note">
-                <div class="note-title">Clarificación Teórica: ¿Qué es el Broadcast?</div>
-                <p>El <strong>broadcast</strong> no es la primera comunicación de un host por definición, sino un método
-                    de envío masivo a la red física.</p>
-                <p style="margin-bottom:0;"><strong>¿Por qué existe la confusión?</strong> Cuando un equipo entra a la
-                    red no conoce la topología ni tiene direcciones del resto de nodos, por lo que recurre al broadcast
-                    (solicitud DHCP o consulta ARP) para descubrir la información faltante.</p>
-            </div>
-
-            <p><strong>Características clave del Broadcast:</strong></p>
-            <ul>
-                <li><strong>Destino masivo:</strong> Usa direcciones especiales (<code>255.255.255.255</code> en Capa 3
-                    o <code>FF:FF:FF:FF:FF:FF</code> en Capa 2).</li>
-                <li><strong>Procesamiento obligado:</strong> Todos los receptores deben procesar el paquete en su pila
-                    de red.</li>
-                <li><strong>Uso específico:</strong> Se usa cuando se desconoce la ubicación del destinatario.</li>
+                <li><strong>Unicast:</strong> Comunicación punto a punto (un emisor a un receptor específico).</li>
+                <li><strong>Multicast:</strong> Comunicación punto a multipunto (un emisor a un grupo suscrito).</li>
+                <li><strong>Broadcast (Difusión):</strong> Envío desde un host hacia <strong>todos los
+                        dispositivos</strong> de la misma red física (dirección IP <code>255.255.255.255</code> o MAC
+                    <code>FF:FF:FF:FF:FF:FF</code>). Se procesa obligatoriamente por todas las NICs de la red.</li>
             </ul>
         </section>
 
         <section>
             <h2>2. ¿Qué es el Protocolo ARP?</h2>
-            <p>El <strong>Address Resolution Protocol (ARP)</strong> asocia una dirección IP (Capa 3 / Lógica) con una
-                dirección MAC (Capa 2 / Física) dentro de una misma red Ethernet.</p>
-            <img src="./pictures/arpeditado.gif" alt="Asignación IP a MAC en ARP" class="section-img">
+            <p>El <strong>Address Resolution Protocol (ARP)</strong> permite asociar una dirección IP (Capa 3 / Lógica)
+                con una dirección MAC (Capa 2 / Física) dentro de un mismo dominio de difusión Ethernet.</p>
+            <img src="./pictures/arpeditado.gif" alt="Resolución de direcciones ARP" class="section-img">
         </section>
 
         <section>
-            <h2>3. Rol de la Tarjeta de Red (NIC)</h2>
-            <p>Las aplicaciones usan direcciones IP, pero las <strong>Tarjetas de Interfaz de Red (NIC)</strong> en una
-                red local solo se comunican mediante direcciones físicas MAC.</p>
+            <h2>3. Rol de la Tarjeta de Red (NIC) y Trama Ethernet</h2>
+            <p>Las aplicaciones operan con direccionamiento IP, pero la entrega de marcos en la red local se realiza a
+                través de las direcciones MAC procesadas por la NIC.</p>
 
             <svg class="section-img" viewBox="0 0 850 360" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -303,24 +285,21 @@
                 <text x="35" y="268" class="svg-desc" font-weight="bold">• MAC Destino FF:FF:FF:FF:FF:FF</text>
                 <text x="240" y="268" class="svg-desc">Broadcast: Recibido y procesado por todos los nodos.</text>
                 <text x="35" y="293" class="svg-desc" font-weight="bold">• FCS (Frame Check Sequence)</text>
-                <text x="240" y="293" class="svg-desc">Verifica que el mensaje no llegue corrupto.</text>
-                <text x="35" y="318" class="svg-desc" font-weight="bold">• Filtro de la NIC</text>
-                <text x="240" y="318" class="svg-desc">La NIC solo pasa a CPU tráfico para su propia MAC o
+                <text x="240" y="293" class="svg-desc">Verifica la integridad de la trama a nivel de enlace.</text>
+                <text x="35" y="318" class="svg-desc" font-weight="bold">• Filtro de Hardware</text>
+                <text x="240" y="318" class="svg-desc">La NIC solo eleva a la CPU tramas dirigidas a su propia MAC o
                     Broadcast.</text>
             </svg>
-
-            <p><strong>Filtro de Hardware:</strong> La NIC actúa como filtro inicial. Solo eleva a la CPU paquetes
-                dirigidos a su propia dirección MAC o los enviados a Broadcast (<code>FF:FF:FF:FF:FF:FF</code>).</p>
-            <img src="./pictures/imagen.jpg" alt="Filtro de la NIC" class="section-img">
         </section>
 
         <section>
-            <h2>4. La Tabla ARP (Caché ARP)</h2>
-            <p>Los sistemas operativos guardan las asociaciones IP-MAC aprendidas en la RAM para reducir las consultas
-                por Broadcast:</p>
+            <h2>4. La Tabla Caché ARP</h2>
+            <p>Los sistemas operativos almacenan dinámicamente las entradas IP-MAC aprendidas en la memoria RAM para
+                optimizar el tráfico de red:</p>
             <ul>
-                <li><strong>Dinámicas:</strong> Se aprenden automáticamente y expiran con inactividad.</li>
-                <li><strong>Estáticas:</strong> Asignadas manualmente; permanecen hasta reiniciar o borrar.</li>
+                <li><strong>Dinámicas:</strong> Aprendidas automáticamente mediante respuestas ARP; poseen tiempo de
+                    vida (TTL).</li>
+                <li><strong>Estáticas:</strong> Configuradas manualmente; persisten en la tabla de cómputo.</li>
             </ul>
 
             <div class="carbon-container">
@@ -340,42 +319,25 @@
         </section>
 
         <section>
-            <h2>5. Mapeo de Direcciones: Unicast vs Broadcast</h2>
+            <h2>5. Proceso de Mapeo de Direcciones</h2>
             <ol>
-                <li><strong>Consulta Caché:</strong> PC A (<code>192.168.1.10</code>) busca la MAC de PC B
-                    (<code>192.168.1.20</code>) en su memoria local.</li>
-                <li><strong>Solicitud ARP (Broadcast):</strong> Al no encontrarla, emite una consulta a
-                    <code>FF:FF:FF:FF:FF:FF</code>.</li>
-                <li><strong>Retransmisión Switch:</strong> El Switch difunde el mensaje por todos sus puertos.</li>
-                <li><strong>Filtrado:</strong> Los demás equipos descartan el paquete; PC B reconoce su IP.</li>
-                <li><strong>Respuesta ARP (Unicast):</strong> PC B responde directamente a la MAC de PC A.</li>
-                <li><strong>Envío de Datos:</strong> PC A guarda la MAC en su tabla y envía los datos por Unicast.</li>
+                <li><strong>Consulta de Caché Local:</strong> El host origen busca la IP destino en su tabla ARP.</li>
+                <li><strong>Solicitud ARP (Broadcast):</strong> Si no existe el registro, envía un <em>ARP Request</em>
+                    con dirección MAC de destino <code>FF:FF:FF:FF:FF:FF</code>.</li>
+                <li><strong>Inundación por el Switch:</strong> El switch retransmite la trama por todos los puertos
+                    activos del dominio de colisión/VLAN.</li>
+                <li><strong>Filtrado e Identificación:</strong> Los hosts descartan la trama salvo el equipo que posee
+                    la IP solicitada.</li>
+                <li><strong>Respuesta ARP (Unicast):</strong> El host destino responde con un <em>ARP Reply</em>
+                    dirigido explícitamente a la MAC del emisor.</li>
+                <li><strong>Actualización de Caché y Transmisión:</strong> El origen actualiza su tabla ARP y conmuta el
+                    tráfico de datos por unicast.</li>
             </ol>
-
-            <img src="./pictures/imagen.jpg" alt="Flujo ARP" class="section-img">
-
-            <div class="carbon-container">
-                <div class="carbon-header">
-                    <span>mecanica_broadcast_vs_unicast.txt</span>
-                    <button class="copy-btn" onclick="copyCode('code-flow-example')">Copiar</button>
-                </div>
-                <pre id="code-flow-example"><code><span class="c-kw">[PASO 1: Petición ARP - BROADCAST]</span>
-  PC A ----> "¿Quién tiene la IP 192.168.1.20?" (Destino: FF:FF:FF:FF:FF:FF) ----> Switch
-  Switch   ----> Difunde a todos los puertos
-                 ├── PC B (192.168.1.20) -> Es mi IP. Respondo.
-                 └── PC C (192.168.1.30) -> No es mi IP. Descarto.
-
-<span class="c-kw">[PASO 2: Respuesta ARP - UNICAST]</span>
-  PC B ----> "PC A, la IP es mía. Mi MAC es 00:11:22:AA:BB:CC" ----> Switch
-  Switch   ----> Entrega exclusivamente a PC A.
-  PC A     ----> Guarda registro y transmite los datos directamente.</code></pre>
-            </div>
         </section>
 
         <section>
-            <h2>6. Estructura Interna del Mensaje ARP</h2>
-            <p>Campos del mensaje ARP estándar (28 bytes):</p>
-            <img src="./pictures/imagen.jpg" alt="Cabecera ARP RFC 826" class="section-img">
+            <h2>6. Estructura del Mensaje ARP (RFC 826)</h2>
+            <p>Formato del paquete de datos ARP (28 bytes sobre encabezado Ethernet):</p>
 
             <div class="carbon-container">
                 <div class="carbon-header">
@@ -393,7 +355,7 @@
 +-----------------------------------------------------------------------+
 | <span class="c-str">IP Emisor (SPA) - [4 Bytes]</span>                                        |
 +-----------------------------------------------------------------------+
-| <span class="c-str">MAC Destino (THA) - [6 Bytes] (En ceros al preguntar)</span>               |
+| <span class="c-str">MAC Destino (THA) - [6 Bytes] (00:00:00:00:00:00 en Request)</span>         |
 +-----------------------------------------------------------------------+
 | <span class="c-str">IP Destino (TPA) - [4 Bytes]</span>                                       |
 +-----------------------------------------------------------------------+</code></pre>
@@ -401,17 +363,17 @@
         </section>
 
         <section>
-            <h2>7. Variaciones Comunes de ARP</h2>
+            <h2>7. Variaciones del Protocolo ARP</h2>
             <ul>
-                <li><strong>Gratuitous ARP (GARP):</strong> Broadcast no solicitado para anunciar propia IP o detectar
-                    conflictos.</li>
-                <li><strong>Proxy ARP:</strong> Un router responde con su MAC a consultas destinadas a hosts de otra
-                    subred.</li>
+                <li><strong>Gratuitous ARP (GARP):</strong> Mensaje de difusión no solicitado utilizado para anunciar
+                    cambios de direccionamiento MAC o detectar duplicidad de IP en la red.</li>
+                <li><strong>Proxy ARP:</strong> Mecanismo donde un router responde solicitudes ARP en nombre de un host
+                    situado en otra subred.</li>
             </ul>
         </section>
 
         <section>
-            <h2>8. Comandos Útiles</h2>
+            <h2>8. Comandos de Diagnóstico</h2>
             <div class="carbon-container">
                 <div class="carbon-header">
                     <span>Windows (CMD / PowerShell)</span>
@@ -420,7 +382,7 @@
                 <pre id="code-win"><code><span class="c-cm"># Mostrar tabla ARP</span>
 <span class="c-kw">arp</span> -a
 
-<span class="c-cm"># Borrar tabla ARP (Admin)</span>
+<span class="c-cm"># Borrar tabla ARP (Requiere privilegios de Administrador)</span>
 <span class="c-kw">arp</span> -d *</code></pre>
             </div>
 
@@ -432,21 +394,23 @@
                 <pre id="code-linux"><code><span class="c-cm"># Ver vecinos ARP</span>
 <span class="c-kw">ip</span> neighbor show
 
-<span class="c-cm"># Limpiar tabla ARP</span>
+<span class="c-cm"># Limpiar caché ARP</span>
 <span class="c-kw">sudo ip</span> neigh flush dev eth0</code></pre>
             </div>
         </section>
 
         <section>
             <h2>9. Seguridad: ARP Spoofing</h2>
-            <p>Al no incluir autenticación, un atacante puede emitir respuestas ARP falsas para asociar la IP de la
-                puerta de enlace a su MAC (Ataque <em>Man-In-The-Middle</em>).</p>
+            <p>Debido a la ausencia de autenticación en el RFC 826, un atacante puede enviar respuestas ARP no
+                solicitadas para asociar su MAC a la IP del Gateway, facilitando ataques de tipo <em>Man-In-The-Middle
+                    (MITM)</em>.</p>
         </section>
 
         <div class="note">
-            <div class="note-title">Nota sobre IPv6</div>
-            <p style="margin-bottom:0;">En IPv6 el protocolo ARP y el broadcast no existen. Se reemplazan por el
-                protocolo <strong>NDP (Neighbor Discovery Protocol)</strong> basado en <strong>Multicast</strong>.</p>
+            <div class="note-title">Nota: Implementación en IPv6</div>
+            <p style="margin-bottom:0;">En IPv6 no existe el protocolo ARP ni las transmisiones por broadcast. Se
+                utiliza en su lugar <strong>NDP (Neighbor Discovery Protocol)</strong> sobre mensajes Multicast ICMPv6.
+            </p>
         </div>
 
     </div>
