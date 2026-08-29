@@ -96,6 +96,17 @@
             width: 100%;
         }
 
+        .standard-box img {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .standard-box img:hover {
+            transform: scale(1.02);
+        }
+
         .svg-connector {
             width: 100%;
             max-width: 280px;
@@ -135,6 +146,51 @@
             border-radius: 4px;
             font-weight: bold;
         }
+
+        /* ESTILOS DEL MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .modal-caption {
+            margin-top: 15px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #ffffff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ccc;
+        }
     </style>
 </head>
 
@@ -170,15 +226,15 @@
             <p>Posicione el conector RJ-45 con la pestaña de bloqueo orientada hacia abajo y los contactos dorados
                 apuntando hacia arriba. Los pines se cuentan del 1 al 8 de izquierda a derecha.</p>
 
-                  <img src="./pictures/normaA.jpg">
-            
-                      
+            <div class="standards-container">
+                <div class="standard-box">
+                    <h2>T568A</h2>
+                    <img src="./pictures/normaA.jpg" alt="Esquema Norma T568A" class="modal-trigger">
                 </div>
 
-                <!-- Conector T568B -->
                 <div class="standard-box">
                     <h2>T568B</h2>
-                   <img src="./pictures/normaB.jpg">
+                    <img src="./pictures/normaB.jpg" alt="Esquema Norma T568B" class="modal-trigger">
                 </div>
             </div>
         </section>
@@ -235,6 +291,46 @@
         </section>
     </main>
 
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImg");
+        const modalCaption = document.getElementById("modalCaption");
+        const closeBtn = document.querySelector(".close-btn");
+        const triggers = document.querySelectorAll(".modal-trigger");
+
+        triggers.forEach(img => {
+            img.addEventListener("click", function () {
+                modal.style.display = "flex";
+                modalImg.src = this.src;
+                modalCaption.textContent = this.alt;
+            });
+        });
+
+        // Cerrar modal al hacer clic en el botón (X)
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        // Cerrar modal al presionar la tecla Escape
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modal.style.display === "flex") {
+                modal.style.display = "none";
+            }
+        });
+    </script>
 </body>
 
 </html>
