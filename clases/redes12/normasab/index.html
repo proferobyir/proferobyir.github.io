@@ -83,6 +83,9 @@
             border: 1px solid var(--border-color);
             border-radius: 15px;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .standard-box h2 {
@@ -90,26 +93,103 @@
             padding-bottom: 10px;
             margin-bottom: 15px;
             text-align: center;
+            width: 100%;
         }
 
-        ol {
-            list-style-position: inside;
-            padding-left: 5px;
+        .standard-box img {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
 
-        li {
-            padding: 6px 0;
-            border-bottom: 1px dashed #cccccc;
-            font-weight: 500;
+        .standard-box img:hover {
+            transform: scale(1.02);
         }
 
-        li:last-child {
-            border-bottom: none;
+        .svg-connector {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            margin: 10px 0;
         }
 
-        .pin-pair {
-            font-size: 0.85rem;
-            color: #444444;
+        /* Clases para destacar los cables con fondo de color y texto blanco */
+        .wire-green {
+            background-color: #2e7d32;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .wire-orange {
+            background-color: #e65100;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .wire-blue {
+            background-color: #1565c0;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .wire-brown {
+            background-color: #6d4c41;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* ESTILOS DEL MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .modal-caption {
+            margin-top: 15px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #ffffff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ccc;
         }
     </style>
 </head>
@@ -137,7 +217,7 @@
                 <h3>Aclaratoria Importante sobre Compatibilidad</h3>
                 <p>Ambos esquemas son funcionalmente idénticos en términos de rendimiento de red (mismo ancho de banda,
                     frecuencias y capacidades de transmisión). La única diferencia real entre T568A y T568B es la
-                    transposición de los pares de cables 2 (Naranja) y 3 (Verde).</p>
+                    transposición de los pares de cables 2 (<span class="wire-orange">Naranja</span>) y 3 (<span class="wire-green">Verde</span>).</p>
             </div>
         </section>
 
@@ -149,38 +229,27 @@
             <div class="standards-container">
                 <div class="standard-box">
                     <h2>T568A</h2>
-                    <ol>
-                        <li>Blanco / Verde <span class="pin-pair">(Par 3)</span></li>
-                        <li>Verde <span class="pin-pair">(Par 3)</span></li>
-                        <li>Blanco / Naranja <span class="pin-pair">(Par 2)</span></li>
-                        <li>Azul <span class="pin-pair">(Par 1)</span></li>
-                        <li>Blanco / Azul <span class="pin-pair">(Par 1)</span></li>
-                        <li>Naranja <span class="pin-pair">(Par 2)</span></li>
-                        <li>Blanco / Marrón <span class="pin-pair">(Par 4)</span></li>
-                        <li>Marrón <span class="pin-pair">(Par 4)</span></li>
-                    </ol>
+                    <img src="./pictures/normaA.jpg" alt="Esquema Norma T568A" class="modal-trigger">
                 </div>
 
                 <div class="standard-box">
                     <h2>T568B</h2>
-                    <ol>
-                        <li>Blanco / Naranja <span class="pin-pair">(Par 2)</span></li>
-                        <li>Naranja <span class="pin-pair">(Par 2)</span></li>
-                        <li>Blanco / Verde <span class="pin-pair">(Par 3)</span></li>
-                        <li>Azul <span class="pin-pair">(Par 1)</span></li>
-                        <li>Blanco / Azul <span class="pin-pair">(Par 1)</span></li>
-                        <li>Verde <span class="pin-pair">(Par 3)</span></li>
-                        <li>Blanco / Marrón <span class="pin-pair">(Par 4)</span></li>
-                        <li>Marrón <span class="pin-pair">(Par 4)</span></li>
-                    </ol>
+                    <img src="./pictures/normaB.jpg" alt="Esquema Norma T568B" class="modal-trigger">
                 </div>
             </div>
         </section>
 
         <section>
+            <strong>Transmisión Física de Datos (Tx / Rx)</strong>
+            <p>En conexiones Fast Ethernet (100BASE-TX), no todos los conductores transmiten datos simultáneamente:</p>
+            <p><strong>Pines 1 y 2:</strong> Transmisión de datos (Tx+ / Tx-).</p>
+            <p><strong>Pines 3 y 6:</strong> Recepción de datos (Rx+ / Rx-).</p>
+            <p><strong>Pines 4, 5, 7 y 8:</strong> En redes Fast Ethernet quedan libres o se usan para telefonía/PoE. Sin embargo, en <strong>Gigabit Ethernet (1000BASE-T)</strong>, los 4 pares se utilizan de forma bidireccional para lograr tasas de 1 Gbps.</p>
+        </section>
+
+        <section>
             <strong>Diferencias Clave y Aplicación</strong>
-            <p>La regla fundamental en el cableado estructurado es mantener la consistencia en toda la infraestructura.
-            </p>
+            <p>La regla fundamental en el cableado estructurado es mantener la consistencia en toda la infraestructura.</p>
 
             <div class="callout">
                 <h3>Aclaratoria sobre Cables Directos vs. Cruzados</h3>
@@ -188,13 +257,80 @@
                     (T568A-T568A o T568B-T568B). Se utiliza para conectar dispositivos de diferente tipo (ej. PC a
                     Switch).</p>
                 <p><strong>Cable Cruzado (Crossover):</strong> Utiliza T568A en un extremo y T568B en el otro.
-                    Historicamente se usaba para conectar dispositivos similares (ej. PC a PC). Hoy en día, la
+                    Históricamente se usaba para conectar dispositivos similares (ej. PC a PC). Hoy en día, la
                     tecnología <em>Auto-MDIX</em> en los equipos modernos conmuta los pines automáticamente, haciendo
                     casi obsoleto el uso de cables cruzados.</p>
             </div>
         </section>
+
+        <section>
+            <strong>Categorías de Cables UTP y Ancho de Banda</strong>
+            <p>El estándar T568A/B se aplica independientemente de la categoría del cable. La diferencia técnica radica en la frecuencia de operación y los giros por pulgada del par trenzado:</p>
+            <p><strong>Cat 5e:</strong> Soporta velocidades de hasta 1 Gbps con una frecuencia de 100 MHz.</p>
+            <p><strong>Cat 6:</strong> Soporta hasta 10 Gbps (hasta 55 metros) a una frecuencia de 250 MHz.</p>
+            <p><strong>Cat 6a:</strong> Soporta hasta 10 Gbps (hasta 100 metros) trabajando a 500 MHz y con mayor aislamiento contra la diafonía (crosstalk).</p>
+        </section>
+
+        <section>
+            <strong>Procedimiento Práctico de Armado y Ponchado</strong>
+            <p>Para garantizar una conexión estable y duradera, se debe seguir el procedimiento técnico estándar:</p>
+            <p><strong>1. Deschaquetado:</strong> Retirar aproximadamente 2 cm de la cubierta exterior de PVC cuidando no cortar el aislamiento de los hilos internos.</p>
+            <p><strong>2. Destrenzado y Alineación:</strong> Peinar y aplanar los hilos organizándolos de izquierda a derecha según la norma elegida (T568A o T568B).</p>
+            <p><strong>3. Corte Parejo:</strong> Cortar el exceso de hilo en línea recta, dejando aproximadamente 1.2 cm a 1.5 cm desde el borde del recubrimiento exterior.</p>
+            <p><strong>4. Inserción:</strong> Empujar firmemente los hilos dentro del conector RJ-45 asegurándose de que la chaqueta exterior del cable ingrese dentro de la cubierta posterior del conector.</p>
+            <p><strong>5. Crimpado:</strong> Usar la ponchadora (crimping tool) para presionar las cuchillas doradas contra los hilos y asegurar el freno mecánico sobre la chaqueta exterior.</p>
+        </section>
+
+        <section>
+            <div class="callout">
+                <h3>Errores Comunes durante la Práctica</h3>
+                <p><strong>Chaqueta fuera del conector:</strong> Dejar la cubierta exterior fuera del conector RJ-45 provoca que el cable se desprenda fácilmente con la tracción.</p>
+                <p><strong>Pares no destrenzados correctamente:</strong> Perder el orden de pines 3 y 6 al cruzar el par <span class="wire-green">Verde</span> o <span class="wire-orange">Naranja</span>.</p>
+                <p><strong>Exceso de destrenzado:</strong> Deshacer las trenzas más allá de 1.3 cm incrementa el ruido electromagnético y reduce la velocidad real del enlace.</p>
+            </div>
+        </section>
     </main>
 
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImg");
+        const modalCaption = document.getElementById("modalCaption");
+        const closeBtn = document.querySelector(".close-btn");
+        const triggers = document.querySelectorAll(".modal-trigger");
+
+        triggers.forEach(img => {
+            img.addEventListener("click", function () {
+                modal.style.display = "flex";
+                modalImg.src = this.src;
+                modalCaption.textContent = this.alt;
+            });
+        });
+
+        // Cerrar modal al hacer clic en el botón (X)
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        // Cerrar modal al presionar la tecla Escape
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modal.style.display === "flex") {
+                modal.style.display = "none";
+            }
+        });
+    </script>
 </body>
 
 </html>
