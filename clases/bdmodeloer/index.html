@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Modelo Entidad-Relación y SGBD</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #282828;
+            --accent-blue: #0f62fe;
+            --accent-cyan: #1177d6;
+            --text-primary: #f4f4f4;
+            --text-secondary: #c6c6c6;
+            --border: #393939;
+            --code-bg: #161616;
+            --highlight: #00d700;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 16px;
+        }
+
+        header {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border-bottom: 3px solid var(--accent-blue);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        nav {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        nav a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 6px 0;
+        }
+
+        section {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            color: var(--accent-cyan);
+            margin: 14px 0 6px 0;
+        }
+
+        p,
+        li {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .svg-container {
+            width: 100%;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            margin: 14px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .quiz-container {
+            background: var(--bg-card);
+            padding: 14px;
+            border-radius: 6px;
+            margin-top: 14px;
+        }
+
+        .quiz-option {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 8px 0;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .feedback {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding: 20px 0;
+        }
+
+        /* Responsive Breakpoints (Desktop Enhance) */
+        @media (min-width: 768px) {
+            body {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            nav {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .grid-2col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Bases de Datos & Modelo E-R</h1>
+        <div class="subtitle">Guía de aprendizaje interactiva | Enfoque Carbon Dark</div>
+    </header>
+
+    <nav>
+        <a href="#sgbd">1. ¿Qué es un SGBD?</a>
+        <a href="#mer">2. Componentes E-R</a>
+        <a href="#cardinalidad">3. Cardinalidad</a>
+        <a href="#ejemplo">4. Caso Práctico</a>
+    </nav>
+
+    <section id="sgbd">
+        <h2>1. Sistema de Gestión de Bases de Datos (SGBD)</h2>
+        <p>Un <strong>SGBD</strong> (o DBMS en inglés) es el software que actúa como interfaz entre la base de datos,
+            los usuarios y las aplicaciones. Permite almacenar, modificar y extraer información de forma estructurada,
+            segura y eficiente.</p>
+
+        <div class="card">
+            <h3>Funciones Clave de un SGBD:</h3>
+            <ul>
+                <li><strong>Gestión del almacenamiento:</strong> Organiza los datos en disco de forma óptima.</li>
+                <li><strong>Control de concurrencia:</strong> Permite que varios usuarios accedan simultáneamente sin
+                    corromper la información.</li>
+                <li><strong>Integridad y seguridad:</strong> Aplica reglas de acceso y restricciones de datos.</li>
+                <li><strong>Recuperación ante fallos:</strong> Permite restaurar datos tras un error del sistema.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="mer">
+        <h2>2. Componentes del Modelo Entidad-Relación</h2>
+        <p>El **Modelo Entidad-Relación (MER)** es una herramienta conceptual utilizada para diseñar la estructura de
+            una base de datos antes de programarla.</p>
+
+        <div class="grid-2col">
+            <div class="card">
+                <h3>Entidad</h3>
+                <p>Representa un objeto, persona, lugar o concepto del mundo real sobre el cual se desea almacenar
+                    información. En el diagrama se representa con un <strong>rectángulo</strong>.</p>
+                <p><em>Ejemplo: Estudiante, Curso, Factura.</em></p>
+            </div>
+
+            <div class="card">
+                <h3>Atributo</h3>
+                <p>Es una propiedad o característica que describe a una entidad. Se representan mediante
+                    <strong>óvalos</strong>.</p>
+                <p><em>Ejemplo: Cédula, Nombre, Correo. El atributo principal se subraya (Clave Primaria).</em></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Relación</h3>
+            <p>Es la asociación o vínculo que existe entre dos o más entidades. Se representa con un
+                <strong>rombo</strong>.</p>
+            <p><em>Ejemplo: Un Estudiante <strong>Inscribe</strong> una Asignatura.</em></p>
+        </div>
+    </section>
+
+    <section id="cardinalidad">
+        <h2>3. Cardinalidades y Simbología</h2>
+        <p>La cardinalidad define cuántas instancias de una entidad pueden asociarse con instancias de otra entidad.</p>
+
+        <ul>
+            <li><strong>1:1 (Uno a Uno):</strong> Una entidad A se relaciona con una sola entidad B.</li>
+            <li><strong>1:N (Uno a Muchos):</strong> Una entidad A se relaciona con varias entidades B, pero B solo con
+                una A.</li>
+            <li><strong>N:M (Muchos a Muchos):</strong> Varias entidades A se relacionan con varias entidades B.</li>
+        </ul>
+
+        <div class="svg-container">
+            <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+                <!-- Entidad Estudiante -->
+                <rect x="10" y="40" width="100" height="40" rx="4" fill="#282828" stroke="#0f62fe" stroke-width="2" />
+                <text x="60" y="65" fill="#f4f4f4" font-size="12" text-anchor="middle">ESTUDIANTE</text>
+
+                <!-- Relación Inscribe -->
+                <polygon points="180,35 220,60 180,85 140,60" fill="#282828" stroke="#1177d6" stroke-width="2" />
+                <text x="180" y="64" fill="#f4f4f4" font-size="10" text-anchor="middle">INSCRIBE</text>
+
+                <!-- Entidad Curso -->
+                <rect x="260" y="40" width="100" height="40" rx="4" fill="#282828" stroke="#0f62fe" stroke-width="2" />
+                <text x="310" y="65" fill="#f4f4f4" font-size="12" text-anchor="middle">MATERIA</text>
+
+                <!-- Líneas y Cardinalidad -->
+                <line x1="110" y1="60" x2="140" y2="60" stroke="#f4f4f4" stroke-width="2" />
+                <line x1="220" y1="60" x2="260" y2="60" stroke="#f4f4f4" stroke-width="2" />
+
+                <text x="125" y="52" fill="#00d700" font-size="12" font-weight="bold">N</text>
+                <text x="235" y="52" fill="#00d700" font-size="12" font-weight="bold">M</text>
+            </svg>
+        </div>
+    </section>
+
+    <section id="ejemplo">
+        <h2>4. Caso Práctico & Comprobación</h2>
+        <p><strong>Enunciado:</strong> Un profesor imparte varias asignaturas, pero cada asignatura es impartida por un
+            único profesor. ¿Qué tipo de cardinalidad aplica aquí entre Profesor y Asignatura?</p>
+
+        <div class="quiz-container">
+            <button class="quiz-option" onclick="checkAnswer(1)">A) Cardinalidad 1:1</button>
+            <button class="quiz-option" onclick="checkAnswer(2)">B) Cardinalidad 1:N (Un profesor a Muchas
+                asignaturas)</button>
+            <button class="quiz-option" onclick="checkAnswer(3)">C) Cardinalidad N:M</button>
+
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Material de Apoyo Académico | Diseño Adaptativo Mobile-First</p>
+    </footer>
+
+    <script>
+        function checkAnswer(option) {
+            const feedback = document.getElementById('feedback');
+            feedback.style.display = 'block';
+
+            if (option === 2) {
+                feedback.style.color = '#00d700';
+                feedback.textContent = '¡Correcto! Un profesor puede tener N asignaturas, pero la asignatura solo pertenece a 1 profesor.';
+            } else {
+                feedback.style.color = '#ff8389';
+                feedback.textContent = 'Incorrecto. Revisa las reglas: un profesor puede dar más de una clase.';
+            }
+        }
+    </script>
+</body>
+
+</html>
