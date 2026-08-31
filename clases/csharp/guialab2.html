@@ -1,1228 +1,212 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE1 html>
+    <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Laboratorio N° 2 - C# Avanzado</title>
-    <style>
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #111111;
-            --accent-color: #2563eb;
-            --code-bg: #1e1e1e;
-            --code-header-bg: #2d2d2d;
-            --code-text: #f8f8f2;
-            --border-color: #e5e7eb;
-            --card-bg: #f9fafb;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Taller Práctico - C# 5.0 y Visual Studio 2012</title>
+        <style>
+            :root {
+                --bg-color: #1e1e1e;
+                --card-bg: #252526;
+                --text-color: #d4d4d4;
+                --accent-color: #007acc;
+                --keyword-color: #569cd6;
+                --border-color: #3e3e42;
+            }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 1rem;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        header {
-            text-align: center;
-            padding: 1.5rem 0;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        header h1 {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        header p {
-            font-size: 1rem;
-            color: #4b5563;
-        }
-
-        .exercise-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .exercise-header {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .exercise-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .exercise-desc {
-            font-size: 0.95rem;
-            color: #374151;
-        }
-
-        .code-container {
-            background-color: var(--code-bg);
-            border-radius: 6px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .code-header {
-            background-color: var(--code-header-bg);
-            padding: 0.5rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #3d3d3d;
-        }
-
-        .code-lang {
-            font-size: 0.8rem;
-            font-family: monospace;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .copy-btn {
-            background-color: #3b82f6;
-            color: #ffffff;
-            border: none;
-            padding: 0.3rem 0.75rem;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.2s ease;
-        }
-
-        .copy-btn:hover {
-            background-color: #1d4ed8;
-        }
-
-        pre {
-            padding: 1rem;
-            overflow-x: auto;
-            font-family: "Consolas", "Monaco", "Courier New", monospace;
-            font-size: 0.875rem;
-            color: var(--code-text);
-            line-height: 1.5;
-        }
-
-        code {
-            font-family: inherit;
-        }
-
-        /* Carbon Syntax Colors */
-        .keyword {
-            color: #ff79c6;
-        }
-
-        .type {
-            color: #8be9fd;
-        }
-
-        .string {
-            color: #f1fa8c;
-        }
-
-        .comment {
-            color: #6272a4;
-        }
-
-        .number {
-            color: #bd93f9;
-        }
-
-        .function {
-            color: #50fa7b;
-        }
-
-        @media (min-width: 640px) {
             body {
-                padding: 2rem;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
             }
 
-            header h1 {
-                font-size: 2.25rem;
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
             }
 
-            .exercise-card {
-                padding: 1.5rem;
+            header {
+                text-align: center;
+                border-bottom: 2px solid var(--accent-color);
+                padding-bottom: 15px;
+                margin-bottom: 30px;
             }
 
-            .exercise-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: baseline;
+            h1 {
+                color: #ffffff;
+                margin-bottom: 5px;
             }
-        }
-    </style>
-</head>
 
-<body>
-
-    <div class="container">
-        <header>
-            <h1>Guía de Laboratorio N° 2 - C# Avanzado</h1>
-            <p>Estructuras de Control (<code>switch</code>), Ciclos (<code>while</code>, <code>for</code>,
-                <code>foreach</code>) y Listas (<code>List&lt;T&gt;</code>)</p>
-        </header>
-
-        <!-- Ejercicio 1 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">1. Saludador Múltiple</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita al usuario que ingrese nombres de estudiantes uno a uno y los guarde en una
-                <code>List&lt;string&gt;</code> hasta que escriba <code>"fin"</code>. Al terminar, recorre la lista con
-                un bucle <code>foreach</code> y saluda a cada estudiante.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">string</span>&gt; estudiantes = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">string</span>&gt;();
-        <span class="type">string</span> nombre;
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"Ingrese los nombres de los estudiantes (escriba 'fin' para terminar):"</span>);
-        <span class="keyword">while</span> (<span class="keyword">true</span>)
-        {
-            <span class="type">Console</span>.Write(<span class="string">"Nombre: "</span>);
-            nombre = <span class="type">Console</span>.ReadLine();
-            <span class="keyword">if</span> (nombre.ToLower() == <span class="string">"fin"</span>) <span class="keyword">break</span>;
-            estudiantes.Add(nombre);
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- Saludos ---"</span>);
-        <span class="keyword">foreach</span> (<span class="type">string</span> est <span class="keyword">in</span> estudiantes)
-        {
-            <span class="type">Console</span>.WriteLine(<span class="string">$"¡Hola, {est}! Bienvenido a la clase."</span>);
-        }
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 2 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">2. Calculadora de Dobles Iterativa</div>
-            </div>
-            <div class="exercise-desc">
-                Pide números enteros al usuario para mostrar su doble. El programa debe repetirse dentro de un bucle
-                <code>while</code> hasta que el usuario ingrese un número negativo.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">int</span> numero = <span class="number">0</span>;
-        <span class="keyword">while</span> (numero &gt;= <span class="number">0</span>)
-        {
-            <span class="type">Console</span>.Write(<span class="string">"Ingrese un número entero (negativo para salir): "</span>);
-            numero = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-            
-            <span class="keyword">if</span> (numero &gt;= <span class="number">0</span>)
-            {
-                <span class="type">Console</span>.WriteLine(<span class="string">$"El doble de {numero} es: {numero * 2}
-"</span>);
+            .subtitle {
+                color: var(--accent-color);
+                font-weight: bold;
             }
-        }
-        <span class="type">Console</span>.WriteLine(<span class="string">"Programa finalizado."</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
 
-        <!-- Ejercicio 3 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">3. Sumatoria Acumulada de Pares</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita ingresar N números enteros en una <code>List&lt;int&gt;</code>. Muestra mediante un ciclo
-                <code>for</code> únicamente los números pares y la suma total acumulada de estos.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; numeros = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">Console</span>.Write(<span class="string">"¿Cuántos números desea ingresar?: "</span>);
-        <span class="type">int</span> n = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Número {i + 1}: "</span>);
-            numeros.Add(<span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine()));
-        }
-
-        <span class="type">int</span> sumaPares = <span class="number">0</span>;
-        <span class="type">Console</span>.WriteLine(<span class="string">"
-Números pares ingresados:"</span>);
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; numeros.Count; i++)
-        {
-            <span class="keyword">if</span> (numeros[i] % <span class="number">2</span> == <span class="number">0</span>)
-            {
-                <span class="type">Console</span>.WriteLine(numeros[i]);
-                sumaPares += numeros[i];
+            .section-card {
+                background-color: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-left: 5px solid var(--accent-color);
+                border-radius: 4px;
+                padding: 20px;
+                margin-bottom: 25px;
             }
-        }
-        <span class="type">Console</span>.WriteLine(<span class="string">$"Suma total de pares: {sumaPares}"</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
 
-        <!-- Ejercicio 4 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">4. Facturador con Menú de Impuestos</div>
-            </div>
-            <div class="exercise-desc">
-                Pide el precio base de un producto. Presenta un menú mediante <code>switch</code> para seleccionar el
-                tipo de IVA (16%, 8%, 0%). Repite el menú si selecciona una opción inválida usando un bucle
-                <code>do-while</code>.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">Console</span>.Write(<span class="string">"Ingrese el precio base del producto: "</span>);
-        <span class="type">double</span> precioBase = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-        <span class="type">int</span> opcion;
-        <span class="type">double</span> precioFinal = <span class="number">0</span>;
-        <span class="type">bool</span> opcionValida = <span class="keyword">true</span>;
-
-        <span class="keyword">do</span>
-        {
-            <span class="type">Console</span>.WriteLine(<span class="string">"
---- Seleccione el IVA ---"</span>);
-            <span class="type">Console</span>.WriteLine(<span class="string">"1. General (16%)"</span>);
-            <span class="type">Console</span>.WriteLine(<span class="string">"2. Reducido (8%)"</span>);
-            <span class="type">Console</span>.WriteLine(<span class="string">"3. Exento (0%)"</span>);
-            <span class="type">Console</span>.Write(<span class="string">"Opción: "</span>);
-            opcion = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-            <span class="keyword">switch</span> (opcion)
-            {
-                <span class="keyword">case</span> <span class="number">1</span>:
-                    precioFinal = precioBase * <span class="number">1.16</span>;
-                    opcionValida = <span class="keyword">true</span>;
-                    <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">2</span>:
-                    precioFinal = precioBase * <span class="number">1.08</span>;
-                    opcionValida = <span class="keyword">true</span>;
-                    <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">3</span>:
-                    precioFinal = precioBase;
-                    opcionValida = <span class="keyword">true</span>;
-                    <span class="keyword">break</span>;
-                <span class="keyword">default</span>:
-                    <span class="type">Console</span>.WriteLine(<span class="string">"Opción inválida. Intente de nuevo."</span>);
-                    opcionValida = <span class="keyword">false</span>;
-                    <span class="keyword">break</span>;
+            h2 {
+                color: #ffffff;
+                margin-top: 0;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 8px;
             }
-        } <span class="keyword">while</span> (!opcionValida);
 
-        <span class="type">Console</span>.WriteLine(<span class="string">$"El precio final a pagar es: ${precioFinal:F2}"</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 5 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">5. Contador de Vocales y Consonantes</div>
-            </div>
-            <div class="exercise-desc">
-                Permite ingresar caracteres en una <code>List&lt;char&gt;</code> hasta presionar la tecla '0'. Usa un
-                <code>foreach</code> con un <code>switch</code> para contar vocales y consonantes.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">char</span>&gt; caracteres = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">char</span>&gt;();
-        <span class="type">char</span> c;
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"Ingrese letras una a una (ingrese '0' para finalizar):"</span>);
-        <span class="keyword">while</span> (<span class="keyword">true</span>)
-        {
-            c = <span class="type">Console</span>.ReadKey().KeyChar;
-            <span class="type">Console</span>.WriteLine();
-            <span class="keyword">if</span> (c == <span class="string">'0'</span>) <span class="keyword">break</span>;
-            caracteres.Add(<span class="type">char</span>.ToLower(c));
-        }
-
-        <span class="type">int</span> vocales = <span class="number">0</span>, consonantes = <span class="number">0</span>;
-        <span class="keyword">foreach</span> (<span class="type">char</span> item <span class="keyword">in</span> caracteres)
-        {
-            <span class="keyword">if</span> (<span class="type">char</span>.IsLetter(item))
-            {
-                <span class="keyword">switch</span> (item)
-                {
-                    <span class="keyword">case</span> <span class="string">'a'</span>: <span class="keyword">case</span> <span class="string">'e'</span>: <span class="keyword">case</span> <span class="string">'i'</span>: <span class="keyword">case</span> <span class="string">'o'</span>: <span class="keyword">case</span> <span class="string">'u'</span>:
-                        vocales++;
-                        <span class="keyword">break</span>;
-                    <span class="keyword">default</span>:
-                        consonantes++;
-                        <span class="keyword">break</span>;
-                }
+            .exercise-box {
+                background-color: #1b1b1c;
+                border: 1px dashed var(--accent-color);
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 15px;
             }
-        }
-        <span class="type">Console</span>.WriteLine(<span class="string">$"
-Vocales: {vocales} | Consonantes: {consonantes}"</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
 
-        <!-- Ejercicio 6 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">6. Validador de Mayoría de Edad para Grupo</div>
-            </div>
-            <div class="exercise-desc">
-                Pide las edades de un grupo de personas y almacénalas en una <code>List&lt;int&gt;</code>. Usa un ciclo
-                <code>for</code> para clasificar cuántas personas son mayores y menores de edad.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; edades = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">Console</span>.Write(<span class="string">"¿Cuántas personas va a registrar?: "</span>);
-        <span class="type">int</span> total = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; total; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Edad de la persona {i + 1}: "</span>);
-            edades.Add(<span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine()));
-        }
-
-        <span class="type">int</span> mayores = <span class="number">0</span>, menores = <span class="number">0</span>;
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; edades.Count; i++)
-        {
-            <span class="keyword">if</span> (edades[i] &gt;= <span class="number">18</span>) mayores++;
-            <span class="keyword">else</span> menores++;
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">$"
-Mayores de edad: {mayores}
-Menores de edad: {menores}"</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 7 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">7. Clasificador de Números</div>
-            </div>
-            <div class="exercise-desc">
-                Pide al usuario N números. Almacénalos en una lista y recorriéndola, clasifícalos mostrando si cada uno
-                es positivo, negativo o cero.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; numeros = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">Console</span>.Write(<span class="string">"Cantidad de números a ingresar: "</span>);
-        <span class="type">int</span> cantidad = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; cantidad; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Número {i + 1}: "</span>);
-            numeros.Add(<span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine()));
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- Resultados ---"</span>);
-        <span class="keyword">foreach</span> (<span class="type">int</span> num <span class="keyword">in</span> numeros)
-        {
-            <span class="type">int</span> signo = Math.Sign(num); <span class="comment">// Retorna 1 (Positivo), -1 (Negativo) o 0</span>
-            <span class="keyword">switch</span> (signo)
-            {
-                <span class="keyword">case</span> <span class="number">1</span>:
-                    <span class="type">Console</span>.WriteLine(<span class="string">$"El número {num} es POSITIVO."</span>);
-                    <span class="keyword">break</span>;
-                <span class="keyword">case</span> -<span class="number">1</span>:
-                    <span class="type">Console</span>.WriteLine(<span class="string">$"El número {num} es NEGATIVO."</span>);
-                    <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">0</span>:
-                    <span class="type">Console</span>.WriteLine(<span class="string">$"El número es CERO."</span>);
-                    <span class="keyword">break</span>;
+            .exercise-title {
+                color: #4ec9b0;
+                font-weight: bold;
+                font-size: 1.1em;
+                margin-bottom: 10px;
             }
-        }
-    }
-}</code></pre>
-            </div>
-        </div>
 
-        <!-- Ejercicio 8 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">8. Filtro de Pares e Impares</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita al usuario ingresar 10 números. Guarda los pares en una <code>List&lt;int&gt; listaPares</code>
-                y los impares en una <code>List&lt;int&gt; listaImpares</code>. Muestra el contenido de ambas listas al
-                final.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; listaPares = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; listaImpares = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"Ingrese 10 números enteros:"</span>);
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"[{i + 1}/10]: "</span>);
-            <span class="type">int</span> val = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-            <span class="keyword">if</span> (val % <span class="number">2</span> == <span class="number">0</span>) listaPares.Add(val);
-            <span class="keyword">else</span> listaImpares.Add(val);
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- Lista de Pares ---"</span>);
-        <span class="keyword">foreach</span> (<span class="type">int</span> p <span class="keyword">in</span> listaPares) <span class="type">Console</span>.Write(p + <span class="string">" "</span>);
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"
-
---- Lista de Impares ---"</span>);
-        <span class="keyword">foreach</span> (<span class="type">int</span> imp <span class="keyword">in</span> listaImpares) <span class="type">Console</span>.Write(imp + <span class="string">" "</span>);
-        <span class="type">Console</span>.WriteLine();
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 9 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">9. Búsqueda del Número Mayor</div>
-            </div>
-            <div class="exercise-desc">
-                Pide N números y guárdalos en una lista. Usa un bucle <code>foreach</code> para determinar el número
-                mayor ingresado y cuántas veces se repite.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; numeros = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">Console</span>.Write(<span class="string">"¿Cuántos números ingresará?: "</span>);
-        <span class="type">int</span> total = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; total; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Elemento {i + 1}: "</span>);
-            numeros.Add(<span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine()));
-        }
-
-        <span class="type">int</span> mayor = <span class="type">int</span>.MinValue;
-        <span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> numeros)
-        {
-            <span class="keyword">if</span> (n &gt; mayor) mayor = n;
-        }
-
-        <span class="type">int</span> repeticiones = <span class="number">0</span>;
-        <span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> numeros)
-        {
-            <span class="keyword">if</span> (n == mayor) repeticiones++;
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>
-El número mayor es: {mayor} (se repite {repeticiones} veces)"<span class="string">);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 10 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">10. Registro de Notas y Promedio</div>
-            </div>
-            <div class="exercise-desc">
-                Permite cargar calificaciones (0 a 10) en una <code>List&lt;float&gt;</code> hasta ingresar -1. Muestra
-                la escala equivalente mediante <code>switch</code> y calcula el promedio.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">float</span>&gt; notas = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">float</span>&gt;();
-        <span class="type">float</span> nota = <span class="number">0</span>;
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"Ingrese notas de 0 a 10 (-1 para finalizar):"</span>);
-        <span class="keyword">while</span> (<span class="keyword">true</span>)
-        {
-            <span class="type">Console</span>.Write(<span class="string">"Nota: "</span>);
-            nota = <span class="type">float</span>.Parse(<span class="type">Console</span>.ReadLine());
-            <span class="keyword">if</span> (nota == -<span class="number">1</span>) <span class="keyword">break</span>;
-            <span class="keyword">if</span> (nota &gt;= <span class="number">0</span> && nota &lt;= <span class="number">10</span>) notas.Add(nota);
-            <span class="keyword">else</span> <span class="type">Console</span>.WriteLine(<span class="string">"Nota inválida."</span>);
-        }
-
-        <span class="type">float</span> suma = <span class="number">0</span>;
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- Detalle de Notas ---"</span>);
-        <span class="keyword">foreach</span> (<span class="type">float</span> n <span class="keyword">in</span> notas)
-        {
-            suma += n;
-            <span class="type">int</span> notaEntera = (<span class="type">int</span>)Math.Floor(n);
-            <span class="type">string</span> escala = <span class="string">""</span>;
-            <span class="keyword">switch</span> (notaEntera)
-            {
-                <span class="keyword">case</span> <span class="number">10</span>: <span class="keyword">case</span> <span class="number">9</span>: escala = <span class="string">"Sobresaliente"</span>; <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">8</span>: <span class="keyword">case</span> <span class="number">7</span>: escala = <span class="string">"Notable"</span>; <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">6</span>: <span class="keyword">case</span> <span class="number">5</span>: escala = <span class="string">"Aprobado"</span>; <span class="keyword">break</span>;
-                <span class="keyword">default</span>: escala = <span class="string">"Reprobado"</span>; <span class="keyword">break</span>;
+            code {
+                font-family: 'Consolas', 'Courier New', Courier, monospace;
+                background-color: #2d2d2d;
+                color: #ce9178;
+                padding: 2px 6px;
+                border-radius: 3px;
             }
-            <span class="type">Console</span>.WriteLine(<span class="string">$"Nota: {n} -&gt; {escala}"</span>);
-        }
 
-        <span class="keyword">if</span> (notas.Count &gt; <span class="number">0</span>)
-            <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>
-Promedio General: {suma / notas.Count:F2}"<span class="string">);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 11 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">11. Sistema de Intentos de Contraseña</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita una contraseña numérica de 4 dígitos. Concede un máximo de 3 intentos mediante un ciclo
-                <code>for</code>.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="keyword">const int</span> CLAVE_CORRECTA = <span class="number">1234</span>;
-        <span class="type">bool</span> accesoConcedido = <span class="keyword">false</span>;
-
-        <span class="keyword">for</span> (<span class="type">int</span> intento = <span class="number">1</span>; intento &lt;= <span class="number">3</span>; intento++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Intento {intento}/3 - Ingrese su clave: "</span>);
-            <span class="type">int</span> clave = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-            <span class="keyword">if</span> (clave == CLAVE_CORRECTA)
-            {
-                accesoConcedido = <span class="keyword">true</span>;
-                <span class="keyword">break</span>;
+            ul,
+            ol {
+                padding-left: 20px;
             }
-            <span class="keyword">else</span>
-            {
-                <span class="type">Console</span>.WriteLine(<span class="string">"Clave incorrecta."</span>);
+
+            li {
+                margin-bottom: 8px;
             }
-        }
 
-        <span class="keyword">if</span> (accesoConcedido) <span class="type">Console</span>.WriteLine(<span class="string">"
-¡Acceso Concedido!"</span>);
-        <span class="keyword">else</span> <span class="type">Console</span>.WriteLine(<span class="string">"
-Cuenta bloqueada por demasiados intentos."</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 12 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">12. Convertidor de Días de la Semana</div>
-            </div>
-            <div class="exercise-desc">
-                Programa interactivo que pide un número (1 al 7) y usa <code>switch</code> para imprimir el día. Se
-                mantiene dentro de un <code>while</code> hasta ingresar 0.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">int</span> dia = -<span class="number">1</span>;
-        <span class="keyword">while</span> (dia != <span class="number">0</span>)
-        {
-            <span class="type">Console</span>.Write(<span class="string">"
-Ingrese número de día (1-7, 0 para salir): "</span>);
-            dia = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-            <span class="keyword">switch</span> (dia)
-            {
-                <span class="keyword">case</span> <span class="number">1</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Lunes"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">2</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Martes"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">3</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Miércoles"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">4</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Jueves"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">5</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Viernes"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">6</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Sábado"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">7</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Domingo"</span>); <span class="keyword">break</span>;
-                <span class="keyword">case</span> <span class="number">0</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Saliendo..."</span>); <span class="keyword">break</span>;
-                <span class="keyword">default</span>: <span class="type">Console</span>.WriteLine(<span class="string">"Día inválido."</span>); <span class="keyword">break</span>;
+            .img-container {
+                text-align: center;
+                margin: 20px 0;
             }
-        }
-    }
-}</code></pre>
-            </div>
-        </div>
 
-        <!-- Ejercicio 13 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">13. Clasificador de Triángulos en Serie</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita las medidas de 3 lados de un triángulo y muestra su tipo. Pregunta al final si desea evaluar
-                otro usando un bucle <code>do-while</code>.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">char</span> opcion;
-        <span class="keyword">do</span>
-        {
-            <span class="type">Console</span>.WriteLine(<span class="string">"
-Ingrese los 3 lados del triángulo:"</span>);
-            <span class="type">double</span> l1 = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-            <span class="type">double</span> l2 = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-            <span class="type">double</span> l3 = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-            <span class="keyword">if</span> (l1 == l2 && l2 == l3)
-                <span class="type">Console</span>.WriteLine(<span class="string">"Triángulo Equilátero"</span>);
-            <span class="keyword">else if</span> (l1 == l2 || l1 == l3 || l2 == l3)
-                <span class="type">Console</span>.WriteLine(<span class="string">"Triángulo Isósceles"</span>);
-            <span class="keyword">else</span>
-                <span class="type">Console</span>.WriteLine(<span class="string">"Triángulo Escaleno"</span>);
-
-            <span class="type">Console</span>.Write(<span class="string">"¿Desea evaluar otro triángulo? (S/N): "</span>);
-            opcion = <span class="type">char</span>.ToUpper(<span class="type">Console</span>.ReadKey().KeyChar);
-            <span class="type">Console</span>.WriteLine();
-        } <span class="keyword">while</span> (opcion == <span class="string">'S'</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 14 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">14. Buscador de Divisibles entre 2 y 3</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita un límite superior N. Guarda en una lista todos los números desde 1 hasta N que sean divisibles
-                simultáneamente por 2 y por 3.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; divisibles = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">Console</span>.Write(<span class="string">"Ingrese el límite superior (N): "</span>);
-        <span class="type">int</span> n = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)
-        {
-            <span class="keyword">if</span> (i % <span class="number">2</span> == <span class="number">0</span> && i % <span class="number">3</span> == <span class="number">0</span>)
-            {
-                divisibles.Add(i);
+            .img-container img {
+                max-width: 100%;
+                height: auto;
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
             }
-        }
 
-        <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>
-Números divisibles por 2 y 3 entre 1 y {n}:"<span class="string">);
-        <span class="keyword">foreach</span> (<span class="type">int</span> num <span class="keyword">in</span> divisibles)
-        {
-            <span class="type">Console</span>.Write(num + <span class="string">" "</span>);
-        }
-        <span class="type">Console</span>.WriteLine();
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 15 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">15. Caja Registradora con Descuentos</div>
-            </div>
-            <div class="exercise-desc">
-                Permite ingresar precios de artículos en una <code>List&lt;double&gt;</code>. Suma el total con
-                <code>foreach</code>. Si supera $100, aplica 10% de descuento según el método de pago mediante
-                <code>switch</code>.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">double</span>&gt; compras = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">double</span>&gt;();
-        <span class="type">double</span> precio = <span class="number">0</span>;
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"Ingrese precios de productos (0 para totalizar):"</span>);
-        <span class="keyword">while</span> (<span class="keyword">true</span>)
-        {
-            <span class="type">Console</span>.Write(<span class="string">"Precio: $"</span>);
-            precio = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-            <span class="keyword">if</span> (precio == <span class="number">0</span>) <span class="keyword">break</span>;
-            compras.Add(precio);
-        }
-
-        <span class="type">double</span> total = <span class="number">0</span>;
-        <span class="keyword">foreach</span> (<span class="type">double</span> p <span class="keyword">in</span> compras) total += p;
-
-        <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>
-Subtotal: ${total:F2}"<span class="string">);
-        <span class="keyword">if</span> (total &gt; <span class="number">100</span>)
-        {
-            <span class="type">Console</span>.WriteLine(<span class="string">"¡Aplica para 10% de descuento por compra superior a $100!"</span>);
-            total *= <span class="number">0.90</span>;
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>Total final a pagar: ${total:F2}"<span class="string">);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 16 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">16. Censo por Categoría de Edad</div>
-            </div>
-            <div class="exercise-desc">
-                Solicita el año de nacimiento de N personas. Calcula sus edades y las clasifica en Niños, Adolescentes,
-                Adultos y Adultos Mayores.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">int</span>&gt; edades = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">int</span>&gt;();
-        <span class="type">int</span> anioActual = DateTime.Now.Year;
-
-        <span class="type">Console</span>.Write(<span class="string">"¿Cuántas personas censará?: "</span>);
-        <span class="type">int</span> n = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Año de nacimiento de persona {i + 1}: "</span>);
-            <span class="type">int</span> anioNac = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-            edades.Add(anioActual - anioNac);
-        }
-
-        <span class="type">int</span> ninos = <span class="number">0</span>, adolescentes = <span class="number">0</span>, adultos = <span class="number">0</span>, mayores = <span class="number">0</span>;
-
-        <span class="keyword">foreach</span> (<span class="type">int</span> edad <span class="keyword">in</span> edades)
-        {
-            <span class="keyword">if</span> (edad &lt;= <span class="number">12</span>) ninos++;
-            <span class="keyword">else if</span> (edad &lt;= <span class="number">17</span>) adolescentes++;
-            <span class="keyword">else if</span> (edad &lt;= <span class="number">59</span>) adultos++;
-            <span class="keyword">else</span> mayores++;
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- Resultados del Censo ---"</span>);
-        <span class="type">Console</span>.WriteLine(<span class="string">$"Niños: {ninos}
-Adolescentes: {adolescentes}
-Adultos: {adultos}
-Adultos Mayores: {mayores}"</span>);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 17 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">17. Analizador de Cadenas de Texto</div>
-            </div>
-            <div class="exercise-desc">
-                Pide una frase al usuario, convierte la cadena en un arreglo de caracteres y usa <code>foreach</code>
-                para contar las vocales.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                </div>
-                <pre><code><span class="keyword">using</span> System;
-
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">Console</span>.Write(<span class="string">"Ingrese una frase: "</span>);
-        <span class="type">string</span> texto = <span class="type">Console</span>.ReadLine().ToLower();
-        <span class="type">char</span>[] letras = texto.ToCharArray();
-
-        <span class="type">int</span> contadorVocales = <span class="number">0</span>;
-        <span class="keyword">foreach</span> (<span class="type">char</span> c <span class="keyword">in</span> letras)
-        {
-            <span class="keyword">switch</span> (c)
-            {
-                <span class="keyword">case</span> <span class="string">'a'</span>: <span class="keyword">case</span> <span class="string">'e'</span>: <span class="keyword">case</span> <span class="string">'i'</span>: <span class="keyword">case</span> <span class="string">'o'</span>: <span class="keyword">case</span> <span class="string">'u'</span>:
-                    contadorVocales++;
-                    <span class="keyword">break</span>;
+            .badge {
+                background-color: var(--accent-color);
+                color: white;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.85em;
             }
-        }
+        </style>
+    </head>
 
-        <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>La frase contiene {contadorVocales} vocales."<span class="string">);
-    }
-}</code></pre>
-            </div>
-        </div>
+    <body>
 
-        <!-- Ejercicio 18 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">18. Calculadora Interactiva con Menú Continuo</div>
-            </div>
-            <div class="exercise-desc">
-                Calculadora básica con un menú de opciones mediante <code>switch</code> dentro de un bucle
-                <code>do-while</code>. Valida división por cero.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+        <div class="container">
+            <header>
+                <h1>Taller Práctico de Programación en C#</h1>
+                <p class="subtitle">Entorno: Visual Studio 2012 | Versión de Lenguaje: C# 5.0 (.NET Framework 4.5)</p>
+            </header>
+
+            <!-- SECCIÓN 1 -->
+            <div class="section-card">
+                <h2>1. Estructura Básica de un Proyecto en C# 5.0</h2>
+                <p>Proceso de creación de una aplicación de consola estándar en Visual Studio 2012:</p>
+
+                <div class="img-container">
+                    <img src="./pictures/newproject.png"
+                        alt="Proceso de creación de un proyecto de consola C# en Visual Studio 2012">
                 </div>
-                <pre><code><span class="keyword">using</span> System;
 
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">int</span> opcion;
-        <span class="keyword">do</span>
-        {
-            <span class="type">Console</span>.WriteLine(<span class="string">"
---- CALCULADORA ---"</span>);
-            <span class="type">Console</span>.WriteLine(<span class="string">"1. Sumar
-2. Restar
-3. Multiplicar
-4. Dividir
-5. Salir"</span>);
-            <span class="type">Console</span>.Write(<span class="string">"Seleccione una opción: "</span>);
-            opcion = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-            <span class="keyword">if</span> (opcion &gt;= <span class="number">1</span> && opcion &lt;= <span class="number">4</span>)
-            {
-                <span class="type">Console</span>.Write(<span class="string">"Ingrese primer número: "</span>);
-                <span class="type">double</span> a = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-                <span class="type">Console</span>.Write(<span class="string">"Ingrese segundo número: "</span>);
-                <span class="type">double</span> b = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-                <span class="keyword">switch</span> (opcion)
-                {
-                    <span class="keyword">case</span> <span class="number">1</span>: <span class="type">Console</span>.WriteLine(<span class="string">$"Resultado: {a + b}"</span>); <span class="keyword">break</span>;
-                    <span class="keyword">case</span> <span class="number">2</span>: <span class="type">Console</span>.WriteLine(<span class="string">$"Resultado: {a - b}"</span>); <span class="keyword">break</span>;
-                    <span class="keyword">case</span> <span class="number">3</span>: <span class="type">Console</span>.WriteLine(<span class="string">$"Resultado: {a * b}"</span>); <span class="keyword">break</span>;
-                    <span class="keyword">case</span> <span class="number">4</span>: 
-                        <span class="keyword">if</span> (b != <span class="number">0</span>) <span class="type">Console</span>.WriteLine(<span class="string">$"Resultado: {a / b}"</span>);
-                        <span class="keyword">else</span> <span class="type">Console</span>.WriteLine(<span class="string">"Error: No se puede dividir entre cero."</span>);
-                        <span class="keyword">break</span>;
-                }
-            }
-        } <span class="keyword">while</span> (opcion != <span class="number">5</span>);
-    }
-}</code></pre>
+                <p>Elementos esenciales de la plantilla inicial de C# 5.0:</p>
+                <ul>
+                    <li><code>using System;</code> Importación del espacio de nombres base.</li>
+                    <li><code>namespace</code> Organización lógica de las clases del proyecto.</li>
+                    <li><code>class Program</code> Clase principal contenedora.</li>
+                    <li><code>static void Main(string[] args)</code> Punto de entrada ejecutable de la aplicación.</li>
+                </ul>
             </div>
-        </div>
 
-        <!-- Ejercicio 19 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">19. Monitor de Temperaturas</div>
+            <!-- SECCIÓN 2 -->
+            <div class="section-card">
+                <h2>2. Características Clave de C# 5.0</h2>
+                <p>Repaso sintáctico compatible con .NET 4.5:</p>
+                <ul>
+                    <li><strong>Propiedades Auto-implementadas:</strong> Requieren <code>get; set;</code> explícitos
+                        para lectura y escritura.</li>
+                    <li><strong>Inicialización de Objetos:</strong> Sintaxis limpia mediante bloques de inicialización
+                        <code>new Persona { Nombre = "Juan" }</code>.</li>
+                    <li><strong>Programación Asíncrona:</strong> Uso de las palabras clave <code>async</code> y
+                        <code>await</code> introducidas en esta versión junto con <code>Task</code>.</li>
+                </ul>
             </div>
-            <div class="exercise-desc">
-                Registra las temperaturas de una semana en una <code>List&lt;double&gt;</code>. Recorre con
-                <code>foreach</code> e indica el estado del clima de cada día.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+
+            <!-- SECCIÓN 3: EJERCICIOS PRACTICOS (SIN SOLUCIÓN) -->
+            <div class="section-card">
+                <h2>3. Ejercicios Prácticos para Resolver en Clase</h2>
+                <p>Desarrollar los siguientes programas utilizando únicamente la sintaxis de C# 5.0:</p>
+
+                <!-- Ejercicio 1 -->
+                <div class="exercise-box">
+                    <div class="exercise-title">Ejercicio 1: Calculadora de Promedio y Estado Académico</div>
+                    <p><strong>Requerimiento:</strong> Crear una aplicación de consola que solicite al usuario 3 notas
+                        de un estudiante (valores flotantes o decimales).</p>
+                    <ul>
+                        <li>Calcular el promedio de las notas.</li>
+                        <li>Determinar si el estudiante está <code>Aprobado</code> (promedio &gt;= 9.5) o
+                            <code>Reprobado</code>.</li>
+                        <li>Mostrar los resultados en pantalla formateados con dos decimales.</li>
+                        <li>Pausar la consola usando <code>Console.ReadKey()</code> al finalizar.</li>
+                    </ul>
                 </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
 
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">double</span>&gt; temps = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">double</span>&gt;();
-        <span class="type">Console</span>.WriteLine(<span class="string">"Ingrese las temperaturas de los 7 días de la semana:"</span>);
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">7</span>; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"Día {i + 1}: "</span>);
-            temps.Add(<span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine()));
-        }
-
-        <span class="type">double</span> suma = <span class="number">0</span>;
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- Reporte de Clima ---"</span>);
-        <span class="keyword">foreach</span> (<span class="type">double</span> t <span class="keyword">in</span> temps)
-        {
-            suma += t;
-            <span class="type">string</span> estado = <span class="string">""</span>;
-            <span class="keyword">if</span> (t &lt; <span class="number">15</span>) estado = <span class="string">"Hace frío"</span>;
-            <span class="keyword">else if</span> (t &lt;= <span class="number">25</span>) estado = <span class="string">"Clima agradable"</span>;
-            <span class="keyword">else</span> estado = <span class="string">"Hace calor"</span>;
-
-            <span class="type">Console</span>.WriteLine(<span class="string">$"Temp: {t}°C -&gt; {estado}"</span>);
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>
-Temperatura promedio: {suma / temps.Count:F1}°C"<span class="string">);
-    }
-}</code></pre>
-            </div>
-        </div>
-
-        <!-- Ejercicio 20 -->
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <div class="exercise-title">20. Calculadora Grupal de IMC</div>
-            </div>
-            <div class="exercise-desc">
-                Registra nombres, pesos y alturas en listas paralelas. Muestra un reporte final usando un ciclo
-                <code>for</code> indicando el estado de cada paciente.
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span class="code-lang">C#</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <!-- Ejercicio 2 -->
+                <div class="exercise-box">
+                    <div class="exercise-title">Ejercicio 2: Gestión de Empleados con POO</div>
+                    <p><strong>Requerimiento:</strong> Diseñar una clase <code>Empleado</code> e instanciarla en el
+                        método <code>Main</code>.</p>
+                    <ul>
+                        <li>La clase debe contener las propiedades auto-implementadas: <code>Id</code> (int),
+                            <code>Nombre</code> (string) y <code>SalarioBase</code> (double).</li>
+                        <li>Incluir un método <code>CalcularSalarioNeto()</code> que descuente un 4% de seguro social y
+                            retorne el total.</li>
+                        <li>En el <code>Main</code>, instanciar al menos dos objetos usando sintaxis de inicializador de
+                            objetos, calcular su salario neto y mostrar sus datos tabulados en la consola.</li>
+                    </ul>
                 </div>
-                <pre><code><span class="keyword">using</span> System;
-<span class="keyword">using</span> System.Collections.Generic;
 
-<span class="keyword">class</span> <span class="type">Program</span>
-{
-    <span class="keyword">static void</span> <span class="function">Main</span>()
-    {
-        <span class="type">List</span>&lt;<span class="type">string</span>&gt; nombres = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">string</span>&gt;();
-        <span class="type">List</span>&lt;<span class="type">double</span>&gt; imcs = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">double</span>&gt;();
+                <!-- Ejercicio 3 -->
+                <div class="exercise-box">
+                    <div class="exercise-title">Ejercicio 3: Simulación de Operación Asíncrona (async/await)</div>
+                    <p><strong>Requerimiento:</strong> Implementar una simulación de descarga de datos usando la
+                        sintaxis <code>async</code> y <code>await</code> de C# 5.0.</p>
+                    <ul>
+                        <li>Crear un método asíncrono <code>static async Task DescargarArchivoAsync()</code>.</li>
+                        <li>Usar <code>await Task.Delay(3000)</code> para simular una espera de 3 segundos sin bloquear
+                            el hilo principal.</li>
+                        <li>Mostrar mensajes informativos en la consola antes y después de la simulación.</li>
+                    </ul>
+                </div>
 
-        <span class="type">Console</span>.Write(<span class="string">"¿Cuántos pacientes registrará?: "</span>);
-        <span class="type">int</span> n = <span class="type">int</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++)
-        {
-            <span class="type">Console</span>.Write(<span class="string">$"$"</span>
-Nombre paciente {i + 1}: "<span class="string">);
-            nombres.Add(<span class="type">Console</span>.ReadLine());
-            
-            <span class="type">Console</span>.Write(<span class="string">"Peso (kg): "</span>);
-            <span class="type">double</span> peso = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-            
-            <span class="type">Console</span>.Write(<span class="string">"Altura (m): "</span>);
-            <span class="type">double</span> altura = <span class="type">double</span>.Parse(<span class="type">Console</span>.ReadLine());
-
-            <span class="type">double</span> imc = peso / (altura * altura);
-            imcs.Add(imc);
-        }
-
-        <span class="type">Console</span>.WriteLine(<span class="string">"
---- REPORTE FINAL IMC ---"</span>);
-        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nombres.Count; i++)
-        {
-            <span class="type">string</span> diagnostico = <span class="string">""</span>;
-            <span class="keyword">if</span> (imcs[i] &lt; <span class="number">18.5</span>) diagnostico = <span class="string">"Bajo peso"</span>;
-            <span class="keyword">else if</span> (imcs[i] &lt;= <span class="number">24.9</span>) diagnostico = <span class="string">"Peso normal"</span>;
-            <span class="keyword">else</span> diagnostico = <span class="string">"Sobrepeso"</span>;
-
-            <span class="type">Console</span>.WriteLine(<span class="string">$"$"</span>{nombres[i]} -&gt; IMC: {imcs[i]:F2} ({diagnostico})"<span class="string">);
-        }
-    }
-}</code></pre>
             </div>
         </div>
 
-    </div>
+    </body>
 
-    <script>
-        function copyCode(button) {
-            const pre = button.parentElement.nextElementSibling;
-            const codeText = pre.textContent;
-
-            navigator.clipboard.writeText(codeText).then(() => {
-                const originalText = button.textContent;
-                button.textContent = "¡Copiado!";
-                button.style.backgroundColor = "#16a34a";
-
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.backgroundColor = "#3b82f6";
-                }, 2000);
-            }).catch(err => {
-                console.error("Error al copiar: ", err);
-            });
-        }
-    </script>
-
-</body>
-
-</html>
+    </html>
