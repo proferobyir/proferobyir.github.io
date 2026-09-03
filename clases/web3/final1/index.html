@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Académica - CRUD & Autenticación JWT</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm 10mm;
+            background-color: #ffffff;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 9.5pt;
+            line-height: 1.45;
+            color: #111111;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Responsive Mobile-First Container Constraints */
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        header {
+            border-bottom: 2px solid #111111;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 18pt;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            color: #000000;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 10pt;
+            color: #444444;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .badge-bar {
+            margin-top: 8px;
+            font-size: 8pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 2px 6px;
+            margin-right: 4px;
+            border-radius: 3px;
+        }
+
+        /* Section Headings */
+        h2 {
+            font-size: 12pt;
+            font-weight: 700;
+            margin: 16px 0 8px 0;
+            color: #000000;
+            border-left: 3px solid #111111;
+            padding-left: 8px;
+            page-break-after: avoid;
+        }
+
+        p {
+            margin: 0 0 10px 0;
+            color: #222222;
+        }
+
+        ul {
+            margin: 0 0 10px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* Mobile-First Layout Diagram / Structural Explanation */
+        .grid-mobile {
+            width: 100%;
+            margin-bottom: 14px;
+            border-collapse: collapse;
+        }
+
+        .grid-mobile td {
+            padding: 8px;
+            border: 1px solid #dddddd;
+            background: #fafafa;
+            vertical-align: top;
+            font-size: 9pt;
+        }
+
+        /* CARBON THEME FOR CODE BLOCKS ONLY */
+        .code-block {
+            background-color: #1c1e24; /* Dark Carbon Background */
+            border-radius: 6px;
+            margin: 10px 0 16px 0;
+            overflow: hidden;
+            border: 1px solid #2d3139;
+            page-break-inside: avoid;
+        }
+
+        .code-header {
+            background-color: #14161b;
+            padding: 6px 12px;
+            border-bottom: 1px solid #2d3139;
+            color: #abb2bf;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 8pt;
+            font-weight: bold;
+        }
+
+        .code-header span.dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        pre {
+            margin: 0;
+            padding: 10px 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 8.2pt;
+            color: #abb2bf; /* Carbon Default Text */
+            line-height: 1.4;
+        }
+
+        /* Carbon Syntax Highlighting Colors */
+        .kwd { color: #c678dd; font-weight: bold; } /* Keywords: const, function, return, async */
+        .str { color: #98c379; } /* Strings */
+        .num { color: #d19a66; } /* Numbers */
+        .com { color: #5c6370; font-style: italic; } /* Comments */
+        .fn  { color: #61afef; } /* Function names */
+        .tag { color: #e06c75; } /* HTML Tags */
+        .attr{ color: #d19a66; } /* Attributes */
+        .var { color: #e5c07b; } /* Variables / Parameters */
+
+        /* Features Box */
+        .feature-box {
+            background: #ffffff;
+            border: 1px solid #111111;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            font-size: 9.5pt;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>GUÍA PRÁCTICA: CRUD Y RUTAS PROTEGIDAS JWT</h1>
+        <p class="subtitle">Estructura Front-End Mobile-First con Bootstrap 5 (AdminLTE 4) + Node.js Express API</p>
+        <div class="badge-bar">
+            <span class="badge">Mobile-First</span>
+            <span class="badge">Bootstrap 5</span>
+            <span class="badge">Fetch API</span>
+            <span class="badge">JWT Auth</span>
+            <span class="badge">Zero JQuery</span>
+        </div>
+    </header>
+
+    <div class="feature-box">
+        <div class="feature-title">📌 Filosofía de Diseño Mobile-First & Integración</div>
+        <p>El código HTML se ha estructurado utilizando un enfoque <strong>Mobile-First</strong> mediante las clases nativas del Grid de Bootstrap 5 (ej. <code>col-12 col-md-6</code>). Todas las tablas disponen de envoltorios responsivos (<code>table-responsive</code>) para garantizar que en pantallas pequeñas de smartphones no se rompa el layout, permitiendo scroll horizontal suave mientras mantiene la compatibilidad con plantillas administrativas modernas como <strong>AdminLTE 4</strong>.</p>
+    </div>
+
+    <h2>1. Middleware de Autenticación JWT (Back-End)</h2>
+    <p>Guarda este archivo como <code>middleware/auth.js</code>. Este componente protege los endpoints del servidor validando el token enviado en la cabecera <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+
+    <div class="code-block">
+        <div class="code-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            middleware/auth.js (Node.js + Express)
+        </div>
+        <pre><code><span class="kwd">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
+<span class="kwd">const</span> SECRET_KEY = <span class="str">'clave_secreta_super_segura'</span>;
+
+<span class="kwd">function</span> <span class="fn">verificarToken</span>(<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) {
+  <span class="com">// Obtener el header 'Authorization'</span>
+  <span class="kwd">const</span> authHeader = req.headers[<span class="str">'authorization'</span>];
+  <span class="com">// Formato esperado: "Bearer TOKEN"</span>
+  <span class="kwd">const</span> token = authHeader && authHeader.<span class="fn">split</span>(<span class="str">' '</span>)[<span class="num">1</span>];
+
+  <span class="kwd">if</span> (!token) {
+    <span class="kwd">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Acceso denegado. Token no proporcionado.'</span> });
+  }
+
+  jwt.<span class="fn">verify</span>(token, SECRET_KEY, (<span class="var">err</span>, <span class="var">usuario</span>) => {
+    <span class="kwd">if</span> (err) {
+      <span class="kwd">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ error: <span class="str">'Token inválido o expirado.'</span> });
+    }
+    req.usuario = usuario;
+    <span class="fn">next</span>(); <span class="com">// Continuar hacia la ruta del CRUD</span>
+  });
+}
+
+module.exports = verificarToken;</code></pre>
+    </div>
+
+    <h2>2. Interfaz del Dashboard & CRUD Mobile-First (Front-End)</h2>
+    <p>Estructura HTML5 compatible con Bootstrap 5 / AdminLTE 4. Fondo blanco neutro, diseño pensado para smartphones primero y adaptable a escritorio.</p>
+
+    <div class="code-block">
+        <div class="code-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            dashboard.html (Bootstrap 5 Mobile-First Layout)
+        </div>
+        <pre><code><span class="tag">&lt;!DOCTYPE</span> <span class="attr">html</span><span class="tag">&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="str">"es"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="str">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span> <span class="attr">content</span>=<span class="str">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>Dashboard Estudiantes - AdminLTE 4<span class="tag">&lt;/title&gt;</span>
+  <span class="com">&lt;!-- CSS Bootstrap 5 Nativo (Sin jQuery) --&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"</span> <span class="attr">rel</span>=<span class="str">"stylesheet"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body</span> <span class="attr">class</span>=<span class="str">"bg-white text-dark"</span><span class="tag">&gt;</span>
+
+  <span class="com">&lt;!-- Navbar Superior Adaptable --&gt;</span>
+  <span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="str">"navbar navbar-expand-lg navbar-dark bg-dark mb-4"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container-fluid"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"navbar-brand fw-bold"</span> <span class="attr">href</span>=<span class="str" style="color:#fff;">"#"</span><span class="tag">&gt;</span>Panel Académico<span class="tag">&lt;/a&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-outline-light btn-sm ms-auto"</span> <span class="attr">onclick</span>=<span class="str">"cerrarSesion()"</span><span class="tag">&gt;</span>Cerrar Sesión<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/nav&gt;</span>
+
+  <span class="com">&lt;!-- Contenedor Principal (Mobile-First) --&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container-fluid px-3"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-2"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2</span> <span class="attr">class</span>=<span class="str">"h4 mb-0"</span><span class="tag">&gt;</span>Gestión de Estudiantes<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary w-100 w-sm-auto"</span> <span class="attr">onclick</span>=<span class="str">"abrirModalCrear()"</span><span class="tag">&gt;</span>+ Nuevo Estudiante<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="com">&lt;!-- Tabla Responsiva --&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"table-responsive border rounded"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;table</span> <span class="attr">class</span>=<span class="str">"table table-hover align-middle mb-0"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;thead</span> <span class="attr">class</span>=<span class="str">"table-light"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;tr&gt;</span>
+            <span class="tag">&lt;th&gt;</span>ID<span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>Nombre<span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>Correo<span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>Carrera<span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th</span> <span class="attr">class</span>=<span class="str">"text-end"</span><span class="tag">&gt;</span>Acciones<span class="tag">&lt;/th&gt;</span>
+          <span class="tag">&lt;/tr&gt;</span>
+        <span class="tag">&lt;/thead&gt;</span>
+        <span class="tag">&lt;tbody</span> <span class="attr">id</span>=<span class="str">"tablaEstudiantes"</span><span class="tag">&gt;</span>
+          <span class="com">&lt;!-- Se llena dinámicamente con JavaScript Fetch --&gt;</span>
+        <span class="tag">&lt;/tbody&gt;</span>
+      <span class="tag">&lt;/table&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+
+  <span class="com">&lt;!-- Modal Único para Crear / Editar --&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal fade"</span> <span class="attr">id</span>=<span class="str">"modalEstudiante"</span> <span class="attr">tabindex</span>=<span class="str">"-1"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-dialog modal-dialog-centered"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-content"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-header"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h5</span> <span class="attr">class</span>=<span class="str">"modal-title"</span> <span class="attr">id</span>=<span class="str">"modalTitulo"</span><span class="tag">&gt;</span>Estudiante<span class="tag">&lt;/h5&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"button"</span> <span class="attr">class</span>=<span class="str">"btn-close"</span> <span class="attr">data-bs-dismiss</span>=<span class="str">"modal"</span><span class="tag">&gt;&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;form</span> <span class="attr">id</span>=<span class="str">"formEstudiante"</span> <span class="attr">onsubmit</span>=<span class="str">"guardarEstudiante(event)"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-body"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"hidden"</span> <span class="attr">id</span>=<span class="str">"estudianteId"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;label</span> <span class="attr">class</span>=<span class="str">"form-label"</span><span class="tag">&gt;</span>Nombre Completo<span class="tag">&lt;/label&gt;</span>
+              <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="attr">id</span>=<span class="str">"nombre"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;label</span> <span class="attr">class</span>=<span class="str">"form-label"</span><span class="tag">&gt;</span>Correo Electrónico<span class="tag">&lt;/label&gt;</span>
+              <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"email"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="attr">id</span>=<span class="str">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;label</span> <span class="attr">class</span>=<span class="str">"form-label"</span><span class="tag">&gt;</span>Carrera<span class="tag">&lt;/label&gt;</span>
+              <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="attr">id</span>=<span class="str">"carrera"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-footer"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"button"</span> <span class="attr">class</span>=<span class="str">"btn btn-secondary"</span> <span class="attr">data-bs-dismiss</span>=<span class="str">"modal"</span><span class="tag">&gt;</span>Cancelar<span class="tag">&lt;/button&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">class</span>=<span class="str">"btn btn-primary"</span><span class="tag">&gt;</span>Guardar<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/form&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+
+  <span class="com">&lt;!-- JS Bootstrap 5 --&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"app.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+    </div>
+
+    <h2>3. Lógica del Cliente Fetch API (Front-End JavaScript)</h2>
+    <p>Este archivo (<code>app.js</code>) se encarga de verificar la sesión en el cliente y comunicarse de forma asíncrona mediante <code>fetch</code> enviando las credenciales JWT.</p>
+
+    <div class="code-block">
+        <div class="code-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            public/app.js (JavaScript Asíncrono + DOM)
+        </div>
+        <pre><code><span class="com">// 1. VERIFICACIÓN DE SESIÓN EN FRONT-END</span>
+<span class="kwd">const</span> token = localStorage.<span class="fn">getItem</span>(<span class="str">'token'</span>);
+<span class="kwd">if</span> (!token) {
+  <span class="com">// Si no hay token, redirigir inmediatamente al login</span>
+  window.location.href = <span class="str">'login.html'</span>;
+}
+
+<span class="kwd">const</span> API_URL = <span class="str">'/api/estudiantes'</span>;
+<span class="kwd">let</span> modalBS = <span class="kwd">null</span>;
+
+document.<span class="fn">addEventListener</span>(<span class="str">'DOMContentLoaded'</span>, () => {
+  modalBS = <span class="kwd">new</span> bootstrap.<span class="fn">Modal</span>(document.<span class="fn">getElementById</span>(<span class="str">'modalEstudiante'</span>));
+  <span class="fn">cargarEstudiantes</span>();
+});
+
+<span class="com">// Cabecera global con token JWT para peticiones seguras</span>
+<span class="kwd">function</span> <span class="fn">getAuthHeaders</span>() {
+  <span class="kwd">return</span> {
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+    <span class="str">'Authorization'</span>: <span class="str">`Bearer ${localStorage.getItem('token')}`</span>
+  };
+}
+
+<span class="com">// 2. OBTENER Y RENDERIZAR REGISTROS (READ)</span>
+<span class="kwd">async function</span> <span class="fn">cargarEstudiantes</span>() {
+  <span class="kwd">try</span> {
+    <span class="kwd">const</span> res = <span class="kwd">await</span> <span class="fn">fetch</span>(API_URL, { headers: <span class="fn">getAuthHeaders</span>() });
+    <span class="kwd">if</span> (res.status === <span class="num">401</span> || res.status === <span class="num">403</span>) <span class="kwd">return</span> <span class="fn">cerrarSesion</span>();
+    
+    <span class="kwd">const</span> estudiantes = <span class="kwd">await</span> res.<span class="fn">json</span>();
+    <span class="kwd">const</span> tbody = document.<span class="fn">getElementById</span>(<span class="str">'tablaEstudiantes'</span>);
+    tbody.innerHTML = <span class="str">''</span>;
+
+    estudiantes.<span class="fn">forEach</span>(<span class="var">est</span> => {
+      tbody.innerHTML += <span class="str">`
+        &lt;tr&gt;
+          &lt;td&gt;${est.id}&lt;/td&gt;
+          &lt;td class="fw-semibold"&gt;${est.nombre}&lt;/td&gt;
+          &lt;td&gt;${est.email}&lt;/td&gt;
+          &lt;td&gt;${est.carrera}&lt;/td&gt;
+          &lt;td class="text-end"&gt;
+            &lt;button class="btn btn-sm btn-outline-primary me-1" onclick="abrirModalEditar(${est.id}, '${est.nombre}', '${est.email}', '${est.carrera}')"&gt;✏️ Editar&lt;/button&gt;
+            &lt;button class="btn btn-sm btn-outline-danger" onclick="eliminarEstudiante(${est.id})"&gt;🗑️ Eliminar&lt;/button&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+      `</span>;
+    });
+  } <span class="kwd">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Error cargando estudiantes:'</span>, error);
+  }
+}
+
+<span class="com">// 3. CREAR Y ACTUALIZAR (CREATE / UPDATE)</span>
+<span class="kwd">function</span> <span class="fn">abrirModalCrear</span>() {
+  document.<span class="fn">getElementById</span>(<span class="str">'formEstudiante'</span>).<span class="fn">reset</span>();
+  document.<span class="fn">getElementById</span>(<span class="str">'estudianteId'</span>).value = <span class="str">''</span>;
+  document.<span class="fn">getElementById</span>(<span class="str">'modalTitulo'</span>).innerText = <span class="str">'Nuevo Estudiante'</span>;
+  modalBS.<span class="fn">show</span>();
+}
+
+<span class="kwd">function</span> <span class="fn">abrirModalEditar</span>(<span class="var">id</span>, <span class="var">nombre</span>, <span class="var">email</span>, <span class="var">carrera</span>) {
+  document.<span class="fn">getElementById</span>(<span class="str">'estudianteId'</span>).value = id;
+  document.<span class="fn">getElementById</span>(<span class="str">'nombre'</span>).value = nombre;
+  document.<span class="fn">getElementById</span>(<span class="str">'email'</span>).value = email;
+  document.<span class="fn">getElementById</span>(<span class="str">'carrera'</span>).value = carrera;
+  document.<span class="fn">getElementById</span>(<span class="str">'modalTitulo'</span>).innerText = <span class="str">'Editar Estudiante'</span>;
+  modalBS.<span class="fn">show</span>();
+}
+
+<span class="kwd">async function</span> <span class="fn">guardarEstudiante</span>(<span class="var">e</span>) {
+  e.<span class="fn">preventDefault</span>();
+  <span class="kwd">const</span> id = document.<span class="fn">getElementById</span>(<span class="str">'estudianteId'</span>).value;
+  <span class="kwd">const</span> datos = {
+    nombre: document.<span class="fn">getElementById</span>(<span class="str">'nombre'</span>).value,
+    email: document.<span class="fn">getElementById</span>(<span class="str">'email'</span>).value,
+    carrera: document.<span class="fn">getElementById</span>(<span class="str">'carrera'</span>).value
+  };
+
+  <span class="kwd">const</span> metodo = id ? <span class="str">'PUT'</span> : <span class="str">'POST'</span>;
+  <span class="kwd">const</span> url = id ? <span class="str">`${API_URL}/${id}`</span> : API_URL;
+
+  <span class="kwd">await</span> <span class="fn">fetch</span>(url, {
+    method: metodo,
+    headers: <span class="fn">getAuthHeaders</span>(),
+    body: JSON.<span class="fn">stringify</span>(datos)
+  });
+
+  modalBS.<span class="fn">hide</span>();
+  <span class="fn">cargarEstudiantes</span>();
+}
+
+<span class="com">// 4. ELIMINAR (DELETE)</span>
+<span class="kwd">async function</span> <span class="fn">eliminarEstudiante</span>(<span class="var">id</span>) {
+  <span class="kwd">if</span> (<span class="fn">confirm</span>(<span class="str">'¿Está seguro de eliminar este registro?'</span>)) {
+    <span class="kwd">await</span> <span class="fn">fetch</span>(<span class="str">`${API_URL}/${id}`</span>, {
+      method: <span class="str">'DELETE'</span>,
+      headers: <span class="fn">getAuthHeaders</span>()
+    });
+    <span class="fn">cargarEstudiantes</span>();
+  }
+}
+
+<span class="com">// 5. LOGOUT</span>
+<span class="kwd">function</span> <span class="fn">cerrarSesion</span>() {
+  localStorage.<span class="fn">removeItem</span>(<span class="str">'token'</span>);
+  window.location.href = <span class="str">'login.html'</span>;
+}</code></pre>
+    </div>
+</div>
+
+</body>
+</html>
