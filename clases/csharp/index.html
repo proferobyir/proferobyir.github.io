@@ -72,7 +72,8 @@
             color: var(--text-color);
         }
 
-        ul {
+        ul,
+        ol {
             padding-left: 1.5rem;
         }
 
@@ -153,7 +154,7 @@
 
     <header>
         <h1>Programación en C# (Visual Studio 2012)</h1>
-        <p>Estructura, Variables, Entrada/Salida, Control de Flujo, Manejo de Cadenas, Colecciones y Funciones</p>
+        <p>Estructura, Variables, Entrada/Salida, Control de Flujo, Manejo de Cadenas, Colecciones, LINQ y Funciones</p>
     </header>
 
     <div class="container">
@@ -212,7 +213,7 @@
                 </li>
                 <li>Asigne un nombre al proyecto y haga clic en <strong>Aceptar</strong>.</li>
             </ol>
-            <!-- Imagen de creación del proyecto -->
+
             <div class="img-container">
                 <img src="./pictures/newproject.png"
                     alt="Proceso de creación de un proyecto de consola C# en Visual Studio 2012"
@@ -408,19 +409,17 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
                 <pre><code><span class="type">string</span> cadenaBase = <span class="string">"   Código de Producto: PRD-98765-VEN.xlsx   "</span>;
 
 <span class="comment">// 1. Encadenamiento de Métodos (Method Chaining en una sola línea)</span>
-<span class="comment">// Se limpia, convierte a minúsculas y reemplaza la extensión en secuencia</span>
 <span class="type">string</span> limpioYFormateado = cadenaBase.Trim().ToLower().Replace(<span class="string">".xlsx"</span>, <span class="string">".pdf"</span>);
-<span class="comment">// Resultado: "código de producto: prd-98765-ven.pdf"</span>
 
 <span class="comment">// 2. Limpieza de espacios y conversión de caso</span>
-<span class="type">string</span> textoLimpio = cadenaBase.Trim(); <span class="comment">// Quita espacios al inicio y final</span>
-<span class="type">string</span> enMinusculas = textoLimpio.ToLower(); <span class="comment">// "código de producto: prd-98765-ven.xlsx"</span>
-<span class="type">string</span> enMayusculas = textoLimpio.ToUpper(); <span class="comment">// "CÓDIGO DE PRODUCTO: PRD-98765-VEN.XLSX"</span>
+<span class="type">string</span> textoLimpio = cadenaBase.Trim();
+<span class="type">string</span> enMinusculas = textoLimpio.ToLower();
+<span class="type">string</span> enMayusculas = textoLimpio.ToUpper();
 
 <span class="comment">// 3. Verificación de contenido (Retornan bool)</span>
-<span class="type">bool</span> iniciaConCodigo = textoLimpio.StartsWith(<span class="string">"Código"</span>); <span class="comment">// true</span>
-<span class="type">bool</span> esExcel = textoLimpio.EndsWith(<span class="string">".xlsx"</span>);              <span class="comment">// true</span>
-<span class="type">bool</span> contienePRD = textoLimpio.Contains(<span class="string">"PRD"</span>);             <span class="comment">// true</span>
+<span class="type">bool</span> iniciaConCodigo = textoLimpio.StartsWith(<span class="string">"Código"</span>);
+<span class="type">bool</span> esExcel = textoLimpio.EndsWith(<span class="string">".xlsx"</span>);
+<span class="type">bool</span> contienePRD = textoLimpio.Contains(<span class="string">"PRD"</span>);
 
 <span class="comment">// 4. Encadenamiento en evaluaciones condicionales</span>
 <span class="type">string</span> entradaCorreo = <span class="string">"   USUARIO@DOMINIO.COM  "</span>;
@@ -429,74 +428,128 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
     Console.WriteLine(<span class="string">"Correo válido con dominio comercial."</span>);
 }
 
-<span class="comment">// 5. Búsqueda de posiciones de caracteres o subcadenas</span>
-<span class="type">int</span> posDosPuntos = textoLimpio.IndexOf(<span class="string">':'</span>);       <span class="comment">// Retorna el índice donde aparece ':' (18)</span>
-<span class="type">int</span> posUltimoGuion = textoLimpio.LastIndexOf(<span class="string">'-'</span>); <span class="comment">// Retorna la posición del último '-'</span>
+<span class="comment">// 5. Búsqueda de posiciones</span>
+<span class="type">int</span> posDosPuntos = textoLimpio.IndexOf(<span class="string">':'</span>);
+<span class="type">int</span> posUltimoGuion = textoLimpio.LastIndexOf(<span class="string">'-'</span>);
 
 <span class="comment">// 6. Extracción de partes del string (Substring)</span>
 <span class="keyword">if</span> (posDosPuntos != -<span class="string">1</span>)
 {
-    <span class="comment">// Substring(inicio, longitud): Extrae el código delimitado</span>
-    <span class="type">string</span> codigoExtraido = textoLimpio.Substring(posDosPuntos + <span class="string">2</span>, <span class="string">17</span>); <span class="comment">// "PRD-98765-VEN.xlsx"</span>
-    
-    <span class="comment">// Substring(inicio): Extrae desde la posición dada hasta el final</span>
-    <span class="type">string</span> extension = textoLimpio.Substring(posUltimoGuion + <span class="string">1</span>); <span class="comment">// "VEN.xlsx"</span>
+    <span class="type">string</span> codigoExtraido = textoLimpio.Substring(posDosPuntos + <span class="string">2</span>, <span class="string">17</span>);
+    <span class="type">string</span> extension = textoLimpio.Substring(posUltimoGuion + <span class="string">1</span>);
 }
 
 <span class="comment">// 7. Reemplazo y Eliminación</span>
-<span class="type">string</span> textoSinPuntos = textoLimpio.Replace(<span class="string">"."</span>, <span class="string">"_"</span>); <span class="comment">// Reemplaza '.' por '_'</span>
-<span class="type">string</span> textoRecortado = textoLimpio.Remove(<span class="string">0</span>, <span class="string">20</span>);       <span class="comment">// Elimina los primeros 20 caracteres</span>
+<span class="type">string</span> textoSinPuntos = textoLimpio.Replace(<span class="string">"."</span>, <span class="string">"_"</span>);
+<span class="type">string</span> textoRecortado = textoLimpio.Remove(<span class="string">0</span>, <span class="string">20</span>);
 
-                <span class="comment">// 8. División (Split) y Combinación (Join)</span>
-                <span class="type">string</span> listaFrutas = <span class="string">"Manzana,Pera,Uva,Naranja"</span>;
-                <span class="type">string</span>[] arregloFrutas = listaFrutas.Split(<span class="string">','</span>); <span class="comment">// Divide la cadena en un array por la coma</span>
+<span class="comment">// 8. División (Split) y Combinación (Join)</span>
+<span class="type">string</span> listaFrutas = <span class="string">"Manzana,Pera,Uva,Naranja"</span>;
+<span class="type">string</span>[] arregloFrutas = listaFrutas.Split(<span class="string">','</span>);
+<span class="type">string</span> unionConGuiones = <span class="type">string</span>.Join(<span class="string">" - "</span>, arregloFrutas);
 
-                <span class="comment">// Une los elementos de un arreglo insertando un separador determinado</span>
-                <span class="type">string</span> unionConGuiones = <span class="type">string</span>.Join(<span class="string">" - "</span>, arregloFrutas); <span class="comment">// "Manzana - Pera - Uva - Naranja"</span>
+<span class="comment">// 9. Validación de cadenas vacías o nulas (C# 5.0)</span>
+<span class="type">string</span> entradaUsuario = <span class="string">"   "</span>;
+<span class="keyword">if</span> (<span class="type">string</span>.IsNullOrWhiteSpace(entradaUsuario))
+{
+    Console.WriteLine(<span class="string">"La entrada está vacía, es nula o solo contiene espacios."</span>);
+}
 
-                <span class="comment">// 9. Validación de cadenas vacías o nulas (C# 5.0)</span>
-                <span class="type">string</span> entradaUsuario = <span class="string">"   "</span>;
-                <span class="keyword">if</span> (<span class="type">string</span>.IsNullOrWhiteSpace(entradaUsuario))
-                {
-                    Console.WriteLine(<span class="string">"La entrada está vacía, es nula o solo contiene espacios."</span>);
-                }
-
-                <span class="comment">// 10. Formateo de Cadenas compatible con C# 5.0 (string.Format)</span>
-                <span class="type">string</span> producto = <span class="string">"Laptop"</span>;
-                <span class="type">double</span> precio = <span class="string">850.75</span>;
-                <span class="type">string</span> reporte = <span class="type">string</span>.Format(<span class="string">"Producto: {0} | Precio: ${1:F2}"</span>, producto, precio);
-                Console.WriteLine(reporte);</code></pre>
+<span class="comment">// 10. Formateo de Cadenas compatible con C# 5.0 (string.Format)</span>
+<span class="type">string</span> producto = <span class="string">"Laptop"</span>;
+<span class="type">double</span> precio = <span class="string">850.75</span>;
+<span class="type">string</span> reporte = <span class="type">string</span>.Format(<span class="string">"Producto: {0} | Precio: ${1:F2}"</span>, producto, precio);
+Console.WriteLine(reporte);</code></pre>
             </div>
         </section>
 
         <section>
-            <h2>10. Arreglos (Arrays) y Listas Dinámicas (List&lt;T&gt;)</h2>
-            <p>Los arreglos tradicionales poseen un tamaño estático definido al momento de su inicialización. En
-                contraste, las listas genéricas dinamizadas (<code>List&lt;T&gt;</code>) ajustan su capacidad de manera
-                automática según los elementos ingresados.</p>
-            <p><strong>Uso de Espacios de Nombres y Ensamblados:</strong> Para utilizar colecciones genéricas como
-                <code>List&lt;T&gt;</code>, es obligatorio incluir al inicio del archivo la directiva
-                <code>using System.Collections.Generic;</code>. Esto le indica al compilador de .NET que resuelva las
-                referencias de tipos y métodos genéricos alojados en los ensamblados base del framework.
-            </p>
+            <h2>10. Arreglos (Arrays) y Colecciones de Datos</h2>
+            <p>Las estructuras de datos permiten almacenar y gestionar conjuntos de elementos en memoria. En C# contamos
+                con arreglos estáticos de tamaño fijo y colecciones genéricas dinámicas que se adaptan automáticamente
+                al número de elementos.</p>
+            <p><strong>Espacio de Nombres Requerido:</strong> Para utilizar colecciones genéricas como
+                <code>List&lt;T&gt;</code>, <code>Stack&lt;T&gt;</code> y <code>Queue&lt;T&gt;</code>, es obligatorio
+                incluir al inicio del archivo la directiva <code>using System.Collections.Generic;</code>.</p>
+
             <div class="explainer-box">
-                <h3>Ejemplo de Arreglos y Listas</h3>
-                <pre><code><span class="comment">// Se requiere la directiva de ensamblado: using System.Collections.Generic;</span>
-
-<span class="comment">// 1. Arreglo unidimensional de tamaño fijo</span>
+                <h3>1. Arreglos Unidimensionales (Vectores)</h3>
+                <p>Poseen una dimensión finita y un índice basado en cero.</p>
+                <pre><code><span class="comment">// Declaración e inicialización directa</span>
 <span class="type">string</span>[] tecnologias = { <span class="string">"C#"</span>, <span class="string">"Visual Studio"</span>, <span class="string">"ADO.NET"</span> };
-Console.WriteLine(<span class="string">"Primer elemento del arreglo: "</span> + tecnologias[<span class="string">0</span>]);
+Console.WriteLine(<span class="string">"Primer elemento: "</span> + tecnologias[<span class="string">0</span>]);
 
-<span class="comment">// 2. Lista dinámica tipada</span>
-List&lt;<span class="type">string</span>&gt; estudiantes = <span class="keyword">new</span> List&lt;<span class="type">string</span>&gt;();
+<span class="comment">// Declaración reservando tamaño fijo</span>
+<span class="type">int</span>[] numeros = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">3</span>];
+numeros[<span class="string">0</span>] = <span class="string">10</span>;
+numeros[<span class="string">1</span>] = <span class="string">20</span>;
+numeros[<span class="string">2</span>] = <span class="string">30</span>;</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>2. Arreglos Multidimensionales (Matrices) y Dentados</h3>
+                <p>C# soporta matrices rectangulares bidimensionales (filas y columnas) y arreglos de arreglos (arreglos
+                    dentados o <em>jagged arrays</em>).</p>
+                <pre><code><span class="comment">// Matriz rectangular (2 filas x 3 columnas)</span>
+<span class="type">int</span>[,] matriz = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">2</span>, <span class="string">3</span>] { 
+    { <span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span> }, 
+    { <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span> } 
+};
+Console.WriteLine(<span class="string">"Elemento fila 1, col 2: "</span> + matriz[<span class="string">1</span>, <span class="string">2</span>]); <span class="comment">// Imprime 6</span>
+
+<span class="comment">// Arreglo Dentado (Jagged Array): Arreglo cuyos elementos son otros arreglos</span>
+<span class="type">int</span>[][] dentado = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">2</span>][];
+dentado[<span class="string">0</span>] = <span class="keyword">new</span> <span class="type">int</span>[] { <span class="string">1</span>, <span class="string">2</span> };
+dentado[<span class="string">1</span>] = <span class="keyword">new</span> <span class="type">int</span>[] { <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span> };
+Console.WriteLine(<span class="string">"Elemento del arreglo dentado: "</span> + dentado[<span class="string">1</span>][<span class="string">2</span>]); <span class="comment">// Imprime 5</span></code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>3. Listas Dinámicas (List&lt;T&gt;)</h3>
+                <p>Permiten agregar, eliminar y buscar elementos de manera dinámica sin definir un límite
+                    predeterminado.</p>
+                <pre><code>List&lt;<span class="type">string</span>&gt; estudiantes = <span class="keyword">new</span> List&lt;<span class="type">string</span>&gt;();
 estudiantes.Add(<span class="string">"Ana"</span>);
 estudiantes.Add(<span class="string">"Carlos"</span>);
+estudiantes.Add(<span class="string">"Beatriz"</span>);
 
-<span class="comment">// Recorrer la lista con foreach</span>
+estudiantes.Remove(<span class="string">"Carlos"</span>); <span class="comment">// Remueve por valor</span>
+
 <span class="keyword">foreach</span> (<span class="type">string</span> est <span class="keyword">in</span> estudiantes)
 {
     Console.WriteLine(<span class="string">"Estudiante: "</span> + est);
 }</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>4. Pilas (Stack&lt;T&gt;) y Colas (Queue&lt;T&gt;)</h3>
+                <p>Estructuras dinámicas que ordenan el procesamiento de sus elementos mediante políticas específicas:
+                </p>
+                <ul>
+                    <li><strong>Stack&lt;T&gt; (Pila):</strong> Estructura de tipo <strong>LIFO</strong> (<em>Last In,
+                            First Out</em> - Último en entrar, primero en salir). Usa <code>Push()</code> para agregar y
+                        <code>Pop()</code> para retirar.</li>
+                    <li><strong>Queue&lt;T&gt; (Cola):</strong> Estructura de tipo <strong>FIFO</strong> (<em>First In,
+                            First Out</em> - Primero en entrar, primero en salir). Usa <code>Enqueue()</code> para
+                        encolar y <code>Dequeue()</code> para desencolar.</li>
+                </ul>
+                <pre><code><span class="comment">// Uso de Pilas (Stack - LIFO)</span>
+Stack&lt;<span class="type">string</span>&gt; historialNavegacion = <span class="keyword">new</span> Stack&lt;<span class="type">string</span>&gt;();
+historialNavegacion.Push(<span class="string">"Google.com"</span>);
+historialNavegacion.Push(<span class="string">"Github.com"</span>);
+historialNavegacion.Push(<span class="string">"StackOverflow.com"</span>);
+
+<span class="type">string</span> ultimaPagina = historialNavegacion.Pop(); <span class="comment">// Extrae "StackOverflow.com"</span>
+Console.WriteLine(<span class="string">"Página removida de la pila: "</span> + ultimaPagina);
+
+<span class="comment">// Uso de Colas (Queue - FIFO)</span>
+Queue&lt;<span class="type">string</span>&gt; colaImpresion = <span class="keyword">new</span> Queue&lt;<span class="type">string</span>&gt;();
+colaImpresion.Enqueue(<span class="string">"Documento1.pdf"</span>);
+colaImpresion.Enqueue(<span class="string">"Reporte.xlsx"</span>);
+colaImpresion.Enqueue(<span class="string">"Plano.dwg"</span>);
+
+<span class="type">string</span> primerDocumento = colaImpresion.Dequeue(); <span class="comment">// Extrae "Documento1.pdf"</span>
+Console.WriteLine(<span class="string">"Atendiendo en la cola: "</span> + primerDocumento);</code></pre>
             </div>
         </section>
 
@@ -576,6 +629,49 @@ Console.WriteLine(<span class="string">"--- Ciclo Foreach ---"</span>);
         Console.WriteLine(<span class="string">"El resultado de la suma es: "</span> + resultado);
     }
 }</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>13. Consultas Integradas con LINQ (Language Integrated Query)</h2>
+            <p><strong>LINQ</strong> proporciona una sintaxis unificada para realizar filtrados, ordenamientos y
+                proyecciones directamente sobre colecciones de datos (como arreglos o listas) dentro del código C#.</p>
+            <p><strong>Espacio de Nombres Requerido:</strong> Para habilitar el uso de LINQ en C# 5.0, agregue al inicio
+                del archivo la directiva <code>using System.Linq;</code>.</p>
+
+            <div class="explainer-box">
+                <h3>Ejemplo de Consultas LINQ en C# 5.0</h3>
+                <pre><code><span class="comment">// Se requiere la directiva: using System.Linq;</span>
+
+<span class="type">int</span>[] numeros = { <span class="string">15</span>, <span class="string">8</span>, <span class="string">21</span>, <span class="string">4</span>, <span class="string">42</span>, <span class="string">11</span>, <span class="string">30</span> };
+
+<span class="comment">// 1. Sintaxis de Consulta (Query Syntax): Filtrar y ordenar números mayores a 10</span>
+<span class="keyword">var</span> numerosFiltrados = <span class="keyword">from</span> n <span class="keyword">in</span> numeros
+                       <span class="keyword">where</span> n > <span class="string">10</span>
+                       <span class="keyword">orderby</span> n <span class="keyword">ascending</span>
+                       <span class="keyword">select</span> n;
+
+Console.WriteLine(<span class="string">"--- Números mayores a 10 (Sintaxis Query) ---"</span>);
+<span class="keyword">foreach</span> (<span class="type">int</span> num <span class="keyword">in</span> numerosFiltrados)
+{
+    Console.WriteLine(num);
+}
+
+<span class="comment">// 2. Sintaxis de Métodos (Method Syntax): Uso de expresiones Lambda</span>
+<span class="keyword">var</span> pares = numeros.Where(n => n % <span class="string">2</span> == <span class="string">0</span>).OrderBy(n => n);
+
+Console.WriteLine(<span class="string">"--- Números pares ordenados (Sintaxis Métodos) ---"</span>);
+<span class="keyword">foreach</span> (<span class="type">int</span> par <span class="keyword">in</span> pares)
+{
+    Console.WriteLine(par);
+}
+
+<span class="comment">// 3. Métodos de Agregación Directos de LINQ</span>
+<span class="type">int</span> cantidad = numeros.Count();
+<span class="type">int</span> maximo = numeros.Max();
+<span class="type">double</span> promedio = numeros.Average();
+
+Console.WriteLine(string.Format(<span class="string">"Total: {0} | Máximo: {1} | Promedio: {2:F2}"</span>, cantidad, maximo, promedio));</code></pre>
             </div>
         </section>
 
