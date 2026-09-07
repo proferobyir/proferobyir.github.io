@@ -379,6 +379,11 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
                     <code>string</code></strong> con el resultado que puede guardarse en otra variable o reasignarse.
             </p>
 
+            <p><strong>Encadenamiento de Métodos (Method Chaining):</strong> Gracias a que los métodos de cadenas
+                devuelven un nuevo objeto <code>string</code>, es posible conectar múltiples métodos en una sola línea
+                de código. La evaluación se realiza de izquierda a derecha, aplicando cada transformación al resultado
+                del método anterior.</p>
+
             <div class="explainer-box">
                 <h3>Resumen de Métodos Más Útiles</h3>
                 <ul>
@@ -399,24 +404,36 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
             </div>
 
             <div class="explainer-box">
-                <h3>Ejemplos Prácticos de Métodos de Cadenas</h3>
+                <h3>Ejemplos Prácticos de Métodos y Encadenamiento</h3>
                 <pre><code><span class="type">string</span> cadenaBase = <span class="string">"   Código de Producto: PRD-98765-VEN.xlsx   "</span>;
 
-<span class="comment">// 1. Limpieza de espacios y conversión de caso</span>
+<span class="comment">// 1. Encadenamiento de Métodos (Method Chaining en una sola línea)</span>
+<span class="comment">// Se limpia, convierte a minúsculas y reemplaza la extensión en secuencia</span>
+<span class="type">string</span> limpioYFormateado = cadenaBase.Trim().ToLower().Replace(<span class="string">".xlsx"</span>, <span class="string">".pdf"</span>);
+<span class="comment">// Resultado: "código de producto: prd-98765-ven.pdf"</span>
+
+<span class="comment">// 2. Limpieza de espacios y conversión de caso</span>
 <span class="type">string</span> textoLimpio = cadenaBase.Trim(); <span class="comment">// Quita espacios al inicio y final</span>
 <span class="type">string</span> enMinusculas = textoLimpio.ToLower(); <span class="comment">// "código de producto: prd-98765-ven.xlsx"</span>
 <span class="type">string</span> enMayusculas = textoLimpio.ToUpper(); <span class="comment">// "CÓDIGO DE PRODUCTO: PRD-98765-VEN.XLSX"</span>
 
-<span class="comment">// 2. Verificación de contenido (Retornan bool)</span>
+<span class="comment">// 3. Verificación de contenido (Retornan bool)</span>
 <span class="type">bool</span> iniciaConCodigo = textoLimpio.StartsWith(<span class="string">"Código"</span>); <span class="comment">// true</span>
 <span class="type">bool</span> esExcel = textoLimpio.EndsWith(<span class="string">".xlsx"</span>);              <span class="comment">// true</span>
 <span class="type">bool</span> contienePRD = textoLimpio.Contains(<span class="string">"PRD"</span>);             <span class="comment">// true</span>
 
-<span class="comment">// 3. Búsqueda de posiciones de caracteres o subcadenas</span>
+<span class="comment">// 4. Encadenamiento en evaluaciones condicionales</span>
+<span class="type">string</span> entradaCorreo = <span class="string">"   USUARIO@DOMINIO.COM  "</span>;
+<span class="keyword">if</span> (entradaCorreo.Trim().ToLower().EndsWith(<span class="string">".com"</span>))
+{
+    Console.WriteLine(<span class="string">"Correo válido con dominio comercial."</span>);
+}
+
+<span class="comment">// 5. Búsqueda de posiciones de caracteres o subcadenas</span>
 <span class="type">int</span> posDosPuntos = textoLimpio.IndexOf(<span class="string">':'</span>);       <span class="comment">// Retorna el índice donde aparece ':' (18)</span>
 <span class="type">int</span> posUltimoGuion = textoLimpio.LastIndexOf(<span class="string">'-'</span>); <span class="comment">// Retorna la posición del último '-'</span>
 
-<span class="comment">// 4. Extracción de partes del string (Substring)</span>
+<span class="comment">// 6. Extracción de partes del string (Substring)</span>
 <span class="keyword">if</span> (posDosPuntos != -<span class="string">1</span>)
 {
     <span class="comment">// Substring(inicio, longitud): Extrae el código delimitado</span>
@@ -426,25 +443,25 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
     <span class="type">string</span> extension = textoLimpio.Substring(posUltimoGuion + <span class="string">1</span>); <span class="comment">// "VEN.xlsx"</span>
 }
 
-<span class="comment">// 5. Reemplazo y Eliminación</span>
+<span class="comment">// 7. Reemplazo y Eliminación</span>
 <span class="type">string</span> textoSinPuntos = textoLimpio.Replace(<span class="string">"."</span>, <span class="string">"_"</span>); <span class="comment">// Reemplaza '.' por '_'</span>
 <span class="type">string</span> textoRecortado = textoLimpio.Remove(<span class="string">0</span>, <span class="string">20</span>);       <span class="comment">// Elimina los primeros 20 caracteres</span>
 
-                <span class="comment">// 6. Divisió</span>n (Split) y Combinación (Join)
+                <span class="comment">// 8. División (Split) y Combinación (Join)</span>
                 <span class="type">string</span> listaFrutas = <span class="string">"Manzana,Pera,Uva,Naranja"</span>;
                 <span class="type">string</span>[] arregloFrutas = listaFrutas.Split(<span class="string">','</span>); <span class="comment">// Divide la cadena en un array por la coma</span>
 
                 <span class="comment">// Une los elementos de un arreglo insertando un separador determinado</span>
                 <span class="type">string</span> unionConGuiones = <span class="type">string</span>.Join(<span class="string">" - "</span>, arregloFrutas); <span class="comment">// "Manzana - Pera - Uva - Naranja"</span>
 
-                <span class="comment">// 7. Validación de cadenas vacías o nulas (C# 5.0)</span>
+                <span class="comment">// 9. Validación de cadenas vacías o nulas (C# 5.0)</span>
                 <span class="type">string</span> entradaUsuario = <span class="string">"   "</span>;
                 <span class="keyword">if</span> (<span class="type">string</span>.IsNullOrWhiteSpace(entradaUsuario))
                 {
                     Console.WriteLine(<span class="string">"La entrada está vacía, es nula o solo contiene espacios."</span>);
                 }
 
-                <span class="comment">// 8. Formateo de Cadenas compatible con C# 5.0 (string.Format)</span>
+                <span class="comment">// 10. Formateo de Cadenas compatible con C# 5.0 (string.Format)</span>
                 <span class="type">string</span> producto = <span class="string">"Laptop"</span>;
                 <span class="type">double</span> precio = <span class="string">850.75</span>;
                 <span class="type">string</span> reporte = <span class="type">string</span>.Format(<span class="string">"Producto: {0} | Precio: ${1:F2}"</span>, producto, precio);
