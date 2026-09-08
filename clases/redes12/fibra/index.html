@@ -180,7 +180,8 @@
             <div class="note">
                 <strong>Anexo Técnico: ¿Qué es una Micra (µm)?</strong>
                 <p>El símbolo <strong>µm</strong> representa al <em>micrómetro</em> (comúnmente llamado <em>micra</em>),
-                    una unidad de longitud del Sistema Internacional equivalente a la milmillonésima parte de un metro o
+                    una unidad de longitud del Sistema Internacional equivalente a la <strong>millonésima parte de un
+                        metro</strong> o
                     a la milésima parte de un milímetro. Está compuesto por la letra griega <strong>µ</strong> (mu,
                     prefijo "micro-" que significa 10<sup>-6</sup>) y la <strong>m</strong> (metro).</p>
                 <br>
@@ -253,31 +254,103 @@
             <h2>4. Caso Práctico: Arquitectura de una Instalación Residencial FTTH/GPON</h2>
             <p>Análisis de los componentes reales de una acometida doméstica de fibra óptica:</p>
 
-            <h3>1. Cable Drop Exterior (Bipolar)</h3>
-            <p>Cable de exterior reinforced con doble miembro de tracción metálico o dieléctrico. Soporta la tensión
-                entre postes y la intemperie desde la red del proveedor hasta la vivienda.</p>
-            <img src="cable_drop_exterior_bipolar" alt="Cable Drop exterior reforzado" class="img-placeholder">
+            <h3>1. Cable Flat Drop Exterior (2 Hilos / 2 Cores)</h3>
+            <p>Cable de exterior autosoportado con tensores de FRP o acero. Soporta la tensión entre postes e intemperie
+                desde la caja NAP hasta la vivienda.</p>
+            <img src="cable_drop_exterior" alt="Cable Drop exterior reforzado" class="img-placeholder">
 
-            <h3>2. Roseta Óptica (ROS / Caja de Demarcación)</h3>
-            <p>Punto de demarcación dentro de la vivienda. En su interior se fusiona el cable Drop exterior con una
-                pigtail SC/APC interna para proteger la instalación física.</p>
+            <h3>2. Roseta Óptica (PTO / Caja de Demarcación)</h3>
+            <p>Punto de terminación dentro de la vivienda. En su interior se fusiona el hilo activo del cable Drop con
+                un pigtail SC/APC interno, dejando el segundo hilo en reserva para contingencias.</p>
             <img src="roseta_optica_ros" alt="Roseta de fibra óptica interior" class="img-placeholder">
 
-            <h3>3. Patch Cord Híbrido de Adaptación (SC/APC a SC/UPC)</h3>
-            <p>Jumper de fibra con un extremo SC/APC (Verde) conectado a la roseta para acoplar con el ángulo de la red
-                externa, y un extremo SC/UPC (Azul) para conectar al puerto PON de la ONU doméstica.</p>
+            <h3>3. Patch Cord de Adaptación (SC/APC a SC/UPC)</h3>
+            <p>Jumper de fibra monomodo con un extremo SC/APC (Verde) conectado a la roseta para acoplar con el pulido
+                en ángulo de la red externa, y un extremo SC/UPC (Azul) para conectar al puerto PON de la ONU del
+                usuario.</p>
             <img src="patch_cord_sc_apc_sc_upc" alt="Patch cord híbrido SC/APC verde a SC/UPC azul"
                 class="img-placeholder">
 
             <h3>4. Unidad de Red Óptica (ONU / ONT)</h3>
-            <p>Módem óptico que recibe el extremo SC/UPC y transforma la señal óptica del proveedor en interfaces
+            <p>Módem óptico (ej. V-SOL V2801SG con puerto SC/UPC) que recibe la señal y la transforma en interfaces
                 Ethernet RJ45 y Wi-Fi para el usuario.</p>
             <img src="onu_modo_pon" alt="ONU con puerto PON SC/UPC" class="img-placeholder">
         </section>
 
         <!-- Tema 5 -->
         <section id="tema-5">
-            <h2>5. Transceptores Ópticos (Transceivers)</h2>
+            <h2>5. La Cabecera de Red: OLT y Tecnologías PON (GPON vs. EPON)</h2>
+            <p>En el extremo del proveedor de servicios (ISP) se encuentra la <strong>OLT (Optical Line
+                    Terminal)</strong>,
+                el equipo central encargado de emitir y coordinar las señales ópticas hacia todos los abonados.</p>
+
+            <h3>1. ¿Qué es una OLT?</h3>
+            <p>Es un chasis o equipo modular ubicado en la central del ISP que convierte las señales eléctricas del
+                backbone de Internet
+                en haces de luz. A través de un solo puerto de la OLT y mediante divisores ópticos pasivos
+                (<em>Splitters</em>),
+                se puede dar servicio a entre 32 y 128 usuarios (ONUs) simultáneamente.</p>
+
+            <h3>2. Comparativa: EPON vs. GPON</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>EPON (Ethernet PON)</th>
+                            <th>GPON (Gigabit PON)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Estándar</strong></td>
+                            <td>IEEE 802.3ah</td>
+                            <td>ITU-T G.984</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Velocidad de Bajada (Downstream)</strong></td>
+                            <td>1.25 Gbps</td>
+                            <td>2.488 Gbps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Velocidad de Subida (Upstream)</strong></td>
+                            <td>1.25 Gbps (Simétrico)</td>
+                            <td>1.244 Gbps (Asimétrico)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Relación de División (Split Ratio)</strong></td>
+                            <td>Hasta 1:64 por puerto</td>
+                            <td>Hasta 1:128 por puerto</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Encapsulamiento</strong></td>
+                            <td>Tramas Ethernet nativas</td>
+                            <td>Tramas GEM (GPON Encapsulation Method)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Uso Comercial</strong></td>
+                            <td>Redes de bajo costo o despliegues legacy.</td>
+                            <td>Estándar predominante en la mayoría de los ISPs (FTTH).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="note">
+                <strong>Nota de Aplicación Práctica (ONUs Dual Mode):</strong>
+                <p>Existen equipos terminales como la ONU <strong>V-SOL V2801SG</strong> que implementan chipset
+                    <em>G/EPON Dual Mode</em>.
+                    Esto permite que la ONU detecte automáticamente si la OLT emisora opera en protocolo EPON o GPON y
+                    adapte su negociación de canal sin necesidad de cambiar el hardware.</p>
+            </div>
+
+            <img src="esquema_olt_splitter_onu" alt="Esquema de distribución OLT hacia Splitter y ONUs"
+                class="img-placeholder">
+        </section>
+
+        <!-- Tema 6 -->
+        <section id="tema-6">
+            <h2>6. Transceptores Ópticos (Transceivers)</h2>
             <p>Dispositivos modulares encargados de la conversión bidireccional entre impulsos de luz y señales
                 eléctricas digitales en switches y routers.</p>
 
@@ -290,12 +363,13 @@
             <img src="convertidor_de_medios" alt="Convertidor de Medios Fibra a RJ45" class="img-placeholder">
         </section>
 
-        <!-- Tema 6 -->
-        <section id="tema-6">
-            <h2>6. La Bahía Modular y el Estándar MSA</h2>
+        <!-- Tema 7 -->
+        <section id="tema-7">
+            <h2>7. La Bahía Modular y el Estándar MSA</h2>
             <p>La bahía de conexión en los equipos de red se rige por acuerdos multisuministrador denominados
                 <strong>MSA (Multi-Source Agreement)</strong>. Esto garantiza la estandarización física de las ranuras
-                entre fabricantes.</p>
+                entre fabricantes.
+            </p>
 
             <ul>
                 <li><strong>Bahía SFP:</strong> Soporta velocidades de hasta 1 Gbps.</li>
