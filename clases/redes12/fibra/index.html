@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Redes: Fibra Óptica y Transceptores</title>
+    <title>Guía de Redes: Fibra Óptica, Transceptores y Arquitectura FTTH</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -115,7 +115,6 @@
             font-size: 0.9rem;
         }
 
-        /* Bloque Carbon Dark Theme opcional para ejemplos */
         pre.carbon-theme {
             background-color: var(--code-bg);
             color: var(--code-text);
@@ -132,9 +131,9 @@
 <body>
 
     <header>
-        <h1>Material de Estudio: Fibra Óptica y Transceptores</h1>
-        <p class="intro">Guía técnica sobre medios de transmisión ópticos, conectores y módulos SFP para la asignatura
-            de Redes.</p>
+        <h1>Material de Estudio: Fibra Óptica, Transceptores y Arquitectura FTTH</h1>
+        <p class="intro">Guía técnica sobre medios de transmisión ópticos, conectores, módulos SFP y casos prácticos de
+            despliegue residencial para la asignatura de Redes.</p>
     </header>
 
     <main>
@@ -159,7 +158,7 @@
                             <td><strong>Monomodo (OS1 / OS2)</strong></td>
                             <td>9 µm</td>
                             <td>> 10 km</td>
-                            <td>Enlaces WAN, FTTH, campus universitarios y backbones interurbanos.</td>
+                            <td>Enlaces WAN, FTTH/GPON, campus universitarios y backbones interurbanos.</td>
                         </tr>
                         <tr>
                             <td><strong>Multimodo (OM1 / OM2)</strong></td>
@@ -186,15 +185,17 @@
             <h2>2. Conectores de Fibra Óptica Más Utilizados</h2>
 
             <h3>Conector LC (Lucent Connector)</h3>
-            <p>Formato pequeño con seguro tipo pestaña. Es el estándar actual en salas de servidores.</p>
+            <p>Formato pequeño con seguro tipo pestaña. Es el estándar actual en salas de servidores y switches.</p>
             <img src="conector_lc" alt="Conector LC" class="img-placeholder">
 
             <h3>Conector SC (Subscriber Connector)</h3>
-            <p>Conector rectangular de acople a presión (push-pull). Muy extendido en ONTs y rosetas de fibra.</p>
+            <p>Conector rectangular de acople a presión (push-pull). Muy extendido en ONTs, rosetas de fibra y redes
+                FTTH.</p>
             <img src="conector_sc" alt="Conector SC" class="img-placeholder">
 
             <h3>Conector ST (Straight Tip)</h3>
-            <p>Conector redondo con acople por bayoneta (giro y bloqueo). Utilizado en instalaciones antiguas.</p>
+            <p>Conector redondo con acople por bayoneta (giro y bloqueo). Utilizado en instalaciones antiguas e
+                industriales.</p>
             <img src="conector_st" alt="Conector ST" class="img-placeholder">
 
             <h3>Conector MPO / MTP (Multi-fiber Push-On)</h3>
@@ -215,8 +216,9 @@
             </ul>
 
             <div class="note">
-                <strong>Regla de oro:</strong> Nunca acoplar un conector APC (Verde) con uno UPC (Azul) para evitar
-                daños mecánicos en la cerámica y pérdida severa de señal.
+                <strong>Regla de oro:</strong> Nunca acoplar directamente un conector APC (Verde) con uno UPC (Azul)
+                dentro de un acoplador sin el mecanismo de adaptación adecuado, para evitar daños mecánicos en la
+                cerámica y pérdida severa de señal.
             </div>
 
             <img src="pulido_upc_vs_apc" alt="Comparativa de pulidos UPC azul y APC verde" class="img-placeholder">
@@ -224,9 +226,36 @@
 
         <!-- Tema 4 -->
         <section id="tema-4">
-            <h2>4. Transceptores Ópticos (Transceivers)</h2>
+            <h2>4. Caso Práctico: Arquitectura de una Instalación Residencial FTTH/GPON</h2>
+            <p>Análisis de los componentes reales de una acometida doméstica de fibra óptica:</p>
+
+            <h3>1. Cable Drop Exterior (Bipolar)</h3>
+            <p>Cable de exterior reforzado con doble miembro de tracción metálico o dieléctrico. Soporta la tensión
+                entre postes y la intemperie desde la red del proveedor hasta la vivienda.</p>
+            <img src="cable_drop_exterior_bipolar" alt="Cable Drop exterior reforzado" class="img-placeholder">
+
+            <h3>2. Roseta Óptica (ROS / Caja de Demarcación)</h3>
+            <p>Punto de demarcación dentro de la vivienda. En su interior se fusiona el cable Drop exterior con una
+                pigtail SC/APC interna para proteger la instalación física.</p>
+            <img src="roseta_optica_ros" alt="Roseta de fibra óptica interior" class="img-placeholder">
+
+            <h3>3. Patch Cord Híbrido de Adaptación (SC/APC a SC/UPC)</h3>
+            <p>Jumper de fibra con un extremo SC/APC (Verde) conectado a la roseta para acoplar con el ángulo de la red
+                externa, y un extremo SC/UPC (Azul) para conectar al puerto PON de la ONU doméstica.</p>
+            <img src="patch_cord_sc_apc_sc_upc" alt="Patch cord híbrido SC/APC verde a SC/UPC azul"
+                class="img-placeholder">
+
+            <h3>4. Unidad de Red Óptica (ONU / ONT)</h3>
+            <p>Módem óptico que recibe el extremo SC/UPC y transforma la señal óptica del proveedor en interfaces
+                Ethernet RJ45 y Wi-Fi para el usuario.</p>
+            <img src="onu_modo_pon" alt="ONU con puerto PON SC/UPC" class="img-placeholder">
+        </section>
+
+        <!-- Tema 5 -->
+        <section id="tema-5">
+            <h2>5. Transceptores Ópticos (Transceivers)</h2>
             <p>Dispositivos modulares encargados de la conversión bidireccional entre impulsos de luz y señales
-                eléctricas digitales.</p>
+                eléctricas digitales en switches y routers.</p>
 
             <h3>Módulo Transceptor SFP / SFP+</h3>
             <p>Se inserta en la ranura modular del switch o router. Recibe comúnmente cables con conector LC.</p>
@@ -237,9 +266,9 @@
             <img src="convertidor_de_medios" alt="Convertidor de Medios Fibra a RJ45" class="img-placeholder">
         </section>
 
-        <!-- Tema 5 -->
-        <section id="tema-5">
-            <h2>5. La Bahía Modular y el Estándar MSA</h2>
+        <!-- Tema 6 -->
+        <section id="tema-6">
+            <h2>6. La Bahía Modular y el Estándar MSA</h2>
             <p>La bahía de conexión en los equipos de red se rige por acuerdos multisuministrador denominados
                 <strong>MSA (Multi-Source Agreement)</strong>. Esto garantiza la estandarización física de las ranuras
                 entre fabricantes.</p>
