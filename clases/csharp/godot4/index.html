@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curso Completo Godot 4 & C# | De Cero a Máster</title>
+    <title>Curso Máster: Godot 4 & C# | De Cero a Máster</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -18,6 +18,7 @@
             --type-color: #79c0ff;
             --string-color: #a5d6ff;
             --comment-color: #8b949e;
+            --highlight-color: #d29922;
         }
 
         * {
@@ -96,6 +97,15 @@
         .callout {
             background-color: rgba(56, 139, 253, 0.1);
             border-left: 4px solid var(--heading-color);
+            padding: 0.8rem 1rem;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .callout-warning {
+            background-color: rgba(210, 153, 34, 0.1);
+            border-left: 4px solid var(--highlight-color);
             padding: 0.8rem 1rem;
             border-radius: 0 6px 6px 0;
             margin-bottom: 1rem;
@@ -207,69 +217,112 @@
 
     <header>
         <h1>Curso Máster: Godot 4 & C#</h1>
-        <p>Ruta Cero a Experto: Fundamentos de POO, Árbol de Nodos, Física 2D y TileMaps</p>
+        <p>Ruta Cero a Experto: Encapsulamiento, POO, Árbol de Nodos, Física 2D y TileMaps</p>
     </header>
 
     <main>
 
-        <!-- MÓDULO 0 -->
+        <!-- MÓDULO 0: FUNDAMENTOS POO & ENCAPSULAMIENTO -->
         <section>
-            <h2>Módulo 0: Fundamentos Absolutos de Programación Orientada a Objetos (POO)</h2>
-            <p>Antes de mover nodos en Godot, es imprescindible entender qué es la <strong>Programación Orientada a
-                    Objetos</strong> en C#.</p>
+            <h2>Módulo 0: Fundamentos de POO y Modificadores de Acceso</h2>
+            <p>Antes de mover nodos en Godot, es vital entender qué es una <strong>Clase</strong>, un
+                <strong>Objeto</strong> y cómo funciona el <strong>Encapsulamiento</strong> mediante los modificadores
+                de acceso (<code>public</code>, <code>private</code>, etc.).</p>
 
             <div class="callout">
-                <strong>Analógia Docente:</strong> Piensa en una <strong>Clase</strong> como el <em>plano
+                <strong>Analogía Docente:</strong> Piensa en una <strong>Clase</strong> como el <em>plano
                     arquitectónico</em> de una casa, y en un <strong>Objeto</strong> como la <em>casa real
                     construida</em> a partir de ese plano.
             </div>
 
-            <h3>1. Clases, Atributos y Métodos</h3>
-            <ul>
-                <li><strong>Variables/Atributos:</strong> Las características o datos de la clase (ej. Vida, Velocidad,
-                    Nombre).</li>
-                <li><strong>Métodos/Funciones:</strong> Las acciones que la clase puede realizar (ej. Caminar, Saltar,
-                    Atacar).</li>
-            </ul>
+            <h3>1. ¿Por qué usamos `public`, `private` y `protected`? (Encapsulamiento)</h3>
+            <p>El <strong>encapsulamiento</strong> consiste en proteger los datos internos de un objeto para evitar que
+                otros componentes del sistema modifiquen valores sin validación.</p>
 
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Modificador</th>
+                            <th>Visibilidad / Alcance</th>
+                            <th>¿Cuándo usarlo?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>public</code></td>
+                            <td>Acceso total desde cualquier otra clase o archivo del proyecto.</td>
+                            <td>Para métodos o propiedades que otros componentes o el mismo motor (Godot) necesitan
+                                invocar/leer obligatoriamente.</td>
+                        </tr>
+                        <tr>
+                            <td><code>private</code></td>
+                            <td>Acceso restringido <strong>únicamente</strong> dentro de la misma clase donde se
+                                declaró.</td>
+                            <td>Para variables internas, contadores de estado o métodos auxiliares que nadie más debe
+                                tocar directamente.</td>
+                        </tr>
+                        <tr>
+                            <td><code>protected</code></td>
+                            <td>Acceso permitido en la clase actual y en sus <strong>clases hijas</strong> (herencia).
+                            </td>
+                            <td>Para variables o métodos que quieres compartir entre clases derivadas pero ocultar al
+                                exterior.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout-warning">
+                <strong>Regla de Oro en Godot 4:</strong> Toda clase adjunta a un nodo de Godot <strong>debe ser
+                    <code>public</code></strong>. De lo contrario, el motor de Godot (escrito internamente en C++) no
+                tendrá permisos de acceso para instanciar la clase, vincularla al nodo o ejecutar sus métodos
+                principales como <code>_Ready()</code> y <code>_Process()</code>.
+            </div>
+
+            <h3>2. Ejemplo Práctico de Encapsulamiento en C#</h3>
             <pre><code><span class="kw">using</span> System;
 
-<span class="cm">// Declaración del plano (Clase)</span>
-<span class="kw">public class</span> <span class="type">PersonajeBase</span>
+<span class="cm">// La clase es pública para que pueda ser utilizada en cualquier parte del sistema</span>
+<span class="kw">public class</span> <span class="type">JugadorBase</span>
 {
-    <span class="cm">// Atributos (Estado del objeto)</span>
-    <span class="kw">public string</span> Nombre = <span class="str">"Sin Nombre"</span>;
-    <span class="kw">public int</span> Vida = 100;
+    <span class="cm">// PUBLIC: Nombre es visible y modificable libremente desde fuera</span>
+    <span class="kw">public string</span> Nombre = <span class="str">"Héroe"</span>;
 
-    <span class="cm">// Método Constructor: Se ejecuta al crear el objeto</span>
-    <span class="kw">public</span> PersonajeBase(<span class="kw">string</span> nombreInicial)
-    {
-        Nombre = nombreInicial;
-    }
+    <span class="cm">// PRIVATE: La vida está protegida. Ninguna otra clase puede hacer "jugador._vida = -50;"</span>
+    <span class="kw">private int</span> _vida = 100;
 
-    <span class="cm">// Método (Comportamiento)</span>
+    <span class="cm">// PROTECTED: Las clases hijas (como Mago o Guerrero) podrán leer o cambiar este valor</span>
+    <span class="kw">protected float</span> FuerzaAtaque = 10.0f;
+
+    <span class="cm">// PUBLIC: Método de acceso seguro para modificar la vida interna controladamente</span>
     <span class="kw">public void</span> RecibirDanio(<span class="kw">int</span> cantidad)
     {
-        Vida -= cantidad;
-        <span class="type">Console</span>.WriteLine($"{Nombre} recibió {cantidad} de daño. Vida restante: {Vida}");
+        <span class="kw">if</span> (cantidad < 0) <span class="kw">return</span>; <span class="cm">// Validación para evitar errores</span>
+        _vida -= cantidad;
+        <span class="kw">if</span> (_vida < 0) _vida = 0;
+        
+        <span class="type">Console</span>.WriteLine($"{Nombre} recibió {cantidad} de daño. Vida restante: {_vida}");
+    }
+
+    <span class="cm">// PUBLIC: Permite leer la vida sin dar permiso de modificarla directamente</span>
+    <span class="kw">public int</span> ObtenerVida()
+    {
+        <span class="kw">return</span> _vida;
     }
 }</code></pre>
 
-            <h3>2. Herencia y Polimorfismo</h3>
-            <p>La <strong>Herencia</strong> permite que una clase hija adquiera automáticamente todas las propiedades y
-                métodos de una clase padre.</p>
+            <h3>3. Herencia y Polimorfismo</h3>
+            <p>La <strong>Herencia</strong> permite que una clase hija adquiera automáticamente los atributos y métodos
+                de la clase padre mediante el operador <code>:</code>.</p>
 
-            <pre><code><span class="cm">// Enemigo hereda todos los miembros de PersonajeBase</span>
-<span class="kw">public class</span> <span class="type">Enemigo</span> : <span class="type">PersonajeBase</span>
+            <pre><code><span class="cm">// Enemigo hereda de JugadorBase (adquiere Nombre, _vida y FuerzaAtaque)</span>
+<span class="kw">public class</span> <span class="type">Enemigo</span> : <span class="type">JugadorBase</span>
 {
-    <span class="kw">public int</span> DanioAtaque = 15;
-
-    <span class="cm">// Constructor que llama al constructor padre</span>
-    <span class="kw">public</span> Enemigo(<span class="kw">string</span> nombre) : <span class="kw">base</span>(nombre) { }
-
-    <span class="kw">public void</span> Atacar()
+    <span class="kw">public void</span> PrepararAtaqueEspecial()
     {
-        <span class="type">Console</span>.WriteLine($"{Nombre} ataca causando {DanioAtaque} puntos de daño.");
+        <span class="cm">// Puede acceder a FuerzaAtaque por ser 'protected' en el padre</span>
+        <span class="type">Console</span>.WriteLine($"{Nombre} ataca con potencia: {FuerzaAtaque * 2}");
     }
 }</code></pre>
         </section>
@@ -278,34 +331,38 @@
         <section>
             <h2>Módulo 1: Adaptación de C# al Entorno de Godot 4</h2>
             <p>En Godot, cada script hereda de un tipo de nodo específico del motor. Para integrarse correctamente con
-                el sistema interno de C# .NET en Godot 4, se deben cumplir tres reglas:</p>
+                la arquitectura de Godot 4 en C#, se aplican las siguientes reglas:</p>
             <ul>
-                <li>Heredar de un tipo de nodo existente (ej. <code>Node2D</code>, <code>CharacterBody2D</code>).</li>
-                <li>Usar el modificador <code>partial</code> en la clase.</li>
-                <li>Utilizar <code>GD.Print()</code> para mostrar mensajes en la consola del editor.</li>
+                <li><strong><code>public</code>:</strong> Obligatorio para que el motor reconozca el script.</li>
+                <li><strong><code>partial</code>:</strong> Permite que Godot fusione el código C# que escribes con el
+                    código autogenerado internamente por el motor.</li>
+                <li><strong>Heredar del nodo:</strong> Hereda las propiedades del nodo adjunto (ej. <code>Node2D</code>,
+                    <code>CharacterBody2D</code>).</li>
             </ul>
 
-            <h3>Ejemplo de Script Integrado</h3>
+            <h3>Ejemplo de Script Integrado con Encapsulamiento Correcto</h3>
             <pre><code><span class="kw">using</span> Godot;
 <span class="kw">using</span> System;
 
 <span class="kw">namespace</span> TutorialJuego;
 
+<span class="cm">// PUBLIC: Accesible por el motor Godot. PARTIAL: Integración nativa de C#.</span>
 <span class="kw">public partial class</span> <span class="type">MiPrimerNodo</span> : <span class="type">Node2D</span>
 {
-    <span class="cm">// Export permite modificar la variable desde el Inspector del Editor</span>
+    <span class="cm">// [Export] expone una propiedad pública al Inspector visual de Godot</span>
     [<span class="type">Export</span>] <span class="kw">public float</span> VelocidadBase { <span class="kw">get</span>; <span class="kw">set</span>; } = 200.0f;
     [<span class="type">Export</span>] <span class="kw">public string</span> NombreJugador = <span class="str">"Héroe"</span>;
 
+    <span class="cm">// PRIVATE: Control de estado exclusivo del script</span>
     <span class="kw">private int</span> _puntosVida = 100;
 
-    <span class="cm">// Equivalente al Constructor: Se ejecuta cuando el nodo entra a la escena</span>
+    <span class="cm">// Método del ciclo de vida: Se ejecuta una vez al entrar a la escena</span>
     <span class="kw">public override void</span> _Ready()
     {
         <span class="type">GD</span>.Print($"Cargando a {NombreJugador} en el mapa...");
     }
 
-    <span class="cm">// Ciclo principal del juego: Se ejecuta en cada frame de renderizado</span>
+    <span class="cm">// Ciclo principal: Se ejecuta en cada frame de renderizado</span>
     <span class="kw">public override void</span> _Process(<span class="kw">double</span> delta)
     {
         Rotation += 1.0f * (<span class="kw">float</span>)delta;
@@ -316,18 +373,15 @@
         <!-- MÓDULO 2 -->
         <section>
             <h2>Módulo 2: Arquitectura del Árbol de Escenas (Scene Tree)</h2>
-            <p>Godot no utiliza clases aisladas; compone el juego mediante <strong>Nodos</strong> organizados en forma
-                de árbol. Una <strong>Escena</strong> es un conjunto jerárquico de nodos guardado como archivo
-                <code>.tscn</code>.
-            </p>
+            <p>Godot organiza los elementos mediante <strong>Nodos</strong> en forma de árbol. Una
+                <strong>Escena</strong> es un conjunto jerárquico de nodos guardado como archivo <code>.tscn</code>.</p>
 
             <div class="tree-view">EscenaPrincipal (Node2D)
                 ├── Jugador (CharacterBody2D) <-- Adjunto: Jugador.cs │ ├── Sprite2D │ └── CollisionShape2D └──
                     Generador (Node2D) <-- Adjunto: Generador.cs</div>
 
                     <h3>Instanciación Dinámica de Escenas</h3>
-                    <p>Permite instanciar copias de una escena programáticamente (ej. proyectiles, enemigos o
-                        coleccionables):</p>
+                    <p>Permite crear copias de un objeto programáticamente en tiempo de ejecución:</p>
                     <pre><code><span class="kw">using</span> Godot;
 
 <span class="kw">public partial class</span> <span class="type">Generador</span> : <span class="type">Node2D</span>
@@ -338,13 +392,13 @@
     {
         <span class="kw">if</span> (EscenaProyectil != <span class="kw">null</span>)
         {
-            <span class="cm">// 1. Instanciar el objeto desde el plano (PackedScene)</span>
+            <span class="cm">// 1. Instanciar el objeto desde la plantilla (PackedScene)</span>
             <span class="type">Node2D</span> nuevoProyectil = EscenaProyectil.Instantiate&lt;<span class="type">Node2D</span>&gt;();
             
             <span class="cm">// 2. Configurar posición</span>
             nuevoProyectil.Position = posicionInicial;
             
-            <span class="cm">// 3. Agregarlo como hijo al árbol de la escena activa</span>
+            <span class="cm">// 3. Agregarlo como hijo en la jerarquía activa</span>
             AddChild(nuevoProyectil);
         }
     }
@@ -354,8 +408,8 @@
         <!-- MÓDULO 3 -->
         <section>
             <h2>Módulo 3: Movimiento y Física Cinemática (CharacterBody2D)</h2>
-            <p>El nodo <code>CharacterBody2D</code> proporciona la lógica necesaria para personajes controlados por
-                teclado o gamepad mediante física cinemática.</p>
+            <p>El nodo <code>CharacterBody2D</code> maneja entidades con física controlada por código (movimiento de
+                personaje, detección de suelo, gravedad y rampas).</p>
 
             <h3>Configuración del Input Map</h3>
             <p>Configurar en <strong>Proyecto &rarr; Configuración del Proyecto &rarr; Mapa de Entradas</strong>:</p>
@@ -373,14 +427,14 @@
     [<span class="type">Export</span>] <span class="kw">public float</span> Speed = 300.0f;
     [<span class="type">Export</span>] <span class="kw">public float</span> JumpVelocity = -400.0f;
 
-    <span class="cm">// Gravedad por defecto del motor</span>
+    <span class="cm">// Obtenemos la gravedad definida globalmente en el motor</span>
     <span class="kw">public float</span> Gravity = <span class="type">ProjectSettings</span>.GetSetting(<span class="str">"physics/2d/default_gravity"</span>).AsSingle();
 
     <span class="kw">public override void</span> _PhysicsProcess(<span class="kw">double</span> delta)
     {
         <span class="type">Vector2</span> velocity = Velocity;
 
-        <span class="cm">// Aplicar gravedad si el personaje está en el aire</span>
+        <span class="cm">// Aplicar gravedad si está en el aire</span>
         <span class="kw">if</span> (!IsOnFloor())
         {
             velocity.Y += Gravity * (<span class="kw">float</span>)delta;
@@ -392,7 +446,7 @@
             velocity.Y = JumpVelocity;
         }
 
-        <span class="cm">// Control de Movimiento Lateral</span>
+        <span class="cm">// Movimiento Lateral</span>
         <span class="type">Vector2</span> direction = <span class="type">Input</span>.GetVector(<span class="str">"mover_izquierda"</span>, <span class="str">"mover_derecha"</span>, <span class="str">"ui_up"</span>, <span class="str">"ui_down"</span>);
         <span class="kw">if</span> (direction != <span class="type">Vector2</span>.Zero)
         {
@@ -405,7 +459,7 @@
 
         Velocity = velocity;
         
-        <span class="cm">// Aplica la velocidad respetando colisiones</span>
+        <span class="cm">// Mueve el personaje respetando colisiones</span>
         MoveAndSlide();
     }
 }</code></pre>
@@ -414,9 +468,8 @@
         <!-- MÓDULO 4 -->
         <section>
             <h2>Módulo 4: Detección de Colisiones y Señales (Area2D)</h2>
-            <p>Las <strong>Señales</strong> permiten aplicar el patrón de diseño Observador para notificar eventos sin
-                acoplar código. El nodo <code>Area2D</code> detecta entrada y salida de cuerpos sin aplicar fricción
-                física.</p>
+            <p>El nodo <code>Area2D</code> se usa para detectar solapamiento de áreas (monedas, trampas, portales) sin
+                física de choque sólido.</p>
 
             <h3>Objeto Recolectable (Moneda)</h3>
             <pre><code><span class="kw">using</span> Godot;
@@ -427,18 +480,18 @@
 
     <span class="kw">public override void</span> _Ready()
     {
-        <span class="cm">// Suscribir método a la señal BodyEntered nativa</span>
+        <span class="cm">// Suscribir el método a la señal de colisión de área</span>
         BodyEntered += OnBodyEntered;
     }
 
     <span class="kw">private void</span> OnBodyEntered(<span class="type">Node2D</span> body)
     {
-        <span class="cm">// Validar si el objeto colisionado es el Jugador (Polimorfismo / Pattern Matching)</span>
+        <span class="cm">// Validar si el objeto colisionado es de tipo Jugador</span>
         <span class="kw">if</span> (body <span class="kw">is</span> <span class="type">Jugador</span> jugador)
         {
             <span class="type">GD</span>.Print($"Moneda recolectada. +{ValorPuntos} pts.");
             
-            <span class="cm">// Eliminar el nodo de forma segura</span>
+            <span class="cm">// Eliminar nodo de memoria de forma segura</span>
             QueueFree();
         }
     }
@@ -448,8 +501,7 @@
         <!-- MÓDULO 5 -->
         <section>
             <h2>Módulo 5: Construcción de Escenarios con TileMapLayer</h2>
-            <p>En Godot 4.3+, la creación de escenarios optimizados mediante baldosas se realiza a través del nodo
-                <code>TileMapLayer</code>.
+            <p>En Godot 4.3+, la creación de escenarios optimizados por capas se maneja con <code>TileMapLayer</code>.
             </p>
 
             <div class="table-container">
@@ -463,30 +515,28 @@
                     <tbody>
                         <tr>
                             <td><strong>1. Nodo Base</strong></td>
-                            <td>Añadir un nodo <code>TileMapLayer</code> a la escena. En el inspector, asignar un nuevo
-                                <code>TileSet</code>.
-                            </td>
+                            <td>Añadir un nodo <code>TileMapLayer</code> a la escena. Crear un nuevo recurso
+                                <code>TileSet</code> en el inspector.</td>
                         </tr>
                         <tr>
                             <td><strong>2. Textura</strong></td>
-                            <td>En la pestaña inferior <strong>TileSet</strong>, arrastrar el archivo de imagen
-                                (Atlas/SpriteSheet).</td>
+                            <td>En el panel inferior <strong>TileSet</strong>, arrastrar el sprite sheet / atlas de
+                                imágenes.</td>
                         </tr>
                         <tr>
-                            <td><strong>3. Física</strong></td>
+                            <td><strong>3. Capa de Física</strong></td>
                             <td>En el Inspector del <code>TileSet</code>, desplegar <strong>Physics Layers</strong> y
-                                añadir un nuevo elemento.</td>
+                                añadir una capa.</td>
                         </tr>
                         <tr>
                             <td><strong>4. Colisión</strong></td>
                             <td>En el panel <strong>TileSet</strong>, seleccionar la herramienta
-                                <strong>Physics</strong> y trazar el rectángulo de colisión sobre los bloques sólidos.
-                            </td>
+                                <strong>Physics</strong> y dibujar los polígonos sobre los bloques sólidos.</td>
                         </tr>
                         <tr>
                             <td><strong>5. Pintado</strong></td>
-                            <td>Cambiar a la pestaña <strong>TileMap</strong> y diseñar el nivel directamente en el
-                                visor 2D.</td>
+                            <td>En el panel <strong>TileMap</strong>, elegir baldosas y pintar el escenario en el visor
+                                2D.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -497,21 +547,19 @@
         <section>
             <h2>Módulo 6: Resumen Docente y Buenas Prácticas</h2>
             <ul>
-                <li><strong>_Process vs _PhysicsProcess:</strong> Usar <code>_Process</code> para UI, cámaras y
-                    elementos visuales. Usar <code>_PhysicsProcess</code> estrictamente para movimiento de cuerpos
-                    físicos.</li>
-                <li><strong>QueueFree():</strong> No usar eliminación directa de memoria. <code>QueueFree()</code>
-                    elimina el nodo de forma segura al finalizar el frame actual.</li>
-                <li><strong>Tipado en C#:</strong> Aprovechar la comprobación de tipos explícita
-                    (<code>if (nodo is Clase)</code>) para evitar errores de referencias nulas en tiempo de ejecución.
-                </li>
+                <li><strong>Modificadores:</strong> Mantén las variables privadas (<code>private</code>) por defecto y
+                    expón solo lo estrictamente necesario con <code>public</code> o <code>[Export]</code>.</li>
+                <li><strong>_Process vs _PhysicsProcess:</strong> <code>_Process</code> para UI y renderizado;
+                    <code>_PhysicsProcess</code> únicamente para cálculos de física y movimiento.</li>
+                <li><strong>QueueFree():</strong> Elimina nodos de memoria de forma asíncrona al terminar el frame
+                    actual para no romper la física activa.</li>
             </ul>
         </section>
 
     </main>
 
     <footer>
-        <p>Material de enseñanza para Godot Engine 4 y C# .NET para estudiantes del profesor:Ing.Robyir Loreto</p>
+        <p>Material de enseñanza para Godot Engine 4 y C# .NET</p>
     </footer>
 
 </body>
