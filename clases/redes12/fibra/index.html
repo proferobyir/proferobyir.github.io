@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Técnica: Fibra Óptica y FTTH</title>
+    <title>Guía Técnica: Redes GPON y FTTH</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -123,13 +123,16 @@
 <body>
 
     <header>
-        <h1>Fibra Óptica, Transceptores y Arquitectura FTTH</h1>
+        <h1>Redes GPON y FTTH: Componentes Básicos</h1>
     </header>
 
     <main>
         <!-- Tema 1 -->
         <section id="tema-1">
-            <h2>1. Tipos de Cable de Fibra Óptica</h2>
+            <h2>1. Fibra Óptica en Redes de Acceso</h2>
+            <p>En Venezuela, las empresas de servicios de internet (ISP) utilizan exclusivamente <strong>fibra
+                    monomodo (SMF)</strong> para sus redes GPON. La fibra multimodo quedó relegada a data centers y
+                redes LAN antiguas, no se usa en FTTH residencial.</p>
 
             <div class="table-container">
                 <table>
@@ -137,223 +140,204 @@
                         <tr>
                             <th>Tipo</th>
                             <th>Núcleo</th>
-                            <th>Alcance</th>
-                            <th>Uso</th>
+                            <th>Uso en ISP Venezolanos</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Monomodo (OS1 / OS2)</strong></td>
+                            <td><strong>Monomodo OS2</strong></td>
                             <td>9 µm</td>
-                            <td>> 10 km</td>
-                            <td>WAN, FTTH/GPON, Backbones.</td>
+                            <td>Redes GPON, FTTH, backbones y enlaces metropolitanos.</td>
                         </tr>
                         <tr>
-                            <td><strong>Multimodo (OM1 / OM2)</strong></td>
-                            <td>50 / 62.5 µm</td>
-                            <td>Hasta 550 m</td>
-                            <td>Redes antiguas (Legacy).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Multimodo (OM3 / OM4 / OM5)</strong></td>
+                            <td><strong>Multimodo OM3/OM4</strong></td>
                             <td>50 µm</td>
-                            <td>Hasta 400 m</td>
-                            <td>Data Centers y LAN de alta velocidad.</td>
+                            <td>Solo en data centers de proveedores. No llega al cliente final.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <img src="cable_fibra_monomodo_multimodo" alt="Comparativa Monomodo y Multimodo" class="img-placeholder">
+            <img src="cable_fibra_monomodo" alt="Fibra monomodo usada en GPON" class="img-placeholder">
         </section>
 
         <!-- Tema 2 -->
         <section id="tema-2">
-            <h2>2. Conectores Ópticos</h2>
+            <h2>2. Conectores Ópticos en Redes GPON</h2>
+            <p>En las redes GPON venezolanas, los conectores más utilizados son <strong>SC/APC</strong> y
+                <strong>SC/UPC</strong>. Los conectores LC se usan en equipos activos (OLT y switches), pero no en la
+                planta externa.
+            </p>
 
-            <h3>SC (Subscriber Connector)</h3>
-            <p>Conector rectangular de presión (push-pull). Pérdida típica: ~0.25 dB.</p>
-            <ul>
-                <li><strong>SC/UPC (Azul):</strong> Pulido plano. Redes LAN y datos generales.</li>
-                <li><strong>SC/APC (Verde):</strong> Pulido en ángulo 8°. FTTH/GPON y CATV.</li>
-            </ul>
-            <img src="conector_sc" alt="Conector SC UPC y APC" class="img-placeholder">
+            <h3>SC/APC (Verde)</h3>
+            <p>Es el estándar en la planta externa (NAP, rosetas, splitters). Su pulido en ángulo de 8° reduce la
+                reflexión y es ideal para GPON. <strong>Uso típico:</strong> Cable drop, roseta óptica, puerto PON de
+                la ONU.</p>
+            <img src="conector_sc_apc" alt="Conector SC/APC" class="img-placeholder">
 
-            <h3>LC (Lucent Connector)</h3>
-            <p>Formato compacto con seguro tipo RJ45. Pérdida típica: ~0.10 dB. Estándar para switches y patch panels.
+            <h3>SC/UPC (Azul)</h3>
+            <p>Se usa en interiores, en patch cords que conectan la ONU a equipos activos o en puertos de OLT que no
+                requieren APC. <strong>Uso típico:</strong> Patch cord de la ONU al router, conexiones en rack.</p>
+            <img src="conector_sc_upc" alt="Conector SC/UPC" class="img-placeholder">
+
+            <h3>LC/UPC (Azul)</h3>
+            <p>Formato compacto usado en transceptores SFP de OLT y switches. No se usa en planta externa.
+                <strong>Uso típico:</strong> Puertos SFP de OLT, switches de agregación.
             </p>
             <img src="conector_lc" alt="Conector LC" class="img-placeholder">
 
-            <h3>FC (Ferrule Connector)</h3>
-            <p>Acople roscado metálico. Resistente a vibraciones. Pérdida típica: ~0.30 dB. Usado en OTDR y
-                laboratorios.</p>
-            <img src="conector_fc" alt="Conector FC" class="img-placeholder">
-
-            <h3>ST (Straight Tip)</h3>
-            <p>Acople por bayoneta (girar y bloquear). Usado en redes multimodo tradicionales.</p>
-            <img src="conector_st" alt="Conector ST" class="img-placeholder">
-
-            <h3>MPO / MTP</h3>
-            <p>Conector multifibra de alta densidad (8 a 72 fibras). Usado en Data Centers (40G/100G/400G).</p>
-            <img src="conector_mpo_mtp" alt="Conector MPO/MTP" class="img-placeholder">
+            <div class="note">
+                <strong>Nota:</strong> Los conectores FC y ST prácticamente no se usan en redes GPON nuevas. Fueron
+                reemplazados por SC y LC.
+            </div>
         </section>
 
         <!-- Tema 3 -->
         <section id="tema-3">
-            <h2>3. Tipos de Pulido y Pérdida de Retorno (Return Loss)</h2>
+            <h2>3. Pulido APC vs UPC: Lo que debes saber</h2>
+            <p>En GPON, la pérdida de retorno es crítica. Por eso se usa <strong>APC (Verde)</strong> en la planta
+                externa. Conectar APC con UPC daña los conectores y degrada la señal.</p>
 
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Pulido</th>
-                            <th>Geometría</th>
+                            <th>Color</th>
                             <th>Pérdida de Retorno</th>
-                            <th>Aplicación</th>
+                            <th>Uso en ISP Venezolanos</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>PC</strong></td>
-                            <td>Plano biselado</td>
-                            <td>-30 dB a -40 dB</td>
-                            <td>Obsoleto.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>UPC (Azul)</strong></td>
-                            <td>Esférico</td>
-                            <td>-40 dB a -55 dB</td>
-                            <td>Redes LAN y Switches.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>APC (Verde)</strong></td>
-                            <td>Inclinado 8°</td>
+                            <td><strong>APC</strong></td>
+                            <td>Verde</td>
                             <td>&le; -60 dB</td>
-                            <td>GPON, FTTH y CATV.</td>
+                            <td>Planta externa: NAP, rosetas, splitters, ONU.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UPC</strong></td>
+                            <td>Azul</td>
+                            <td>-40 dB a -55 dB</td>
+                            <td>Interiores: patch cords, OLT, switches.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="note">
-                <strong>Importante:</strong> Nunca conectar <strong>APC (Verde)</strong> directamente con <strong>UPC
-                    (Azul)</strong>. El ángulo destruye las superficies cerámicas y destruye la señal.
+                <strong>Importante:</strong> Nunca conectar <strong>APC (Verde)</strong> con <strong>UPC
+                    (Azul)</strong>. El ángulo del APC destruye la superficie del UPC y genera pérdidas altas.
             </div>
 
-            <img src="pulido_pc_upc_apc" alt="Comparativa de pulidos PC, UPC y APC" class="img-placeholder">
+            <img src="pulido_apc_upc" alt="Comparativa APC y UPC" class="img-placeholder">
         </section>
 
         <!-- Tema 4 -->
         <section id="tema-4">
-            <h2>4. Código de Colores (TIA/EIA-598)</h2>
+            <h2>4. Código de Colores en Redes GPON</h2>
+            <p>El código de colores ayuda a identificar el tipo de fibra y conector. En GPON, lo más importante es
+                reconocer el <strong>amarillo (monomodo)</strong> y el <strong>verde (APC)</strong>.</p>
 
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Fibra</th>
-                            <th>Pulido / Tipo</th>
+                            <th>Pulido</th>
                             <th>Color Conector</th>
-                            <th>Color Cubierta (Jacket)</th>
+                            <th>Color Cubierta</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>OM1 (62.5/125)</td>
-                            <td>Standard</td>
-                            <td>Beige</td>
-                            <td>Naranja</td>
+                            <td>OS2 Monomodo</td>
+                            <td>APC</td>
+                            <td>Verde</td>
+                            <td>Amarillo</td>
                         </tr>
                         <tr>
-                            <td>OM2 (50/125)</td>
-                            <td>Standard</td>
-                            <td>Negro</td>
-                            <td>Naranja</td>
-                        </tr>
-                        <tr>
-                            <td>OM3 / OM4</td>
-                            <td>Optimizado Láser</td>
-                            <td>Aguamarina</td>
-                            <td>Aguamarina</td>
-                        </tr>
-                        <tr>
-                            <td>OM5</td>
-                            <td>Banda Ancha</td>
-                            <td>Verde Lima</td>
-                            <td>Verde Lima</td>
-                        </tr>
-                        <tr>
-                            <td>OS1 / OS2</td>
+                            <td>OS2 Monomodo</td>
                             <td>UPC</td>
                             <td>Azul</td>
                             <td>Amarillo</td>
                         </tr>
                         <tr>
-                            <td>OS1 / OS2</td>
-                            <td>APC</td>
-                            <td>Verde</td>
-                            <td>Amarillo</td>
+                            <td>OM3/OM4 Multimodo</td>
+                            <td>UPC</td>
+                            <td>Aguamarina</td>
+                            <td>Aguamarina</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <img src="tabla_colores_conectores_cables" alt="Código de colores de fibra" class="img-placeholder">
+            <img src="tabla_colores_gpon" alt="Código de colores en GPON" class="img-placeholder">
         </section>
 
         <!-- Tema 5 -->
         <section id="tema-5">
-            <h2>5. Arquitectura FTTH Residencial</h2>
+            <h2>5. Arquitectura FTTH Residencial (GPON)</h2>
+            <p>Así se conecta un cliente residencial en Venezuela:</p>
 
             <ol>
-                <li><strong>Cable Drop Exterior:</strong> Cable autosoportado (2 hilos) desde la caja NAP hasta la
-                    vivienda.</li>
-                <li><strong>Roseta Óptica (PTO):</strong> Punto final interior donde se fusiona el hilo activo a un
-                    pigtail SC/APC.</li>
-                <li><strong>Patch Cord Híbrido:</strong> Cable de conexión SC/APC (Verde) a SC/UPC (Azul).</li>
-                <li><strong>ONU / ONT:</strong> Módem óptico que convierte la señal luminosa a Ethernet (RJ45) y Wi-Fi.
+                <li><strong>OLT (Optical Line Terminal):</strong> Equipo en la central del ISP. Envía la señal óptica y
+                    gestiona a todos los clientes.</li>
+                <li><strong>Splitter Óptico:</strong> Divisor pasivo que reparte la señal de una fibra a varias (ej:
+                    1:32 o 1:64). Se ubica en la NAP o en cajas de distribución.</li>
+                <li><strong>NAP (Network Access Point):</strong> Caja en poste o pared donde llega la fibra del splitter
+                    y se conecta el cable drop del cliente.</li>
+                <li><strong>Cable Drop:</strong> Fibra autosoportada (2 hilos) desde la NAP hasta la casa del cliente.
                 </li>
+                <li><strong>Roseta Óptica (PTO):</strong> Punto terminal dentro de la casa. Aquí se fusiona el hilo
+                    activo con un pigtail SC/APC.</li>
+                <li><strong>ONU/ONT:</strong> Módem óptico que convierte la luz en Ethernet (RJ45) y Wi-Fi. Se conecta a
+                    la roseta con un patch cord SC/APC a SC/UPC.</li>
             </ol>
+
+            <img src="arquitectura_ftth_gpon" alt="Arquitectura FTTH GPON" class="img-placeholder">
         </section>
 
         <!-- Tema 6 -->
         <section id="tema-6">
-            <h2>6. Cabecera PON: GPON vs. EPON</h2>
+            <h2>6. GPON vs. EPON: Lo que usan los ISP Venezolanos</h2>
+            <p>En Venezuela, la tecnología dominante es <strong>GPON</strong> (ITU-T G.984). EPON casi no se usa en
+                redes nuevas.</p>
 
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Parámetro</th>
-                            <th>EPON</th>
                             <th>GPON</th>
+                            <th>EPON</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Estándar</strong></td>
-                            <td>IEEE 802.3ah</td>
                             <td>ITU-T G.984</td>
+                            <td>IEEE 802.3ah</td>
                         </tr>
                         <tr>
-                            <td><strong>Bajada (Downstream)</strong></td>
-                            <td>1.25 Gbps</td>
+                            <td><strong>Bajada</strong></td>
                             <td>2.488 Gbps</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Subida (Upstream)</strong></td>
                             <td>1.25 Gbps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Subida</strong></td>
                             <td>1.244 Gbps</td>
+                            <td>1.25 Gbps</td>
                         </tr>
                         <tr>
-                            <td><strong>Ratio Splitter</strong></td>
-                            <td>Hasta 1:64</td>
+                            <td><strong>Splitter</strong></td>
                             <td>Hasta 1:128</td>
+                            <td>Hasta 1:64</td>
                         </tr>
                         <tr>
-                            <td><strong>Encapsulamiento</strong></td>
-                            <td>Ethernet Nativo</td>
-                            <td>GEM (GPON Encapsulation Method)</td>
+                            <td><strong>Uso en Venezuela</strong></td>
+                            <td>Estándar en ISP (Inter, Movistar, Digitel, etc.)</td>
+                            <td>Muy raro, solo en redes antiguas.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -362,16 +346,19 @@
 
         <!-- Tema 7 -->
         <section id="tema-7">
-            <h2>7. Transceptores (MSA) y Conversión</h2>
+            <h2>7. Transceptores y Equipos Activos</h2>
+            <p>Los transceptores son módulos que se insertan en OLT, switches y ONUs para convertir señales.</p>
 
             <ul>
-                <li><strong>SFP:</strong> Hasta 1 Gbps (conector LC).</li>
-                <li><strong>SFP+:</strong> Hasta 10 Gbps.</li>
-                <li><strong>QSFP+:</strong> 40 Gbps / 100 Gbps.</li>
-                <li><strong>Media Converter:</strong> Transforma señal de fibra a cable de cobre UTP (RJ45).</li>
+                <li><strong>SFP GPON:</strong> Módulo para puerto PON de OLT. Hasta 2.5 Gbps. Conector SC/APC o
+                    SC/UPC.</li>
+                <li><strong>SFP+:</strong> Para enlaces de 10 Gbps entre OLT y switches. Conector LC.</li>
+                <li><strong>Media Converter:</strong> Convierte fibra a cobre (RJ45). Se usa en instalaciones antiguas o
+                    para clientes empresariales.</li>
+                <li><strong>ONU/ONT:</strong> Equipo en casa del cliente. Convierte GPON a Ethernet y Wi-Fi.</li>
             </ul>
 
-            <img src="transceiver_sfp" alt="Transceptor SFP" class="img-placeholder">
+            <img src="transceptor_sfp_gpon" alt="Transceptor SFP GPON" class="img-placeholder">
         </section>
     </main>
 
