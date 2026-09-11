@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Godot 4 & C# | Guía Completa</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --heading-color: #58a6ff;
+            --accent-color: #238636;
+            --code-bg: #0d1117;
+            --code-color: #e6edf3;
+            --border-color: #30363d;
+            --keyword-color: #ff7b72;
+            --type-color: #79c0ff;
+            --string-color: #a5d6ff;
+            --comment-color: #8b949e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            color: var(--heading-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--comment-color);
+            font-size: 1rem;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        h2 {
+            color: var(--heading-color);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.4rem;
+        }
+
+        h3 {
+            color: #f0f6fc;
+            font-size: 1.1rem;
+            margin: 1.2rem 0 0.5rem 0;
+        }
+
+        p,
+        li {
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .tree-view {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.8rem 1rem;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-bottom: 1rem;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(56, 139, 253, 0.15);
+            color: var(--heading-color);
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        .kw {
+            color: var(--keyword-color);
+        }
+
+        .type {
+            color: var(--type-color);
+        }
+
+        .str {
+            color: var(--string-color);
+        }
+
+        .cm {
+            color: var(--comment-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--comment-color);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+
+            header h1 {
+                font-size: 2.4rem;
+            }
+
+            section {
+                padding: 2rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            h3 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Desarrollo 2D en Godot 4 con C#</h1>
+        <p>Guía docente paso a paso: Sintaxis, Árbol de Nodos, Física y TileMaps</p>
+    </header>
+
+    <main>
+
+        <!-- MÓDULO 1 -->
+        <section>
+            <h2>Módulo 1: Sintaxis Básica de C# en Godot</h2>
+            <p>Para trabajar con C# en Godot 4 (.NET), cada script vinculado a un nodo debe cumplir tres reglas
+                estructurales fundamentales:</p>
+            <ul>
+                <li>Heredar del tipo de nodo al que está adjunto (ej. <code>Node2D</code>,
+                    <code>CharacterBody2D</code>).
+                </li>
+                <li>Utilizar el modificador <code>partial</code> en la declaración de la clase para la integración con
+                    Godot.</li>
+                <li>Usar <code>GD.Print()</code> para imprimir mensajes en la consola del editor.</li>
+            </ul>
+
+            <h3>Estructura de un Script Tipo</h3>
+            <pre><code><span class="kw">using</span> Godot;
+<span class="kw">using</span> System;
+
+<span class="kw">namespace</span> TutorialJuego;
+
+<span class="kw">public partial class</span> <span class="type">MiPrimerNodo</span> : <span class="type">Node2D</span>
+{
+    <span class="cm">// Variables exportadas: visibles en el Inspector de Godot</span>
+    [<span class="type">Export</span>] <span class="kw">public float</span> VelocidadBase { <span class="kw">get</span>; <span class="kw">set</span>; } = 200.0f;
+    [<span class="type">Export</span>] <span class="kw">public string</span> NombreJugador = <span class="str">"Héroe"</span>;
+
+    <span class="cm">// Variables privadas de control</span>
+    <span class="kw">private int</span> _puntosVida = 100;
+    <span class="kw">private bool</span> _estaActivo = <span class="kw">true</span>;
+
+    <span class="cm">// Se ejecuta una vez al entrar al árbol de escenas</span>
+    <span class="kw">public override void</span> _Ready()
+    {
+        <span class="type">GD</span>.Print($<span class="str">"Inicializando a {NombreJugador} con vida: {_puntosVida}"</span>);
+    }
+
+    <span class="cm">// Se ejecuta en cada frame de renderizado</span>
+    <span class="kw">public override void</span> _Process(<span class="kw">double</span> delta)
+    {
+        <span class="kw">if</span> (_estaActivo)
+        {
+            RotarObjeto((<span class="kw">float</span>)delta);
+        }
+    }
+
+    <span class="kw">private void</span> RotarObjeto(<span class="kw">float</span> delta)
+    {
+        Rotation += 1.0f * delta;
+    }
+}</code></pre>
+        </section>
+
+        <!-- MÓDULO 2 -->
+        <section>
+            <h2>Módulo 2: Escenas, Nodos y Manejo del Árbol</h2>
+            <p>Godot organiza los elementos mediante una arquitectura de composición basada en <strong>Árboles de
+                    Nodos</strong>. Una <strong>Escena</strong> es una colección jerárquica de nodos guardada como un
+                archivo <code>.tscn</code>.</p>
+
+            <div class="tree-view">EscenaPrincipal (Node2D)
+                ├── Player (CharacterBody2D) <-- Contiene Player.cs │ ├── Sprite2D │ └── CollisionShape2D └── Enemigo
+                    (Area2D)</div>
+
+                    <h3>Instanciación Dinámica de Escenas desde C#</h3>
+                    <p>Permite generar objetos programáticamente durante la ejecución (como proyectiles u objetos
+                        recolectables):</p>
+                    <pre><code><span class="kw">using</span> Godot;
+
+<span class="kw">public partial class</span> <span class="type">Generador</span> : <span class="type">Node2D</span>
+{
+    [<span class="type">Export</span>] <span class="kw">public</span> <span class="type">PackedScene</span> EscenaProyectil;
+
+    <span class="kw">public void</span> Disparar(<span class="type">Vector2</span> posicionInicial)
+    {
+        <span class="kw">if</span> (EscenaProyectil != <span class="kw">null</span>)
+        {
+            <span class="cm">// 1. Instanciar el nodo</span>
+            <span class="type">Node2D</span> nuevoProyectil = EscenaProyectil.Instantiate&lt;<span class="type">Node2D</span>&gt;();
+            
+            <span class="cm">// 2. Definir posición inicial</span>
+            nuevoProyectil.Position = posicionInicial;
+            
+            <span class="cm">// 3. Agregar al árbol como hijo</span>
+            AddChild(nuevoProyectil);
+        }
+    }
+}</code></pre>
+        </section>
+
+        <!-- MÓDULO 3 -->
+        <section>
+            <h2>Módulo 3: Objeto del Jugador y Movimiento 2D</h2>
+            <p>El nodo <code>CharacterBody2D</code> está optimizado para entidades controladas por código que requieren
+                física cinemática y detección precisa de colisiones.</p>
+
+            <h3>Configuración de Input Map</h3>
+            <p>Defina en <strong>Proyecto &rarr; Configuración del Proyecto &rarr; Mapa de Entradas</strong>:</p>
+            <ul>
+                <li><code>mover_derecha</code> (Tecla <strong>D</strong> / Flechas)</li>
+                <li><code>mover_izquierda</code> (Tecla <strong>A</strong> / Flechas)</li>
+                <li><code>saltar</code> (Barra espaciadora)</li>
+            </ul>
+
+            <h3>Código del Jugador</h3>
+            <pre><code><span class="kw">using</span> Godot;
+
+<span class="kw">public partial class</span> <span class="type">Jugador</span> : <span class="type">CharacterBody2D</span>
+{
+    [<span class="type">Export</span>] <span class="kw">public float</span> Speed = 300.0f;
+    [<span class="type">Export</span>] <span class="kw">public float</span> JumpVelocity = -400.0f;
+
+    <span class="kw">public float</span> Gravity = <span class="type">ProjectSettings</span>.GetSetting(<span class="str">"physics/2d/default_gravity"</span>).AsSingle();
+
+    <span class="kw">public override void</span> _PhysicsProcess(<span class="kw">double</span> delta)
+    {
+        <span class="type">Vector2</span> velocity = Velocity;
+
+        <span class="cm">// Aplicar gravedad</span>
+        <span class="kw">if</span> (!IsOnFloor())
+        {
+            velocity.Y += Gravity * (<span class="kw">float</span>)delta;
+        }
+
+        <span class="cm">// Manejo del salto</span>
+        <span class="kw">if</span> (<span class="type">Input</span>.IsActionJustPressed(<span class="str">"saltar"</span>) && IsOnFloor())
+        {
+            velocity.Y = JumpVelocity;
+        }
+
+        <span class="cm">// Obtener dirección del input (-1 a 1)</span>
+        <span class="type">Vector2</span> direction = <span class="type">Input</span>.GetVector(<span class="str">"mover_izquierda"</span>, <span class="str">"mover_derecha"</span>, <span class="str">"ui_up"</span>, <span class="str">"ui_down"</span>);
+        <span class="kw">if</span> (direction != <span class="type">Vector2</span>.Zero)
+        {
+            velocity.X = direction.X * Speed;
+        }
+        <span class="kw">else</span>
+        {
+            velocity.X = <span class="type">Mathf</span>.MoveToward(Velocity.X, 0, Speed);
+        }
+
+        Velocity = velocity;
+        MoveAndSlide();
+    }
+}</code></pre>
+        </section>
+
+        <!-- MÓDULO 4 -->
+        <section>
+            <h2>Módulo 4: Detección de Colisiones y Señales</h2>
+            <p>El nodo <code>Area2D</code> permite detectar superposiciones de objetos sin generar una respuesta física
+                de solidez. Es ideal para coleccionables o zonas de disparo.</p>
+
+            <h3>Moneda Recolectable (Area2D)</h3>
+            <pre><code><span class="kw">using</span> Godot;
+
+<span class="kw">public partial class</span> <span class="type">Moneda</span> : <span class="type">Area2D</span>
+{
+    [<span class="type">Export</span>] <span class="kw">public int</span> ValorPuntos = 10;
+
+    <span class="kw">public override void</span> _Ready()
+    {
+        <span class="cm">// Suscribir método a la señal BodyEntered</span>
+        BodyEntered += OnBodyEntered;
+    }
+
+    <span class="kw">private void</span> OnBodyEntered(<span class="type">Node2D</span> body)
+    {
+        <span class="cm">// Validar si el cuerpo que entró es el Jugador</span>
+        <span class="kw">if</span> (body <span class="kw">is</span> <span class="type">Jugador</span> jugador)
+        {
+            <span class="type">GD</span>.Print($<span class="str">"Moneda recolectada. +{ValorPuntos} puntos."</span>);
+            
+            <span class="cm">// Eliminar el nodo de forma segura</span>
+            QueueFree();
+        }
+    }
+}</code></pre>
+        </section>
+
+        <!-- MÓDULO 5 -->
+        <section>
+            <h2>Módulo 5: Creación de Niveles con Baldosas</h2>
+            <p>En Godot 4.3+, el mapa de baldosas se gestiona mediante el nodo <code>TileMapLayer</code>.</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paso</th>
+                            <th>Configuración en el Editor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Crear Nodo</strong></td>
+                            <td>Agregar un nodo <code>TileMapLayer</code>. En el inspector, asignar un nuevo recurso
+                                <code>TileSet</code>.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Textura</strong></td>
+                            <td>En el panel inferior <strong>TileSet</strong>, arrastrar el sprite sheet o atlas de
+                                imágenes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Físicas</strong></td>
+                            <td>En el inspector del <code>TileSet</code>, ir a <strong>Physics Layers &rarr; Add
+                                    Element</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Colisiones</strong></td>
+                            <td>En el panel <strong>TileSet</strong>, seleccionar la herramienta
+                                <strong>Physics</strong> y dibujar el polígono sobre las baldosas sólidas.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>5. Pintar</strong></td>
+                            <td>Seleccionar la pestaña <strong>TileMap</strong> y pintar las baldosas en el visor 2D.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MÓDULO 6 -->
+        <section>
+            <h2>Módulo 6: Resumen y Buenas Prácticas</h2>
+            <ul>
+                <li><strong>QueueFree():</strong> Liberación de memoria asíncrona recomendada para no interrumpir el
+                    ciclo de procesamiento de física.</li>
+                <li><strong>_PhysicsProcess:</strong> Usar exclusivamente para movimiento físico y manipulación de
+                    cuerpos cinemáticos o rígidos.</li>
+                <li><strong>Pattern Matching:</strong> Aprovechar las comprobaciones con <code>is</code> en C# (ej.
+                    <code>if (body is Jugador)</code>) para evitar excepciones de tipo nulo.
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Material educativo desarrollado para clases de Godot Engine y C# del Profesor: Ing.Robyir Loreto</p>
+    </footer>
+
+</body>
+
+</html>
