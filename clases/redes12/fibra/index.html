@@ -216,10 +216,10 @@
             margin-bottom: 0.4rem;
         }
 
-        /* Grid de tarjetas de conectores */
+        /* Grid de tarjetas de conectores: 2 arriba y 2 abajo */
         .connector-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin: 1.2rem 0;
         }
@@ -410,6 +410,10 @@
                 font-size: 1.1rem;
             }
 
+            .connector-grid {
+                grid-template-columns: 1fr;
+            }
+
             .flow-diagram {
                 flex-direction: column;
             }
@@ -532,6 +536,11 @@
                     <p>Divide la señal óptica para que una fibra pueda llegar a varios usuarios.</p>
                 </div>
                 <div class="card">
+                    <h3>Roseta Óptica (PTO)</h3>
+                    <p>Punto de terminación óptico ubicado dentro de la vivienda donde finaliza la acometida exterior
+                        (cable drop) y se realiza la conexión mediante patchcord hacia el equipo del cliente.</p>
+                </div>
+                <div class="card">
                     <h3>ONU / ONT</h3>
                     <p>Está del lado del cliente. Recibe la señal óptica y la convierte para que los equipos de la casa
                         puedan utilizarla.</p>
@@ -606,7 +615,8 @@
                     inclinada, aproximadamente 8°.</p>
                 <p>En una instalación se debe utilizar el tipo de conector especificado por los equipos y accesorios.
                     <strong>No se deben acoplar directamente conectores APC y UPC</strong>, porque la geometría no
-                    coincide y puede producir pérdidas, reflexiones o daños en las superficies de conexión.</p>
+                    coincide y puede producir pérdidas, reflexiones o daños en las superficies de conexión.
+                </p>
             </div>
         </section>
 
@@ -615,7 +625,8 @@
             <div class="card">
                 <h3>Downstream: del operador hacia el cliente</h3>
                 <p>La OLT envía información hacia las ONU/ONT. En GPON se utiliza normalmente una longitud de onda de
-                    <strong>1490 nm</strong> para downstream.</p>
+                    <strong>1490 nm</strong> para downstream.
+                </p>
             </div>
 
             <div class="card">
@@ -798,8 +809,6 @@
             const closeBtn = document.getElementById('modalClose');
 
             // Seleccionar TODAS las imágenes que deben ser clicables:
-            // - Las que están dentro de .media-container
-            // - Las que están dentro de .connector-card
             const clickableImages = document.querySelectorAll(
                 '.media-container img, .connector-card img'
             );
@@ -812,9 +821,7 @@
                 modalImg.setAttribute('src', src);
                 modalImg.setAttribute('alt', alt);
                 modal.classList.add('active');
-                // Bloquear scroll del body mientras el modal está abierto
                 document.body.style.overflow = 'hidden';
-                // Enfocar el botón de cerrar para accesibilidad
                 closeBtn.focus();
             }
 
@@ -823,28 +830,23 @@
                 modalImg.setAttribute('src', '');
                 modalImg.setAttribute('alt', '');
                 document.body.style.overflow = '';
-                // Devolver foco al elemento que abrió el modal (si es posible)
                 if (lastFocusedElement) {
                     lastFocusedElement.focus();
                 }
             }
 
-            // Guardar el elemento que tenía el foco antes de abrir el modal
             let lastFocusedElement = null;
 
             clickableImages.forEach(function (img) {
-                // Añadir atributos de accesibilidad
                 img.setAttribute('tabindex', '0');
                 img.setAttribute('role', 'button');
                 img.setAttribute('aria-label', 'Ampliar imagen: ' + (img.alt || 'imagen'));
 
-                // Click con ratón
                 img.addEventListener('click', function (e) {
                     lastFocusedElement = this;
                     openModal(this);
                 });
 
-                // Acceso por teclado (Enter o Space)
                 img.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
@@ -854,17 +856,14 @@
                 });
             });
 
-            // Cerrar al hacer clic en el botón
             closeBtn.addEventListener('click', closeModal);
 
-            // Cerrar al hacer clic fuera de la imagen (en el fondo del modal)
             modal.addEventListener('click', function (e) {
                 if (e.target === modal) {
                     closeModal();
                 }
             });
 
-            // Cerrar con la tecla Escape
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && modal.classList.contains('active')) {
                     closeModal();
@@ -872,7 +871,6 @@
             });
         })();
     </script>
-
 </body>
 
 </html>
