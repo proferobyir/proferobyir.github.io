@@ -15,7 +15,9 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #a7b1c2cc;
+            background-image: url("./pictures/bg.jpg");
+            background-size: auto;
+            background-color: #3d485acc;
             color: #000000;
             line-height: 1.6;
             padding: 1rem;
@@ -48,7 +50,7 @@
 
         /* Secciones separadas */
         .card-topic {
-            background-color: #ffffff;
+            background-color: rgba(92, 90, 90, 0.8);
             border-left: 5px solid #000000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             /* Sombra gris 10% */
@@ -70,12 +72,19 @@
             margin: 1.2rem 0 0.5rem 0;
         }
 
+        .card-topic h4 {
+            font-size: 1.05rem;
+            margin: 1rem 0 0.4rem 0;
+            color: #222222;
+        }
+
         .card-topic p {
             margin-bottom: 0.8rem;
             font-size: 0.98rem;
         }
 
-        .card-topic ul {
+        .card-topic ul,
+        .card-topic ol {
             margin-left: 1.2rem;
             margin-bottom: 1rem;
         }
@@ -91,6 +100,37 @@
             border-radius: 4px;
             font-family: "Courier New", Courier, monospace;
             font-size: 0.9rem;
+        }
+
+        /* Estilos para secuencias didácticas e imágenes */
+        .img-container {
+            text-align: center;
+            margin: 1.2rem 0;
+            padding: 0.8rem;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .img-caption {
+            font-size: 0.85rem;
+            color: #555555;
+            margin-top: 0.4rem;
+            font-style: italic;
+        }
+
+        .step-block {
+            background-color: #fafafa;
+            border-left: 4px solid #333333;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            border-radius: 0 4px 4px 0;
         }
 
         footer {
@@ -187,6 +227,70 @@
                     configuraciones del sistema y aplicaciones.</li>
                 <li>Soporte para ejecutar subsistemas como WSL (Windows Subsystem for Linux).</li>
             </ul>
+
+            <h3>Administrador de Tareas y Gestión de Procesos</h3>
+            <p>El <strong>Administrador de Tareas</strong> (<code>taskmgr.exe</code>) es la herramienta nativa de
+                diagnóstico en Windows que permite supervisar el uso de CPU, memoria, disco y red, además de gestionar
+                el ciclo de vida de los procesos activos.</p>
+            <ul>
+                <li><strong>Finalización Directa:</strong> Solicita al proceso el cierre ordenado liberando recursos.
+                </li>
+                <li><strong>Matar Procesos (Terminación Forzada):</strong> Invoca la llamada a la API
+                    <code>TerminateProcess()</code> para detener inmediatamente la ejecución en la CPU y liberar la RAM
+                    asignada sin guardar datos en búfer.</li>
+                <li><strong>Comandos CLI equivalentes:</strong>
+                    <ul>
+                        <li><code>tasklist</code>: Lista todos los procesos con su ID numérico (PID).</li>
+                        <li><code>taskkill /IM nombre_proceso.exe /F</code>: Fuerza la terminación de un proceso por su
+                            nombre ejecutable.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Resolución de Problemas: Caso Atasco en la Cola de Impresión</h3>
+            <p>El servicio <strong>Print Spooler</strong> (<code>spoolsv.exe</code>) almacena temporalmente los trabajos
+                de impresión en disco. Si un archivo se corrompe, retiene el archivo de spool e inhabilita las llamadas
+                posteriores. Para resolverlo se sigue este procedimiento paso a paso:</p>
+
+            <div class="step-block">
+                <h4>Paso 1: Detener el Servicio de Cola de Impresión</h4>
+                <p>Abre la consola de Servicios (<code>services.msc</code>), busca el servicio <strong>Cola de
+                        impresión</strong> y detén su ejecución para liberar los bloqueos sobre los archivos temporales.
+                </p>
+                <div class="img-container">
+                    <img src="detener servicio de cola de impresion" alt="Detener servicio de cola de impresión">
+                    <div class="img-caption">Figura 2.1: Detención manual del servicio Print Spooler desde Services.msc.
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-block">
+                <h4>Paso 2: Eliminar los Archivos del Directorio PRINTERS</h4>
+                <p>Navega a la ruta <code>C:\Windows\System32\spool\PRINTERS</code> y elimina todos los archivos con
+                    extensión <code>.SHD</code> y <code>.SPL</code> retenidos en la carpeta.</p>
+                <div class="img-container">
+                    <img src="eliminar archivos del directorio PRINT" alt="Eliminar archivos del directorio PRINT">
+                    <div class="img-caption">Figura 2.2: Limpieza de archivos de spool retenidos dentro del directorio
+                        de impresión.</div>
+                </div>
+            </div>
+
+            <div class="step-block">
+                <h4>Paso 3: Reiniciar el Servicio de Cola de Impresión</h4>
+                <p>Regresa a la consola de Servicios y haz clic en <strong>Iniciar</strong> sobre el servicio
+                    <strong>Cola de impresión</strong> para restablecer el spooler de forma limpia.</p>
+                <div class="img-container">
+                    <img src="iniciar nuevamente servicio de cola de impresion"
+                        alt="Iniciar nuevamente servicio de cola de impresión">
+                    <div class="img-caption">Figura 2.3: Reanudación del servicio de impresión en el sistema operativo.
+                    </div>
+                </div>
+            </div>
+
+            <p><em>Alternativa por consola administrativa (CMD):</em></p>
+            <pre><code>net stop spooler
+del /Q /F /S "%systemroot%\System32\Spool\PRINTERS\*.*"
+net start spooler</code></pre>
         </section>
 
         <!-- Tema 3: macOS -->
@@ -269,7 +373,7 @@
     </main>
 
     <footer>
-        <p>Fundamentos de Sistemas Operativos. </p>
+        <p>Fundamentos de Sistemas Operativos.</p>
     </footer>
 
 </body>
