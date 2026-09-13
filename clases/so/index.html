@@ -6,7 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fundamentos de Sistemas Operativos</title>
     <style>
-        /* CSS Reset y Base Mobile-First */
+        /* ==========================================================================
+           1. RESET & VARIABLES SISTEMA (HYBRID OS DESIGN SYSTEM)
+           ========================================================================== */
+        :root {
+            /* macOS Theme Variables */
+            --mac-bg-glass: rgba(30, 34, 42, 0.75);
+            --mac-border: rgba(255, 255, 255, 0.12);
+            --mac-close: #ff5f56;
+            --mac-min: #ffbd2e;
+            --mac-max: #27c93f;
+
+            /* Windows 11 Fluent Variables */
+            --win-card-bg: rgba(255, 255, 255, 0.04);
+            --win-accent: #0078d4;
+            --win-accent-hover: #106ebe;
+            --win-border: rgba(255, 255, 255, 0.08);
+
+            /* Linux Terminal & IDE Variables */
+            --term-bg: #0d1117;
+            --term-header: #161b22;
+            --term-text: #c9d1d9;
+            --term-green: #3fb950;
+            --term-cyan: #58a6ff;
+
+            /* Typography */
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-code: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -14,106 +42,203 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-image: url("./pictures/bg.jpg");
-            background-size: auto;
-            background-color: #3d485acc;
-            color: #000000;
+            font-family: var(--font-main);
+            background: #0f172a url("./pictures/bg.jpg") no-repeat center center fixed;
+            background-size: cover;
+            color: #f0f6fc;
             line-height: 1.6;
             padding: 1rem;
+            min-height: 100vh;
         }
 
-        header {
+        /* ==========================================================================
+           2. CONTENEDOR TIPO VENTANA MACOS / WINDOWS DEKTOP
+           ========================================================================== */
+        .window-container {
+            max-width: 960px;
+            margin: 1rem auto;
+            background: var(--mac-bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--mac-border);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        /* Barra de título con controles tipo macOS */
+        .window-header {
+            background: rgba(22, 27, 34, 0.8);
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--mac-border);
+            position: relative;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-close {
+            background-color: var(--mac-close);
+        }
+
+        .dot-min {
+            background-color: var(--mac-min);
+        }
+
+        .dot-max {
+            background-color: var(--mac-max);
+        }
+
+        .window-title {
+            position: absolute;
+            left: 0;
+            right: 0;
             text-align: center;
-            padding: 1.5rem 0 2rem 0;
-            border-bottom: 2px solid #000000;
-            margin-bottom: 2rem;
-        }
-
-        header h1 {
-            font-size: 1.8rem;
-            text-transform: uppercase;
+            font-size: 0.85rem;
+            color: #8b949e;
+            font-weight: 500;
             letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        /* Header Interno de Contenido */
+        header.content-header {
+            text-align: center;
+            padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--win-border);
+        }
+
+        header.content-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
             margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #ffffff, #58a6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        header p {
+        header.content-header p {
             font-size: 1rem;
-            color: #000000;
+            color: #8b949e;
         }
 
-        /* Contenedor principal */
+        /* ==========================================================================
+           3. TARJETAS DE CONTENIDO (ESTILO FLUENT WINDOWS 11)
+           ========================================================================== */
         main {
-            max-width: 900px;
-            margin: 0 auto;
+            padding: 1.5rem;
         }
 
-        /* Secciones separadas */
         .card-topic {
-            background-color: rgba(8, 0, 0, 1);
-            border-left: 5px solid #000000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            /* Sombra gris 10% */
+            background: var(--win-card-bg);
+            border: 1px solid var(--win-border);
+            border-radius: 8px;
             padding: 1.5rem;
-            margin-bottom: 2rem;
-            border-radius: 0 8px 8px 0;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-topic:hover {
+            border-color: rgba(0, 120, 212, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .card-topic h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin-bottom: 1rem;
-            text-transform: uppercase;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 0.4rem;
-            color: #FFFFFF;
+            color: var(--win-accent);
+            border-bottom: 1px solid var(--win-border);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-topic h3 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             margin: 1.2rem 0 0.5rem 0;
+            color: #f0f6fc;
         }
 
         .card-topic h4 {
-            font-size: 1.05rem;
+            font-size: 1rem;
             margin: 1rem 0 0.4rem 0;
-            color: #FFFFFF;
+            color: #58a6ff;
         }
 
-        .card-topic p {
-            margin-bottom: 0.8rem;
-            font-size: 0.98rem;
-            color: #FFFFFF;
+        .card-topic p,
+        .card-topic li {
+            color: #c9d1d9;
+            font-size: 0.95rem;
         }
 
         .card-topic ul,
         .card-topic ol {
             margin-left: 1.2rem;
             margin-bottom: 1rem;
-            color: #FFFFFF;
         }
 
         .card-topic li {
             margin-bottom: 0.4rem;
-            font-size: 0.95rem;
-            color: #FFFFFF;
         }
 
+        /* ==========================================================================
+           4. ELEMENTOS ESTILO LINUX TERMINAL (BLOQUES DE CÓDIGO Y GUÍAS)
+           ========================================================================== */
         code {
-            background-color: #f4f4f4;
+            background-color: rgba(110, 118, 129, 0.2);
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.9rem;
-            color: #000000;
+            font-family: var(--font-code);
+            font-size: 0.88rem;
+            color: #f0f6fc;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Estilos para secuencias didácticas e imágenes */
+        pre {
+            background-color: var(--term-bg);
+            border: 1px solid var(--win-border);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+            color: var(--term-green);
+        }
+
+        /* Bloques de pasos / Procedimientos (Estilo Terminal / Linux Card) */
+        .step-block {
+            background-color: var(--term-bg);
+            border-left: 3px solid var(--win-accent);
+            border-radius: 0 6px 6px 0;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
         .img-container {
             text-align: center;
             margin: 1.2rem 0;
             padding: 0.8rem;
-            background-color: #f9f9f9;
-            border: 1px solid #e0e0e0;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px dashed var(--win-border);
             border-radius: 6px;
         }
 
@@ -124,48 +249,38 @@
         }
 
         .img-caption {
-            font-size: 0.85rem;
-            color: #555555;
-            margin-top: 0.4rem;
+            font-size: 0.82rem;
+            color: #8b949e;
+            margin-top: 0.5rem;
             font-style: italic;
         }
 
-        .step-block {
-            background-color: #fafafa;
-            border-left: 4px solid #333333;
-            padding: 1rem;
-            margin-bottom: 1.2rem;
-            border-radius: 0 4px 4px 0;
-        }
-
+        /* Footer */
         footer {
             text-align: center;
-            padding: 2rem 0;
-            margin-top: 1rem;
-            border-top: 1px solid #e0e0e0;
+            padding: 1.5rem;
+            border-top: 1px solid var(--win-border);
             font-size: 0.85rem;
+            color: #8b949e;
+            background: rgba(13, 17, 23, 0.5);
         }
 
-        /* Pantallas medianas y grandes (Desktop / Tablet) */
+        /* Responsive Breakpoints */
         @media (min-width: 768px) {
             body {
                 padding: 2rem;
             }
 
-            header h1 {
+            header.content-header h1 {
                 font-size: 2.3rem;
             }
 
-            .card-topic {
+            main {
                 padding: 2rem;
             }
 
-            .card-topic h2 {
-                font-size: 1.6rem;
-            }
-
-            .card-topic h3 {
-                font-size: 1.25rem;
+            .card-topic {
+                padding: 1.8rem;
             }
         }
     </style>
@@ -173,215 +288,254 @@
 
 <body>
 
-    <header>
-        <h1>Fundamentos de Sistemas Operativos</h1>
-        <p>Guía de conceptos esenciales, arquitecturas y sistemas de archivos</p>
-    </header>
+    <!-- Ventana Principal Híbrida (macOS Style Shell) -->
+    <div class="window-container">
 
-    <main>
+        <!-- Barra de estado superior estilo macOS -->
+        <div class="window-header">
+            <div class="window-controls">
+                <span class="dot dot-close"></span>
+                <span class="dot dot-min"></span>
+                <span class="dot dot-max"></span>
+            </div>
+            <div class="window-title">bash — Fundamentos de Sistemas Operativos — 80x24</div>
+        </div>
 
-        <!-- Tema 1: Conceptos Fundamentales -->
-        <section class="card-topic">
-            <h2>1. Conceptos Clave de un Sistema Operativo</h2>
-            <p>Un <strong>Sistema Operativo (SO)</strong> es el software principal que gestiona el hardware de una
-                computadora y proporciona servicios a los programas de aplicación.</p>
+        <header class="content-header">
+            <h1>Fundamentos de Sistemas Operativos</h1>
+            <p>Guía de conceptos esenciales, arquitecturas y sistemas de archivos</p>
+        </header>
 
-            <h3>Procesos vs. Hilos (Threads)</h3>
-            <ul>
-                <li><strong>Proceso:</strong> Es una programa en ejecución. Tiene su propio espacio de memoria
-                    independiente, asignación de recursos y contexto de seguridad.</li>
-                <li><strong>Hilo (Thread):</strong> Es la unidad más pequeña de ejecución dentro de un proceso.
-                    Múltiples hilos dentro del mismo proceso comparten la misma memoria y recursos, lo que permite la
-                    concurrencia y la multitarea eficiente.</li>
-            </ul>
+        <main>
 
-            <h3>Servicios y Demonios (Daemons)</h3>
-            <p>Son programas que se ejecutan en segundo plano sin una interfaz de usuario directa para realizar tareas
-                continuas o responder a eventos del sistema:</p>
-            <ul>
-                <li><strong>Servicios (Windows):</strong> Procesos gestionados por el Administrador de Control de
-                    Servicios (por ejemplo, el servicio de actualización o cola de impresión).</li>
-                <li><strong>Demonios / Daemons (Linux y macOS):</strong> Procesos en segundo plano que usualmente
-                    terminan en "d" (ej. <code>sshd</code>, <code>httpd</code>, <code>launchd</code>).</li>
-            </ul>
+            <!-- Tema 1: Conceptos Fundamentales -->
+            <section class="card-topic">
+                <h2>1. Conceptos Clave de un Sistema Operativo</h2>
+                <p>Un <strong>Sistema Operativo (SO)</strong> es el software principal que gestiona el hardware de una
+                    computadora y proporciona servicios a los programas de aplicación.</p>
 
-            <h3>Kernel o Núcleo</h3>
-            <p>Es el corazón del SO. Controla el acceso directo al hardware (CPU, memoria, dispositivos I/O) y gestiona
-                la transición entre el espacio de usuario y el espacio de kernel.</p>
-        </section>
+                <h3>Procesos vs. Hilos (Threads)</h3>
+                <ul>
+                    <li><strong>Proceso:</strong> Es un programa en ejecución. Tiene su propio espacio de memoria
+                        independiente, asignación de recursos y contexto de seguridad.</li>
+                    <li><strong>Hilo (Thread):</strong> Es la unidad más pequeña de ejecución dentro de un proceso.
+                        Múltiples hilos dentro del mismo proceso comparten la misma memoria y recursos, lo que permite
+                        la
+                        concurrencia y la multitarea eficiente.</li>
+                </ul>
 
-        <!-- Tema 2: Windows 10 y 11 -->
-        <section class="card-topic">
-            <h2>2. Microsoft Windows (10 y 11)</h2>
-            <p>Windows es un sistema operativo de código cerrado orientado al usuario final y entornos empresariales,
-                basado en el núcleo <strong>Windows NT</strong>.</p>
+                <h3>Servicios y Demonios (Daemons)</h3>
+                <p>Son programas que se ejecutan en segundo plano sin una interfaz de usuario directa para realizar
+                    tareas
+                    continuas o responder a eventos del sistema:</p>
+                <ul>
+                    <li><strong>Servicios (Windows):</strong> Procesos gestionados por el Administrador de Control de
+                        Servicios (por ejemplo, el servicio de actualización o cola de impresión).</li>
+                    <li><strong>Demonios / Daemons (Linux y macOS):</strong> Procesos en segundo plano que usualmente
+                        terminan en "d" (ej. <code>sshd</code>, <code>httpd</code>, <code>launchd</code>).</li>
+                </ul>
 
-            <h3>Sistema de Archivos: NTFS y ReFS</h3>
-            <ul>
-                <li><strong>NTFS (New Technology File System):</strong> El sistema de archivos predeterminado desde
-                    Windows NT. Soporta permisos de acceso ACL (Listas de Control de Acceso), cifrado (EFS), compresión,
-                    listas de control de auditoría y archivos de gran tamaño.</li>
-                <li><strong>ReFS (Resilient File System):</strong> Diseñado para maximizar la disponibilidad de datos,
-                    tolerancia a fallos y manejo de grandes volúmenes de almacenamiento (usado principalmente en Windows
-                    Server y versiones Pro/Enterprise).</li>
-            </ul>
+                <h3>Kernel o Núcleo</h3>
+                <p>Es el corazón del SO. Controla el acceso directo al hardware (CPU, memoria, dispositivos I/O) y
+                    gestiona
+                    la transición entre el espacio de usuario y el espacio de kernel.</p>
+            </section>
 
-            <h3>Características Destacadas</h3>
-            <ul>
-                <li>Uso intensivo del <strong>Registro de Windows</strong>, una base de datos centralizada para
-                    configuraciones del sistema y aplicaciones.</li>
-                <li>Soporte para ejecutar subsistemas como WSL (Windows Subsystem for Linux).</li>
-            </ul>
+            <!-- Tema 2: Windows 10 y 11 -->
+            <section class="card-topic">
+                <h2>2. Microsoft Windows (10 y 11)</h2>
+                <p>Windows es un sistema operativo de código cerrado orientado al usuario final y entornos
+                    empresariales,
+                    basado en el núcleo <strong>Windows NT</strong>.</p>
 
-            <h3>Administrador de Tareas y Gestión de Procesos</h3>
-            <p>El <strong>Administrador de Tareas</strong> (<code>taskmgr.exe</code>) es la herramienta nativa de
-                diagnóstico en Windows que permite supervisar el uso de CPU, memoria, disco y red, además de gestionar
-                el ciclo de vida de los procesos activos.</p>
-            <ul>
-                <li><strong>Finalización Directa:</strong> Solicita al proceso el cierre ordenado liberando recursos.
-                </li>
-                <li><strong>Matar Procesos (Terminación Forzada):</strong> Invoca la llamada a la API
-                    <code>TerminateProcess()</code> para detener inmediatamente la ejecución en la CPU y liberar la RAM
-                    asignada sin guardar datos en búfer.
-                </li>
-                <li><strong>Comandos CLI equivalentes:</strong>
-                    <ul>
-                        <li><code>tasklist</code>: Lista todos los procesos con su ID numérico (PID).</li>
-                        <li><code>taskkill /IM nombre_proceso.exe /F</code>: Fuerza la terminación de un proceso por su
-                            nombre ejecutable.</li>
-                    </ul>
-                </li>
-            </ul>
+                <h3>Sistema de Archivos: NTFS y ReFS</h3>
+                <ul>
+                    <li><strong>NTFS (New Technology File System):</strong> El sistema de archivos predeterminado desde
+                        Windows NT. Soporta permisos de acceso ACL (Listas de Control de Acceso), cifrado (EFS),
+                        compresión,
+                        listas de control de auditoría y archivos de gran tamaño.</li>
+                    <li><strong>ReFS (Resilient File System):</strong> Diseñado para maximizar la disponibilidad de
+                        datos,
+                        tolerancia a fallos y manejo de grandes volúmenes de almacenamiento (usado principalmente en
+                        Windows
+                        Server y versiones Pro/Enterprise).</li>
+                </ul>
 
-            <h3>Resolución de Problemas: Caso Atasco en la Cola de Impresión</h3>
-            <p>El servicio <strong>Print Spooler</strong> (<code>spoolsv.exe</code>) almacena temporalmente los trabajos
-                de impresión en disco. Si un archivo se corrompe, retiene el archivo de spool e inhabilita las llamadas
-                posteriores. Para resolverlo se sigue este procedimiento paso a paso:</p>
+                <h3>Características Destacadas</h3>
+                <ul>
+                    <li>Uso intensivo del <strong>Registro de Windows</strong>, una base de datos centralizada para
+                        configuraciones del sistema y aplicaciones.</li>
+                    <li>Soporte para ejecutar subsistemas como WSL (Windows Subsystem for Linux).</li>
+                </ul>
 
-            <div class="step-block">
-                <h4>Paso 1: Detener el Servicio de Cola de Impresión</h4>
-                <p>Abre la consola de Servicios (<code>services.msc</code>), busca el servicio <strong>Cola de
-                        impresión</strong> y detén su ejecución para liberar los bloqueos sobre los archivos temporales.
-                </p>
-                <div class="img-container">
-                    <img src="detener servicio de cola de impresion" alt="Detener servicio de cola de impresión">
-                    <div class="img-caption">Figura 2.1: Detención manual del servicio Print Spooler desde Services.msc.
+                <h3>Administrador de Tareas y Gestión de Procesos</h3>
+                <p>El <strong>Administrador de Tareas</strong> (<code>taskmgr.exe</code>) es la herramienta nativa de
+                    diagnóstico en Windows que permite supervisar el uso de CPU, memoria, disco y red, además de
+                    gestionar
+                    el ciclo de vida de los procesos activos.</p>
+                <ul>
+                    <li><strong>Finalización Directa:</strong> Solicita al proceso el cierre ordenado liberando
+                        recursos.</li>
+                    <li><strong>Matar Procesos (Terminación Forzada):</strong> Invoca la llamada a la API
+                        <code>TerminateProcess()</code> para detener inmediatamente la ejecución en la CPU y liberar la
+                        RAM
+                        asignada sin guardar datos en búfer.
+                    </li>
+                    <li><strong>Comandos CLI equivalentes:</strong>
+                        <ul>
+                            <li><code>tasklist</code>: Lista todos los procesos con su ID numérico (PID).</li>
+                            <li><code>taskkill /IM nombre_proceso.exe /F</code>: Fuerza la terminación de un proceso por
+                                su
+                                nombre ejecutable.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Resolución de Problemas: Caso Atasco en la Cola de Impresión</h3>
+                <p>El servicio <strong>Print Spooler</strong> (<code>spoolsv.exe</code>) almacena temporalmente los
+                    trabajos
+                    de impresión en disco. Si un archivo se corrompe, retiene el archivo de spool e inhabilita las
+                    llamadas
+                    posteriores. Para resolverlo se sigue este procedimiento paso a paso:</p>
+
+                <div class="step-block">
+                    <h4>Paso 1: Detener el Servicio de Cola de Impresión</h4>
+                    <p>Abre la consola de Servicios (<code>services.msc</code>), busca el servicio <strong>Cola de
+                            impresión</strong> y detén su ejecución para liberar los bloqueos sobre los archivos
+                        temporales.
+                    </p>
+                    <div class="img-container">
+                        <img src="detener servicio de cola de impresion" alt="Detener servicio de cola de impresión">
+                        <div class="img-caption">Figura 2.1: Detención manual del servicio Print Spooler desde
+                            Services.msc.
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="step-block">
-                <h4>Paso 2: Eliminar los Archivos del Directorio PRINTERS</h4>
-                <p>Navega a la ruta <code>C:\Windows\System32\spool\PRINTERS</code> y elimina todos los archivos con
-                    extensión <code>.SHD</code> y <code>.SPL</code> retenidos en la carpeta.</p>
-                <div class="img-container">
-                    <img src="eliminar archivos del directorio PRINT" alt="Eliminar archivos del directorio PRINT">
-                    <div class="img-caption">Figura 2.2: Limpieza de archivos de spool retenidos dentro del directorio
-                        de impresión.</div>
-                </div>
-            </div>
-
-            <div class="step-block">
-                <h4>Paso 3: Reiniciar el Servicio de Cola de Impresión</h4>
-                <p>Regresa a la consola de Servicios y haz clic en <strong>Iniciar</strong> sobre el servicio
-                    <strong>Cola de impresión</strong> para restablecer el spooler de forma limpia.
-                </p>
-                <div class="img-container">
-                    <img src="iniciar nuevamente servicio de cola de impresion"
-                        alt="Iniciar nuevamente servicio de cola de impresión">
-                    <div class="img-caption">Figura 2.3: Reanudación del servicio de impresión en el sistema operativo.
+                <div class="step-block">
+                    <h4>Paso 2: Eliminar los Archivos del Directorio PRINTERS</h4>
+                    <p>Navega a la ruta <code>C:\Windows\System32\spool\PRINTERS</code> y elimina todos los archivos con
+                        extensión <code>.SHD</code> y <code>.SPL</code> retenidos en la carpeta.</p>
+                    <div class="img-container">
+                        <img src="eliminar archivos del directorio PRINT" alt="Eliminar archivos del directorio PRINT">
+                        <div class="img-caption">Figura 2.2: Limpieza de archivos de spool retenidos dentro del
+                            directorio
+                            de impresión.</div>
                     </div>
                 </div>
-            </div>
 
-            <p><em>Alternativa por consola administrativa (CMD):</em></p>
-            <pre><code>net stop spooler
-del /Q /F /S "%systemroot%\System32\Spool\PRINTERS\*.*"
-net start spooler</code></pre>
-        </section>
+                <div class="step-block">
+                    <h4>Paso 3: Reiniciar el Servicio de Cola de Impresión</h4>
+                    <p>Regresa a la consola de Servicios y haz clic en <strong>Iniciar</strong> sobre el servicio
+                        <strong>Cola de impresión</strong> para restablecer el spooler de forma limpia.
+                    </p>
+                    <div class="img-container">
+                        <img src="iniciar nuevamente servicio de cola de impresion"
+                            alt="Iniciar nuevamente servicio de cola de impresión">
+                        <div class="img-caption">Figura 2.3: Reanudación del servicio de impresión en el sistema
+                            operativo.
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Tema 3: macOS -->
-        <section class="card-topic">
-            <h2>3. Apple macOS</h2>
-            <p>macOS es el sistema operativo exclusivo de los equipos Mac, basado en <strong>Unix</strong> (núcleo XNU /
-                arquitectura Darwin). Cumple con las especificaciones POSIX.</p>
+                <p><em>Alternativa por consola administrativa (CMD):</em></p>
+                <pre><code>C:\> net stop spooler
+C:\> del /Q /F /S "%systemroot%\System32\Spool\PRINTERS\*.*"
+C:\> net start spooler</code></pre>
+            </section>
 
-            <h3>Sistema de Archivos: APFS</h3>
-            <ul>
-                <li><strong>APFS (Apple File System):</strong> Optimizado para almacenamiento SSD y Flash. Ofrece un
-                    cifrado fuerte de varios claves, clonación instantánea de archivos, "snapshots" (capturas de estado
-                    del sistema para respaldos con Time Machine) y asignación dinámica de espacio.</li>
-                <li><strong>HFS+ (Hierarchical File System Plus):</strong> El sistema heredado sustituido por APFS a
-                    partir de macOS High Sierra.</li>
-            </ul>
+            <!-- Tema 3: macOS -->
+            <section class="card-topic">
+                <h2>3. Apple macOS</h2>
+                <p>macOS es el sistema operativo exclusivo de los equipos Mac, basado en <strong>Unix</strong> (núcleo
+                    XNU /
+                    arquitectura Darwin). Cumple con las especificaciones POSIX.</p>
 
-            <h3>Gestión de Servicios</h3>
-            <p>Usa <code>launchd</code> como sistema de inicialización y gestión de demonios en segundo plano,
-                reemplazando a los tradicionales scripts <code>init.d</code> o <code>cron</code>.</p>
-        </section>
+                <h3>Sistema de Archivos: APFS</h3>
+                <ul>
+                    <li><strong>APFS (Apple File System):</strong> Optimizado para almacenamiento SSD y Flash. Ofrece un
+                        cifrado fuerte de varias claves, clonación instantánea de archivos, "snapshots" (capturas de
+                        estado
+                        del sistema para respaldos con Time Machine) y asignación dinámica de espacio.</li>
+                    <li><strong>HFS+ (Hierarchical File System Plus):</strong> El sistema heredado sustituido por APFS a
+                        partir de macOS High Sierra.</li>
+                </ul>
 
-        <!-- Tema 4: Linux y Vertientes -->
-        <section class="card-topic">
-            <h2>4. Linux y sus Principales Vertientes</h2>
-            <p>Linux es un núcleo (Kernel) de código abierto inspirado en Unix. Al combinarse con software de GNU y
-                repositorios, conforma una <strong>Distribución Linux (Distro)</strong>.</p>
+                <h3>Gestión de Servicios</h3>
+                <p>Usa <code>launchd</code> como sistema de inicialización y gestión de demonios en segundo plano,
+                    reemplazando a los tradicionales scripts <code>init.d</code> o <code>cron</code>.</p>
+            </section>
 
-            <h3>Las dos grandes familias/vertientes:</h3>
-            <ul>
-                <li><strong>Vertiente Debian:</strong>
-                    <ul>
-                        <li>Se enfoca en la estabilidad, la filosofía del software libre y una inmensa comunidad.</li>
-                        <li>Gestión de paquetes mediante <code>.deb</code> con herramientas como <code>apt</code> y
-                            <code>dpkg</code>.
-                        </li>
-                        <li><em>Ejemplos destacados:</em> Debian, Ubuntu, Linux Mint, Pop!_OS, Kali Linux.</li>
-                    </ul>
-                </li>
-                <li><strong>Vertiente Red Hat:</strong>
-                    <ul>
-                        <li>Orientada a entornos empresariales, servidores corporativos, rendimiento y certificación de
-                            seguridad.</li>
-                        <li>Gestión de paquetes mediante <code>.rpm</code> con herramientas como <code>dnf</code> y
-                            <code>yum</code>.
-                        </li>
-                        <li><em>Ejemplos destacados:</em> RHEL (Red Hat Enterprise Linux), Fedora, CentOS Stream, Rocky
-                            Linux, AlmaLinux.</li>
-                    </ul>
-                </li>
-            </ul>
+            <!-- Tema 4: Linux y Vertientes -->
+            <section class="card-topic">
+                <h2>4. Linux y sus Principales Vertientes</h2>
+                <p>Linux es un núcleo (Kernel) de código abierto inspirado en Unix. Al combinarse con software de GNU y
+                    repositorios, conforma una <strong>Distribución Linux (Distro)</strong>.</p>
 
-            <h3>Sistemas de Archivos en Linux</h3>
-            <ul>
-                <li><strong>ext4 (Fourth Extended Filesystem):</strong> Es el estándar más utilizado. Soporta journaling
-                    (diario para evitar corrupción de datos en cortes de energía), desfragmentación en línea y excelente
-                    rendimiento general.</li>
-                <li><strong>Btrfs / XFS:</strong> Sistemas modernos utilizados frecuentemente en servidores y
-                    distribuidores como Fedora o RHEL por su soporte de volúmenes lógicos, snapshots y tolerancia a
-                    fallos.</li>
-            </ul>
-        </section>
+                <h3>Las dos grandes familias/vertientes:</h3>
+                <ul>
+                    <li><strong>Vertiente Debian:</strong>
+                        <ul>
+                            <li>Se enfoca en la estabilidad, la filosofía del software libre y una inmensa comunidad.
+                            </li>
+                            <li>Gestión de paquetes mediante <code>.deb</code> con herramientas como <code>apt</code> y
+                                <code>dpkg</code>.
+                            </li>
+                            <li><em>Ejemplos destacados:</em> Debian, Ubuntu, Linux Mint, Pop!_OS, Kali Linux.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Vertiente Red Hat:</strong>
+                        <ul>
+                            <li>Orientada a entornos empresariales, servidores corporativos, rendimiento y certificación
+                                de
+                                seguridad.</li>
+                            <li>Gestión de paquetes mediante <code>.rpm</code> con herramientas como <code>dnf</code> y
+                                <code>yum</code>.
+                            </li>
+                            <li><em>Ejemplos destacados:</em> RHEL (Red Hat Enterprise Linux), Fedora, CentOS Stream,
+                                Rocky
+                                Linux, AlmaLinux.</li>
+                        </ul>
+                    </li>
+                </ul>
 
-        <!-- Tema 5: Jerarquía del Sistema de Archivos en Unix/Linux -->
-        <section class="card-topic">
-            <h2>5. Estructura de Directorios (FHS en Linux)</h2>
-            <p>A diferencia de Windows (que usa letras de unidad como <code>C:\</code> o <code>D:\</code>), Linux y
-                macOS organizan todo desde una única raíz representada por una barra diagonal <code>/</code>:</p>
-            <ul>
-                <li><code>/</code> : La raíz del sistema de archivos (Root).</li>
-                <li><code>/bin</code> y <code>/usr/bin</code> : Binarios y comandos esenciales del sistema.</li>
-                <li><code>/etc</code> : Archivos de configuración del sistema y servicios.</li>
-                <li><code>/home</code> (o <code>/Users</code> en macOS) : Directorios personales de cada usuario.</li>
-                <li><code>/var</code> : Archivos variables (logs, bases de datos temporales, colas de correo).</li>
-                <li><code>/proc</code> : Sistema de archivos virtual que expone información sobre el kernel y los
-                    procesos en ejecución.</li>
-            </ul>
-        </section>
+                <h3>Sistemas de Archivos en Linux</h3>
+                <ul>
+                    <li><strong>ext4 (Fourth Extended Filesystem):</strong> Es el estándar más utilizado. Soporta
+                        journaling
+                        (diario para evitar corrupción de datos en cortes de energía), desfragmentación en línea y
+                        excelente
+                        rendimiento general.</li>
+                    <li><strong>Btrfs / XFS:</strong> Sistemas modernos utilizados frecuentemente en servidores y
+                        distribuidores como Fedora o RHEL por su soporte de volúmenes lógicos, snapshots y tolerancia a
+                        fallos.</li>
+                </ul>
+            </section>
 
-    </main>
+            <!-- Tema 5: Jerarquía del Sistema de Archivos en Unix/Linux -->
+            <section class="card-topic">
+                <h2>5. Estructura de Directorios (FHS en Linux)</h2>
+                <p>A diferencia de Windows (que usa letras de unidad como <code>C:\</code> o <code>D:\</code>), Linux y
+                    macOS organizan todo desde una única raíz representada por una barra diagonal <code>/</code>:</p>
+                <ul>
+                    <li><code>/</code> : La raíz del sistema de archivos (Root).</li>
+                    <li><code>/bin</code> y <code>/usr/bin</code> : Binarios y comandos esenciales del sistema.</li>
+                    <li><code>/etc</code> : Archivos de configuración del sistema y servicios.</li>
+                    <li><code>/home</code> (o <code>/Users</code> en macOS) : Directorios personales de cada usuario.
+                    </li>
+                    <li><code>/var</code> : Archivos variables (logs, bases de datos temporales, colas de correo).</li>
+                    <li><code>/proc</code> : Sistema de archivos virtual que expone información sobre el kernel y los
+                        procesos en ejecución.</li>
+                </ul>
+            </section>
 
-    <footer>
-        <p>Fundamentos de Sistemas Operativos.</p>
-    </footer>
+        </main>
+
+        <footer>
+            <p>Fundamentos de Sistemas Operativos &copy; 2026 — Edición Multi-Plataforma</p>
+        </footer>
+
+    </div>
 
 </body>
 
