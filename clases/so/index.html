@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Fundamentos de Sistemas Operativos</title>
+    <title>Sistemas Operativos: Microsoft Windows 10 y 11</title>
     <style>
         @page {
             size: A4;
@@ -182,19 +182,86 @@
             page-break-inside: avoid;
         }
 
+        /* Estilos para las imágenes de ejemplo */
         .img-container {
             text-align: center;
-            margin: 6px 0;
-            padding: 6px;
-            background-color: rgba(0, 0, 0, 0.25);
+            margin: 12px 0 6px 0;
+            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
             border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            max-height: 180px;
+            object-fit: contain;
             border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .img-container img:hover {
+            transform: scale(1.02);
+            border-color: #58a6ff;
         }
 
         .img-caption {
             font-size: 8pt;
             color: #8b949e;
             font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* Estilos del Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-caption {
+            margin-top: 10px;
+            color: #f0f6fc;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f0f6fc;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #ff5f56;
         }
 
         footer {
@@ -218,219 +285,241 @@
                 <span class="dot dot-min"></span>
                 <span class="dot dot-max"></span>
             </div>
-            <div class="window-title">bash — Fundamentos de Sistemas Operativos — 80x24</div>
+            <div class="window-title">cmd.exe — Windows 10/11 Architecture Guide — 80x24</div>
         </div>
 
         <header class="content-header">
-            <h1>Fundamentos de Sistemas Operativos</h1>
-            <p>Guía de conceptos esenciales, arquitecturas y sistemas de archivos</p>
+            <h1>Guía Técnica: Microsoft Windows 10 y 11</h1>
+            <p>Arquitectura, Registro, variables de entorno y administración del sistema</p>
         </header>
 
         <main>
 
-            <!-- Tema 1: Conceptos Fundamentales -->
+            <!-- Tema 1: Arquitectura Base de Windows NT -->
             <section class="card-topic">
-                <h2>1. Conceptos Clave de un Sistema Operativo</h2>
-                <p>Un <strong>Sistema Operativo (SO)</strong> es el software principal que actúa como intermediario
-                    entre el hardware de una computadora y las aplicaciones del usuario, administrando los recursos de
-                    procesamiento, memoria y almacenamiento.</p>
+                <h2>1. Arquitectura Base del Núcleo Windows NT</h2>
+                <p>Windows 10 y 11 están construidos sobre la arquitectura de núcleo <strong>Windows NT</strong>. Operan
+                    bajo un modelo híbrido que divide la ejecución en dos modos de privilegio principales:</p>
 
-                <h3>1.1 El Núcleo (Kernel): El Corazón del Sistema</h3>
-                <p>Para cumplir con esta función de intermediación, todo sistema operativo posee un <strong>Kernel o
-                        Núcleo</strong>. Es el componente central que controla el acceso directo al hardware (CPU,
-                    memoria, dispositivos I/O) y gestiona la transición segura entre el espacio de usuario y el espacio
-                    de kernel.</p>
-
-                <h3>1.2 Unidades de Ejecución: Procesos e Hilos</h3>
-                <p>Para ejecutar las aplicaciones sobre el Kernel, el sistema organiza el trabajo en diferentes niveles
-                    de procesamiento:</p>
+                <h3>1.1 Modo Usuario (User Mode) y Modo Núcleo (Kernel Mode)</h3>
                 <ul>
-                    <li><strong>Proceso:</strong> Es un programa en ejecución que cuenta con su propio espacio de
-                        memoria independiente, asignación de recursos y contexto de seguridad aislado.</li>
-                    <li><strong>Hilo (Thread):</strong> Es la unidad más pequeña de ejecución dentro de un proceso.
-                        Múltiples hilos dentro de un mismo proceso comparten la misma memoria y recursos, permitiendo la
-                        concurrencia y la multitarea eficiente sin sobrecargar al sistema.</li>
+                    <li><strong>Modo Usuario:</strong> Espacio de memoria restringido donde se ejecutan las aplicaciones
+                        finales y la interfaz gráfica. No tienen acceso directo al hardware.</li>
+                    <li><strong>Modo Núcleo:</strong> Espacio con privilegios totales donde opera el Kernel
+                        (<code>ntoskrnl.exe</code>), los controladores de dispositivos (drivers) y la abstracción de
+                        hardware (HAL).</li>
                 </ul>
 
-                <h3>1.3 Tareas en Segundo Plano: Servicios y Demonios</h3>
-                <p>Además de los programas interactivos que el usuario observa en pantalla, el Kernel coordina procesos
-                    continuos que operan de forma invisible:</p>
-                <ul>
-                    <li><strong>Servicios (Windows):</strong> Procesos background gestionados por el Administrador de
-                        Control de Servicios (por ejemplo, el servicio de actualización o la cola de impresión).</li>
-                    <li><strong>Demonios / Daemons (Linux y macOS):</strong> Procesos en segundo plano guiados por el
-                        sistema de inicialización que usualmente terminan en la letra "d" (ej. <code>sshd</code>,
-                        <code>httpd</code>, <code>launchd</code>).
-                    </li>
-                </ul>
+                <div class="img-container">
+                    <img src="ejemplo" alt="Esquema de la Arquitectura NT: User Mode vs Kernel Mode"
+                        onclick="openModal(this)">
+                    <p class="img-caption">Figura 1.1: Diagrama de separación de privilegios entre Modo Usuario y Modo
+                        Núcleo (Haz clic para ampliar)</p>
+                </div>
             </section>
 
-            <!-- Tema 2: Windows 10 y 11 -->
+            <!-- Tema 2: El Registro de Windows y Regedit -->
             <section class="card-topic">
-                <h2>2. Microsoft Windows (10 y 11)</h2>
-                <p>Microsoft Windows es un sistema operativo de código cerrado basado en el núcleo <strong>Windows
-                        NT</strong>, orientado principalmente a interfaces gráficas para usuarios finales y entornos
-                    corporativos.</p>
+                <h2>2. El Registro de Windows y Editor Regedit</h2>
+                <p>El <strong>Registro de Windows</strong> es una base de datos jerárquica centralizada donde el sistema
+                    operativo guarda la configuración del hardware, controladores, programas instalados y preferencias
+                    de usuario.</p>
 
-                <h3>2.1 Sistemas de Archivos</h3>
-                <p>Para organizar la información en el disco, Windows implementa estructuras específicas según el
-                    entorno de trabajo:</p>
+                <h3>2.1 ¿Qué es Regedit?</h3>
+                <p><strong>Regedit</strong> (<code>regedit.exe</code>) es la herramienta oficial de interfaz gráfica de
+                    Windows diseñada para inspeccionar, modificar, exportar y restaurar las claves y valores almacenados
+                    en la base de datos del Registro.</p>
+
+                <h3>2.2 Estructura de Claves Raíz (HKEYs)</h3>
                 <ul>
-                    <li><strong>NTFS (New Technology File System):</strong> El estándar predeterminado en clientes.
-                        Soporta permisos ACL (Listas de Control de Acceso), cifrado (EFS), compresión y registros de
-                        auditoría.</li>
-                    <li><strong>ReFS (Resilient File System):</strong> Diseñado para entornos de alta disponibilidad y
-                        servidores, con tolerancia a fallos ante corrupción de datos y soporte para volúmenes masivos.
-                    </li>
+                    <li><code>HKEY_CLASSES_ROOT (HKCR):</code> Guarda asociaciones de archivos (extensión-aplicación) y
+                        registros COM/ActiveX.</li>
+                    <li><code>HKEY_CURRENT_USER (HKCU):</code> Almacena la configuración y preferencias del usuario con
+                        la sesión activa.</li>
+                    <li><code>HKEY_LOCAL_MACHINE (HKLM):</code> Contiene los ajustes globales del equipo aplicables a
+                        <strong>todos los usuarios</strong>.</li>
+                    <li><code>HKEY_USERS (HKU):</code> Aloja los perfiles de todos los usuarios registrados en el
+                        sistema.</li>
+                    <li><code>HKEY_CURRENT_CONFIG (HKCC):</code> Información temporal sobre el perfil de hardware activo
+                        detectado en el arranque.</li>
                 </ul>
 
-                <h3>2.2 Arquitectura y Administración del Sistema</h3>
-                <p>Windows centraliza su configuración en el <strong>Registro de Windows</strong> (una base de datos
-                    jerárquica clave-valor) y ofrece compatibilidad con subsistemas modernos como WSL (Windows Subsystem
-                    for Linux).</p>
-                <p>Para supervisar la ejecución en tiempo real, el sistema incluye el <strong>Administrador de
-                        Tareas</strong> (<code>taskmgr.exe</code>), el cual maneja el cierre de aplicaciones mediante
-                    dos mecanismos principales:</p>
+                <div class="img-container">
+                    <img src="ejemplo" alt="Interfaz de Regedit mostrando la estructura HKEY" onclick="openModal(this)">
+                    <p class="img-caption">Figura 2.1: Estructura de colmenas del Registro en regedit.exe (Haz clic para
+                        ampliar)</p>
+                </div>
+            </section>
+
+            <!-- Tema 3: Sistemas de Archivos en Windows -->
+            <section class="card-topic">
+                <h2>3. Sistemas de Archivos Nativos</h2>
+                <p>Windows utiliza estructuras de almacenamiento avanzadas para organizar y asegurar la información en
+                    disco:</p>
                 <ul>
-                    <li><strong>Finalización Directa:</strong> Notifica al proceso que debe cerrar de forma ordenada
-                        liberando sus recursos.</li>
-                    <li><strong>Terminación Forzada (Matar Proceso):</strong> Invoca directamente la llamada a la API
-                        <code>TerminateProcess()</code> para detener el proceso en la CPU y liberar la RAM de inmediato.
-                    </li>
-                    <li><strong>Gestión por Línea de Comandos (CLI):</strong>
-                        <ul>
-                            <li><code>tasklist</code>: Muestra los procesos activos junto a su PID (Process ID).</li>
-                            <li><code>taskkill /IM nombre_proceso.exe /F</code>: Fuerza la detención de un proceso por
-                                su ejecutable.</li>
-                        </ul>
-                    </li>
+                    <li><strong>NTFS (New Technology File System):</strong> El estándar principal en unidades de
+                        sistema. Ofrece permisos ACL, cifrado EFS, compresión y <em>journaling</em>.</li>
+                    <li><strong>ReFS (Resilient File System):</strong> Orientado a servidores y volúmenes masivos.
+                        Ofrece detección automática y reparación de corrupción en línea.</li>
+                    <li><strong>FAT32 / exFAT:</strong> Utilizados en medios extraíbles para máxima compatibilidad
+                        multiplataforma.</li>
                 </ul>
 
-                <h3>2.3 Caso Práctico de Diagnóstico: Atasco en el Spooler de Impresión</h3>
+                <div class="img-container">
+                    <img src="ejemplo" alt="Comparativa de Sistemas de Archivos NTFS y ReFS" onclick="openModal(this)">
+                    <p class="img-caption">Figura 3.1: Propiedades de volúmenes de disco y asignación de NTFS (Haz clic
+                        para ampliar)</p>
+                </div>
+            </section>
+
+            <!-- Tema 4: Variables de Entorno -->
+            <section class="card-topic">
+                <h2>4. Variables de Entorno en Windows</h2>
+                <p>Una <strong>variable de entorno</strong> es un valor dinámico guardado en el sistema operativo que
+                    contiene información sobre el entorno de ejecución. Su principal ventaja es la
+                    <strong>portabilidad</strong> entre distintos equipos.</p>
+
+                <h3>4.1 Sintaxis según la Consola</h3>
+                <ul>
+                    <li><strong>CMD:</strong> Se delimitan entre signos de porcentaje (ej. <code>%variable%</code>).
+                    </li>
+                    <li><strong>PowerShell:</strong> Se acceden usando el proveedor de entorno (ej.
+                        <code>$env:variable</code>).</li>
+                </ul>
+
+                <h3>4.2 Principales Variables Nativas</h3>
+                <ul>
+                    <li><code>%systemroot%</code> / <code>$env:SystemRoot</code> : Directorio de instalación de Windows
+                        (<code>C:\Windows</code>).</li>
+                    <li><code>%programfiles%</code> / <code>$env:ProgramFiles</code> : Carpeta de aplicaciones de 64
+                        bits.</li>
+                    <li><code>%userprofile%</code> / <code>$env:USERPROFILE</code> : Ruta personal del usuario activo.
+                    </li>
+                    <li><code>%temp%</code> / <code>$env:TEMP</code> : Ubicación de archivos temporales.</li>
+                    <li><code>%PATH%</code> / <code>$env:PATH</code> : Rutas para búsqueda ejecutiva de comandos.</li>
+                </ul>
+
+                <pre><code>:: Consultar el valor de una variable en CMD
+C:\> echo %systemroot%
+C:\Windows
+
+# Consultar el valor de una variable en PowerShell
+PS C:\> $env:SystemRoot
+C:\Windows</code></pre>
+
+                <div class="img-container">
+                    <img src="ejemplo" alt="Ventana de configuración de Variables de Entorno en Windows"
+                        onclick="openModal(this)">
+                    <p class="img-caption">Figura 4.1: Panel de gestión gráfica de Variables de Entorno (Haz clic para
+                        ampliar)</p>
+                </div>
+            </section>
+
+            <!-- Tema 5: Gestión de Procesos e Hilos -->
+            <section class="card-topic">
+                <h2>5. Administración de Procesos y Servicios</h2>
+
+                <h3>5.1 Conceptos de Ejecución</h3>
+                <ul>
+                    <li><strong>Proceso:</strong> Instancia de un programa con memoria virtual privada.</li>
+                    <li><strong>Hilo (Thread):</strong> Unidad básica de ejecución dentro de un proceso.</li>
+                    <li><strong>Servicio:</strong> Proceso background controlado por el SCM sin requerir inicio de
+                        sesión.</li>
+                </ul>
+
+                <h3>5.2 Controladores y Herramientas CLI</h3>
+                <pre><code>:: Listar procesos activos con PID
+C:\> tasklist
+
+:: Finalizar un proceso forzadamente por nombre
+C:\> taskkill /IM nombre_proceso.exe /F
+
+:: Finalizar un proceso por su Identificador (PID)
+C:\> taskkill /PID 4096 /F</code></pre>
+
+                <div class="img-container">
+                    <img src="ejemplo" alt="Administrador de Tareas y consola ejecutando tasklist"
+                        onclick="openModal(this)">
+                    <p class="img-caption">Figura 5.1: Administración de procesos interactiva y por CLI (Haz clic para
+                        ampliar)</p>
+                </div>
+            </section>
+
+            <!-- Tema 6: Caso Práctico - Spooler de Impresión -->
+            <section class="card-topic">
+                <h2>6. Práctica de Diagnóstico: Restablecimiento de la Cola de Impresión</h2>
                 <p>El servicio <strong>Print Spooler</strong> (<code>spoolsv.exe</code>) almacena temporalmente los
-                    documentos en disco antes de enviarlos a la impresora. Si un archivo se corrompe, la cola se
-                    bloquea. A continuación se detalla el procedimiento para restablecerlo:</p>
+                    trabajos de impresión en la memoria intermedia antes de transmitirlos.</p>
 
                 <div class="step-block">
-                    <h4>Paso 1: Detener el Servicio</h4>
-                    <p>Accede a la consola de Servicios (<code>services.msc</code>) y detén el servicio <strong>Cola de
-                            impresión</strong> para liberar el bloqueo sobre los archivos temporales.</p>
-                    <div class="img-container">
-                        <div class="img-caption">Figura 2.1: Detención manual del servicio Print Spooler desde
-                            Services.msc.</div>
-                    </div>
-                </div>
-
-                <div class="step-block">
-                    <h4>Paso 2: Limpiar el Directorio de Spool</h4>
-                    <p>Navega a la ruta del sistema <code>C:\Windows\System32\spool\PRINTERS</code> y elimina todos los
-                        archivos con extensión <code>.SHD</code> y <code>.SPL</code>.</p>
-                    <div class="img-container">
-                        <div class="img-caption">Figura 2.2: Eliminación de archivos temporales retenidos.</div>
-                    </div>
-                </div>
-
-                <div class="step-block">
-                    <h4>Paso 3: Reiniciar el Servicio</h4>
-                    <p>Regresa a la consola de Servicios e <strong>Inicia</strong> nuevamente la <strong>Cola de
+                    <h4>Paso 1: Detención del Servicio</h4>
+                    <p>Accede a la consola de servicios (<code>services.msc</code>) y detén <strong>Cola de
                             impresión</strong>.</p>
-                    <div class="img-container">
-                        <div class="img-caption">Figura 2.3: Reanudación del servicio de impresión.</div>
-                    </div>
                 </div>
 
-                <p><em>Resolución equivalente desde la consola administrativa (CMD):</em></p>
+                <div class="step-block">
+                    <h4>Paso 2: Depuración de Archivos Temporales</h4>
+                    <p>Elimina los archivos alojados en <code>C:\Windows\System32\spool\PRINTERS</code>.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Paso 3: Reinicio del Servicio</h4>
+                    <p>Vuelve a iniciar el servicio para restablecer el flujo de impresión.</p>
+                </div>
+
+                <p><em>Resolución automatizada desde CMD (usando <code>%systemroot%</code>):</em></p>
                 <pre><code>C:\> net stop spooler
 C:\> del /Q /F /S "%systemroot%\System32\Spool\PRINTERS\*.*"
 C:\> net start spooler</code></pre>
-            </section>
 
-            <!-- Tema 3: macOS -->
-            <section class="card-topic">
-                <h2>3. Apple macOS</h2>
-                <p>macOS es el sistema operativo de Apple para computadoras Mac. Está construido sobre una base
-                    <strong>Unix</strong> (núcleo XNU / arquitectura Darwin) y cumple oficialmente con las
-                    especificaciones POSIX.
-                </p>
+                <p><em>Equivalente en PowerShell (usando <code>$env:SystemRoot</code>):</em></p>
+                <pre><code>PS C:\> Stop-Service -Name "Spooler" -Force
+PS C:\> Remove-Item -Path "$env:SystemRoot\System32\Spool\PRINTERS\*" -Force -Recurse
+PS C:\> Start-Service -Name "Spooler"</code></pre>
 
-                <h3>3.1 Sistema de Archivos: APFS</h3>
-                <p>Diseñado para aprovechar el almacenamiento en estado sólido (SSD y Flash), el sistema de archivos
-                    predeterminado es <strong>APFS (Apple File System)</strong>, el cual reemplazó al histórico HFS+.
-                    APFS integra cifrado nativo de clave múltiple, clonación instantánea de archivos y instantáneas
-                    (<em>snapshots</em>) optimizadas para respaldos con Time Machine.</p>
-
-                <h3>3.2 Gestión de Servicios y Demonios</h3>
-                <p>A diferencia de los sistemas Unix tradicionales, macOS utiliza <code>launchd</code> como el demonio
-                    maestro para la inicialización y administración centralizada de procesos en segundo plano.</p>
-            </section>
-
-            <!-- Tema 4: Linux y Vertientes -->
-            <section class="card-topic">
-                <h2>4. Linux y sus Principales Vertientes</h2>
-                <p>Linux es un núcleo (Kernel) libre y de código abierto. Cuando el núcleo se integra con utilidades del
-                    proyecto GNU, sistemas de gestión de paquetes y software complementario, se conforma una
-                    <strong>Distribución Linux (Distro)</strong>.
-                </p>
-
-                <h3>4.1 Principales Familias de Distribuciones</h3>
-                <ul>
-                    <li><strong>Vertiente Debian:</strong> Orientada a la estabilidad y al software libre.
-                        <ul>
-                            <li>Gestión de paquetes: Formato <code>.deb</code> mediante herramientas como
-                                <code>apt</code> y <code>dpkg</code>.
-                            </li>
-                            <li><em>Ejemplos:</em> Debian, Ubuntu, Linux Mint, Pop!_OS, Kali Linux.</li>
-                        </ul>
-                    </li>
-                    <li><strong>Vertiente Red Hat:</strong> Enfocada en entornos corporativos, servidores y
-                        certificación de seguridad.
-                        <ul>
-                            <li>Gestión de paquetes: Formato <code>.rpm</code> mediante herramientas como
-                                <code>dnf</code> y <code>yum</code>.
-                            </li>
-                            <li><em>Ejemplos:</em> RHEL, Fedora, CentOS Stream, Rocky Linux, AlmaLinux.</li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <h3>4.2 Sistemas de Archivos en Linux</h3>
-                <ul>
-                    <li><strong>ext4 (Fourth Extended Filesystem):</strong> Es el estándar más extendido. Incorpora
-                        <em>journaling</em> (registro de transacciones) para prevenir la corrupción de datos ante cortes
-                        de energía.
-                    </li>
-                    <li><strong>Btrfs / XFS:</strong> Utilizados en servidores y distribuciones modernas (como Fedora)
-                        por sus capacidades de gestión de volúmenes lógicos, snapshots y tolerancia a fallos.</li>
-                </ul>
-            </section>
-
-            <!-- Tema 5: Jerarquía del Sistema de Archivos en Unix/Linux -->
-            <section class="card-topic">
-                <h2>5. Estructura de Directorios (FHS en Unix/Linux)</h2>
-                <p>A diferencia de Windows (que asigna letras a cada unidad como <code>C:\</code> o <code>D:\</code>),
-                    los sistemas basados en Unix (Linux y macOS) organizan toda la jerarquía de almacenamiento a partir
-                    de una única raíz representada por la barra diagonal <code>/</code> (Root):</p>
-                <ul>
-                    <li><code>/</code> : La raíz del sistema de archivos.</li>
-                    <li><code>/bin</code> y <code>/usr/bin</code> : Contienen los ejecutables y comandos esenciales del
-                        sistema.</li>
-                    <li><code>/etc</code> : Archivos de configuración del sistema operativo y sus servicios.</li>
-                    <li><code>/home</code> (o <code>/Users</code> en macOS) : Directorios personales de los usuarios.
-                    </li>
-                    <li><code>/var</code> : Archivos de datos variables (logs del sistema, colas de impresión/correo,
-                        bases de datos).</li>
-                    <li><code>/proc</code> : Sistema de archivos virtual que expone en tiempo real información del
-                        kernel y procesos activos.</li>
-                </ul>
+                <div class="img-container">
+                    <img src="ejemplo" alt="Consola de Servicios services.msc y detención del Spooler"
+                        onclick="openModal(this)">
+                    <p class="img-caption">Figura 6.1: Consola de servicios (services.msc) ajustando la Cola de
+                        Impresión (Haz clic para ampliar)</p>
+                </div>
             </section>
 
         </main>
 
         <footer>
-            <p>Fundamentos de Sistemas Operativos &copy; 2026 — Edición Multi-Plataforma</p>
+            <p>Sistemas Operativos: Windows 10 & 11 &copy; 2026 — Material Académico de Cátedra</p>
         </footer>
 
     </div>
+
+    <!-- Modal Component -->
+    <div id="imageModal" class="modal" onclick="closeModal(event)">
+        <span class="modal-close" onclick="closeModal(event)">&times;</span>
+        <img class="modal-content" id="modalImg" alt="Vista ampliada">
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+
+    <script>
+        function openModal(element) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImg");
+            const captionText = document.getElementById("modalCaption");
+
+            modal.classList.add("active");
+            modalImg.src = element.src;
+            modalImg.alt = element.alt;
+            captionText.innerHTML = element.alt;
+        }
+
+        function closeModal(event) {
+            // Cierra el modal solo si se hace clic fuera de la imagen o en el botón de cerrar
+            if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+                const modal = document.getElementById("imageModal");
+                modal.classList.remove("active");
+            }
+        }
+    </script>
 
 </body>
 
