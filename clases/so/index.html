@@ -1591,7 +1591,86 @@ C:\&gt; taskschd.msc</code></pre>
 
             </section>
 
+            <!-- ===================================================== -->
+            <!-- TEMA 9.3: SEMÁforos Y OBJETOS DE NÚCLEO (x64)         -->
+            <!-- ===================================================== -->
 
+            <section class="card-topic">
+
+                <h2>9.3 Sincronización con Semáforos y Objetos de Núcleo (x64)</h2>
+
+                <p>
+                    <strong>Analogía didáctica:</strong> Piensa en un
+                    estacionamiento subterráneo de un corporativo x64 con
+                    <strong>4 espacios disponibles</strong>. Los <em>hilos</em>
+                    (vehículos) llegan a la pluma de acceso. Si hay espacios,
+                    el <em>Object Manager del Kernel</em> (vigilante de 64 bits)
+                    levanta el <code>SEMAPHORE_OBJECT</code> (decrementa contador).
+                    Cuando el carro sale, libera un espacio (<code>ReleaseSemaphore</code>).
+                    Si el estacionamiento está lleno, los hilos esperan en cola
+                    sin consumir CPU inútilmente (bloqueados por hardware/kernel).
+                </p>
+
+                <div class="img-container">
+
+                    <img src="./pictures/analogia_semaforo_x64.png"
+                        alt="Analogía visual de semáforo de núcleo Win64 controlando accesos concurrentes"
+                        onclick="openModal(this)">
+
+                    <p class="img-caption">
+                        Figura 9.3: Analogía del semáforo de núcleo Win64 (x64)
+                        gestionando concurrencia de hilos (Haz clic para ampliar)
+                    </p>
+
+                </div>
+
+                <h3>Diferencia clave en Windows 10/11 x64</h3>
+                <ul>
+                    <li>
+                        <strong>Handles de 64 bits (8 bytes / <code>ULONG_PTR</code>):</strong>
+                        Permiten direccionar millones de objetos de núcleo simultáneos en el espacio de 64 bits del
+                        Executive.
+                    </li>
+                    <li>
+                        <strong><code>CreateSemaphoreW()</code>:</strong> Crea o abre el contador atómico de núcleo en
+                        el espacio protegido.
+                    </li>
+                    <li>
+                        <strong><code>WaitForSingleObject()</code>:</strong> Equivalente a la operación de
+                        espera/bloqueo del hilo en x64.
+                    </li>
+                    <li>
+                        <strong><code>ReleaseSemaphore()</code>:</strong> Incrementa de forma atómica el contador de
+                        permisos libres.
+                    </li>
+                </ul>
+
+                <p>
+                    <strong>Ejemplo práctico Win64 API (C/C++ x64):</strong>
+                </p>
+
+                <pre><code>// Semáforo con máximo 4 accesos concurrentes en arquitectura x64
+HANDLE hSem64 = CreateSemaphoreW(NULL, 4, 4, L"Local\\Win64ParkingSemaphore");
+
+if (hSem64 != NULL) {
+    // El hilo pide un espacio (Espera atómica x64)
+    DWORD dwWait = WaitForSingleObject(hSem64, INFINITE);
+    
+    // ZONA CRÍTICA: Acceso seguro al recurso compartido (ej. buffer x64)
+    
+    // Libera el espacio en el semáforo de núcleo
+    ReleaseSemaphore(hSem64, 1, NULL);
+    CloseHandle(hSem64);
+}</code></pre>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio x64</h4>
+                    <p>Haz clic en la imagen conceptual, analiza cómo el contador de 64 bits protege la zona crítica, y
+                        usa <code>handle64.exe -p &lt;PID&gt;</code> para comprobar que el objeto <code>Semaphore</code>
+                        aparece registrado con su Handle de 64 bits en el proceso.</p>
+                </div>
+
+            </section>
             <!-- ===================================================== -->
             <!-- TEMA 10 -->
             <!-- ===================================================== -->
