@@ -290,7 +290,7 @@
 
         <header class="content-header">
             <h1>Guía Técnica: Microsoft Windows 10 y 11</h1>
-            <p>Arquitectura, Registro, variables de entorno y administración del sistema</p>
+            <p>Arquitectura, Registro, almacenamiento, variables de entorno y administración del sistema</p>
         </header>
 
         <main>
@@ -337,7 +337,7 @@
                     <li><code>HKEY_CURRENT_USER (HKCU):</code> Almacena la configuración y preferencias del usuario con
                         la sesión activa.</li>
                     <li><code>HKEY_LOCAL_MACHINE (HKLM):</code> Contiene los ajustes globales del equipo aplicables a
-                        <strong>todos los usuarios</strong>.
+                        <strong>todos los usuarios.</strong>.
                     </li>
                     <li><code>HKEY_USERS (HKU):</code> Aloja los perfiles de todos los usuarios registrados en el
                         sistema.</li>
@@ -353,24 +353,94 @@
                 </div>
             </section>
 
-            <!-- Tema 3: Sistemas de Archivos en Windows -->
+            <!-- Tema 3: Sistemas de Archivos y Particiones en Windows -->
             <section class="card-topic">
-                <h2>3. Sistemas de Archivos Nativos</h2>
-                <p>Windows utiliza estructuras de almacenamiento avanzadas para organizar y asegurar la información en
-                    disco:</p>
+                <h2>3. Sistemas de Archivos y Particiones en Windows 10 y 11</h2>
+                <p>En Windows conviene distinguir dos conceptos: el <strong>sistema de archivos</strong> organiza los
+                    datos dentro de un volumen, mientras que el <strong>esquema o estilo de particionado</strong>
+                    define cómo se distribuyen las particiones en el disco.</p>
+
+                <h3>3.1 Sistemas de archivos</h3>
                 <ul>
-                    <li><strong>NTFS (New Technology File System):</strong> El estándar principal en unidades de
-                        sistema. Ofrece permisos ACL, cifrado EFS, compresión y <em>journaling</em>.</li>
-                    <li><strong>ReFS (Resilient File System):</strong> Orientado a servidores y volúmenes masivos.
-                        Ofrece detección automática y reparación de corrupción en línea.</li>
-                    <li><strong>FAT32 / exFAT:</strong> Utilizados en medios extraíbles para máxima compatibilidad
-                        multiplataforma.</li>
+                    <li><strong>NTFS (New Technology File System):</strong> Es el sistema de archivos principal de
+                        Windows 10 y 11 para el volumen donde se instala el sistema. Soporta permisos mediante
+                        <strong>ACL</strong>, journaling, compresión, cuotas y cifrado EFS.</li>
+                    <li><strong>exFAT:</strong> Adecuado para memorias USB, tarjetas SD y discos externos cuando se
+                        necesita compatibilidad entre Windows y otros sistemas. No ofrece el mismo conjunto de
+                        permisos y características de seguridad que NTFS.</li>
+                    <li><strong>FAT32:</strong> Muy compatible con distintos equipos y dispositivos, pero tiene una
+                        limitación importante: no permite archivos individuales de más de <strong>4 GiB</strong>.
+                        Windows suele utilizar FAT32 en la partición de sistema EFI (ESP) en equipos UEFI.</li>
+                    <li><strong>ReFS (Resilient File System):</strong> Diseñado para escenarios que requieren alta
+                        resiliencia y grandes volúmenes de datos. Su disponibilidad depende de la edición y versión
+                        de Windows; no debe confundirse con el sistema de archivos habitual de arranque de Windows 10/11.</li>
                 </ul>
 
                 <div class="img-container">
                     <img src="ejemplo" alt="Comparativa de Sistemas de Archivos NTFS y ReFS" onclick="openModal(this)">
                     <p class="img-caption">Figura 3.1: Propiedades de volúmenes de disco y asignación de NTFS (Haz clic
                         para ampliar)</p>
+                </div>
+
+                <h3>3.2 Estilos de particionado: GPT y MBR</h3>
+                <ul>
+                    <li><strong>GPT (GUID Partition Table):</strong> Es el esquema recomendado para instalaciones
+                        modernas de Windows 10 y 11 con firmware <strong>UEFI</strong>. Permite numerosos discos y
+                        particiones de gran tamaño y mantiene copias redundantes de la información de particionado.</li>
+                    <li><strong>MBR (Master Boot Record):</strong> Es un esquema heredado, asociado normalmente con
+                        firmware <strong>BIOS/Legacy</strong>. Tiene limitaciones frente a GPT, entre ellas el uso
+                        tradicional de hasta 2 TB por disco y cuatro particiones primarias.</li>
+                </ul>
+
+                <h3>3.3 Particiones habituales de una instalación UEFI de Windows 10/11</h3>
+                <ul>
+                    <li><strong>EFI System Partition (ESP):</strong> normalmente FAT32; contiene los archivos necesarios
+                        para el arranque mediante UEFI.</li>
+                    <li><strong>Microsoft Reserved (MSR):</strong> pequeña partición reservada por Windows en discos GPT
+                        para tareas internas de administración de particiones.</li>
+                    <li><strong>Partición principal de Windows:</strong> normalmente NTFS; contiene <code>Windows</code>,
+                        <code>Program Files</code>, perfiles de usuario y el resto de los datos del sistema.</li>
+                    <li><strong>Partición de recuperación:</strong> contiene herramientas del entorno de recuperación de
+                        Windows (WinRE), cuando el equipo la utiliza.</li>
+                </ul>
+
+                <h3>3.4 Ejemplo conceptual del disco</h3>
+                <pre><code>Disco GPT (UEFI)
+┌────────────┬──────┬──────────────────────────┬──────────────┐
+│ EFI / FAT32│ MSR  │ Windows / NTFS           │ Recuperación │
+│   arranque │      │ C:\                      │    / WinRE   │
+└────────────┴──────┴──────────────────────────┴──────────────┘
+
+Sistema de archivos ≠ partición:
+NTFS / FAT32 / exFAT / ReFS  → organizan datos dentro de un volumen
+GPT / MBR                    → describen cómo se particiona el disco</code></pre>
+
+                <h3>3.5 Herramientas de Windows para consultar discos</h3>
+                <ul>
+                    <li><strong>Administración de discos:</strong> <code>diskmgmt.msc</code> permite visualizar
+                        discos, volúmenes, particiones, letras de unidad y sistemas de archivos.</li>
+                    <li><strong>DiskPart:</strong> herramienta de consola para consultar y administrar discos y
+                        particiones. Debe utilizarse con cuidado porque algunas operaciones pueden eliminar datos.</li>
+                    <li><strong>PowerShell:</strong> los cmdlets <code>Get-Disk</code>, <code>Get-Partition</code> y
+                        <code>Get-Volume</code> permiten consultar la estructura de almacenamiento.</li>
+                </ul>
+
+                <pre><code>:: Consultar discos y particiones
+C:\&gt; diskpart
+DISKPART&gt; list disk
+DISKPART&gt; list partition
+
+:: PowerShell
+PS C:\&gt; Get-Disk
+PS C:\&gt; Get-Partition
+PS C:\&gt; Get-Volume</code></pre>
+
+                <div class="img-container">
+                    <img src="./pictures/sistemas_archivos_particiones_win10_11.png"
+                        alt="Mapa visual de sistemas de archivos y particiones en Windows 10 y 11"
+                        onclick="openModal(this)">
+                    <p class="img-caption">Figura 3.2: Sistemas de archivos, GPT/MBR y particiones habituales en
+                        Windows 10/11 (Haz clic para ampliar)</p>
                 </div>
             </section>
 
@@ -523,6 +593,14 @@ PS C:\> Start-Service -Name "Spooler"</code></pre>
                 modal.classList.remove("active");
             }
         }
+
+        // Permite cerrar el visor con la tecla Escape.
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                const modal = document.getElementById("imageModal");
+                modal.classList.remove("active");
+            }
+        });
     </script>
 
 </body>
