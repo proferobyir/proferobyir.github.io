@@ -462,7 +462,7 @@ C:\&gt; gpedit.msc</code></pre>
                 <div class="img-container">
                     <img src="./pictures/regeditwin10.png" alt="Interfaz de Regedit mostrando la estructura HKEY"
                         onclick="openModal(this)">
-                    <p class="img-caption">Figura 8.1: Estructura de colmenas del Registro en regedit.exe (Haz clic para
+                    <p class="img-caption">Figura 9.1: Estructura de colmenas del Registro en regedit.exe (Haz clic para
                         ampliar)</p>
                 </div>
             </section>
@@ -495,7 +495,7 @@ C:\&gt; gpedit.msc</code></pre>
                 <div class="img-container">
                     <img src="./pictures/sistemadearchivos.png" alt="Comparativa de Sistemas de Archivos NTFS y ReFS"
                         onclick="openModal(this)">
-                    <p class="img-caption">Figura 10.1: Propiedades de volúmenes de disco y asignación de NTFS (Haz clic
+                    <p class="img-caption">Figura 11.1: Propiedades de volúmenes de disco y asignación de NTFS (Haz clic
                         para ampliar)</p>
                 </div>
 
@@ -565,9 +565,177 @@ PS C:\&gt; Get-Volume</code></pre>
                 </div>
             </section>
 
-            <!-- Tema 7: Variables de Entorno -->
+
+            <!-- Tema 7: Estructura de Directorios de Windows -->
             <section class="card-topic">
-                <h2>7. Variables de Entorno en Windows</h2>
+                <h2>7. Estructura de Directorios de Windows 10 y 11</h2>
+                <p>Después de estudiar los sistemas de archivos y las particiones, el siguiente paso es comprender
+                    cómo Windows organiza la información dentro del volumen del sistema, normalmente identificado como
+                    <code>C:\</code>. El árbol de directorios permite relacionar las carpetas con los usuarios,
+                    aplicaciones, componentes del sistema y tareas de mantenimiento.</p>
+
+                <h3>7.1 Árbol principal de directorios</h3>
+                <pre><code>C:\
+│
+├── Boot\
+│   └── Archivos relacionados con el proceso de arranque
+│
+├── EFI\
+│   └── Archivos de arranque UEFI (cuando corresponda)
+│
+├── PerfLogs\
+│   └── Registros de rendimiento
+│
+├── Program Files\
+│   └── Programas instalados de 64 bits
+│
+├── Program Files (x86)\
+│   └── Programas de 32 bits en Windows de 64 bits
+│
+├── ProgramData\
+│   └── Datos compartidos de aplicaciones
+│
+├── Users\
+│   ├── Public\
+│   │   └── Archivos compartidos entre usuarios
+│   │
+│   └── NombreUsuario\
+│       ├── Desktop\
+│       ├── Documents\
+│       ├── Downloads\
+│       ├── Pictures\
+│       ├── Music\
+│       ├── Videos\
+│       └── AppData\
+│           ├── Local\
+│           ├── LocalLow\
+│           └── Roaming\
+│
+├── Windows\
+│   ├── System32\
+│   ├── SysWOW64\
+│   ├── Temp\
+│   ├── Logs\
+│   ├── INF\
+│   ├── Fonts\
+│   ├── SoftwareDistribution\
+│   └── WinSxS\
+│
+└── Recovery\
+    └── Componentes relacionados con recuperación</code></pre>
+
+                <h3>7.2 Directorios fundamentales</h3>
+                <ul>
+                    <li><strong><code>C:\Windows</code>:</strong> contiene los componentes principales del sistema
+                        operativo.</li>
+                    <li><strong><code>C:\Windows\System32</code>:</strong> contiene numerosos componentes, bibliotecas,
+                        ejecutables y herramientas del sistema.</li>
+                    <li><strong><code>C:\Users</code>:</strong> contiene los perfiles de los usuarios del equipo.</li>
+                    <li><strong><code>C:\Users\NombreUsuario\AppData</code>:</strong> almacena datos y configuraciones
+                        de aplicaciones asociados al perfil del usuario.</li>
+                    <li><strong><code>C:\Program Files</code>:</strong> ubicación habitual de aplicaciones instaladas
+                        de 64 bits.</li>
+                    <li><strong><code>C:\Program Files (x86)</code>:</strong> ubicación habitual de aplicaciones de
+                        32 bits en Windows de 64 bits.</li>
+                    <li><strong><code>C:\ProgramData</code>:</strong> almacena datos de aplicaciones que pueden ser
+                        utilizados por diferentes usuarios.</li>
+                    <li><strong><code>C:\Windows\Temp</code>:</strong> contiene archivos temporales utilizados por
+                        componentes y procesos del sistema.</li>
+                    <li><strong><code>C:\Windows\Logs</code>:</strong> contiene diferentes registros generados por
+                        componentes de Windows.</li>
+                </ul>
+
+                <h3>7.3 El perfil de usuario</h3>
+                <pre><code>C:\Users\NombreUsuario\
+│
+├── Desktop\
+├── Documents\
+├── Downloads\
+├── Pictures\
+├── Music\
+├── Videos\
+└── AppData\
+    ├── Local\
+    ├── LocalLow\
+    └── Roaming\</code></pre>
+
+                <p>Esta estructura permite relacionar directamente el tema de <strong>gestión de usuarios</strong>
+                    con el almacenamiento de sus datos. Cada perfil mantiene sus propios documentos, configuraciones
+                    y datos de aplicaciones.</p>
+
+                <h3>7.4 Relación con las variables de entorno</h3>
+                <p>Las variables de entorno permiten acceder a determinadas rutas sin escribirlas manualmente. Por
+                    ejemplo, <code>%SystemRoot%</code> normalmente apunta a <code>C:\Windows</code>, mientras que
+                    <code>%USERPROFILE%</code> apunta al perfil del usuario activo.</p>
+
+                <pre><code>:: CMD
+C:\&gt; echo %SystemRoot%
+C:\Windows
+
+C:\&gt; echo %USERPROFILE%
+C:\Users\NombreUsuario
+
+:: PowerShell
+PS C:\&gt; $env:SystemRoot
+C:\Windows
+
+PS C:\&gt; $env:USERPROFILE
+C:\Users\NombreUsuario</code></pre>
+
+                <h3>7.5 Explorar el árbol desde la consola</h3>
+                <p>El comando <code>tree</code> permite visualizar jerárquicamente las carpetas. Para comenzar la
+                    práctica se recomienda consultar una rama concreta en lugar de mostrar todo el volumen del sistema.</p>
+
+                <pre><code>:: Mostrar las carpetas principales de C:
+C:\&gt; tree C:\ /A
+
+:: Mostrar el árbol de Windows
+C:\&gt; tree C:\Windows /A
+
+:: Mostrar solamente un nivel de profundidad
+C:\&gt; tree C:\Windows /A /F</code></pre>
+
+                <p>También se puede utilizar <code>dir</code> para obtener un listado convencional:</p>
+
+                <pre><code>C:\&gt; dir C:\
+C:\&gt; dir C:\Windows
+C:\&gt; dir C:\Users</code></pre>
+
+                <h3>7.6 Equivalente en PowerShell</h3>
+                <pre><code>PS C:\&gt; Get-ChildItem C:\
+PS C:\&gt; Get-ChildItem C:\Windows
+PS C:\&gt; Get-ChildItem C:\Users</code></pre>
+
+                <h3>7.7 Relación entre el árbol y las herramientas estudiadas</h3>
+                <pre><code>                 C:\
+                  │
+        ┌─────────┼──────────┐
+        │         │          │
+     Windows    Users    Program Files
+        │         │          │
+     System32   Perfil    Aplicaciones
+        │         │
+     Herramientas AppData
+     del sistema   │
+                   └── Datos de aplicaciones
+
+Registro ───────► Configuración del sistema y usuarios
+UAC ────────────► Control de elevación de privilegios
+gpedit.msc ─────► Políticas del sistema y usuarios
+Variables ──────► Acceso dinámico a rutas
+Procesos ───────► Ejecutables y servicios en ejecución
+dxdiag ─────────► Diagnóstico del hardware y DirectX</code></pre>
+
+                <p><strong>Nota de seguridad:</strong> la estructura puede variar según la edición, configuración,
+                    arquitectura y características instaladas. No se deben eliminar ni modificar manualmente archivos
+                    críticos de <code>C:\Windows</code> o de sus subdirectorios sin conocer previamente su función y
+                    contar con un procedimiento de recuperación.</p>
+            </section>
+
+            <!-- Tema 8: Variables de Entorno -->
+
+            <section class="card-topic">
+                <h2>8. Variables de Entorno en Windows</h2>
                 <p>Una <strong>variable de entorno</strong> es un valor dinámico guardado en el sistema operativo que
                     contiene información sobre el entorno de ejecución. Su principal ventaja es la
                     <strong>portabilidad</strong> entre distintos equipos.
@@ -605,15 +773,15 @@ C:\Windows</code></pre>
                 <div class="img-container">
                     <img src="./pictures/variablesdeentorno.jpg"
                         alt="Ventana de configuración de Variables de Entorno en Windows" onclick="openModal(this)">
-                    <p class="img-caption">Figura 7.1: Panel de gestión gráfica de Variables de Entorno al ejecutar el
+                    <p class="img-caption">Figura 8.1: Panel de gestión gráfica de Variables de Entorno al ejecutar el
                         comando <code>rundll32 sysdm.cpl,EditEnvironmentVariables</code> (Haz clic para
                         ampliar)</p>
                 </div>
             </section>
 
-            <!-- Tema 8: Gestión de Procesos e Hilos -->
+            <!-- Tema 9: Gestión de Procesos e Hilos -->
             <section class="card-topic">
-                <h2>8. Administración de Procesos y Servicios</h2>
+                <h2>9. Administración de Procesos y Servicios</h2>
 
                 <h3>5.1 Conceptos de Ejecución</h3>
                 <ul>
@@ -643,9 +811,9 @@ C:\> taskkill /PID 4096 /F</code></pre>
             </section>
 
 
-            <!-- Tema 9: Diagnóstico de Hardware y DirectX -->
+            <!-- Tema 10: Diagnóstico de Hardware y DirectX -->
             <section class="card-topic">
-                <h2>9. Diagnóstico del Sistema con dxdiag</h2>
+                <h2>10. Diagnóstico del Sistema con dxdiag</h2>
                 <p><strong>DxDiag (DirectX Diagnostic Tool)</strong> es una herramienta de Windows que recopila
                     información útil sobre el sistema, DirectX, pantalla, sonido y dispositivos relacionados.
                     Es especialmente práctica para soporte técnico y diagnóstico inicial.</p>
@@ -674,10 +842,10 @@ C:\&gt; dxdiag</code></pre>
                     herramientas específicas de reparación.</p>
             </section>
 
-            <!-- Tema 10: Caso Práctico - Spooler de Impresión -->
+            <!-- Tema 11: Caso Práctico - Spooler de Impresión -->
 
             <section class="card-topic">
-                <h2>10. Práctica de Diagnóstico: Restablecimiento de la Cola de Impresión</h2>
+                <h2>11. Práctica de Diagnóstico: Restablecimiento de la Cola de Impresión</h2>
                 <p>El servicio <strong>Print Spooler</strong> (<code>spoolsv.exe</code>) almacena temporalmente los
                     trabajos de impresión en la memoria intermedia antes de transmitirlos.</p>
 
