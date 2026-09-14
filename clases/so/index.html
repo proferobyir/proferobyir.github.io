@@ -148,6 +148,23 @@
             margin-bottom: 3px;
         }
 
+        .challenge-box {
+            background: rgba(0, 120, 212, 0.08);
+            border: 1px dashed rgba(0, 120, 212, 0.4);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-top: 10px;
+        }
+
+        .challenge-box h4 {
+            color: #58a6ff;
+            margin-top: 0;
+            margin-bottom: 4px;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         code {
             background-color: rgba(110, 118, 129, 0.25);
             padding: 1px 4px;
@@ -359,6 +376,12 @@
 
                 </div>
 
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Investiga con <code>tasklist /v</code> qué proceso de usuario corre bajo el session ID 0 (si
+                        aplica) o identifica qué proceso de sesión interactiva pertenece a tu cuenta actual.</p>
+                </div>
+
             </section>
 
 
@@ -472,6 +495,12 @@ C:\&gt; net localgroup</code></pre>
                     conceder privilegios administrativos solamente cuando
                     sean necesarios.
                 </p>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Crea un usuario local llamado <code>auditor</code>, añádelo únicamente al grupo estándar de
+                        usuarios, y verifica su pertenencia con <code>net localgroup Usuarios</code>.</p>
+                </div>
 
             </section>
 
@@ -709,6 +738,12 @@ C:\&gt; UserAccountControlSettings.exe</code></pre>
                     que controla la elevación de determinadas operaciones.
                 </p>
 
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Abre <code>UserAccountControlSettings.exe</code>, cambia el nivel a notificación estricta y
+                        prueba ejecutar un instalador o consola elevada para ver el comportamiento del UAC.</p>
+                </div>
+
             </section>
 
 
@@ -777,6 +812,13 @@ C:\&gt; gpedit.msc</code></pre>
                     edición y versión de Windows.
                 </p>
 
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Localiza en <code>gpedit.msc</code> una política restrictiva (por ejemplo, ocultar unidades
+                        específicas de Mi PC) y comprueba qué clave de registro se modifica en
+                        <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer</code>.</p>
+                </div>
+
             </section>
 
 
@@ -840,6 +882,18 @@ C:\&gt; gpedit.msc</code></pre>
 
                 </ul>
 
+                <h3>5.3 Tipos de valores fundamentales y Precauciones</h3>
+                <ul>
+                    <li><code>REG_SZ</code>: Cadena de texto estándar.</li>
+                    <li><code>REG_DWORD</code>: Valor entero de 32 bits (binario/decimal para flags o configuraciones
+                        numéricas).</li>
+                    <li><strong>Precauciones:</strong> Una modificación errónea en <code>HKLM\SYSTEM</code> puede
+                        invalidar el arranque del kernel; exporta siempre la rama antes de editar.</li>
+                </ul>
+
+                <pre><code>:: Consultar o crear valor de registro desde CLI (ejemplo básico)
+C:\&gt; reg query "HKCU\Console"</code></pre>
+
                 <div class="img-container">
 
                     <img src="./pictures/regeditwin10.png" alt="Interfaz de Regedit mostrando la estructura HKEY"
@@ -850,6 +904,12 @@ C:\&gt; gpedit.msc</code></pre>
                         regedit.exe (Haz clic para ampliar)
                     </p>
 
+                </div>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Exporta la subclave <code>HKCU\Environment</code> a un archivo <code>backup_env.reg</code> y
+                        añade un valor de prueba tipo <code>REG_SZ</code> llamado <code>LabTest</code>.</p>
                 </div>
 
             </section>
@@ -910,6 +970,17 @@ C:\&gt; gpedit.msc</code></pre>
 
                 </ul>
 
+                <h3>6.2 Diferencia práctica: Permisos Compartidos (Red) vs. Permisos NTFS (Local)</h3>
+                <p>
+                    Los permisos NTFS evalúan el acceso local y de red combinados aplicando la regla de <strong>la
+                        restricción más restrictiva</strong> si se cruzan, mientras que los permisos compartidos (SMB)
+                    aplican al recurso en red. Buenas prácticas: dejar Compartir con acceso Total a <code>Todos</code> o
+                    <code>Authenticated Users</code> y acotar la seguridad real usando listas de control de acceso NTFS.
+                </p>
+                <p>
+                    Comando de gestión de ACLs locales: <code>icacls C:\Logs /grant auditor:(R)</code>
+                </p>
+
                 <div class="img-container">
 
                     <img src="./pictures/sistemadearchivos.png" alt="Comparativa de Sistemas de Archivos NTFS y ReFS"
@@ -923,7 +994,7 @@ C:\&gt; gpedit.msc</code></pre>
                 </div>
 
 
-                <h3>6.2 Estilos de particionado: GPT y MBR</h3>
+                <h3>6.3 Estilos de particionado: GPT y MBR</h3>
 
                 <ul>
 
@@ -942,7 +1013,7 @@ C:\&gt; gpedit.msc</code></pre>
                 </ul>
 
 
-                <h3>6.3 Particiones habituales de una instalación UEFI</h3>
+                <h3>6.4 Particiones habituales de una instalación UEFI</h3>
 
                 <ul>
 
@@ -974,7 +1045,7 @@ C:\&gt; gpedit.msc</code></pre>
                 </ul>
 
 
-                <h3>6.4 Ejemplo conceptual del disco</h3>
+                <h3>6.5 Ejemplo conceptual del disco</h3>
 
                 <pre><code>Disco GPT (UEFI)
 
@@ -990,7 +1061,7 @@ NTFS / FAT32 / exFAT / ReFS → organizan datos dentro de un volumen
 GPT / MBR → describen cómo se particiona el disco</code></pre>
 
 
-                <h3>6.5 Herramientas de Windows para consultar discos</h3>
+                <h3>6.6 Herramientas de Windows para consultar discos</h3>
 
                 <ul>
 
@@ -1047,6 +1118,13 @@ PS C:\&gt; Get-Volume</code></pre>
                         (Haz clic para ampliar)
                     </p>
 
+                </div>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Crea la carpeta <code>C:\Logs</code>, asigna permisos de lectura al usuario <code>auditor</code>
+                        usando <code>icacls C:\Logs /grant auditor:(R)</code> y prueba escribir un archivo dentro para
+                        verificar denegación o UAC según corresponda.</p>
                 </div>
 
             </section>
@@ -1292,6 +1370,12 @@ dxdiag ─────────► Diagnóstico del hardware y DirectX</code>
                     función y contar con un procedimiento de recuperación.
                 </p>
 
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Usa <code>tree %userprofile% /A</code> desde CMD para auditar el contenido de tu perfil de
+                        usuario sin interactuar con la interfaz gráfica.</p>
+                </div>
+
             </section>
 
 
@@ -1336,7 +1420,7 @@ dxdiag ─────────► Diagnóstico del hardware y DirectX</code>
 
                     <li>
                         <code>%systemroot%</code> /
-                        <code>$env:SystemRoot</code>:
+                        <code>$env:SystemRoot%</code>:
                         directorio de instalación de Windows.
                     </li>
 
@@ -1361,17 +1445,24 @@ dxdiag ─────────► Diagnóstico del hardware y DirectX</code>
                     <li>
                         <code>%PATH%</code> /
                         <code>$env:PATH</code>:
-                        rutas utilizadas para la búsqueda de comandos.
+                        rutas utilizadas para la búsqueda de binarios y resolución de comandos en la CLI sin ruta
+                        absoluta.
                     </li>
 
                 </ul>
 
 
-                <pre><code>:: Consultar el valor de una variable en CMD
+                <pre><code>:: Listar todas las variables de entorno
+C:\&gt; set
+
+:: Consultar el valor de una variable en CMD
 
 C:\&gt; echo %systemroot%
 
 C:\Windows
+
+:: Modificar temporalmente / añadir ruta al PATH en sesión CMD
+C:\&gt; set PATH=%PATH%;C:\MiHerramienta
 
 :: Consultar el valor de una variable en PowerShell
 
@@ -1394,6 +1485,13 @@ C:\Windows</code></pre>
 
                 </div>
 
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Agrega un directorio personalizado <code>C:\ScriptsLab</code> al <code>PATH</code> del sistema y
+                        verifica con <code>where mi_script</code> si el ejecutable es localizado desde cualquier ruta de
+                        CMD.</p>
+                </div>
+
             </section>
 
 
@@ -1403,7 +1501,7 @@ C:\Windows</code></pre>
 
             <section class="card-topic">
 
-                <h2>9. Administración de Procesos y Servicios</h2>
+                <h2>9. Administración de Procesos, Servicios y Tareas</h2>
 
                 <h3>9.1 Conceptos de Ejecución</h3>
 
@@ -1411,7 +1509,12 @@ C:\Windows</code></pre>
 
                     <li>
                         <strong>Proceso:</strong>
-                        instancia de un programa con memoria virtual privada.
+                        instancia de un programa con espacio de memoria virtual privada. Un <em>proceso interactivo</em>
+                        se enlaza a una sesión de escritorio visible para el usuario (Session ID > 0), mientras que un
+                        <em>servicio de Windows</em> corre en background controlado por el SCM (Service Control Manager,
+                        Session ID 0) sin interacción directa con GUI de sesión. Una <em>tarea programada</em>
+                        (<code>taskschd.msc</code>) es un job o disparador temporal/condicional administrado por el Task
+                        Scheduler.
                     </li>
 
                     <li>
@@ -1427,7 +1530,7 @@ C:\Windows</code></pre>
                 </ul>
 
 
-                <h3>9.2 Controladores y Herramientas CLI</h3>
+                <h3>9.2 Controladores y Herramientas CLI / GUI</h3>
 
                 <pre><code>:: Listar procesos activos con PID
 
@@ -1439,7 +1542,15 @@ C:\&gt; taskkill /IM nombre_proceso.exe /F
 
 :: Finalizar un proceso por PID
 
-C:\&gt; taskkill /PID 4096 /F</code></pre>
+C:\&gt; taskkill /PID 4096 /F
+
+:: Administrar servicios con SC (Service Control)
+C:\&gt; sc query wuauserv
+C:\&gt; sc stop wuauserv
+
+:: Abrir monitor de recursos avanzado
+C:\&gt; resmon
+C:\&gt; taskschd.msc</code></pre>
 
 
                 <div class="img-container">
@@ -1453,6 +1564,14 @@ C:\&gt; taskkill /PID 4096 /F</code></pre>
                         (Haz clic para ampliar)
                     </p>
 
+                </div>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Identifica un servicio inactivo con <code>sc query type= service</code>, levántalo con
+                        <code>sc start &lt;nombre&gt;</code> y crea una tarea programada simple con
+                        <code>schtasks</code> que ejecute <code>calc.exe</code> o un comando de diagnóstico a una hora
+                        específica.</p>
                 </div>
 
             </section>
@@ -1526,6 +1645,13 @@ C:\&gt; dxdiag</code></pre>
                     con procesos, servicios, controladores y herramientas
                     específicas de reparación.
                 </p>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Exporta el reporte de diagnóstico de <code>dxdiag</code> mediante CLI silenciosa o interfaz
+                        gráfica y contrasta la versión de WDDM del controlador de video con la memoria dedicada
+                        reportada.</p>
+                </div>
 
             </section>
 
@@ -1625,6 +1751,13 @@ PS C:\&gt; Start-Service -Name "Spooler"</code></pre>
                         (Haz clic para ampliar)
                     </p>
 
+                </div>
+
+                <div class="challenge-box">
+                    <h4>Reto de laboratorio</h4>
+                    <p>Simula un documento atascado enviando un archivo fantasma o generando un archivo temporal manual
+                        en <code>PRINTERS\</code>, ejecuta el script de purga automatizada en CMD y verifica el estado
+                        con <code>sc query spooler</code>.</p>
                 </div>
 
             </section>
