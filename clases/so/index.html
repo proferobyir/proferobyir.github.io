@@ -318,9 +318,123 @@
                 </div>
             </section>
 
-            <!-- Tema 2: El Registro de Windows y Regedit -->
+
+            <!-- Tema 2: Gestión de Usuarios, Cuentas y Privilegios -->
             <section class="card-topic">
-                <h2>2. El Registro de Windows y Editor Regedit</h2>
+                <h2>2. Gestión de Usuarios, Cuentas y Privilegios en Windows 10 y 11</h2>
+                <p>La administración de usuarios permite controlar quién puede iniciar sesión, qué recursos puede utilizar
+                    y qué nivel de privilegio posee dentro del equipo. En Windows 10 y 11 conviene conocer tanto las
+                    herramientas gráficas como los comandos de administración.</p>
+
+                <h3>2.1 Tipos de cuentas</h3>
+                <ul>
+                    <li><strong>Cuenta de administrador:</strong> puede realizar cambios que afectan a todo el equipo,
+                        instalar software, administrar usuarios y modificar configuraciones protegidas.</li>
+                    <li><strong>Cuenta estándar:</strong> está orientada al uso cotidiano y tiene restricciones para
+                        realizar cambios que afecten al sistema.</li>
+                    <li><strong>Cuenta Microsoft:</strong> permite iniciar sesión utilizando una identidad Microsoft y
+                        puede integrarse con servicios en línea.</li>
+                    <li><strong>Cuenta local:</strong> existe directamente en el equipo y no requiere una identidad
+                        Microsoft para iniciar sesión.</li>
+                </ul>
+
+                <h3>2.2 Herramientas para administrar usuarios</h3>
+                <ul>
+                    <li><strong>Configuración &gt; Cuentas:</strong> administración gráfica de usuarios, opciones de inicio
+                        de sesión y otros ajustes relacionados con las cuentas.</li>
+                    <li><strong>Panel de control:</strong> ofrece herramientas clásicas de administración de cuentas.</li>
+                    <li><strong>Usuarios y grupos locales:</strong> <code>lusrmgr.msc</code>, disponible principalmente en
+                        ediciones Pro, Enterprise y equivalentes; permite administrar usuarios y grupos locales.</li>
+                    <li><strong>CMD:</strong> <code>net user</code> y <code>net localgroup</code> permiten consultar y
+                        administrar cuentas y grupos desde la consola.</li>
+                </ul>
+
+                <h3>2.3 Comandos básicos de práctica</h3>
+                <pre><code>:: Listar usuarios locales
+C:\&gt; net user
+
+:: Consultar un usuario
+C:\&gt; net user NombreUsuario
+
+:: Crear un usuario local (requiere privilegios administrativos)
+C:\&gt; net user Soporte /add
+
+:: Agregar un usuario al grupo de administradores
+C:\&gt; net localgroup Administradores Soporte /add
+
+:: Listar grupos locales
+C:\&gt; net localgroup</code></pre>
+
+                <p><strong>Buenas prácticas:</strong> utilizar cuentas estándar para las tareas cotidianas y conceder
+                    privilegios administrativos solamente cuando sean necesarios.</p>
+            </section>
+
+            <!-- Tema 3: UAC y control de elevación -->
+            <section class="card-topic">
+                <h2>3. UAC y Control de Cuentas de Usuario</h2>
+                <p><strong>UAC (User Account Control)</strong> es el mecanismo de Windows que solicita confirmación o
+                    credenciales cuando una acción requiere elevación de privilegios. Su objetivo es evitar que cambios
+                    administrativos se ejecuten silenciosamente.</p>
+
+                <h3>3.1 ¿Qué es <code>userpasswords2</code>?</h3>
+                <p>El comando <code>control userpasswords2</code> abre el cuadro clásico de <strong>Cuentas de usuario</strong>.
+                    Es una herramienta útil para gestionar determinados aspectos de las cuentas y de inicio de sesión
+                    automático. No debe confundirse con UAC: son funciones diferentes.</p>
+
+                <pre><code>:: Abrir Cuentas de usuario avanzadas
+C:\&gt; control userpasswords2</code></pre>
+
+                <h3>3.2 Funcionamiento práctico del UAC</h3>
+                <ul>
+                    <li>Una aplicación que necesita privilegios administrativos puede solicitar elevación.</li>
+                    <li>Un usuario administrador normalmente confirma la operación mediante un aviso de UAC.</li>
+                    <li>Una cuenta estándar puede necesitar proporcionar credenciales de administrador.</li>
+                    <li>Desactivar o reducir excesivamente UAC disminuye una capa importante de protección.</li>
+                </ul>
+
+                <h3>3.3 Acceso a la configuración de UAC</h3>
+                <pre><code>:: Abrir la configuración clásica de UAC
+C:\&gt; UserAccountControlSettings.exe</code></pre>
+
+                <p><strong>Objetivo de aprendizaje:</strong> comprender la diferencia entre una cuenta con privilegios
+                    administrativos, la elevación temporal mediante UAC y la administración clásica de cuentas.</p>
+            </section>
+
+            <!-- Tema 4: Directivas de Grupo -->
+            <section class="card-topic">
+                <h2>4. Directivas de Grupo con gpedit.msc</h2>
+                <p>El <strong>Editor de directivas de grupo local</strong> permite configurar numerosas políticas del
+                    sistema y del usuario. Es especialmente útil para aprender cómo Windows centraliza reglas de
+                    configuración y seguridad.</p>
+
+                <h3>4.1 Abrir el Editor de directivas de grupo</h3>
+                <pre><code>:: Abrir el Editor de directivas de grupo local
+C:\&gt; gpedit.msc</code></pre>
+
+                <h3>4.2 Estructura básica</h3>
+                <ul>
+                    <li><strong>Configuración del equipo:</strong> políticas aplicadas al equipo, independientemente del
+                        usuario que inicie sesión.</li>
+                    <li><strong>Configuración de usuario:</strong> políticas relacionadas con el usuario y su entorno.</li>
+                    <li>Dentro de ambas ramas se encuentran <strong>Configuración de software</strong>,
+                        <strong>Configuración de Windows</strong> y <strong>Plantillas administrativas</strong>,
+                        según la directiva disponible.</li>
+                </ul>
+
+                <h3>4.3 Relación entre Registro y Directivas de Grupo</h3>
+                <p>Muchas directivas terminan produciendo configuraciones que Windows almacena o utiliza mediante el
+                    Registro. Por eso resulta didácticamente conveniente estudiar primero la arquitectura y las cuentas,
+                    después UAC y <code>gpedit.msc</code>, y posteriormente profundizar en <code>regedit.exe</code>.</p>
+
+                <p><strong>Importante:</strong> <code>gpedit.msc</code> no está disponible de forma predeterminada en
+                    algunas ediciones, como Windows Home. Las políticas disponibles también pueden variar según la
+                    edición y versión de Windows.</p>
+            </section>
+
+            <!-- Tema 5: El Registro de Windows y Regedit -->
+
+            <section class="card-topic">
+                <h2>5. El Registro de Windows y Editor Regedit</h2>
                 <p>El <strong>Registro de Windows</strong> es una base de datos jerárquica centralizada donde el sistema
                     operativo guarda la configuración del hardware, controladores, programas instalados y preferencias
                     de usuario.</p>
@@ -348,14 +462,14 @@
                 <div class="img-container">
                     <img src="./pictures/regeditwin10.png" alt="Interfaz de Regedit mostrando la estructura HKEY"
                         onclick="openModal(this)">
-                    <p class="img-caption">Figura 2.1: Estructura de colmenas del Registro en regedit.exe (Haz clic para
+                    <p class="img-caption">Figura 8.1: Estructura de colmenas del Registro en regedit.exe (Haz clic para
                         ampliar)</p>
                 </div>
             </section>
 
-            <!-- Tema 3: Sistemas de Archivos y Particiones en Windows -->
+            <!-- Tema 6: Sistemas de Archivos y Particiones en Windows -->
             <section class="card-topic">
-                <h2>3. Sistemas de Archivos y Particiones en Windows 10 y 11</h2>
+                <h2>6. Sistemas de Archivos y Particiones en Windows 10 y 11</h2>
                 <p>En Windows conviene distinguir dos conceptos: el <strong>sistema de archivos</strong> organiza los
                     datos dentro de un volumen, mientras que el <strong>esquema o estilo de particionado</strong>
                     define cómo se distribuyen las particiones en el disco.</p>
@@ -381,7 +495,7 @@
                 <div class="img-container">
                     <img src="./pictures/sistemadearchivos.png" alt="Comparativa de Sistemas de Archivos NTFS y ReFS"
                         onclick="openModal(this)">
-                    <p class="img-caption">Figura 3.1: Propiedades de volúmenes de disco y asignación de NTFS (Haz clic
+                    <p class="img-caption">Figura 10.1: Propiedades de volúmenes de disco y asignación de NTFS (Haz clic
                         para ampliar)</p>
                 </div>
 
@@ -445,15 +559,15 @@ PS C:\&gt; Get-Volume</code></pre>
                     <img src="./pictures/administradordediscos.png"
                         alt="Mapa visual de sistemas de archivos y particiones en Windows 10 y 11"
                         onclick="openModal(this)">
-                    <p class="img-caption">Figura 3.2: Sistemas de archivos, GPT/MBR y particiones habituales en
+                    <p class="img-caption">Figura 6.2: Sistemas de archivos, GPT/MBR y particiones habituales en
                         Windows 10/11 luego de ejecutar el comando <code>diskmgmt.msc</code>
                         (Haz clic para ampliar)</p>
                 </div>
             </section>
 
-            <!-- Tema 4: Variables de Entorno -->
+            <!-- Tema 7: Variables de Entorno -->
             <section class="card-topic">
-                <h2>4. Variables de Entorno en Windows</h2>
+                <h2>7. Variables de Entorno en Windows</h2>
                 <p>Una <strong>variable de entorno</strong> es un valor dinámico guardado en el sistema operativo que
                     contiene información sobre el entorno de ejecución. Su principal ventaja es la
                     <strong>portabilidad</strong> entre distintos equipos.
@@ -491,15 +605,15 @@ C:\Windows</code></pre>
                 <div class="img-container">
                     <img src="./pictures/variablesdeentorno.jpg"
                         alt="Ventana de configuración de Variables de Entorno en Windows" onclick="openModal(this)">
-                    <p class="img-caption">Figura 4.1: Panel de gestión gráfica de Variables de Entorno al ejecutar el
+                    <p class="img-caption">Figura 7.1: Panel de gestión gráfica de Variables de Entorno al ejecutar el
                         comando <code>rundll32 sysdm.cpl,EditEnvironmentVariables</code> (Haz clic para
                         ampliar)</p>
                 </div>
             </section>
 
-            <!-- Tema 5: Gestión de Procesos e Hilos -->
+            <!-- Tema 8: Gestión de Procesos e Hilos -->
             <section class="card-topic">
-                <h2>5. Administración de Procesos y Servicios</h2>
+                <h2>8. Administración de Procesos y Servicios</h2>
 
                 <h3>5.1 Conceptos de Ejecución</h3>
                 <ul>
@@ -522,15 +636,48 @@ C:\> taskkill /PID 4096 /F</code></pre>
                 <div class="img-container">
                     <img src="./pictures//tasklisttaskmgr.png"
                         alt="Administrador de Tareas y consola ejecutando tasklist" onclick="openModal(this)">
-                    <p class="img-caption">Figura 5.1: Administración de procesos interactiva tasklist y taskmgr por CLI
+                    <p class="img-caption">Figura 8.1: Administración de procesos interactiva tasklist y taskmgr por CLI
                         (Haz clic para
                         ampliar)</p>
                 </div>
             </section>
 
-            <!-- Tema 6: Caso Práctico - Spooler de Impresión -->
+
+            <!-- Tema 9: Diagnóstico de Hardware y DirectX -->
             <section class="card-topic">
-                <h2>6. Práctica de Diagnóstico: Restablecimiento de la Cola de Impresión</h2>
+                <h2>9. Diagnóstico del Sistema con dxdiag</h2>
+                <p><strong>DxDiag (DirectX Diagnostic Tool)</strong> es una herramienta de Windows que recopila
+                    información útil sobre el sistema, DirectX, pantalla, sonido y dispositivos relacionados.
+                    Es especialmente práctica para soporte técnico y diagnóstico inicial.</p>
+
+                <h3>9.1 Abrir DxDiag</h3>
+                <pre><code>:: Ejecutar el diagnóstico de DirectX
+C:\&gt; dxdiag</code></pre>
+
+                <h3>9.2 Información que se puede revisar</h3>
+                <ul>
+                    <li><strong>Sistema:</strong> versión de Windows, fabricante y modelo del equipo, BIOS/UEFI,
+                        procesador, memoria y versión de DirectX.</li>
+                    <li><strong>Pantalla / Display:</strong> información del adaptador gráfico, memoria de vídeo,
+                        resolución y controladores.</li>
+                    <li><strong>Sonido / Sound:</strong> dispositivos de audio y controladores asociados.</li>
+                    <li><strong>Entrada / Input:</strong> dispositivos de entrada detectados por el sistema.</li>
+                </ul>
+
+                <h3>9.3 Guardar un informe</h3>
+                <p>Desde la ventana de DxDiag se puede utilizar <strong>“Guardar toda la información…”</strong> para
+                    generar un archivo de texto que facilita compartir las características del equipo durante una
+                    asistencia técnica.</p>
+
+                <p><strong>Secuencia de diagnóstico:</strong> primero identificar el sistema y sus componentes con
+                    <code>dxdiag</code>; después relacionar esa información con procesos, servicios, controladores y
+                    herramientas específicas de reparación.</p>
+            </section>
+
+            <!-- Tema 10: Caso Práctico - Spooler de Impresión -->
+
+            <section class="card-topic">
+                <h2>10. Práctica de Diagnóstico: Restablecimiento de la Cola de Impresión</h2>
                 <p>El servicio <strong>Print Spooler</strong> (<code>spoolsv.exe</code>) almacena temporalmente los
                     trabajos de impresión en la memoria intermedia antes de transmitirlos.</p>
 
@@ -563,7 +710,7 @@ PS C:\> Start-Service -Name "Spooler"</code></pre>
                 <div class="img-container">
                     <img src="./pictures/consolaservicioswin.png"
                         alt="Consola de Servicios services.msc y detención del Spooler" onclick="openModal(this)">
-                    <p class="img-caption">Figura 6.1: Consola de servicios (services.msc) ajustando la Cola de
+                    <p class="img-caption">Figura 10.1: Consola de servicios (services.msc) ajustando la Cola de
                         Impresión (Haz clic para ampliar)</p>
                 </div>
             </section>
