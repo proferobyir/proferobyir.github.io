@@ -7,8 +7,8 @@
     <title>Clase Completa: VLANs y Puertos Trunk con Ejercicio Práctico</title>
     <style>
         /* ==========================================
-           1. ESTILOS BASE Y MOBILE-FIRST (Móviles)
-           ========================================== */
+            1. ESTILOS BASE Y MOBILE-FIRST (Móviles)
+            ========================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -194,8 +194,8 @@
         }
 
         /* ==========================================
-           2. MEDIA QUERIES (Tablets y Desktops)
-           ========================================== */
+            2. MEDIA QUERIES (Tablets y Desktops)
+            ========================================== */
         @media (min-width: 600px) {
             header h1 {
                 font-size: 2.2rem;
@@ -288,10 +288,22 @@
                 servidores IP o cámaras. Todo tráfico que entra sin etiquetar (untagged) es asignado automáticamente por
                 el switch a la VLAN configurada en ese puerto.</p>
 
-            <h3>4.2 Puertos Troncales (Trunk Ports)</h3>
-            <p>Transportan tráfico de <strong>múltiples VLANs</strong> a través de un solo enlace físico (por ejemplo,
-                el enlace inter-switch entre Switch A y Switch B). Para que el switch receptor sepa a qué VLAN pertenece
-                cada trama, se utiliza un estándar de etiquetado.</p>
+            <h3>4.2 ¿Qué es un Puerto Trunk (Troncal)? — Definición Profunda</h3>
+            <p>Imagina una autopista con varios carriles lógicos donde circulan vehículos de diferentes colores (VLAN
+                10, VLAN 20, VLAN 30). Un <strong>puerto Trunk</strong> es un enlace de alta capacidad (generalmente
+                1Gbps o 10Gbps) que actúa como un <em>tubo multiplexor o troncal compartido</em>.</p>
+            <p><strong>Definición técnica:</strong> Es un puerto configurado para transportar tráfico de
+                <strong>múltiples VLANs simultáneamente</strong> a través de un solo cable físico (por ejemplo,
+                interconectando el Switch A con el Switch B, o un Switch con un Router en un esquema Router-on-a-Stick).
+                Para lograrlo, el switch <em>etiqueta (tag)</em> cada trama saliente para que el equipo receptor sepa
+                exactamente a qué VLAN pertenece, y la <em>desetiqueta (untag)</em> al salir hacia un puerto de acceso.
+            </p>
+            <div class="note-box">
+                <p><strong>Analogía rápida:</strong> El puerto Access es como la puerta exclusiva de una oficina (sólo
+                    entran los de contabilidad). El puerto Trunk es como el <em>ascensor principal del edificio</em> por
+                    el que suben empleados de todos los pisos mezclados, pero cada uno lleva una tarjeta visible (tag)
+                    que indica a qué piso pertenece.</p>
+            </div>
 
             <h3>4.3 Encapsulamiento: IEEE 802.1Q (Dot1Q)</h3>
             <p>Es el estándar industrial abierto (en desuso ISL de Cisco, hoy universalmente 802.1Q). Inserta una
@@ -387,77 +399,60 @@
             <h3>Paso 2: Comandos CLI para crear 3 VLANs y asignar puertos</h3>
             <p>Copiaremos y entenderemos la siguiente configuración en nuestra terminal de Packet Tracer:</p>
             <div class="cli-box">
-                <pre>
-                <code>
-                <span class="cli-comment"># Acceder al modo privilegiado y luego al de configuración global</span>
-                <span class="cli-prompt">Switch></span> <span class="cli-cmd">enable</span>
-                <span class="cli-prompt">Switch#</span> <span class="cli-cmd">configure terminal</span>
-                <span class="cli-prompt">Switch(config)#</span> <span class="cli-cmd">hostname SW-CORE</span>
+                <pre><code><span class="cli-comment">! Acceder al modo privilegiado y configuración</span>
+<span class="cli-prompt">Switch></span> <span class="cli-cmd">enable</span>
+<span class="cli-prompt">Switch#</span> <span class="cli-cmd">configure terminal</span>
+<span class="cli-prompt">Switch(config)#</span> <span class="cli-cmd">hostname SW-CORE</span>
 
-                <span class="cli-comment"># 1. Crear las 3 VLANs y asignarles un nombre</span>
-                <span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">vlan 10</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name FINANZAS</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">vlan 20</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name DESARROLLO</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">vlan 30</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name INVITADOS</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">exit</span>
+<span class="cli-comment">! 1. Crear las 3 VLANs y asignarles un nombre</span>
+<span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">vlan 10</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name FINANZAS</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">vlan 20</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name DESARROLLO</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">vlan 30</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name INVITADOS</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">exit</span>
 
-                <span class="cli-comment"># 2. Asignar los puertos a sus respectivas VLANs (Puertos de Acceso)</span>
-                <span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface fastethernet 0/1</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode access</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport access vlan
-                    10</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">exit</span>
+<span class="cli-comment">! 2. Asignar los puertos a sus respectivas VLANs</span>
+<span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface fastethernet 0/1</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode access</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport access vlan 10</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">exit</span>
 
-                <span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface fastethernet 0/2</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode access</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport access vlan
-                    20</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">exit</span>
+<span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface fastethernet 0/2</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode access</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport access vlan 20</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">exit</span>
 
-                <span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface fastethernet 0/3</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode access</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport access vlan
-                    30</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">exit</span> 
-                </code>
-            </pre>
+<span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface fastethernet 0/3</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode access</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport access vlan 30</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">exit</span></code></pre>
             </div>
 
             <h3>Paso 3: Configurar puerto Trunk y Native VLAN</h3>
             <p>Para interconectar este switch con otro dispositivo, configuramos <code>GigabitEthernet0/1</code> como
                 Trunk:</p>
             <div class="cli-box">
-                <pre>
-                <code>
-                <span class="cli-comment"># Crear la VLAN 99 para usarla como Nativa (Buena práctica de
-                    seguridad)</span>
-                <span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">vlan 99</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name NATIVE_SEGURO</span>
-                <span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">exit</span>
+                <pre><code><span class="cli-comment">! Crear la VLAN 99 para usarla como Nativa (Buena práctica de seguridad)</span>
+<span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">vlan 99</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">name NATIVE_SEGURO</span>
+<span class="cli-prompt">SW-CORE(config-vlan)#</span> <span class="cli-cmd">exit</span>
 
-                <span class="cli-comment"># Configurar GigabitEthernet 0/1</span>
-                <span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface gigabitethernet
-                    0/1</span>
-                <span class="cli-comment"># (Nota: En el Switch 2960 de Packet Tracer, Dot1Q es el único protocolo
-                    soportado, por lo que no requiere el comando de encapsulación previo).</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode trunk</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport trunk native vlan
-                    99</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport trunk allowed vlan
-                    10,20,30,99</span>
-                <span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">end</span>
-                </code>
-                </pre>
+<span class="cli-comment">! Configurar GigabitEthernet 0/1 como Troncal</span>
+<span class="cli-prompt">SW-CORE(config)#</span> <span class="cli-cmd">interface gigabitethernet 0/1</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport mode trunk</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport trunk native vlan 99</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">switchport trunk allowed vlan 10,20,30,99</span>
+<span class="cli-prompt">SW-CORE(config-if)#</span> <span class="cli-cmd">end</span></code></pre>
             </div>
 
             <h3>Paso 4: Verificación de la configuración</h3>
             <p>Utiliza los siguientes comandos en modo privilegiado para asegurarte de que tus VLANs y Trunk funcionan:
             </p>
             <div class="cli-box">
-                <span class="cli-prompt">SW-CORE#</span> <span class="cli-cmd">show vlan brief</span>
-                <span class="cli-prompt">SW-CORE#</span> <span class="cli-cmd">show interfaces trunk</span>
+                <pre><code><span class="cli-prompt">SW-CORE#</span> <span class="cli-cmd">show vlan brief</span>
+<span class="cli-prompt">SW-CORE#</span> <span class="cli-cmd">show interfaces trunk</span></code></pre>
             </div>
 
             <p><strong>Verificación esperada en el simulador:</strong></p>
