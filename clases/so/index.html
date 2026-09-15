@@ -1587,7 +1587,7 @@ C:\&gt; taskschd.msc</code></pre>
             </section>
 
             <!-- ===================================================== -->
-            <!-- TEMA 9.3: SEMÁforos Y OBJETOS DE NÚCLEO (x64)         -->
+            <!-- TEMA 9.3: SEMÁFOROS Y OBJETOS DE NÚCLEO (x64)         -->
             <!-- ===================================================== -->
 
             <section class="card-topic">
@@ -1595,16 +1595,35 @@ C:\&gt; taskschd.msc</code></pre>
                 <h2>9.3 Sincronización con Semáforos y Objetos de Núcleo (x64)</h2>
 
                 <p>
-                    <strong>Analogía didáctica:</strong> Piensa en un
-                    estacionamiento subterráneo de un corporativo x64 con
-                    <strong>4 espacios disponibles</strong>. Los <em>hilos</em>
-                    (vehículos) llegan a la pluma de acceso. Si hay espacios,
-                    el <em>Object Manager del Kernel</em> (vigilante de 64 bits)
-                    levanta el <code>SEMAPHORE_OBJECT</code> (decrementa contador).
-                    Cuando el carro sale, libera un espacio (<code>ReleaseSemaphore</code>).
-                    Si el estacionamiento está lleno, los hilos esperan en cola
-                    sin consumir CPU inútilmente (bloqueados por hardware/kernel).
+                    Hasta ahora hemos visto cómo administrar procesos y servicios. Pero, ¿qué pasa cuando varios hilos
+                    de un mismo programa necesitan acceder al mismo recurso al mismo tiempo? Para evitar conflictos,
+                    Windows utiliza <strong>objetos de sincronización</strong> como los semáforos.
                 </p>
+
+                <h3>9.3.1 Analogía: El Estacionamiento con Capacidad Limitada</h3>
+
+                <p>
+                    Piensa en un estacionamiento subterráneo con <strong>4 espacios disponibles</strong>.
+                    Los <em>hilos</em> son como vehículos que llegan a la pluma de acceso.
+                    El <em>Object Manager del Kernel</em> es el vigilante que controla la entrada.
+                </p>
+
+                <ul>
+                    <li>
+                        Si hay espacios libres, el vigilante levanta la pluma y el vehículo entra. Esto equivale a
+                        <strong>decrementar el contador</strong> del semáforo.
+                    </li>
+                    <li>
+                        Si el estacionamiento está lleno, los vehículos esperan en una fila sin consumir combustible
+                        (CPU). El sistema operativo los mantiene <strong>bloqueados</strong> hasta que se libere un
+                        espacio.
+                    </li>
+                    <li>
+                        Cuando un vehículo sale, libera su espacio. El vigilante entonces permite la entrada al
+                        siguiente vehículo en la fila. Esto equivale a <strong>incrementar el contador</strong> del
+                        semáforo.
+                    </li>
+                </ul>
 
                 <div class="img-container">
 
@@ -1619,50 +1638,81 @@ C:\&gt; taskschd.msc</code></pre>
 
                 </div>
 
-                <h3>Diferencia clave en Windows 10/11 x64</h3>
+                <h3>9.3.2 ¿Cómo se implementa en Windows x64?</h3>
+
+                <p>
+                    En Windows, un semáforo no es una variable común. Es un <strong>objeto de núcleo</strong> gestionado
+                    directamente por el sistema operativo. Para que un programa pueda usarlo, debe solicitar su creación
+                    a través de la API de Windows.
+                </p>
+
+                <p>
+                    En arquitecturas de 64 bits, los <strong>handles</strong> (identificadores) de estos objetos son
+                    valores de 64 bits (8 bytes, tipo <code>ULONG_PTR</code>). Esto permite que el sistema operativo
+                    gestione millones de objetos simultáneamente sin agotar el espacio de direcciones.
+                </p>
+
+                <p>
+                    Las funciones principales que se utilizan son:
+                </p>
+
                 <ul>
                     <li>
-                        <strong>Handles de 64 bits (8 bytes / <code>ULONG_PTR</code>):</strong>
-                        Permiten direccionar millones de objetos de núcleo simultáneos en el espacio de 64 bits del
-                        Executive.
+                        <strong><code>CreateSemaphoreW()</code>:</strong> Crea el semáforo y establece su contador
+                        inicial y máximo.
                     </li>
                     <li>
-                        <strong><code>CreateSemaphoreW()</code>:</strong> Crea o abre el contador atómico de núcleo en
-                        el espacio protegido.
+                        <strong><code>WaitForSingleObject()</code>:</strong> El hilo solicita un espacio. Si el contador
+                        es mayor que cero, se decrementa y el hilo continúa. Si es cero, el hilo se bloquea.
                     </li>
                     <li>
-                        <strong><code>WaitForSingleObject()</code>:</strong> Equivalente a la operación de
-                        espera/bloqueo del hilo en x64.
-                    </li>
-                    <li>
-                        <strong><code>ReleaseSemaphore()</code>:</strong> Incrementa de forma atómica el contador de
-                        permisos libres.
+                        <strong><code>ReleaseSemaphore()</code>:</strong> El hilo libera su espacio, incrementando el
+                        contador de forma atómica.
                     </li>
                 </ul>
 
+                <h3>9.3.3 Ejemplo práctico paso a paso</h3>
+
                 <p>
-                    <strong>Ejemplo práctico Win64 API (C/C++ x64):</strong>
+                    El siguiente código en C++ muestra cómo un hilo utilizaría un semáforo con capacidad para 4 accesos
+                    concurrentes. He añadido comentarios para explicar cada línea.
                 </p>
 
-                <pre><code>// Semáforo con máximo 4 accesos concurrentes en arquitectura x64
+                <pre><code>// 1. Se crea el semáforo. El segundo argumento (4) es el contador inicial.
+//    El tercer argumento (4) es el contador máximo.
+//    El cuarto argumento es un nombre opcional para el objeto.
 HANDLE hSem64 = CreateSemaphoreW(NULL, 4, 4, L"Local\\Win64ParkingSemaphore");
 
+// 2. Se verifica que el semáforo se creó correctamente.
 if (hSem64 != NULL) {
-    // El hilo pide un espacio (Espera atómica x64)
+
+    // 3. El hilo solicita un espacio. Si no hay, se queda esperando (bloqueado).
+    //    La constante INFINITE indica que esperará indefinidamente.
     DWORD dwWait = WaitForSingleObject(hSem64, INFINITE);
-    
-    // ZONA CRÍTICA: Acceso seguro al recurso compartido (ej. buffer x64)
-    
-    // Libera el espacio en el semáforo de núcleo
+
+    // 4. ZONA CRÍTICA: Aquí el hilo accede al recurso compartido de forma segura.
+    //    Por ejemplo, escribir en un archivo o modificar una variable global.
+
+    // 5. Al terminar, el hilo libera su espacio. El contador aumenta en 1.
     ReleaseSemaphore(hSem64, 1, NULL);
+
+    // 6. Se cierra el handle para liberar recursos del sistema.
     CloseHandle(hSem64);
 }</code></pre>
 
+                <p>
+                    <strong>Importante:</strong> Observa que el hilo <em>no</em> se queda dando vueltas comprobando si
+                    hay
+                    espacio (lo que se conoce como <em>busy waiting</em>). El sistema operativo lo duerme y lo despierta
+                    solo cuando hay un espacio disponible. Esto hace que el uso de la CPU sea mucho más eficiente.
+                </p>
+
                 <div class="challenge-box">
                     <h4>Reto de laboratorio x64</h4>
-                    <p>Haz clic en la imagen conceptual, analiza cómo el contador de 64 bits protege la zona crítica, y
-                        usa <code>handle64.exe -p &lt;PID&gt;</code> para comprobar que el objeto <code>Semaphore</code>
-                        aparece registrado con su Handle de 64 bits en el proceso.</p>
+                    <p>Analiza la imagen de la analogía. Luego, investiga cómo se vería el handle de un semáforo en un
+                        proceso real. Puedes usar la herramienta <code>handle64.exe</code> de Sysinternals con el
+                        parámetro <code>-p &lt;PID&gt;</code> para listar los handles de un proceso y buscar un objeto
+                        de tipo <code>Semaphore</code>.</p>
                 </div>
 
             </section>
