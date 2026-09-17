@@ -484,56 +484,150 @@
                             clic para ampliar.</figcaption>
                     </figure>
 
+                    <!-- ===== NUEVA EXPLICACIÓN DIDÁCTICA ===== -->
+
+                    <h3 style="margin-top: 20px;">¿Cómo se "prestan" bits para crear subredes?</h3>
                     <p>
-                        La máscara <code>255.255.255.0</code> también se puede escribir como <code>/24</code>. Otras
-                        máscaras comunes son:
+                        Imagina que la máscara <code>/24</code> es un terreno con 8 bits de host disponibles. Si
+                        necesitamos más subredes, podemos <strong>tomar prestados bits de la porción de host</strong>
+                        y convertirlos en bits de red. Cada bit que prestamos tiene tres consecuencias:
+                    </p>
+
+                    <div class="list-item">
+                        <strong>1.</strong> El prefijo CIDR sube en 1 (por ejemplo, de /24 a /25).
+                    </div>
+                    <div class="list-item">
+                        <strong>2.</strong> La cantidad de subredes posibles se duplica (2¹ = 2 subredes, 2² = 4, etc.).
+                    </div>
+                    <div class="list-item">
+                        <strong>3.</strong> Los hosts disponibles en cada subred se reducen a la mitad.
+                    </div>
+
+                    <p>
+                        Para saber qué número va en el último octeto de la máscara, usamos los valores de cada
+                        posición de bit. Estos valores siempre son los mismos:
                     </p>
 
                     <div class="table-wrapper">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Máscara decimal</th>
-                                    <th>CIDR</th>
-                                    <th>Bits de red</th>
-                                    <th>Bits de host</th>
-                                    <th>Hosts utilizables</th>
+                                    <th>Posición</th>
+                                    <th>1.º</th>
+                                    <th>2.º</th>
+                                    <th>3.º</th>
+                                    <th>4.º</th>
+                                    <th>5.º</th>
+                                    <th>6.º</th>
+                                    <th>7.º</th>
+                                    <th>8.º</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td><strong>Valor</strong></td>
+                                    <td>128</td>
+                                    <td>64</td>
+                                    <td>32</td>
+                                    <td>16</td>
+                                    <td>8</td>
+                                    <td>4</td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p>
+                        Entonces, si prestamos bits, la máscara se construye sumando esos valores de izquierda a
+                        derecha:
+                    </p>
+
+                    <div class="example-box">
+                        <h3>Construyendo la máscara paso a paso</h3>
+                        <p>
+                            <strong>Partimos de /24</strong> → máscara <code>255.255.255.0</code> → 8 bits de host,
+                            254 hosts utilizables.
+                        </p>
+                        <p>
+                            <strong>Prestamos 1 bit (nueva máscara /25)</strong> → sumamos 128 →
+                            <code>255.255.255.128</code>.
+                            Quedan 7 bits de host → 2⁷ − 2 = 126 hosts por subred. Se crean 2 subredes.
+                        </p>
+                        <p>
+                            <strong>Prestamos 2 bits (nueva máscara /26)</strong> → sumamos 128 + 64 = 192 →
+                            <code>255.255.255.192</code>. Quedan 6 bits de host → 2⁶ − 2 = 62 hosts por subred.
+                            Se crean 4 subredes.
+                        </p>
+                        <p>
+                            <strong>Prestamos 3 bits (nueva máscara /27)</strong> → sumamos 128 + 64 + 32 = 224 →
+                            <code>255.255.255.224</code>. Quedan 5 bits de host → 2⁵ − 2 = 30 hosts por subred.
+                            Se crean 8 subredes.
+                        </p>
+                        <p>
+                            <strong>Prestamos 4 bits (nueva máscara /28)</strong> → sumamos 128 + 64 + 32 + 16 = 240 →
+                            <code>255.255.255.240</code>. Quedan 4 bits de host → 2⁴ − 2 = 14 hosts por subred.
+                            Se crean 16 subredes.
+                        </p>
+                    </div>
+
+                    <p>
+                        Ahora la tabla resumen tiene mucho más sentido: cada fila es un paso más en el préstamo de
+                        bits desde la máscara original /24.
+                    </p>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bits prestados</th>
+                                    <th>Máscara decimal</th>
+                                    <th>CIDR</th>
+                                    <th>Bits de host restantes</th>
+                                    <th>Subredes creadas</th>
+                                    <th>Hosts por subred</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>0</td>
                                     <td>255.255.255.0</td>
                                     <td>/24</td>
-                                    <td>24</td>
                                     <td>8</td>
+                                    <td>1</td>
                                     <td>254</td>
                                 </tr>
                                 <tr>
+                                    <td>1</td>
                                     <td>255.255.255.128</td>
                                     <td>/25</td>
-                                    <td>25</td>
                                     <td>7</td>
+                                    <td>2</td>
                                     <td>126</td>
                                 </tr>
                                 <tr>
+                                    <td>2</td>
                                     <td>255.255.255.192</td>
                                     <td>/26</td>
-                                    <td>26</td>
                                     <td>6</td>
+                                    <td>4</td>
                                     <td>62</td>
                                 </tr>
                                 <tr>
+                                    <td>3</td>
                                     <td>255.255.255.224</td>
                                     <td>/27</td>
-                                    <td>27</td>
                                     <td>5</td>
+                                    <td>8</td>
                                     <td>30</td>
                                 </tr>
                                 <tr>
+                                    <td>4</td>
                                     <td>255.255.255.240</td>
                                     <td>/28</td>
-                                    <td>28</td>
                                     <td>4</td>
+                                    <td>16</td>
                                     <td>14</td>
                                 </tr>
                             </tbody>
