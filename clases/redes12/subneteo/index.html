@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clase 2: Introducción al Subneteo Básico - Fundamentos de Gestión de Redes</title>
+    <title>Introducción al Subneteo Básico - Fundamentos de Gestión de Redes</title>
     <style>
         /* Estilos base Mobile-First, fondo blanco, letras oscuras */
         * {
@@ -103,6 +103,12 @@
             color: #0f172a;
         }
 
+        h3 {
+            font-size: 1rem;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
         /* Tarjetas y contenidos */
         p {
             margin-bottom: 12px;
@@ -160,6 +166,76 @@
             color: #0f172a;
         }
 
+        .example-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 14px;
+            border-radius: 8px;
+            margin: 14px 0;
+        }
+
+        .example-box h3 {
+            color: #166534;
+            margin-bottom: 8px;
+        }
+
+        .example-box p {
+            color: #14532d;
+            font-size: 0.9rem;
+        }
+
+        .example-box ul {
+            margin-left: 20px;
+            margin-bottom: 8px;
+            color: #14532d;
+            font-size: 0.9rem;
+        }
+
+        .example-box ul li {
+            margin-bottom: 4px;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #3730a3;
+        }
+
+        .highlight {
+            color: #3730a3;
+            font-weight: 600;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        td {
+            color: #334155;
+        }
+
         /* Pie de página */
         footer {
             text-align: center;
@@ -204,20 +280,67 @@
                 </div>
                 <div>
                     <p>
-                        El <strong>subneteo (subnetworking)</strong> consiste en dividir una red grande de computadoras
-                        en subredes más pequeñas y lógicas. Esto mejora drásticamente el rendimiento de la red y
-                        optimiza la seguridad.
+                        El <strong>subneteo (subnetworking)</strong> es el proceso de dividir una red IP grande en
+                        redes más pequeñas llamadas <strong>subredes</strong>. Cada subred funciona como una red
+                        independiente, con su propia dirección de red, dirección de broadcast y rango de hosts
+                        utilizables.
                     </p>
                     <p>
-                        Imagina una empresa con departamentos de Administración, Ventas y Sistemas. Meter a todos en la
-                        misma red masiva genera saturación por tráfico de difusión (<strong>broadcast</strong>).
-                        Dividirla en subredes aísla el tráfico innecesario.
+                        Esta técnica no es opcional en el diseño de redes modernas: es una necesidad. Una red plana
+                        (sin subnetear) con cientos o miles de dispositivos genera un tráfico de difusión
+                        (<strong>broadcast</strong>) que consume ancho de banda, aumenta la latencia y afecta el
+                        rendimiento general. Además, un solo dominio de broadcast es un punto único de fallo y un
+                        riesgo de seguridad, ya que cualquier dispositivo puede espiar el tráfico de los demás.
                     </p>
+                    <p>
+                        Al subnetear, logramos tres objetivos fundamentales:
+                    </p>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <h3>Reducción de Broadcast</h3>
+                            <p style="font-size: 0.85rem; margin: 0;">Cada subred se convierte en su propio dominio de
+                                broadcast. El tráfico de difusión no atraviesa los routers que separan las subredes,
+                                lo que reduce la congestión.</p>
+                        </div>
+                        <div class="card">
+                            <h3>Seguridad y Control</h3>
+                            <p style="font-size: 0.85rem; margin: 0;">Podemos aplicar políticas de seguridad
+                                diferentes en cada subred (por ejemplo, la subred de Administración puede tener
+                                acceso restringido mientras que la de Invitados está aislada).</p>
+                        </div>
+                        <div class="card">
+                            <h3>Organización Lógica</h3>
+                            <p style="font-size: 0.85rem; margin: 0;">Agrupar dispositivos por función (Ventas,
+                                Sistemas, Administración) facilita la gestión, el diagnóstico de fallos y la
+                                asignación de direcciones.</p>
+                        </div>
+                        <div class="card">
+                            <h3>Optimización de Direcciones</h3>
+                            <p style="font-size: 0.85rem; margin: 0;">Evitamos desperdiciar direcciones IP asignando
+                                bloques ajustados al tamaño real de cada departamento o segmento.</p>
+                        </div>
+                    </div>
 
                     <div class="code-box">
                         <strong style="color: #3730a3; display: block; margin-bottom: 6px;">Estructura de
                             Segmentación</strong>
                         Red Principal (Sin Subnetear) &rarr; [Subred Ventas] | [Subred Admin] | [Subred Sistemas]
+                    </div>
+
+                    <div class="example-box">
+                        <h3>Ejemplo práctico: La empresa sin subneteo</h3>
+                        <p>
+                            Imagina una empresa que usa la red <code>192.168.1.0/24</code> (máscara
+                            <code>255.255.255.0</code>) para los 120 empleados de tres departamentos. Todos comparten
+                            el mismo dominio de broadcast. Cuando un equipo envía una solicitud ARP o un mensaje de
+                            difusión, <strong>los 120 equipos deben procesarlo</strong>, aunque no les corresponda.
+                        </p>
+                        <p>
+                            Si dividimos esa red en tres subredes de 62 hosts cada una (una por departamento),
+                            cada broadcast solo afecta a los equipos de esa subred. El tráfico se reduce
+                            drásticamente y la red se vuelve más eficiente y segura.
+                        </p>
                     </div>
                 </div>
             </section>
@@ -230,28 +353,119 @@
                 </div>
                 <div>
                     <p>
-                        Toda dirección IP trabaja junto a una máscara de subred. Su función es actuar como un filtro
-                        para separar la IP en dos partes:
+                        Toda dirección IP (en IPv4) es un número de 32 bits. Para saber qué parte de esa dirección
+                        identifica a la red y qué parte identifica al host, se utiliza la <strong>máscara de
+                            subred</strong>. La máscara es otro número de 32 bits compuesto por unos (1) seguidos de
+                        ceros (0).
+                    </p>
+                    <p>
+                        Los bits en <strong>1</strong> de la máscara indican la porción de red; los bits en
+                        <strong>0</strong> indican la porción de host. Por ejemplo, la máscara
+                        <code>255.255.255.0</code> en binario es:
+                    </p>
+
+                    <div class="code-box">
+                        11111111.11111111.11111111.00000000
+                    </div>
+
+                    <p>
+                        Es decir, los primeros 24 bits son de red y los últimos 8 bits son de host. Esto se puede
+                        escribir con notación <strong>CIDR</strong> (Classless Inter-Domain Routing) como
+                        <span class="highlight">/24</span>. El número después de la barra indica cuántos bits
+                        pertenecen a la red.
                     </p>
 
                     <div class="grid-2">
                         <div class="card">
                             <h3>Porción de Red</h3>
-                            <p style="font-size: 0.85rem; margin: 0;">Identifica a qué red pertenece el dispositivo.</p>
+                            <p style="font-size: 0.85rem; margin: 0;">Identifica a qué red pertenece el dispositivo.
+                                Todos los equipos de la misma subred comparten esta porción.</p>
                         </div>
                         <div class="card">
                             <h3>Porción de Host</h3>
                             <p style="font-size: 0.85rem; margin: 0;">Identifica al dispositivo o equipo en específico
-                                dentro de esa red.</p>
+                                dentro de esa red. Cada host debe tener una combinación única en esta porción.</p>
                         </div>
                     </div>
 
                     <p>
-                        Por ejemplo, la máscara estándar de clase C <code
-                            style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #3730a3;">255.255.255.0</code>
-                        también se puede escribir con notación CIDR como <strong style="color: #3730a3;">/24</strong>
-                        (indicando que los primeros 24 bits son de red).
+                        La máscara <code>255.255.255.0</code> también se puede escribir como <code>/24</code>. Otras
+                        máscaras comunes son:
                     </p>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Máscara decimal</th>
+                                    <th>CIDR</th>
+                                    <th>Bits de red</th>
+                                    <th>Bits de host</th>
+                                    <th>Hosts utilizables</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>255.255.255.0</td>
+                                    <td>/24</td>
+                                    <td>24</td>
+                                    <td>8</td>
+                                    <td>254</td>
+                                </tr>
+                                <tr>
+                                    <td>255.255.255.128</td>
+                                    <td>/25</td>
+                                    <td>25</td>
+                                    <td>7</td>
+                                    <td>126</td>
+                                </tr>
+                                <tr>
+                                    <td>255.255.255.192</td>
+                                    <td>/26</td>
+                                    <td>26</td>
+                                    <td>6</td>
+                                    <td>62</td>
+                                </tr>
+                                <tr>
+                                    <td>255.255.255.224</td>
+                                    <td>/27</td>
+                                    <td>27</td>
+                                    <td>5</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td>255.255.255.240</td>
+                                    <td>/28</td>
+                                    <td>28</td>
+                                    <td>4</td>
+                                    <td>14</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="example-box">
+                        <h3>Ejemplo: Interpretando una dirección IP</h3>
+                        <p>
+                            Tomemos la dirección <code>192.168.10.130</code> con máscara <code>255.255.255.192</code>
+                            (<code>/26</code>).
+                        </p>
+                        <ul>
+                            <li><strong>Porción de red:</strong> los primeros 26 bits. En decimal, la red es
+                                <code>192.168.10.128</code>.
+                            </li>
+                            <li><strong>Porción de host:</strong> los últimos 6 bits. El valor decimal de esa porción
+                                es 2 (130 - 128 = 2).</li>
+                            <li><strong>Rango de hosts:</strong> desde <code>192.168.10.129</code> hasta
+                                <code>192.168.10.190</code>.
+                            </li>
+                            <li><strong>Broadcast:</strong> <code>192.168.10.191</code>.</li>
+                        </ul>
+                        <p>
+                            Esto significa que esta dirección IP pertenece a la subred <code>192.168.10.128/26</code>,
+                            que tiene 62 hosts utilizables.
+                        </p>
+                    </div>
 
                     <div class="code-box">
                         <span style="color: #3730a3; font-weight: bold;">Bits de RED (Ej: 192.168.1.)</span> | <span
@@ -275,23 +489,118 @@
                     <div class="list-item">
                         <strong>1. Dirección de Red:</strong>
                         <p style="font-size: 0.85rem; margin: 4px 0 0 0;">Es la primera dirección del bloque (el
-                            identificador de la subred, los bits de host en 0). <strong>No se le puede asignar a ningún
-                                equipo.</strong></p>
+                            identificador de la subred, todos los bits de host en 0). <strong>No se le puede asignar a
+                                ningún equipo.</strong> Por ejemplo, en la subred <code>192.168.1.0/24</code>, la
+                            dirección de red es <code>192.168.1.0</code>.</p>
                     </div>
 
                     <div class="list-item">
                         <strong>2. Dirección de Broadcast (Difusión):</strong>
                         <p style="font-size: 0.85rem; margin: 4px 0 0 0;">Es la última dirección del bloque (todos los
-                            bits de host en 1). Se usa para enviar mensajes a todos los equipos de la subred.</p>
+                            bits de host en 1). Se usa para enviar mensajes a todos los equipos de la subred. En la
+                            subred <code>192.168.1.0/24</code>, el broadcast es <code>192.168.1.255</code>.</p>
                     </div>
 
                     <div class="list-item">
                         <strong>3. Direcciones de Hosts Utilizables:</strong>
                         <p style="font-size: 0.85rem; margin: 4px 0 0 0;">Son todas las direcciones que van entre la
-                            dirección de red y la de broadcast. Su fórmula fija es siempre <code
-                                style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #3730a3;">2ⁿ - 2</code>
-                            (donde <em>n</em> es la cantidad de bits asignados a hosts).</p>
+                            dirección de red y la de broadcast. Su fórmula fija es siempre <code>2ⁿ - 2</code>
+                            (donde <em>n</em> es la cantidad de bits asignados a hosts). Se resta 2 porque la
+                            dirección de red y la de broadcast no se pueden asignar a dispositivos.</p>
                     </div>
+
+                    <div class="example-box">
+                        <h3>Ejemplo completo: Subneteo de una red /24 en 4 subredes</h3>
+                        <p>
+                            Partimos de la red <code>192.168.1.0/24</code> (máscara <code>255.255.255.0</code>) y
+                            necesitamos dividirla en 4 subredes iguales.
+                        </p>
+                        <p>
+                            <strong>Paso 1:</strong> Determinar cuántos bits necesitamos prestar. Para 4 subredes,
+                            necesitamos 2 bits (2² = 4). La nueva máscara será /26 (24 + 2 = 26), que en decimal es
+                            <code>255.255.255.192</code>.
+                        </p>
+                        <p>
+                            <strong>Paso 2:</strong> Calcular el tamaño de cada subred. Con 6 bits de host
+                            (32 - 26 = 6), cada subred tiene 2⁶ = 64 direcciones totales, de las cuales 62 son
+                            utilizables.
+                        </p>
+                        <p>
+                            <strong>Paso 3:</strong> Listar las subredes resultantes:
+                        </p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Subred</th>
+                                        <th>Dirección de Red</th>
+                                        <th>Primer Host</th>
+                                        <th>Último Host</th>
+                                        <th>Broadcast</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>192.168.1.0/26</td>
+                                        <td>192.168.1.1</td>
+                                        <td>192.168.1.62</td>
+                                        <td>192.168.1.63</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>192.168.1.64/26</td>
+                                        <td>192.168.1.65</td>
+                                        <td>192.168.1.126</td>
+                                        <td>192.168.1.127</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>192.168.1.128/26</td>
+                                        <td>192.168.1.129</td>
+                                        <td>192.168.1.190</td>
+                                        <td>192.168.1.191</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>192.168.1.192/26</td>
+                                        <td>192.168.1.193</td>
+                                        <td>192.168.1.254</td>
+                                        <td>192.168.1.255</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>
+                            Cada subred tiene 62 hosts utilizables, suficiente para departamentos pequeños o
+                            segmentos específicos. Observa que la dirección de red de una subred es siempre par
+                            (0, 64, 128, 192) y el broadcast es la dirección inmediata anterior a la siguiente
+                            subred.
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h3>Ejemplo: Calcular hosts utilizables con diferentes máscaras</h3>
+                        <p>
+                            Si tenemos una subred <code>/27</code> (máscara <code>255.255.255.224</code>), los bits
+                            de host son 5 (32 - 27 = 5). Aplicando la fórmula:
+                        </p>
+                        <p style="text-align: center; font-weight: bold; color: #166534;">
+                            2⁵ - 2 = 32 - 2 = 30 hosts utilizables
+                        </p>
+                        <p>
+                            Si necesitamos conectar 25 equipos, una subred /27 es suficiente. Si necesitamos 50
+                            equipos, necesitamos al menos una subred /26 (62 hosts). Si necesitamos 100 equipos,
+                            necesitamos una subred /25 (126 hosts).
+                        </p>
+                    </div>
+
+                    <p>
+                        Dominar estos cálculos es esencial para diseñar redes eficientes. La clave está en
+                        practicar la conversión entre decimal, binario y CIDR, y en entender que cada bit que
+                        "prestamos" a la red duplica el número de subredes pero reduce a la mitad los hosts
+                        disponibles en cada una.
+                    </p>
                 </div>
             </section>
 
