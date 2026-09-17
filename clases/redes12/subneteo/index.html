@@ -236,6 +236,87 @@
             color: #334155;
         }
 
+        /* Imagen de referencia */
+        .ref-image {
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .ref-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .ref-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .ref-image figcaption {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: zoom-out;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal img {
+            max-width: 95%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            cursor: default;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background-color: #ffffff;
+            color: #0f172a;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close:hover {
+            background-color: #e2e8f0;
+        }
+
         /* Pie de página */
         footer {
             text-align: center;
@@ -328,6 +409,13 @@
                         Red Principal (Sin Subnetear) &rarr; [Subred Ventas] | [Subred Admin] | [Subred Sistemas]
                     </div>
 
+                    <figure class="ref-image">
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80"
+                            alt="Esquema de segmentación de red en subredes" onclick="openModal(this.src, this.alt)">
+                        <figcaption>Figura 1: Segmentación de una red plana en subredes lógicas. Haz clic para ampliar.
+                        </figcaption>
+                    </figure>
+
                     <div class="example-box">
                         <h3>Ejemplo práctico: La empresa sin subneteo</h3>
                         <p>
@@ -387,6 +475,14 @@
                                 dentro de esa red. Cada host debe tener una combinación única en esta porción.</p>
                         </div>
                     </div>
+
+                    <figure class="ref-image">
+                        <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80"
+                            alt="Representación de una máscara de subred y notación CIDR"
+                            onclick="openModal(this.src, this.alt)">
+                        <figcaption>Figura 2: La máscara de subred separa la porción de red y la porción de host. Haz
+                            clic para ampliar.</figcaption>
+                    </figure>
 
                     <p>
                         La máscara <code>255.255.255.0</code> también se puede escribir como <code>/24</code>. Otras
@@ -509,6 +605,13 @@
                             dirección de red y la de broadcast no se pueden asignar a dispositivos.</p>
                     </div>
 
+                    <figure class="ref-image">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80"
+                            alt="Cálculo de subredes y direcciones de host" onclick="openModal(this.src, this.alt)">
+                        <figcaption>Figura 3: Elementos de una subred: dirección de red, hosts utilizables y broadcast.
+                            Haz clic para ampliar.</figcaption>
+                    </figure>
+
                     <div class="example-box">
                         <h3>Ejemplo completo: Subneteo de una red /24 en 4 subredes</h3>
                         <p>
@@ -613,6 +716,36 @@
         </footer>
 
     </div>
+
+    <!-- Modal para imagen ampliada -->
+    <div class="modal" id="imageModal" onclick="closeModal(event)">
+        <button class="modal-close" onclick="closeModal(event)" aria-label="Cerrar">&times;</button>
+        <img id="modalImage" src="" alt="" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        function openModal(src, alt) {
+            var modal = document.getElementById('imageModal');
+            var modalImg = document.getElementById('modalImage');
+            modalImg.src = src;
+            modalImg.alt = alt;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            var modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Cerrar con la tecla Escape
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeModal(event);
+            }
+        });
+    </script>
 </body>
 
 </html>
