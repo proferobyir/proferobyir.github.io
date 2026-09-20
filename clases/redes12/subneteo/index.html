@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clase Magistral: Subneteo IP y Diseño de Subredes | Profe Robyir</title>
+    <title>Subneteo IP y Diseño de Subredes | Profesor: Ing.Robyir Loreto </title>
     <style>
         /* Estilos base inspirados en el entorno Dark IDE / Carbon (Mobile First) */
         :root {
@@ -173,64 +173,6 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /*Tooltip*/
-        /* Estilos básicos para el elemento contenedor */
-        .tooltip {
-            position: relative;
-            /* Esencial para posicionar el globo */
-            cursor: pointer;
-        }
-
-        /* El cuerpo del globo (se genera con ::after) */
-        .tooltip::after {
-            content: attr(data-tooltip);
-            /* Toma el texto del atributo HTML */
-            position: absolute;
-            bottom: 125%;
-            /* Lo posiciona arriba del elemento */
-            left: 50%;
-            transform: translateX(-50%) scale(0);
-            /* Lo oculta y centra por defecto */
-            transition: transform 0.2s ease-in-out;
-            /* Animación de aparición */
-
-            /* Estilos visuales del globo */
-            background-color: #333;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            white-space: nowrap;
-            /* Evita que el texto se rompa en varias líneas */
-            z-index: 10;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* La pequeña flecha del globo (se genera con ::before) */
-        .tooltip::before {
-            content: "";
-            position: absolute;
-            bottom: 110%;
-            /* Justo debajo del cuerpo del globo */
-            left: 50%;
-            transform: translateX(-50%) scale(0);
-            transition: transform 0.2s ease-in-out;
-
-            /* Truco CSS para crear un triángulo */
-            border-width: 6px;
-            border-style: solid;
-            border-color: #333 transparent transparent transparent;
-            z-index: 10;
-        }
-
-        /* Mostrar el globo y la flecha al pasar el cursor (Hover) */
-        .tooltip:hover::after,
-        .tooltip:hover::before {
-            transform: translateX(-50%) scale(1);
-            /* Lo vuelve visible con su tamaño real */
-        }
-
-        /* Media Queries para pantallas medianas y grandes (Desktop/Tablet) */
         @media (min-width: 768px) {
             body {
                 padding: 24px;
@@ -261,163 +203,187 @@
 <body>
 
     <header>
-        <h1>Guía de Subneteo IPv4</h1>
-        <p>Módulo de Redes Electiva II | Profesor: Ing.Robyir Loreto</p>
+        <h1>Guía de Subneteo IPv4 y Diseño de Redes</h1>
+        <p>Módulo de Redes Electiva II | Profesor: Ing. Robyir Loreto</p>
     </header>
 
     <main>
-        <!-- SECCIÓN 1: ¿QUÉ ES EL SUBNETEO? -->
+        <!-- SECCIÓN 1: CONCEPTOS FUNDAMENTALES Y VALOR DE POSICIÓN -->
         <section>
-            <h2>1. Concepto Fundamental: ¿Qué es el Subneteo?</h2>
-            <p>El <strong>subneteo</strong> (o subredes) es el proceso lógico mediante el cual se divide una red IPv4
-                grande en redes más pequeñas llamadas <strong>subredes</strong>. Esto se logra tomando prestados bits de
-                la porción de host de una dirección IP para asignarlos a la porción de red.</p>
+            <h2>1. Concepto Fundamental y Valor de Posición de los Octetos</h2>
+            <p>El <strong>subneteo</strong> es el proceso lógico para dividir una red IPv4 grande en segmentos más
+                pequeños (subredes), tomando prestados bits de la porción de host[cite: 1].</p>
 
-            <p><strong>¿Por qué es necesario?</strong></p>
+            <h3>Tabla de Posición de los Octetos</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="8">Valor de Posición ($2^7$ al $2^0$)[cite: 1]</th>
+                            <th rowspan="2">Decimal Equivalente</th>
+                        </tr>
+                        <tr>
+                            <th>$2^7$ (128)[cite: 1]</th>
+                            <th>$2^6$ (64)[cite: 1]</th>
+                            <th>$2^5$ (32)[cite: 1]</th>
+                            <th>$2^4$ (16)[cite: 1]</th>
+                            <th>$2^3$ (8)[cite: 1]</th>
+                            <th>$2^2$ (4)[cite: 1]</th>
+                            <th>$2^1$ (2)[cite: 1]</th>
+                            <th>$2^0$ (1)[cite: 1]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td><strong>255</strong>[cite: 1]</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td><strong>192</strong>[cite: 1]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Las 3 Fórmulas Clave</h3>
             <ul>
-                <li><strong>Optimización del espacio de direcciones:</strong> Evita el desperdicio masivo de direcciones
-                    IP en organizaciones que no requieren miles de hosts en un mismo segmento físico.</li>
-                <li><strong>Mejora del rendimiento:</strong> Reduce el tráfico de difusión (<dfn>broadcast</dfn>) al
-                    limitar el tamaño de los dominios de difusión.</li>
-                <li><strong>Control y Seguridad:</strong> Permite aislar departamentos o áreas geográficas dentro de una
-                    misma infraestructura corporativa, facilitando la aplicación de políticas de seguridad.</li>
+                <li><strong>Número de Subredes creadas:</strong> $2^n$ (donde $n$ es la cantidad de bits
+                    prestados)[cite: 1].</li>
+                <li><strong>Hosts por Subred (Totales):</strong> $2^h$ (donde $h$ es la cantidad de bits que quedan para
+                    Host)[cite: 1].</li>
+                <li><strong>Hosts Útiles por Subred:</strong> $2^h - 2$ (se restan 2 porque la primera IP es la
+                    dirección de red y la última es el broadcast)[cite: 1].</li>
             </ul>
         </section>
 
-        <!-- SECCIÓN 2: CLASIFICACIÓN DE REDES -->
+        <!-- SECCIÓN 2: CLASIFICACIÓN DE REDES Y RANGOS PRIVADOS -->
         <section>
-            <h2>2. Clasificación de Redes IPv4 (Clases A, B y C)</h2>
-            <p>Las direcciones IPv4 se dividen tradicionalmente en clases según el tamaño de la organización a la que
-                van destinadas. Cada clase define cuántos bits se utilizan para identificar la red y cuántos para los
-                hosts (dispositivos).</p>
+            <h2>2. Clases de Redes IPv4 y Rangos Privados (RFC 1918)</h2>
+            <p>Las direcciones IPv4 se dividen en públicas (ruteables en Internet) y privadas (utilizadas exclusivamente
+                en redes locales LAN)[cite: 2].</p>
 
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Clase</th>
-                            <th>Rango de IPs (Primer Octeto)</th>
-                            <th>Máscara por Defecto</th>
-                            <th>Uso Recomendado</th>
+                            <th>Rango IP Privada</th>
+                            <th>Máscara / CIDR</th>
+                            <th>Bloques / Subredes Disponibles</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Clase A</strong></td>
-                            <td>1.0.0.0 a 126.0.0.0</td>
-                            <td>255.0.0.0 (/8)</td>
-                            <td>Grandes corporaciones, multinacionales y proveedores de servicios de internet (ISP).
-                            </td>
+                            <td>10.0.0.0 – 10.255.255.255[cite: 4]</td>
+                            <td>255.0.0.0 /8[cite: 4]</td>
+                            <td>1 red /8 grande (16.7M de hosts)[cite: 4]</td>
                         </tr>
                         <tr>
                             <td><strong>Clase B</strong></td>
-                            <td>128.0.0.0 a 191.255.0.0</td>
-                            <td>255.255.0.0 (/16)</td>
-                            <td>Medianas y grandes empresas, universidades e instituciones gubernamentales.</td>
+                            <td>172.16.0.0 – 172.31.255.255[cite: 4]</td>
+                            <td>255.240.0.0 /12[cite: 4]</td>
+                            <td>16 redes /16 continuas (65,534 hosts c/u)[cite: 4]</td>
                         </tr>
                         <tr>
                             <td><strong>Clase C</strong></td>
-                            <td>192.0.0.0 a 223.255.255.0</td>
-                            <td>255.255.255.0 (/24)</td>
-                            <td>Redes pequeñas, redes domésticas, oficinas locales (SOHO) y pequeñas empresas.</td>
+                            <td>192.168.0.0 – 192.168.255.255[cite: 4]</td>
+                            <td>255.255.255.0 /16[cite: 4]</td>
+                            <td>256 redes /24 continuas (254 hosts c/u)[cite: 4]</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- SECCIÓN 3: PASO A PASO 3 SUBREDES -->
+        <!-- SECCIÓN 3: EJEMPLO PRÁCTICO PASO A PASO -->
         <section>
-            <h2>3. Configuración Didáctica de 3 Subredes Paso a Paso</h2>
-            <p>Para dividir una red en subredes (por ejemplo, partiendo de una red base Clase C
-                <code>192.168.1.0/24</code>) y obtener al menos 3 subredes operativas, debemos tomar prestados bits de
-                la porción de host.
-            </p>
-
+            <h2>3. Ejemplo Práctico: Dividir 192.168.1.0/24 en 4 Subredes</h2>
             <ol>
-                <li><strong>Identificar la necesidad:</strong> Requerimos 3 subredes. Aplicamos la fórmula $2^n \ge
-                    \text{Subredes}$ (donde $n$ es la cantidad de bits a tomar prestados). Con $n = 2$ bits ($2^2 = 4$),
-                    obtenemos exactamente 4 subredes (suficientes para cubrir las 3 solicitadas).</li>
-                <li><strong>Nueva máscara de subred:</strong> La máscara original pasa de <code>/24</code> a
-                    <code>/26</code> (255.255.255.192).
+                <li><strong>Paso A: Calcular bits necesarios ($n$):</strong> Queremos 4 subredes. Usamos la fórmula de
+                    subredes: $2^n \ge 4 \rightarrow n = 2$ bits. Tomamos 2 bits prestados del último octeto[cite: 1].
                 </li>
-                <li><strong>Cálculo del salto de red:</strong> Como el último octeto tiene 2 bits de red ($128 + 64 =
-                    192$), el incremento (block size) entre cada subred se calcula como $256 - 192 = 64$.</li>
+                <li><strong>Paso B: Calcular capacidad por host ($h$):</strong> Quedan 6 bits para host ($8 - 2 = 6$).
+                    Hosts útiles: $2^6 - 2 = 62$ direcciones por subred[cite: 1].</li>
+                <li><strong>Paso C: Calcular el Tamaño del Bloque (Salto):</strong> Se calcula restando el valor decimal
+                    de la máscara a 256. $Salto = 256 - 192 = 64$[cite: 1].</li>
             </ol>
 
-            <h3>Representación Gráfica Vectorial (Estructura de Bits y Octeto Final)</h3>
-            <p>A continuación se muestra de forma visual la estructura del último octeto al tomar prestados los 2 bits
-                para generar nuestras subredes:</p>
-
-            <div class="svg-container">
-                <!-- SVG Vectorial explicativo de bits y separaciones -->
-                <svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Fondo de la tarjeta SVG -->
-                    <rect width="700" height="180" fill="#0d1117" rx="6" />
-
-                    <!-- Título interno -->
-                    <text x="20" y="25" fill="#58a6ff" font-family="monospace" font-size="14" font-weight="bold">Último
-                        Octeto Modificado (/26): 192.168.1. [ 1 1 | 0 0 0 0 0 0 ]</text>
-
-                    <!-- Línea contenedora principal -->
-                    <rect x="20" y="45" width="660" height="50" fill="none" stroke="#30363d" stroke-width="2" rx="4" />
-
-                    <!-- Celdas de bits (8 bits) -->
-                    <!-- Bits de Red (n=2) -->
-                    <rect x="20" y="45" width="165" height="50" fill="#1f6feb33" stroke="#58a6ff" stroke-width="1.5" />
-                    <text x="102" y="75" fill="#58a6ff" font-family="monospace" font-size="16" font-weight="bold">1
-                        1</text>
-
-                    <!-- Bits de Host (6-2 = 4 bits) -->
-                    <rect x="185" y="45" width="495" height="50" fill="#23863633" stroke="#3fb950" stroke-width="1.5" />
-                    <text x="432" y="75" fill="#3fb950" font-family="monospace" font-size="16" font-weight="bold">0 0 0
-                        0 0 0</text>
-
-                    <!-- Línea divisoria central entre red y host -->
-                    <line x1="185" y1="45" x2="185" y2="95" stroke="#d29922" stroke-width="3" stroke-dasharray="4" />
-
-                    <!-- Etiquetas inferiores -->
-                    <text x="60" y="120" fill="#58a6ff" font-family="sans-serif" font-size="12">Bits de Subred
-                        (n=2)</text>
-                    <text x="380" y="120" fill="#3fb950" font-family="sans-serif" font-size="12">Bits de Host
-                        (h=6)</text>
-
-                    <!-- Anotación del valor decimal -->
-                    <text x="20" y="155" fill="#c9d1d9" font-family="monospace" font-size="12">Valor base de red: 128 +
-                        64 = <tspan fill="#d29922" font-weight="bold">192</tspan> (Nueva máscara:
-                        255.255.255.192)</text>
-                </svg>
+            <h3>Tabla Final de Direccionamiento</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subred</th>
+                            <th>Dirección de Red</th>
+                            <th>Rango de IPs Útiles</th>
+                            <th>Dirección de Broadcast</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Subred 0</td>
+                            <td>192.168.1.0[cite: 3]</td>
+                            <td>192.168.1.1 – 192.168.1.62[cite: 3]</td>
+                            <td>192.168.1.63[cite: 3]</td>
+                        </tr>
+                        <tr>
+                            <td>Subred 1</td>
+                            <td>192.168.1.64[cite: 3]</td>
+                            <td>192.168.1.65 – 192.168.1.126[cite: 3]</td>
+                            <td>192.168.1.127[cite: 3]</td>
+                        </tr>
+                        <tr>
+                            <td>Subred 2</td>
+                            <td>192.168.1.128[cite: 3]</td>
+                            <td>192.168.1.129 – 192.168.1.190[cite: 3]</td>
+                            <td>192.168.1.191[cite: 3]</td>
+                        </tr>
+                        <tr>
+                            <td>Subred 3</td>
+                            <td>192.168.1.192[cite: 3]</td>
+                            <td>192.168.1.193 – 192.168.1.254[cite: 3]</td>
+                            <td>192.168.1.255[cite: 3]</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </section>
 
-            <p>Fórmula para calcular la cantidad de hosts utilizables por cada subred:</p>
-            <div class="formula-box">
-                Hosts útiles = 2^(8 - n) - 2 &rarr; 2^(8 - 2) - 2 = 2^6 - 2 = 64 - 2 = 62 hosts por subred.
-            </div>
-
-            <p>Fórmula para calcular el octeto final de las subredes (incrementos de 64):</p>
+        <!-- SECCIÓN 4: EJERCICIO PRÁCTICO PARA ESTUDIANTES -->
+        <section>
+            <h2>4. Ejercicio Práctico Propuesto</h2>
+            <p><strong>Enunciado:</strong> Una empresa tiene la red <code>192.168.10.0/24</code> y necesita dividirla en
+                8 subredes iguales para sus distintas áreas administrativas[cite: 3].</p>
             <ul>
-                <li><strong>Subred 0:</strong> 192.168.1.0 (Red) / 192.168.1.1 al 192.168.1.62 (Hosts) / 192.168.1.63
-                    (Broadcast)</li>
-                <li><strong>Subred 1:</strong> 192.168.1.64 (Red) / 192.168.1.65 al 192.168.1.126 (Hosts) /
-                    192.168.1.127 (Broadcast)</li>
-                <li><strong>Subred 2:</strong> 192.168.1.128 (Red) / 192.168.1.129 al 192.168.1.190 (Hosts) /
-                    192.168.1.191 (Broadcast)</li>
+                <li>¿Cuál es la nueva máscara de red en formato decimal y sufijo CIDR?[cite: 3]</li>
+                <li>¿Cuántos hosts útiles tendrá cada subred?[cite: 3]</li>
+                <li>¿Cuál es la dirección de red, rango útil y broadcast de la tercera subred?[cite: 3]</li>
             </ul>
         </section>
 
-        <!-- SECCIÓN 4: SEGURIDAD Y VLANs -->
+        <!-- SECCIÓN 5: CONSIDERACIONES DE SEGURIDAD -->
         <section>
-            <h2>4. Consideraciones de Seguridad: Subneteo vs. VLANs</h2>
-            <p>El subneteo organiza lógicamente las direcciones IP y permite el direccionamiento eficiente del tráfico a
-                través de la Capa 3 (Red) del modelo OSI mediante routers o pasarelas.</p>
-
+            <h2>5. Consideraciones de Seguridad: Subneteo vs. VLANs</h2>
             <div class="alert-box">
-                <strong>Nota de Arquitectura de Red:</strong> Un subneteo no reemplaza la seguridad de una VLAN. Aunque
-                dos subredes diferentes estén separadas lógicamente por direcciones IP, si se encuentran configuradas en
-                el mismo switch físico sin segmentación de Capa 2 (VLAN), los dispositivos podrán comunicarse o verse
-                mediante ataques de descubrimiento y envenenamiento de tablas ARP a menos que se apliquen listas de
-                control de acceso (ACLs) estrictas o pasarelas de enrutamiento con cortafuegos. La VLAN aísla el tráfico
-                a nivel de enlace de datos (Capa 2), mientras que el subneteo organiza el espacio de direcciones IP.
+                <strong>Nota de Arquitectura de Red:</strong> Un subneteo organiza el espacio de direcciones IP en Capa
+                3, pero no reemplaza la segmentación de Capa 2 (VLANs) en los switches físicos para mitigar ataques de
+                descubrimiento y envenenamiento ARP[cite: 3].
             </div>
         </section>
     </main>
