@@ -665,77 +665,725 @@ Console.WriteLine(<span class="string">"--- Ciclo Foreach ---"</span>);
         </section>
 
         <section>
-            <h2>12. Declaración y Uso de Funciones (Métodos estáticos)</h2>
-            <p>Bloques de código reutilizables encapsulados dentro de una clase. Pueden recibir parámetros tipados por
-                valor o referencia y retornar resultados explícitos.</p>
+            <h2>12. Declaración y Uso de Funciones (Métodos)</h2>
+            <p>Un <strong>método</strong> es un bloque de código con nombre que encapsula una tarea específica,
+                permitiendo su reutilización, modularidad y mantenimiento. En C#, todos los métodos deben declararse
+                dentro de una clase o estructura.</p>
+
             <div class="explainer-box">
-                <h3>Ejemplo de Métodos</h3>
-                <pre><code><span class="keyword">class</span> <span class="type">Program</span>
+                <h3>12.1. Sintaxis General de un Método</h3>
+                <pre><code>[modificador_acceso] [static] tipo_retorno NombreMetodo([parámetros])
 {
-    <span class="comment">// Método que retorna un valor entero</span>
-    <span class="keyword">static</span> <span class="type">int</span> Sumar(<span class="type">int</span> a, <span class="type">int</span> b)
+    // Cuerpo del método
+    [return valor;]
+}</code></pre>
+                <ul>
+                    <li><strong>modificador_acceso:</strong> <code>public</code>, <code>private</code>,
+                        <code>protected</code>, <code>internal</code>. Controla la visibilidad.
+                    </li>
+                    <li><strong>static:</strong> Indica que el método pertenece a la clase, no a una instancia.</li>
+                    <li><strong>tipo_retorno:</strong> Tipo de dato devuelto (<code>int</code>, <code>string</code>,
+                        <code>void</code>, etc.).
+                    </li>
+                    <li><strong>NombreMetodo:</strong> Identificador en PascalCase por convención.</li>
+                    <li><strong>parámetros:</strong> Lista opcional de variables tipadas que recibe el método.</li>
+                </ul>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.2. Métodos <code>static</code> vs Métodos de Instancia</h3>
+                <ul>
+                    <li><strong>Método <code>static</code>:</strong> Se invoca directamente desde la clase sin crear
+                        objetos. No puede acceder a miembros de instancia.</li>
+                    <li><strong>Método de instancia:</strong> Requiere crear un objeto con <code>new</code> para poder
+                        invocarlo. Puede acceder a campos y propiedades del objeto.</li>
+                </ul>
+                <pre><code><span class="keyword">class</span> <span class="type">Calculadora</span>
+{
+    <span class="comment">// Método estático: no necesita instancia</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> Sumar(<span class="type">int</span> a, <span class="type">int</span> b)
     {
         <span class="keyword">return</span> a + b;
     }
 
-    <span class="comment">// Método sin valor de retorno (void)</span>
-    <span class="keyword">static</span> <span class="keyword">void</span> Saludar(<span class="type">string</span> nombre)
+    <span class="comment">// Método de instancia: necesita un objeto Calculadora</span>
+    <span class="keyword">public</span> <span class="type">int</span> Multiplicar(<span class="type">int</span> a, <span class="type">int</span> b)
     {
-        Console.WriteLine(<span class="string">"Hola, "</span> + nombre + <span class="string">"!"</span>);
+        <span class="keyword">return</span> a * b;
     }
+}
 
-    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="string">string</span>[] args)
+<span class="keyword">class</span> <span class="type">Program</span>
+{
+    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="type">string</span>[] args)
     {
-        Saludar(<span class="string">"Estudiante"</span>);
-        <span class="type">int</span> resultado = Sumar(<span class="string">10</span>, <span class="string">20</span>);
-        Console.WriteLine(<span class="string">"El resultado de la suma es: "</span> + resultado);
+        <span class="comment">// Invocación estática</span>
+        <span class="type">int</span> suma = Calculadora.Sumar(<span class="string">5</span>, <span class="string">3</span>);
+
+        <span class="comment">// Invocación de instancia</span>
+        Calculadora calc = <span class="keyword">new</span> Calculadora();
+        <span class="type">int</span> producto = calc.Multiplicar(<span class="string">5</span>, <span class="string">3</span>);
+
+        Console.WriteLine(<span class="string">"Suma: "</span> + suma + <span class="string">" | Producto: "</span> + producto);
     }
 }</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.3. Parámetros por Valor, por Referencia (<code>ref</code>) y de Salida (<code>out</code>)</h3>
+                <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
+                    <tr style="background:#eef;">
+                        <th style="border:1px solid #ccc; padding:6px;">Modificador</th>
+                        <th style="border:1px solid #ccc; padding:6px;">Comportamiento</th>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc; padding:6px;">(ninguno)</td>
+                        <td style="border:1px solid #ccc; padding:6px;"><strong>Por valor:</strong> se copia el valor.
+                            Cambios internos no afectan al original.</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc; padding:6px;"><code>ref</code></td>
+                        <td style="border:1px solid #ccc; padding:6px;"><strong>Por referencia:</strong> el método puede
+                            modificar la variable original. Debe inicializarse antes.</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc; padding:6px;"><code>out</code></td>
+                        <td style="border:1px solid #ccc; padding:6px;"><strong>Salida:</strong> el método debe
+                            asignarle un valor antes de retornar. No requiere inicialización previa.</td>
+                    </tr>
+                </table>
+                <pre><code><span class="keyword">class</span> <span class="type">Program</span>
+{
+    <span class="comment">// Por valor: no modifica el original</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> DuplicarPorValor(<span class="type">int</span> numero)
+    {
+        numero = numero * <span class="string">2</span>;
+        Console.WriteLine(<span class="string">"Dentro del método (valor): "</span> + numero);
+    }
+
+    <span class="comment">// Por referencia: modifica el original</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> DuplicarPorReferencia(<span class="keyword">ref</span> <span class="type">int</span> numero)
+    {
+        numero = numero * <span class="string">2</span>;
+    }
+
+    <span class="comment">// Parámetro de salida: obliga a asignar valor</span>
+    <span class="keyword">static</span> <span class="type">bool</span> TryDividir(<span class="type">int</span> dividendo, <span class="type">int</span> divisor, <span class="keyword">out</span> <span class="type">double</span> resultado)
+    {
+        <span class="keyword">if</span> (divisor == <span class="string">0</span>)
+        {
+            resultado = <span class="string">0</span>;
+            <span class="keyword">return</span> <span class="keyword">false</span>;
+        }
+        resultado = (<span class="type">double</span>)dividendo / divisor;
+        <span class="keyword">return</span> <span class="keyword">true</span>;
+    }
+
+    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="type">string</span>[] args)
+    {
+        <span class="type">int</span> a = <span class="string">10</span>;
+        DuplicarPorValor(a);
+        Console.WriteLine(<span class="string">"Después por valor: "</span> + a); <span class="comment">// Sigue siendo 10</span>
+
+        DuplicarPorReferencia(<span class="keyword">ref</span> a);
+        Console.WriteLine(<span class="string">"Después por referencia: "</span> + a); <span class="comment">// Ahora es 20</span>
+
+        <span class="comment">// C# 5.0: la variable out se declara ANTES de la llamada</span>
+        <span class="type">double</span> cociente;
+        <span class="keyword">if</span> (TryDividir(<span class="string">20</span>, <span class="string">4</span>, <span class="keyword">out</span> cociente))
+        {
+            Console.WriteLine(<span class="string">"Cociente: "</span> + cociente);
+        }
+    }
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.4. Parámetros Opcionales y Arreglo <code>params</code></h3>
+                <p><strong>Parámetros opcionales:</strong> Se definen con un valor predeterminado. Deben ubicarse al
+                    final de la lista.</p>
+                <pre><code><span class="keyword">static</span> <span class="keyword">void</span> Presentar(<span class="type">string</span> nombre, <span class="type">string</span> titulo = <span class="string">"Estudiante"</span>)
+{
+    Console.WriteLine(<span class="string">"Hola, "</span> + titulo + <span class="string">" "</span> + nombre);
+}
+
+<span class="comment">// Invocaciones válidas:</span>
+Presentar(<span class="string">"Ana"</span>);                    <span class="comment">// Usa "Estudiante"</span>
+Presentar(<span class="string">"Luis"</span>, <span class="string">"Ingeniero"</span>);      <span class="comment">// Usa "Ingeniero"</span></code></pre>
+
+                <p><strong>Arreglo <code>params</code>:</strong> Permite recibir un número variable de argumentos del
+                    mismo tipo.</p>
+                <pre><code><span class="keyword">static</span> <span class="type">int</span> SumarTodos(<span class="keyword">params</span> <span class="type">int</span>[] numeros)
+{
+    <span class="type">int</span> total = <span class="string">0</span>;
+    <span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> numeros)
+    {
+        total += n;
+    }
+    <span class="keyword">return</span> total;
+}
+
+<span class="comment">// Invocaciones válidas:</span>
+<span class="type">int</span> r1 = SumarTodos(<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>);
+<span class="type">int</span> r2 = SumarTodos(<span class="string">10</span>, <span class="string">20</span>, <span class="string">30</span>, <span class="string">40</span>, <span class="string">50</span>);
+<span class="type">int</span> r3 = SumarTodos(); <span class="comment">// Arreglo vacío</span></code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.5. Sobrecarga de Métodos (Overloading)</h3>
+                <p>C# permite definir varios métodos con el <strong>mismo nombre</strong> pero <strong>distinta
+                        firma</strong> (número o tipo de parámetros). El compilador resuelve cuál invocar según los
+                    argumentos.</p>
+                <pre><code><span class="keyword">class</span> <span class="type">Area</span>
+{
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Calcular(<span class="type">double</span> lado)
+    {
+        <span class="keyword">return</span> lado * lado; <span class="comment">// Cuadrado</span>
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Calcular(<span class="type">double</span> baseRect, <span class="type">double</span> altura)
+    {
+        <span class="keyword">return</span> baseRect * altura; <span class="comment">// Rectángulo</span>
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Calcular(<span class="type">double</span> radio, <span class="type">bool</span> esCirculo)
+    {
+        <span class="keyword">if</span> (esCirculo)
+        {
+            <span class="keyword">return</span> Math.PI * radio * radio; <span class="comment">// Círculo</span>
+        }
+        <span class="keyword">return</span> <span class="string">0</span>;
+    }
+}
+
+<span class="comment">// Uso:</span>
+Console.WriteLine(Area.Calcular(<span class="string">5</span>));           <span class="comment">// 25</span>
+Console.WriteLine(Area.Calcular(<span class="string">4</span>, <span class="string">6</span>));        <span class="comment">// 24</span>
+Console.WriteLine(Area.Calcular(<span class="string">3</span>, <span class="keyword">true</span>));     <span class="comment">// 28.27...</span></code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.6. Recursividad</h3>
+                <p>Un método recursivo se invoca a sí mismo con un <strong>caso base</strong> que detiene la recursión.
+                </p>
+                <pre><code><span class="keyword">static</span> <span class="type">long</span> Factorial(<span class="type">int</span> n)
+{
+    <span class="keyword">if</span> (n &lt;= <span class="string">1</span>) <span class="keyword">return</span> <span class="string">1</span>;          <span class="comment">// Caso base</span>
+    <span class="keyword">return</span> n * Factorial(n - <span class="string">1</span>);   <span class="comment">// Llamada recursiva</span>
+}
+
+<span class="keyword">static</span> <span class="type">int</span> Fibonacci(<span class="type">int</span> n)
+{
+    <span class="keyword">if</span> (n &lt;= <span class="string">1</span>) <span class="keyword">return</span> n;
+    <span class="keyword">return</span> Fibonacci(n - <span class="string">1</span>) + Fibonacci(n - <span class="string">2</span>);
+}
+
+<span class="comment">// Uso:</span>
+Console.WriteLine(<span class="string">"Factorial de 5: "</span> + Factorial(<span class="string">5</span>));   <span class="comment">// 120</span>
+Console.WriteLine(<span class="string">"Fibonacci(7): "</span> + Fibonacci(<span class="string">7</span>));      <span class="comment">// 13</span></code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.7. Ámbito y Duración de Variables</h3>
+                <ul>
+                    <li><strong>Variables locales:</strong> declaradas dentro del método, existen solo durante su
+                        ejecución.</li>
+                    <li><strong>Parámetros:</strong> locales al método.</li>
+                    <li><strong>Campos estáticos:</strong> persisten durante toda la vida de la aplicación.</li>
+                </ul>
+                <pre><code><span class="keyword">class</span> <span class="type">Contador</span>
+{
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> totalLlamadas = <span class="string">0</span>; <span class="comment">// Campo estático persistente</span>
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> Registrar()
+    {
+        totalLlamadas++;
+        Console.WriteLine(<span class="string">"Llamadas acumuladas: "</span> + totalLlamadas);
+    }
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.8. Ejemplo Integrador: Calculadora con Múltiples Métodos</h3>
+                <pre><code><span class="keyword">class</span> <span class="type">CalculadoraCompleta</span>
+{
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Sumar(<span class="type">double</span> a, <span class="type">double</span> b)
+    {
+        <span class="keyword">return</span> a + b;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Restar(<span class="type">double</span> a, <span class="type">double</span> b)
+    {
+        <span class="keyword">return</span> a - b;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Multiplicar(<span class="type">double</span> a, <span class="type">double</span> b)
+    {
+        <span class="keyword">return</span> a * b;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">bool</span> Dividir(<span class="type">double</span> a, <span class="type">double</span> b, <span class="keyword">out</span> <span class="type">double</span> resultado)
+    {
+        <span class="keyword">if</span> (b == <span class="string">0</span>)
+        {
+            resultado = <span class="string">0</span>;
+            <span class="keyword">return</span> <span class="keyword">false</span>;
+        }
+        resultado = a / b;
+        <span class="keyword">return</span> <span class="keyword">true</span>;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> Potencia(<span class="type">int</span> baseNum, <span class="type">int</span> exponente)
+    {
+        <span class="type">long</span> resultado = <span class="string">1</span>;
+        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="string">0</span>; i &lt; exponente; i++)
+        {
+            resultado *= baseNum;
+        }
+        <span class="keyword">return</span> resultado;
+    }
+}
+
+<span class="keyword">class</span> <span class="type">Program</span>
+{
+    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="type">string</span>[] args)
+    {
+        Console.WriteLine(<span class="string">"Suma: "</span> + CalculadoraCompleta.Sumar(<span class="string">10</span>, <span class="string">5</span>));
+        Console.WriteLine(<span class="string">"Resta: "</span> + CalculadoraCompleta.Restar(<span class="string">10</span>, <span class="string">5</span>));
+        Console.WriteLine(<span class="string">"Multiplicación: "</span> + CalculadoraCompleta.Multiplicar(<span class="string">10</span>, <span class="string">5</span>));
+
+        <span class="comment">// C# 5.0: variable out declarada antes de la llamada</span>
+        <span class="type">double</span> cociente;
+        <span class="keyword">if</span> (CalculadoraCompleta.Dividir(<span class="string">10</span>, <span class="string">0</span>, <span class="keyword">out</span> cociente))
+        {
+            Console.WriteLine(<span class="string">"División: "</span> + cociente);
+        }
+        <span class="keyword">else</span>
+        {
+            Console.WriteLine(<span class="string">"Error: división entre cero."</span>);
+        }
+
+        Console.WriteLine(<span class="string">"2^10 = "</span> + CalculadoraCompleta.Potencia(<span class="string">2</span>, <span class="string">10</span>));
+    }
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>12.9. Ejemplo con Múltiples Valores de Retorno mediante <code>out</code></h3>
+                <p>En C# 5.0 no existen las tuplas; para devolver varios valores se usan parámetros
+                    <code>out</code>.
+                </p>
+                <pre><code><span class="keyword">static</span> <span class="keyword">void</span> CalcularEstadisticas(<span class="type">int</span>[] datos, <span class="keyword">out</span> <span class="type">int</span> minimo, <span class="keyword">out</span> <span class="type">int</span> maximo, <span class="keyword">out</span> <span class="type">double</span> promedio)
+{
+    minimo = datos[<span class="string">0</span>];
+    maximo = datos[<span class="string">0</span>];
+    <span class="type">int</span> suma = <span class="string">0</span>;
+
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="string">0</span>; i &lt; datos.Length; i++)
+    {
+        <span class="keyword">if</span> (datos[i] &lt; minimo) minimo = datos[i];
+        <span class="keyword">if</span> (datos[i] &gt; maximo) maximo = datos[i];
+        suma += datos[i];
+    }
+    promedio = (<span class="type">double</span>)suma / datos.Length;
+}
+
+<span class="comment">// Uso:</span>
+<span class="type">int</span>[] valores = { <span class="string">15</span>, <span class="string">8</span>, <span class="string">21</span>, <span class="string">4</span>, <span class="string">42</span> };
+<span class="type">int</span> min, max;
+<span class="type">double</span> prom;
+CalcularEstadisticas(valores, <span class="keyword">out</span> min, <span class="keyword">out</span> max, <span class="keyword">out</span> prom);
+Console.WriteLine(<span class="string">"Mín: "</span> + min + <span class="string">" | Máx: "</span> + max + <span class="string">" | Prom: "</span> + prom.ToString(<span class="string">"F2"</span>));</code></pre>
             </div>
         </section>
 
         <section>
             <h2>13. Consultas Integradas con LINQ (Language Integrated Query)</h2>
-            <p><strong>LINQ</strong> proporciona una sintaxis unificada para realizar filtrados, ordenamientos y
-                proyecciones directamente sobre colecciones de datos (como arreglos o listas) dentro del código C#.</p>
+            <p><strong>LINQ</strong> es un conjunto de extensiones del lenguaje C# que permite realizar
+                <strong>consultas tipadas</strong> sobre cualquier colección que implemente
+                <code>IEnumerable&lt;T&gt;</code> (arreglos, <code>List&lt;T&gt;</code>,
+                <code>Dictionary&lt;K,V&gt;</code>, <code>DataSet</code>, XML, etc.). Fue introducido en .NET 3.5 y
+                perfeccionado en .NET 4.5 (Visual Studio 2012).
+            </p>
+            <p><strong>Ventajas:</strong></p>
+            <ul>
+                <li>Sintaxis unificada para distintas fuentes de datos.</li>
+                <li>Verificación en tiempo de compilación (tipado fuerte).</li>
+                <li>IntelliSense completo en Visual Studio.</li>
+                <li>Composición de consultas mediante encadenamiento.</li>
+            </ul>
             <p><strong>Espacio de Nombres Requerido:</strong> Para habilitar el uso de LINQ en C# 5.0, agregue al inicio
                 del archivo la directiva <code>using System.Linq;</code>.</p>
 
             <div class="explainer-box">
-                <h3>Ejemplo de Consultas LINQ en C# 5.0</h3>
-                <pre><code><span class="comment">// Se requiere la directiva: using System.Linq;</span>
+                <h3>13.1. Dos Sintaxis Equivalentes</h3>
+                <p><strong>A) Sintaxis de Consulta (Query Syntax):</strong> similar a SQL, más legible para filtros
+                    complejos.</p>
+                <p><strong>B) Sintaxis de Métodos (Method Syntax):</strong> usa métodos de extensión y expresiones
+                    lambda, más compacta y potente.</p>
+                <pre><code><span class="comment">// Se requiere: using System.Linq;</span>
 
-<span class="type">int</span>[] numeros = { <span class="string">15</span>, <span class="string">8</span>, <span class="string">21</span>, <span class="string">4</span>, <span class="string">42</span>, <span class="string">11</span>, <span class="string">30</span> };
+<span class="type">int</span>[] numeros = { <span class="string">5</span>, <span class="string">12</span>, <span class="string">8</span>, <span class="string">21</span>, <span class="string">3</span>, <span class="string">17</span>, <span class="string">30</span>, <span class="string">4</span> };
 
-<span class="comment">// 1. Sintaxis de Consulta (Query Syntax): Filtrar y ordenar números mayores a 10</span>
-<span class="keyword">var</span> numerosFiltrados = <span class="keyword">from</span> n <span class="keyword">in</span> numeros
-                       <span class="keyword">where</span> n > <span class="string">10</span>
-                       <span class="keyword">orderby</span> n <span class="keyword">ascending</span>
-                       <span class="keyword">select</span> n;
+<span class="comment">// Query Syntax</span>
+<span class="keyword">var</span> mayoresQuery = <span class="keyword">from</span> n <span class="keyword">in</span> numeros
+                   <span class="keyword">where</span> n > <span class="string">10</span>
+                   <span class="keyword">orderby</span> n <span class="keyword">descending</span>
+                   <span class="keyword">select</span> n;
 
-Console.WriteLine(<span class="string">"--- Números mayores a 10 (Sintaxis Query) ---"</span>);
-<span class="keyword">foreach</span> (<span class="type">int</span> num <span class="keyword">in</span> numerosFiltrados)
+<span class="comment">// Method Syntax (equivalente)</span>
+<span class="keyword">var</span> mayoresMetodo = numeros.Where(n => n > <span class="string">10</span>)
+                           .OrderByDescending(n => n);
+
+<span class="comment">// Ambas producen el mismo resultado</span>
+<span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> mayoresQuery)
 {
-    Console.WriteLine(num);
+    Console.WriteLine(n);
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.2. Filtrado (<code>Where</code>)</h3>
+                <pre><code><span class="type">string</span>[] frutas = { <span class="string">"Manzana"</span>, <span class="string">"Pera"</span>, <span class="string">"Mango"</span>, <span class="string">"Melón"</span>, <span class="string">"Uva"</span> };
+
+<span class="keyword">var</span> conM = frutas.Where(f => f.StartsWith(<span class="string">"M"</span>));
+<span class="keyword">foreach</span> (<span class="type">string</span> f <span class="keyword">in</span> conM)
+{
+    Console.WriteLine(f); <span class="comment">// Manzana, Mango, Melón</span>
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.3. Proyección (<code>Select</code>)</h3>
+                <p>Transforma cada elemento en otro tipo o forma.</p>
+                <pre><code><span class="keyword">var</span> longitudes = frutas.Select(f => f.Length);
+<span class="keyword">foreach</span> (<span class="type">int</span> len <span class="keyword">in</span> longitudes)
+{
+    Console.WriteLine(<span class="string">"Longitud: "</span> + len);
 }
 
-<span class="comment">// 2. Sintaxis de Métodos (Method Syntax): Uso de expresiones Lambda</span>
-<span class="keyword">var</span> pares = numeros.Where(n => n % <span class="string">2</span> == <span class="string">0</span>).OrderBy(n => n);
-
-Console.WriteLine(<span class="string">"--- Números pares ordenados (Sintaxis Métodos) ---"</span>);
-<span class="keyword">foreach</span> (<span class="type">int</span> par <span class="keyword">in</span> pares)
+<span class="comment">// Proyección a tipo anónimo (C# 3.0+)</span>
+<span class="keyword">var</span> resumen = frutas.Select(f => <span class="keyword">new</span> { Nombre = f, Letras = f.Length });
+<span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> resumen)
 {
-    Console.WriteLine(par);
+    Console.WriteLine(item.Nombre + <span class="string">" -> "</span> + item.Letras);
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.4. Ordenamiento (<code>OrderBy</code>, <code>ThenBy</code>)</h3>
+                <pre><code><span class="keyword">var</span> ordenadas = frutas.OrderBy(f => f.Length)
+                      .ThenBy(f => f); <span class="comment">// Desempate alfabético</span></code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.5. Agrupación (<code>GroupBy</code>)</h3>
+                <pre><code><span class="keyword">var</span> porLongitud = frutas.GroupBy(f => f.Length);
+
+<span class="keyword">foreach</span> (<span class="keyword">var</span> grupo <span class="keyword">in</span> porLongitud)
+{
+    Console.WriteLine(<span class="string">"Longitud "</span> + grupo.Key + <span class="string">":"</span>);
+    <span class="keyword">foreach</span> (<span class="type">string</span> f <span class="keyword">in</span> grupo)
+    {
+        Console.WriteLine(<span class="string">"  - "</span> + f);
+    }
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.6. Partición (<code>Take</code>, <code>Skip</code>)</h3>
+                <pre><code><span class="keyword">var</span> primerosTres = frutas.Take(<span class="string">3</span>);
+<span class="keyword">var</span> saltandoDos  = frutas.Skip(<span class="string">2</span>);
+<span class="keyword">var</span> rango        = frutas.Skip(<span class="string">1</span>).Take(<span class="string">2</span>);</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.7. Agregación (<code>Count</code>, <code>Sum</code>, <code>Min</code>, <code>Max</code>,
+                    <code>Average</code>)
+                </h3>
+                <pre><code><span class="type">int</span>[] ventas = { <span class="string">120</span>, <span class="string">340</span>, <span class="string">560</span>, <span class="string">230</span>, <span class="string">780</span> };
+
+Console.WriteLine(<span class="string">"Total: "</span>    + ventas.Sum());
+Console.WriteLine(<span class="string">"Mínimo: "</span>   + ventas.Min());
+Console.WriteLine(<span class="string">"Máximo: "</span>   + ventas.Max());
+Console.WriteLine(<span class="string">"Promedio: "</span> + ventas.Average().ToString(<span class="string">"F2"</span>));
+Console.WriteLine(<span class="string">"Cantidad: "</span> + ventas.Count());
+Console.WriteLine(<span class="string">"Mayores a 300: "</span> + ventas.Count(v => v > <span class="string">300</span>));</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.8. Búsqueda de Elementos (<code>First</code>, <code>FirstOrDefault</code>, <code>Single</code>,
+                    <code>Any</code>, <code>All</code>)
+                </h3>
+                <pre><code><span class="type">int</span> primero     = ventas.First();                    <span class="comment">// Lanza excepción si vacío</span>
+<span class="type">int</span> primeroDef  = ventas.FirstOrDefault();           <span class="comment">// Devuelve 0 si vacío</span>
+<span class="type">bool</span> hayAltos   = ventas.Any(v => v > <span class="string">700</span>);          <span class="comment">// true</span>
+<span class="type">bool</span> todosPos   = ventas.All(v => v > <span class="string">0</span>);            <span class="comment">// true</span>
+
+<span class="comment">// Single: exactamente un elemento que cumpla</span>
+<span class="keyword">try</span>
+{
+    <span class="type">int</span> unico = ventas.Single(v => v == <span class="string">560</span>);
+    Console.WriteLine(<span class="string">"Encontrado: "</span> + unico);
+}
+<span class="keyword">catch</span> (InvalidOperationException ex)
+{
+    Console.WriteLine(<span class="string">"No hay exactamente uno: "</span> + ex.Message);
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.9. Operadores de Conjuntos (<code>Distinct</code>, <code>Union</code>, <code>Intersect</code>,
+                    <code>Except</code>)
+                </h3>
+                <pre><code><span class="type">int</span>[] A = { <span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span> };
+<span class="type">int</span>[] B = { <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>, <span class="string">7</span>, <span class="string">8</span> };
+
+<span class="keyword">var</span> union        = A.Union(B);        <span class="comment">// 1,2,3,4,5,6,7,8</span>
+<span class="keyword">var</span> interseccion = A.Intersect(B);    <span class="comment">// 4,5</span>
+<span class="keyword">var</span> diferencia   = A.Except(B);       <span class="comment">// 1,2,3</span>
+<span class="keyword">var</span> distintos    = <span class="keyword">new</span>[] { <span class="string">1</span>, <span class="string">1</span>, <span class="string">2</span>, <span class="string">2</span>, <span class="string">3</span> }.Distinct(); <span class="comment">// 1,2,3</span></code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.10. Expresiones Lambda en LINQ</h3>
+                <p>Una <strong>expresión lambda</strong> es una función anónima compacta. Sintaxis:
+                    <code>(parámetros) =&gt; expresión_o_bloque</code>.
+                </p>
+                <pre><code><span class="comment">// Lambda de expresión</span>
+Func&lt;<span class="type">int</span>, <span class="type">int</span>&gt; cuadrado = x => x * x;
+
+<span class="comment">// Lambda de bloque</span>
+Func&lt;<span class="type">int</span>, <span class="type">int</span>, <span class="type">int</span>&gt; sumar = (a, b) =>
+{
+    <span class="type">int</span> resultado = a + b;
+    <span class="keyword">return</span> resultado;
+};
+
+<span class="comment">// Uso en LINQ</span>
+<span class="keyword">var</span> pares = numeros.Where(n => n % <span class="string">2</span> == <span class="string">0</span>);
+<span class="keyword">var</span> ordenados = numeros.OrderBy(n => n);</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.11. Evaluación Diferida (Deferred Execution)</h3>
+                <p>Las consultas LINQ <strong>no se ejecutan</strong> al definirse, sino al iterarlas
+                    (<code>foreach</code>) o al invocar un operador de agregación. Esto permite componer consultas
+                    eficientemente.</p>
+                <pre><code><span class="keyword">var</span> consulta = numeros.Where(n => n > <span class="string">10</span>); <span class="comment">// Aún no se ejecuta</span>
+
+<span class="comment">// Se ejecuta aquí:</span>
+<span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> consulta)
+{
+    Console.WriteLine(n);
 }
 
-<span class="comment">// 3. Métodos de Agregación Directos de LINQ</span>
-<span class="type">int</span> cantidad = numeros.Count();
-<span class="type">int</span> maximo = numeros.Max();
-<span class="type">double</span> promedio = numeros.Average();
+<span class="comment">// También se ejecuta aquí:</span>
+<span class="type">int</span> total = consulta.Count();</code></pre>
+                <p><strong>Forzar ejecución inmediata:</strong> <code>ToList()</code>, <code>ToArray()</code>,
+                    <code>ToDictionary()</code>.
+                </p>
+                <pre><code>List&lt;<span class="type">int</span>&gt; listaInmediata = numeros.Where(n => n > <span class="string">10</span>).ToList();</code></pre>
+            </div>
 
-Console.WriteLine(string.Format(<span class="string">"Total: {0} | Máximo: {1} | Promedio: {2:F2}"</span>, cantidad, maximo, promedio));</code></pre>
+            <div class="explainer-box">
+                <h3>13.12. LINQ sobre Colecciones de Objetos</h3>
+                <p>Para este ejemplo se define una clase con propiedades auto-implementadas (compatibles con C# 3.0+).
+                </p>
+                <pre><code><span class="keyword">class</span> <span class="type">Producto</span>
+{
+    <span class="keyword">public</span> <span class="type">string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">double</span> Precio { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">string</span> Categoria { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}
+
+List&lt;Producto&gt; inventario = <span class="keyword">new</span> List&lt;Producto&gt;();
+inventario.Add(<span class="keyword">new</span> Producto { Nombre = <span class="string">"Laptop"</span>,   Precio = <span class="string">850.75</span>, Categoria = <span class="string">"Tecnología"</span> });
+inventario.Add(<span class="keyword">new</span> Producto { Nombre = <span class="string">"Mouse"</span>,    Precio = <span class="string">25.50</span>,  Categoria = <span class="string">"Tecnología"</span> });
+inventario.Add(<span class="keyword">new</span> Producto { Nombre = <span class="string">"Cuaderno"</span>, Precio = <span class="string">4.20</span>,   Categoria = <span class="string">"Papelería"</span> });
+inventario.Add(<span class="keyword">new</span> Producto { Nombre = <span class="string">"Monitor"</span>,  Precio = <span class="string">220.00</span>, Categoria = <span class="string">"Tecnología"</span> });
+inventario.Add(<span class="keyword">new</span> Producto { Nombre = <span class="string">"Lápiz"</span>,    Precio = <span class="string">1.10</span>,   Categoria = <span class="string">"Papelería"</span> });
+
+<span class="comment">// 1. Filtrar productos tecnológicos mayores a $100</span>
+<span class="keyword">var</span> techCaros = <span class="keyword">from</span> p <span class="keyword">in</span> inventario
+                <span class="keyword">where</span> p.Categoria == <span class="string">"Tecnología"</span> &amp;&amp; p.Precio > <span class="string">100</span>
+                <span class="keyword">orderby</span> p.Precio <span class="keyword">descending</span>
+                <span class="keyword">select</span> p;
+
+Console.WriteLine(<span class="string">"--- Tecnología > $100 ---"</span>);
+<span class="keyword">foreach</span> (<span class="keyword">var</span> p <span class="keyword">in</span> techCaros)
+{
+    Console.WriteLine(p.Nombre + <span class="string">" -> $"</span> + p.Precio.ToString(<span class="string">"F2"</span>));
+}
+
+<span class="comment">// 2. Agrupar por categoría y calcular totales</span>
+<span class="keyword">var</span> resumenCategoria = <span class="keyword">from</span> p <span class="keyword">in</span> inventario
+                       <span class="keyword">group</span> p <span class="keyword">by</span> p.Categoria <span class="keyword">into</span> g
+                       <span class="keyword">select</span> <span class="keyword">new</span>
+                       {
+                           Categoria = g.Key,
+                           Cantidad  = g.Count(),
+                           Total     = g.Sum(x => x.Precio),
+                           Promedio  = g.Average(x => x.Precio)
+                       };
+
+Console.WriteLine(<span class="string">"--- Resumen por categoría ---"</span>);
+<span class="keyword">foreach</span> (<span class="keyword">var</span> r <span class="keyword">in</span> resumenCategoria)
+{
+    Console.WriteLine(r.Categoria + <span class="string">": "</span> + r.Cantidad + <span class="string">" ítems | Total: $"</span>
+                      + r.Total.ToString(<span class="string">"F2"</span>) + <span class="string">" | Promedio: $"</span>
+                      + r.Promedio.ToString(<span class="string">"F2"</span>));
+}
+
+<span class="comment">// 3. Proyección a tipo anónimo</span>
+<span class="keyword">var</span> nombresYPrecios = inventario
+    .Where(p => p.Precio &lt; <span class="string">30</span>)
+    .Select(p => <span class="keyword">new</span> { p.Nombre, p.Precio });
+
+Console.WriteLine(<span class="string">"--- Productos económicos ---"</span>);
+<span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> nombresYPrecios)
+{
+    Console.WriteLine(item.Nombre + <span class="string">": $"</span> + item.Precio);
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.13. LINQ con <code>Join</code> (Combinación de Colecciones)</h3>
+                <pre><code><span class="keyword">class</span> <span class="type">Cliente</span>
+{
+    <span class="keyword">public</span> <span class="type">int</span> Id { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}
+
+<span class="keyword">class</span> <span class="type">Pedido</span>
+{
+    <span class="keyword">public</span> <span class="type">int</span> Id { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">int</span> ClienteId { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">double</span> Monto { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}
+
+List&lt;Cliente&gt; clientes = <span class="keyword">new</span> List&lt;Cliente&gt;();
+clientes.Add(<span class="keyword">new</span> Cliente { Id = <span class="string">1</span>, Nombre = <span class="string">"Ana"</span> });
+clientes.Add(<span class="keyword">new</span> Cliente { Id = <span class="string">2</span>, Nombre = <span class="string">"Luis"</span> });
+
+List&lt;Pedido&gt; pedidos = <span class="keyword">new</span> List&lt;Pedido&gt;();
+pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">101</span>, ClienteId = <span class="string">1</span>, Monto = <span class="string">150.00</span> });
+pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">102</span>, ClienteId = <span class="string">1</span>, Monto = <span class="string">89.90</span>  });
+pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">103</span>, ClienteId = <span class="string">2</span>, Monto = <span class="string">320.50</span> });
+
+<span class="keyword">var</span> reporte = <span class="keyword">from</span> c <span class="keyword">in</span> clientes
+              <span class="keyword">join</span> p <span class="keyword">in</span> pedidos <span class="keyword">on</span> c.Id <span class="keyword">equals</span> p.ClienteId
+              <span class="keyword">select</span> <span class="keyword">new</span>
+              {
+                  Cliente = c.Nombre,
+                  Pedido  = p.Id,
+                  Monto   = p.Monto
+              };
+
+<span class="keyword">foreach</span> (<span class="keyword">var</span> r <span class="keyword">in</span> reporte)
+{
+    Console.WriteLine(r.Cliente + <span class="string">" - Pedido #"</span> + r.Pedido + <span class="string">" - $"</span> + r.Monto);
+}</code></pre>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.14. Buenas Prácticas con LINQ</h3>
+                <ol>
+                    <li><strong>Usar <code>Any()</code> en lugar de <code>Count() &gt; 0</code></strong> para verificar
+                        existencia (más eficiente).</li>
+                    <li><strong>Evitar múltiples enumeraciones:</strong> materializar con <code>ToList()</code> si se
+                        reutilizará.</li>
+                    <li><strong>Preferir Method Syntax</strong> para consultas simples y encadenamientos largos.</li>
+                    <li><strong>Usar Query Syntax</strong> cuando haya <code>join</code>, <code>group by</code> o
+                        múltiples <code>from</code>.</li>
+                    <li><strong>No abusar de LINQ en bucles críticos:</strong> puede introducir sobrecarga.</li>
+                    <li><strong>Nombrar variables de rango descriptivamente:</strong>
+                        <code>from producto in inventario</code> en lugar de <code>from p in inv</code>.
+                    </li>
+                    <li><strong>Aprovechar la evaluación diferida</strong> para construir consultas dinámicas.</li>
+                    <li><strong>Usar <code>string.Format()</code></strong> para dar formato a salidas (C# 5.0 no tiene
+                        interpolación).</li>
+                </ol>
+            </div>
+
+            <div class="explainer-box">
+                <h3>13.15. Ejemplo Integrador: Sistema de Reportes con LINQ</h3>
+                <pre><code><span class="comment">// using System;</span>
+<span class="comment">// using System.Collections.Generic;</span>
+<span class="comment">// using System.Linq;</span>
+
+<span class="keyword">class</span> <span class="type">Estudiante</span>
+{
+    <span class="keyword">public</span> <span class="type">string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">string</span> Carrera { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">double</span> Promedio { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public</span> <span class="type">int</span> Edad { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}
+
+<span class="keyword">class</span> <span class="type">Program</span>
+{
+    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="type">string</span>[] args)
+    {
+        List&lt;Estudiante&gt; estudiantes = <span class="keyword">new</span> List&lt;Estudiante&gt;();
+        estudiantes.Add(<span class="keyword">new</span> Estudiante { Nombre = <span class="string">"Ana"</span>,    Carrera = <span class="string">"Sistemas"</span>,   Promedio = <span class="string">18.5</span>, Edad = <span class="string">21</span> });
+        estudiantes.Add(<span class="keyword">new</span> Estudiante { Nombre = <span class="string">"Luis"</span>,   Carrera = <span class="string">"Sistemas"</span>,   Promedio = <span class="string">15.2</span>, Edad = <span class="string">23</span> });
+        estudiantes.Add(<span class="keyword">new</span> Estudiante { Nombre = <span class="string">"María"</span>,  Carrera = <span class="string">"Industrial"</span>, Promedio = <span class="string">17.8</span>, Edad = <span class="string">22</span> });
+        estudiantes.Add(<span class="keyword">new</span> Estudiante { Nombre = <span class="string">"Carlos"</span>, Carrera = <span class="string">"Industrial"</span>, Promedio = <span class="string">12.4</span>, Edad = <span class="string">20</span> });
+        estudiantes.Add(<span class="keyword">new</span> Estudiante { Nombre = <span class="string">"Sofía"</span>,  Carrera = <span class="string">"Sistemas"</span>,   Promedio = <span class="string">19.1</span>, Edad = <span class="string">21</span> });
+        estudiantes.Add(<span class="keyword">new</span> Estudiante { Nombre = <span class="string">"Pedro"</span>,  Carrera = <span class="string">"Civil"</span>,      Promedio = <span class="string">14.0</span>, Edad = <span class="string">24</span> });
+
+        <span class="comment">// 1. Estudiantes destacados (promedio &gt;= 17)</span>
+        <span class="keyword">var</span> destacados = estudiantes
+            .Where(e => e.Promedio &gt;= <span class="string">17</span>)
+            .OrderByDescending(e => e.Promedio)
+            .Select(e => <span class="keyword">new</span> { e.Nombre, e.Promedio });
+
+        Console.WriteLine(<span class="string">"--- Destacados ---"</span>);
+        <span class="keyword">foreach</span> (<span class="keyword">var</span> e <span class="keyword">in</span> destacados)
+        {
+            Console.WriteLine(e.Nombre + <span class="string">" ("</span> + e.Promedio + <span class="string">")"</span>);
+        }
+
+        <span class="comment">// 2. Promedio general por carrera</span>
+        <span class="keyword">var</span> porCarrera = estudiantes
+            .GroupBy(e => e.Carrera)
+            .Select(g => <span class="keyword">new</span>
+            {
+                Carrera  = g.Key,
+                Cantidad = g.Count(),
+                Promedio = g.Average(e => e.Promedio),
+                Mejor    = g.Max(e => e.Promedio)
+            });
+
+        Console.WriteLine(<span class="string">"--- Resumen por carrera ---"</span>);
+        <span class="keyword">foreach</span> (<span class="keyword">var</span> c <span class="keyword">in</span> porCarrera)
+        {
+            Console.WriteLine(c.Carrera + <span class="string">": "</span> + c.Cantidad + <span class="string">" alumnos | Prom: "</span>
+                              + c.Promedio.ToString(<span class="string">"F2"</span>) + <span class="string">" | Mejor: "</span> + c.Mejor);
+        }
+
+        <span class="comment">// 3. Top 3 por promedio</span>
+        <span class="keyword">var</span> top3 = estudiantes.OrderByDescending(e => e.Promedio).Take(<span class="string">3</span>);
+        Console.WriteLine(<span class="string">"--- Top 3 ---"</span>);
+        <span class="keyword">foreach</span> (<span class="keyword">var</span> e <span class="keyword">in</span> top3)
+        {
+            Console.WriteLine(e.Nombre + <span class="string">" -> "</span> + e.Promedio);
+        }
+
+        <span class="comment">// 4. ¿Hay algún reprobado (promedio &lt; 13)?</span>
+        <span class="type">bool</span> hayReprobados = estudiantes.Any(e => e.Promedio &lt; <span class="string">13</span>);
+        Console.WriteLine(<span class="string">"\n¿Hay reprobados? "</span> + (hayReprobados ? <span class="string">"Sí"</span> : <span class="string">"No"</span>));
+
+        <span class="comment">// 5. Estadísticas globales</span>
+        Console.WriteLine(<span class="string">"\nTotal: "</span> + estudiantes.Count()
+                          + <span class="string">" | Promedio global: "</span> + estudiantes.Average(e => e.Promedio).ToString(<span class="string">"F2"</span>)
+                          + <span class="string">" | Edad máxima: "</span> + estudiantes.Max(e => e.Edad));
+    }
+}</code></pre>
             </div>
         </section>
+
+
 
     </div>
 
