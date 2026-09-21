@@ -537,7 +537,7 @@
             <div class="alert-box">
                 <strong>Problema:</strong> Una empresa tiene la red
                 <code>192.168.10.0/24</code> y necesita dividirla en
-                <strong>8 subredes iguales</strong> para sus distintas áreas administrativas.
+                <strong>4 subredes iguales</strong> para sus distintas áreas administrativas.
             </div>
 
             <p><strong>Debemos encontrar:</strong></p>
@@ -568,54 +568,54 @@
 
             <div class="step-card">
                 <h4><span class="step-number">2</span>Calcular cuántos bits debemos pedir prestados</h4>
-                <p>Necesitamos <strong>8 subredes</strong>. Utilizamos:</p>
+                <p>Necesitamos <strong>4 subredes</strong>. Utilizamos:</p>
                 <div class="calculation">
                     <strong>2<sup>n</sup> ≥ número de subredes</strong><br><br>
-                    2<sup>n</sup> ≥ 8<br>
-                    2<sup>3</sup> = 8<br><br>
-                    <span class="answer">n = 3 bits prestados</span>
+                    2<sup>n</sup> ≥ 4<br>
+                    2<sup>2</sup> = 4<br><br>
+                    <span class="answer">n = 2 bits prestados</span>
                 </div>
-                <p>Por lo tanto, tomamos <strong>3 bits</strong> de los 8 bits que originalmente eran de host.</p>
-                <div class="binary">11111111.11111111.11111111.11100000</div>
+                <p>Por lo tanto, tomamos <strong>2 bits</strong> de los 8 bits que originalmente eran de host.</p>
+                <div class="binary">11111111.11111111.11111111.11000000</div>
             </div>
 
             <div class="step-card">
                 <h4><span class="step-number">3</span>Obtener la nueva máscara</h4>
                 <p>El prefijo original era <strong>/24</strong>. Al tomar 3 bits:</p>
                 <div class="calculation">
-                    /24 + 3 = <span class="answer">/27</span>
+                    /24 + 2 = <span class="answer">/26</span>
                 </div>
-                <p>El último octeto de la máscara es <code>11100000</code>.</p>
+                <p>El último octeto de la máscara es <code>11000000</code>.</p>
                 <p>Convertimos sus bits a decimal:</p>
-                <div class="binary">128 + 64 + 32 + 0 + 0 + 0 + 0 + 0 = 224</div>
+                <div class="binary">128 + 64 + 0 + 0 + 0 + 0 + 0 + 0 = 192</div>
                 <p>Por tanto:</p>
                 <div class="formula-box">
-                    Nueva máscara: 255.255.255.224<br>
-                    CIDR: /27
+                    Nueva máscara: 255.255.255.192<br>
+                    CIDR: /26
                 </div>
-                <p class="answer">Respuesta 1: 255.255.255.224 (/27)</p>
+                <p class="answer">Respuesta 1: 255.255.255.192 (/26)</p>
             </div>
 
             <div class="step-card">
                 <h4><span class="step-number">4</span>Calcular los hosts disponibles</h4>
                 <p>Si prestamos 3 bits de los 8 originales, quedan:</p>
                 <div class="calculation">
-                    h = 8 - 3 = <span class="answer">5 bits para host</span>
+                    h = 8 - 2 = <span class="answer">6 bits para host</span>
                 </div>
                 <p>Direcciones totales por subred:</p>
-                <div class="formula-box">2<sup>5</sup> = 32 direcciones</div>
+                <div class="formula-box">2<sup>6</sup> = 64 direcciones</div>
                 <p>Como la primera dirección identifica la red y la última es el broadcast:</p>
-                <div class="formula-box">2<sup>5</sup> - 2 = 30 hosts útiles</div>
-                <p class="answer">Respuesta 2: 30 hosts útiles por subred.</p>
+                <div class="formula-box">2<sup>6</sup> - 2 = 62 hosts útiles</div>
+                <p class="answer">Respuesta 2: 62 hosts útiles por subred.</p>
             </div>
 
             <div class="step-card">
                 <h4><span class="step-number">5</span>Calcular el tamaño del salto</h4>
                 <p>El salto se obtiene restando el último octeto de la máscara a 256:</p>
                 <div class="calculation">
-                    256 - 224 = <span class="answer">32</span>
+                    256 - 192 = <span class="answer">64</span>
                 </div>
-                <p>Eso significa que las redes comenzarán cada 32 posiciones:</p>
+                <p>Eso significa que las redes comenzarán cada 64 posiciones:</p>
 
                 <div class="table-container">
                     <table>
@@ -630,41 +630,21 @@
                             <tr>
                                 <td>1</td>
                                 <td>192.168.10.0</td>
-                                <td>31</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>192.168.10.32</td>
                                 <td>63</td>
                             </tr>
                             <tr>
-                                <td>3</td>
+                                <td>2</td>
                                 <td>192.168.10.64</td>
-                                <td>95</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>192.168.10.96</td>
                                 <td>127</td>
                             </tr>
                             <tr>
-                                <td>5</td>
+                                <td>3</td>
                                 <td>192.168.10.128</td>
-                                <td>159</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>192.168.10.160</td>
                                 <td>191</td>
                             </tr>
                             <tr>
-                                <td>7</td>
+                                <td>4</td>
                                 <td>192.168.10.192</td>
-                                <td>223</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>192.168.10.224</td>
                                 <td>255</td>
                             </tr>
                         </tbody>
@@ -677,32 +657,33 @@
                 <p>La tercera subred comienza después de sumar el salto dos veces desde la primera red:</p>
                 <div class="calculation">
                     Primera red: 192.168.10.0<br>
-                    Segunda red: 0 + 32 = 32<br>
-                    Tercera red: 32 + 32 = <span class="answer">64</span>
+                    Segunda red: 0 + 64 = 64<br>
+                    Tercera red: 64 + 64 = <span class="answer">128</span>
                 </div>
 
                 <p>Por tanto, la <strong>dirección de red</strong> de la tercera subred es:</p>
-                <div class="formula-box">192.168.10.64</div>
+                <div class="formula-box">192.168.10.128</div>
             </div>
 
             <div class="step-card">
                 <h4><span class="step-number">7</span>Encontrar el rango de hosts útiles</h4>
-                <p>La dirección de red es <strong>192.168.10.64</strong>.</p>
+                <p>La dirección de red es <strong>192.168.10.128</strong>.</p>
                 <p>La primera IP utilizable es la siguiente:</p>
-                <div class="formula-box">192.168.10.64 + 1 = 192.168.10.65</div>
+                <div class="formula-box">192.168.10.128 + 1 = 192.168.10.129</div>
                 <p>La última IP utilizable está justo antes del broadcast.</p>
-                <p>Como el bloque termina en <strong>.95</strong>, el broadcast será <strong>192.168.10.95</strong>.</p>
-                <div class="formula-box">Broadcast - 1 = 192.168.10.94</div>
+                <p>Como el bloque termina en <strong>.191</strong>, el broadcast será <strong>192.168.10.191</strong>.
+                </p>
+                <div class="formula-box">Broadcast - 1 = 192.168.10.190</div>
                 <p>Por tanto, el rango útil es:</p>
                 <div class="calculation">
-                    <span class="answer">192.168.10.65 – 192.168.10.94</span>
+                    <span class="answer">192.168.10.129 – 192.168.10.190</span>
                 </div>
             </div>
 
             <div class="step-card">
                 <h4><span class="step-number">8</span>Encontrar el broadcast</h4>
                 <p>El broadcast es la última dirección del bloque de 32 direcciones:</p>
-                <div class="formula-box">192.168.10.95</div>
+                <div class="formula-box">192.168.10.191</div>
                 <p>La relación completa queda:</p>
 
                 <div class="table-container">
@@ -716,23 +697,23 @@
                         <tbody>
                             <tr>
                                 <td>Nueva máscara</td>
-                                <td><strong>255.255.255.224 (/27)</strong></td>
+                                <td><strong>255.255.255.192 (/26)</strong></td>
                             </tr>
                             <tr>
                                 <td>Hosts útiles</td>
-                                <td><strong>30</strong></td>
+                                <td><strong>62</strong></td>
                             </tr>
                             <tr>
                                 <td>3.ª dirección de red</td>
-                                <td><strong>192.168.10.64</strong></td>
+                                <td><strong>192.168.10.128</strong></td>
                             </tr>
                             <tr>
                                 <td>Rango útil</td>
-                                <td><strong>192.168.10.65 – 192.168.10.94</strong></td>
+                                <td><strong>192.168.10.129 – 192.168.10.190</strong></td>
                             </tr>
                             <tr>
                                 <td>Broadcast</td>
-                                <td><strong>192.168.10.95</strong></td>
+                                <td><strong>192.168.10.191</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -755,10 +736,10 @@
             <h3>Ahora intenta resolverlo tú</h3>
             <p>Antes de mirar nuevamente la solución, intenta responder mentalmente:</p>
             <ul>
-                <li>¿Por qué se tomaron exactamente 3 bits?</li>
-                <li>¿Por qué la máscara terminó en 224?</li>
-                <li>¿Por qué el salto es 32?</li>
-                <li>¿Por qué la tercera red comienza en .64?</li>
+                <li>¿Por qué se tomaron exactamente 2 bits?</li>
+                <li>¿Por qué la máscara terminó en 192?</li>
+                <li>¿Por qué el salto es 64?</li>
+                <li>¿Por qué la tercera red comienza en .128?</li>
             </ul>
 
             <button class="solution-toggle" type="button" onclick="toggleSolution(this)">
@@ -768,7 +749,7 @@
             <div class="solution">
                 <div class="calculation">
                     <strong>Comprobación:</strong><br>
-                    8 subredes × 32 direcciones = 256 direcciones.<br>
+                    4 subredes × 64 direcciones = 256 direcciones.<br>
                     192.168.10.0 hasta 192.168.10.255 = 256 direcciones.<br>
                     Por tanto, las 8 subredes ocupan exactamente toda la red /24.
                 </div>
