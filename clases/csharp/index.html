@@ -2,227 +2,424 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Completa de C# en Visual Studio 2012</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Guía de Estudio de C# 5.0 — Visual Studio 2012</title>
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #111111;
-            --accent-color: #2b579a;
-            --code-bg: #f4f4f4;
-            --code-border: #cccccc;
-            --box-bg: #fafafa;
-            --box-border: #e0e0e0;
+            --bg: #f5f7fb;
+            --surface: #fff;
+            --surface-2: #eef3f9;
+            --text: #172033;
+            --muted: #5d687b;
+            --primary: #2b579a;
+            --primary-dark: #1b3f73;
+            --accent: #0078d4;
+            --border: #d9e1ec;
+            --code: #0f172a;
+            --code-text: #e7eef8;
+            --shadow: 0 8px 24px rgba(20, 42, 70, .08);
+            --radius: 14px;
+            --max: 980px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
             margin: 0;
-            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.65
+        }
+
+        img {
+            max-width: 100%;
+            height: auto
+        }
+
+        a {
+            color: var(--accent)
         }
 
         header {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            padding: 2.5rem 1rem;
-            text-align: center;
-            border-bottom: 4px solid #1a365d;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff;
+            padding: 2.2rem 1rem 1.8rem;
+            text-align: center
+        }
+
+        header .eyebrow {
+            margin: 0 0 .35rem;
+            font-size: .82rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            opacity: .85
         }
 
         header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2.2rem;
+            margin: 0;
+            font-size: clamp(1.65rem, 6vw, 2.6rem);
+            line-height: 1.15
         }
 
         header p {
-            margin: 0;
-            font-size: 1.1rem;
-            opacity: 0.9;
+            max-width: 760px;
+            margin: .8rem auto 0;
+            font-size: 1rem;
+            opacity: .92
         }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
+            width: min(100% - 1.5rem, var(--max));
+            margin: auto;
+            padding: 1rem 0 3rem
         }
 
-        section {
-            margin-bottom: 2.5rem;
+        .toc {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(255, 255, 255, .96);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .04)
         }
 
-        h2 {
-            color: var(--accent-color);
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 0.3rem;
-            margin-top: 2rem;
+        .toc-inner {
+            width: min(100% - 1.5rem, var(--max));
+            margin: auto;
+            display: flex;
+            gap: .55rem;
+            overflow-x: auto;
+            padding: .65rem 0;
+            scrollbar-width: thin
+        }
+
+        .toc a {
+            white-space: nowrap;
+            text-decoration: none;
+            background: var(--surface-2);
+            color: var(--primary-dark);
+            padding: .45rem .75rem;
+            border-radius: 999px;
+            font-size: .82rem;
+            font-weight: 700
+        }
+
+        .toc a:hover,
+        .toc a:focus {
+            background: var(--primary);
+            color: #fff
+        }
+
+        .unit {
+            margin: 1.4rem 0 2rem
+        }
+
+        .unit-title {
+            background: var(--primary-dark);
+            color: #fff;
+            border-radius: var(--radius) var(--radius) 0 0;
+            padding: 1rem 1rem .9rem;
+            margin: 0
+        }
+
+        .unit-title .unit-number {
+            display: block;
+            font-size: .76rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            opacity: .8
+        }
+
+        .unit-title h2 {
+            margin: .2rem 0 0;
+            font-size: 1.35rem;
+            line-height: 1.25
+        }
+
+        .unit-intro {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 0;
+            padding: 1rem;
+            border-radius: 0 0 var(--radius) var(--radius);
+            color: var(--muted)
+        }
+
+        section.topic {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 5rem
+        }
+
+        section.topic h2 {
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            line-height: 1.3;
+            margin: 0 0 1rem;
+            padding-bottom: .55rem;
+            border-bottom: 2px solid #dbe7f5
         }
 
         h3 {
-            color: var(--text-color);
-            margin-top: 1.5rem;
+            color: #26364f;
+            margin-top: 1.4rem;
+            line-height: 1.35
+        }
+
+        h4 {
+            color: #34455f
         }
 
         p,
         li {
-            font-size: 1rem;
-            color: var(--text-color);
+            font-size: .98rem
         }
 
         ul,
         ol {
-            padding-left: 1.5rem;
+            padding-left: 1.25rem
         }
 
         .explainer-box {
-            background-color: var(--box-bg);
-            border: 1px solid var(--box-border);
-            border-left: 5px solid var(--accent-color);
-            padding: 1.2rem;
-            margin: 1.5rem 0;
-            border-radius: 4px;
+            background: #f7faff;
+            border: 1px solid #d9e8f8;
+            border-left: 5px solid var(--accent);
+            padding: 1rem;
+            margin: 1.2rem 0;
+            border-radius: 10px
         }
 
         pre {
-            background-color: var(--code-bg);
-            border: 1px solid var(--code-border);
-            border-radius: 4px;
+            background: var(--code);
+            color: var(--code-text);
+            border: 1px solid #25334a;
+            border-radius: 10px;
             padding: 1rem;
             overflow-x: auto;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.95rem;
-            color: #000000;
+            font: .88rem/1.55 "Cascadia Code", "SFMono-Regular", Consolas, "Courier New", monospace;
+            margin: 1rem 0
         }
 
         code {
-            font-family: "Courier New", Courier, monospace;
-            background-color: var(--code-bg);
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-size: 0.95rem;
+            font-family: "Cascadia Code", "SFMono-Regular", Consolas, "Courier New", monospace;
+            background: #edf2f7;
+            color: #17365f;
+            padding: .12rem .35rem;
+            border-radius: 5px;
+            font-size: .9em
         }
 
         pre code {
-            background-color: transparent;
-            padding: 0;
+            background: transparent;
+            color: inherit;
+            padding: 0
         }
 
         .keyword {
-            color: #0000ff;
-            font-weight: bold;
+            color: #6ea8fe;
+            font-weight: 700
         }
 
         .type {
-            color: #2b91af;
-            font-weight: bold;
+            color: #66d9ef;
+            font-weight: 700
         }
 
         .string {
-            color: #a31515;
+            color: #ce9178
         }
 
-        .comment {
-            color: #008000;
-            font-style: italic;
+        .callout {
+            padding: 1rem;
+            border-radius: 10px;
+            background: #fff8e8;
+            border: 1px solid #f1dfab
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            display: block;
+            overflow-x: auto;
+            margin: 1rem 0
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: .65rem;
+            text-align: left;
+            min-width: 120px
+        }
+
+        th {
+            background: var(--surface-2)
+        }
+
+        .footer-note {
+            color: var(--muted);
+            font-size: .9rem
         }
 
         footer {
+            background: #172033;
+            color: #dce5f2;
             text-align: center;
-            padding: 1.5rem;
-            background-color: #f1f1f1;
-            border-top: 1px solid var(--code-border);
-            font-size: 0.9rem;
-            color: #555555;
+            padding: 1.5rem 1rem
         }
 
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 1.8rem;
+        @media (min-width:700px) {
+            header {
+                padding: 3rem 1.5rem 2.4rem
             }
 
             .container {
-                padding: 1rem;
+                padding-top: 1.5rem
+            }
+
+            section.topic {
+                padding: 1.35rem
+            }
+
+            .unit-title {
+                padding: 1.2rem 1.35rem 1rem
+            }
+
+            .unit-intro {
+                padding: 1.1rem 1.35rem
+            }
+
+            p,
+            li {
+                font-size: 1rem
+            }
+        }
+
+        @media print {
+            .toc {
+                display: none
+            }
+
+            body {
+                background: #fff
+            }
+
+            .container {
+                width: 100%
+            }
+
+            section.topic {
+                box-shadow: none;
+                break-inside: avoid
+            }
+
+            .unit-title {
+                break-after: avoid
             }
         }
     </style>
 </head>
 
 <body>
-
     <header>
-        <h1>Programación en C# (Visual Studio 2012)</h1>
-        <p>Estructura, Variables, Entrada/Salida, Control de Flujo, Manejo de Cadenas, Colecciones, LINQ y Funciones</p>
+        <p class="eyebrow">Guía de estudio · Programación</p>
+        <h1>C# 5.0 con Visual Studio 2012</h1>
+        <p>Ruta pedagógica: fundamentos → datos → entrada/salida → decisiones → texto → repetición → métodos → LINQ</p>
     </header>
-
-    <div class="container">
-
-        <section>
-            <h2>1. El Origen del Lenguaje C#</h2>
-            <p>C# (pronunciado <em>C-sharp</em>) fue desarrollado a finales de la década de 1990 y principios de los
-                2000 por <strong>Microsoft</strong>, bajo el liderazgo de <strong>Anders Hejlsberg</strong> y su equipo
-                de arquitectos de software.</p>
-            <p>Nació como un lenguaje moderno, orientado a objetos, fuertemente tipado y diseñado específicamente para
-                ejecutarse sobre la plataforma <strong>.NET Framework</strong>. Su propósito principal fue ofrecer la
-                potencia de desarrollo de sistemas de bajo nivel combinada con la alta productividad en la construcción
-                de aplicaciones de escritorio, empresariales y servicios web.</p>
-
-            <div class="explainer-box">
-                <h3>Aspectos Clave de su Evolución</h3>
+    <nav aria-label="Navegación de unidades" class="toc">
+        <div class="toc-inner"><a href="#unidad-1">Unidad 1</a><a href="#unidad-2">Unidad 2</a><a
+                href="#unidad-3">Unidad 3</a><a href="#unidad-4">Unidad 4</a><a href="#unidad-5">Unidad 5</a><a
+                href="#unidad-6">Unidad 6</a><a href="#unidad-7">Unidad 7</a><a href="#unidad-8">Unidad 8</a></div>
+    </nav>
+    <main class="container">
+        <div class="unit" id="unidad-1">
+            <div class="unit-title"><span class="unit-number">Unidad 1</span>
+                <h2>Fundamentos de C# y Visual Studio 2012</h2>
+            </div>
+            <div class="unit-intro">Primero se construye el contexto: de dónde viene C#, qué ofrece C# 5.0 y cómo se
+                estructura un programa antes de trabajar con datos.</div>
+            <section class="topic">
+                <h2>1.1 ¿Qué es C#? — Origen y evolución</h2>
+                <p>C# (pronunciado <em>C-sharp</em>) fue desarrollado a finales de la década de 1990 y principios de los
+                    2000 por <strong>Microsoft</strong>, bajo el liderazgo de <strong>Anders Hejlsberg</strong> y su
+                    equipo
+                    de arquitectos de software.</p>
+                <p>Nació como un lenguaje moderno, orientado a objetos, fuertemente tipado y diseñado específicamente
+                    para
+                    ejecutarse sobre la plataforma <strong>.NET Framework</strong>. Su propósito principal fue ofrecer
+                    la
+                    potencia de desarrollo de sistemas de bajo nivel combinada con la alta productividad en la
+                    construcción
+                    de aplicaciones de escritorio, empresariales y servicios web.</p>
+                <div class="explainer-box">
+                    <h3>Aspectos Clave de su Evolución</h3>
+                    <ul>
+                        <li><strong>Raíces y Sintaxis:</strong> Hereda las convenciones de la familia de lenguajes C,
+                            proporcionando una sintaxis limpia, intuitiva y estructurada.</li>
+                        <li><strong>Estandarización Internacional:</strong> Fue aprobado oficialmente como estándar por
+                            la
+                            asociación <em>ECMA</em> (ECMA-334) y por la organización <em>ISO</em> (ISO/IEC 23270).</li>
+                        <li><strong>Plataforma .NET:</strong> Su ejecución se apoya en el CLR (Common Language Runtime),
+                            garantizando la gestión segura de memoria mediante el recolector de basura (<em>Garbage
+                                Collector</em>) y la interoperabilidad de componentes.</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="topic">
+                <h2>1.2 Características de C# 5.0 y Visual Studio 2012</h2>
+                <p>C# 5.0 introdujo importantes avances orientados a la programación asíncrona (como las palabras clave
+                    <code>async</code> y <code>await</code>), consolidando un modelo de desarrollo robusto bajo las
+                    siguientes premisas estructurales:
+                </p>
                 <ul>
-                    <li><strong>Raíces y Sintaxis:</strong> Hereda las convenciones de la familia de lenguajes C,
-                        proporcionando una sintaxis limpia, intuitiva y estructurada.</li>
-                    <li><strong>Estandarización Internacional:</strong> Fue aprobado oficialmente como estándar por la
-                        asociación <em>ECMA</em> (ECMA-334) y por la organización <em>ISO</em> (ISO/IEC 23270).</li>
-                    <li><strong>Plataforma .NET:</strong> Su ejecución se apoya en el CLR (Common Language Runtime),
-                        garantizando la gestión segura de memoria mediante el recolector de basura (<em>Garbage
-                            Collector</em>) y la interoperabilidad de componentes.</li>
+                    <li><strong>Orientación a Objetos Pura:</strong> Todo tipo de dato, método y ejecutable se encapsula
+                        dentro de clases y estructuras controladas por espacios de nombres (<code>namespace</code>).
+                    </li>
+                    <li><strong>Tipado Estático y Seguro:</strong> Verificación estricta en tiempo de compilación,
+                        permitiendo al mismo tiempo la inferencia local de tipos mediante la palabra clave
+                        <code>var</code>.
+                    </li>
+                    <li><strong>Modelo de Ensamblados:</strong> Organización modular del código a través de ensamblados
+                        (.dll / .exe) gestionados por el CLR de .NET Framework 4.5.</li>
                 </ul>
-            </div>
-        </section>
-
-        <section>
-            <h2>2. Características Clave de C# 5.0 en Visual Studio 2012</h2>
-            <p>C# 5.0 introdujo importantes avances orientados a la programación asíncrona (como las palabras clave
-                <code>async</code> y <code>await</code>), consolidando un modelo de desarrollo robusto bajo las
-                siguientes premisas estructurales:
-            </p>
-            <ul>
-                <li><strong>Orientación a Objetos Pura:</strong> Todo tipo de dato, método y ejecutable se encapsula
-                    dentro de clases y estructuras controladas por espacios de nombres (<code>namespace</code>).</li>
-                <li><strong>Tipado Estático y Seguro:</strong> Verificación estricta en tiempo de compilación,
-                    permitiendo al mismo tiempo la inferencia local de tipos mediante la palabra clave <code>var</code>.
-                </li>
-                <li><strong>Modelo de Ensamblados:</strong> Organización modular del código a través de ensamblados
-                    (.dll / .exe) gestionados por el CLR de .NET Framework 4.5.</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>3. Estructura Básica de un Programa en C#</h2>
-            <p>Esqueleto fundamental que incluye la directiva de espacio de nombres, la clase contenedora y el punto de
-                entrada principal <code>Main</code>. Para crear un proyecto de consola en Visual Studio 2012, siga estos
-                pasos:</p>
-            <ol>
-                <li>Abra Visual Studio 2012.</li>
-                <li>Seleccione <strong>Archivo &gt; Nuevo &gt; Proyecto</strong>.</li>
-                <li>En el cuadro de diálogo, elija <strong>Visual C#</strong> en el panel izquierdo y luego
-                    <strong>Aplicación de Consola</strong>.
-                </li>
-                <li>Asigne un nombre al proyecto y haga clic en <strong>Aceptar</strong>.</li>
-            </ol>
-
-            <div class="img-container">
-                <img src="./pictures/newproject.png"
-                    alt="Proceso de creación de un proyecto de consola C# en Visual Studio 2012"
-                    style="max-width: 100%; height: auto; display: block; margin: 15px 0;">
-            </div>
-
-            <div class="explainer-box">
-                <h3>Estructura General</h3>
-                <pre><code><span class="keyword">using</span> System;
+            </section>
+            <section class="topic">
+                <h2>1.3 Estructura básica de un programa en C#</h2>
+                <p>Esqueleto fundamental que incluye la directiva de espacio de nombres, la clase contenedora y el punto
+                    de
+                    entrada principal <code>Main</code>. Para crear un proyecto de consola en Visual Studio 2012, siga
+                    estos
+                    pasos:</p>
+                <ol>
+                    <li>Abra Visual Studio 2012.</li>
+                    <li>Seleccione <strong>Archivo &gt; Nuevo &gt; Proyecto</strong>.</li>
+                    <li>En el cuadro de diálogo, elija <strong>Visual C#</strong> en el panel izquierdo y luego
+                        <strong>Aplicación de Consola</strong>.
+                    </li>
+                    <li>Asigne un nombre al proyecto y haga clic en <strong>Aceptar</strong>.</li>
+                </ol>
+                <div class="img-container">
+                    <img alt="Proceso de creación de un proyecto de consola C# en Visual Studio 2012"
+                        src="./pictures/newproject.png"
+                        style="max-width: 100%; height: auto; display: block; margin: 15px 0;" />
+                </div>
+                <div class="explainer-box">
+                    <h3>Estructura General</h3>
+                    <pre><code><span class="keyword">using</span> System;
 
 <span class="keyword">namespace</span> <span class="type">EstructuraBase</span>
 {
@@ -235,54 +432,60 @@
         }
     }
 }</code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-2">
+            <div class="unit-title"><span class="unit-number">Unidad 2</span>
+                <h2>Datos, variables y operadores</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>4. Tipos de Datos y Variables</h2>
-            <p>Declaración de tipos primitivos fundamentales (enteros, decimales de punto flotante, booleanos, cadenas
-                de texto) y uso de inferencia estática con <code>var</code>.</p>
-            <div class="explainer-box">
-                <h3>Ejemplo de Variables</h3>
-                <pre><code><span class="type">int</span> edad = <span class="string">25</span>;
+            <div class="unit-intro">Aquí el estudiante aprende a representar información y a operar con ella. Los
+                operadores relacionales se colocan antes de los lógicos porque serán la base de las condiciones.</div>
+            <section class="topic">
+                <h2>2.1 Tipos de datos y variables</h2>
+                <p>Declaración de tipos primitivos fundamentales (enteros, decimales de punto flotante, booleanos,
+                    cadenas
+                    de texto) y uso de inferencia estática con <code>var</code>.</p>
+                <div class="explainer-box">
+                    <h3>Ejemplo de Variables</h3>
+                    <pre><code><span class="type">int</span> edad = <span class="string">25</span>;
 <span class="type">double</span> sueldo = <span class="string">1250.50</span>;
 <span class="type">bool</span> activo = <span class="keyword">true</span>;
 <span class="type">string</span> nombre = <span class="string">"María Pérez"</span>;
 <span class="keyword">var</span> anio = <span class="string">2012</span>; <span class="comment">// Inferencia de tipos en C# 5.0</span></code></pre>
-            </div>
-        </section>
-
-        <section>
-            <h2>5. El Tipo de Dato Char (Caracteres Unicode)</h2>
-            <p>El tipo de dato <code>char</code> en C# se utiliza para representar un único carácter o símbolo según la
-                codificación <strong>Unicode (UTF-16)</strong>. Ocupa exactamente 16 bits (2 bytes) de memoria y su
-                valor se asigna delimiando el carácter estrictamente entre <strong>comillas simples</strong>
-                (<code>' '</code>), a diferencia de las cadenas de texto (<code>string</code>) que emplean comillas
-                dobles (<code>" "</code>).</p>
-
-            <p>La clase estructural detrás de este tipo de dato primitivo es <code>System.Char</code>, la cual provee
-                métodos estáticos esenciales para analizar y categorizar caracteres (por ejemplo, verificar si un
-                carácter es una letra, un número o un espacio en blanco).</p>
-
-            <div class="explainer-box">
-                <h3>Secuencias de Escape Frecuentes</h3>
-                <p>Las secuencias de escape permiten representar caracteres especiales que no se pueden escribir
-                    directamente en el código:</p>
-                <ul>
-                    <li><code>\'</code>: Comilla simple.</li>
-                    <li><code>\"</code>: Comilla doble.</li>
-                    <li><code>\\</code>: Barra invertida (backslash).</li>
-                    <li><code>\n</code>: Salto de línea (New Line).</li>
-                    <li><code>\t</code>: Tabulación horizontal.</li>
-                    <li><code>\0</code>: Carácter nulo (Null).</li>
-                    <li><code>\uXXXX</code>: Especificación de carácter Unicode usando código hexadecimal de 4 dígitos.
-                    </li>
-                </ul>
-            </div>
-
-            <div class="explainer-box">
-                <h3>Ejemplo Práctico de Variables Char y Métodos de System.Char</h3>
-                <pre><code><span class="comment">// 1. Declaración e inicialización básica de variables char</span>
+                </div>
+            </section>
+            <section class="topic">
+                <h2>2.2 El tipo de dato char y caracteres Unicode</h2>
+                <p>El tipo de dato <code>char</code> en C# se utiliza para representar un único carácter o símbolo según
+                    la
+                    codificación <strong>Unicode (UTF-16)</strong>. Ocupa exactamente 16 bits (2 bytes) de memoria y su
+                    valor se asigna delimiando el carácter estrictamente entre <strong>comillas simples</strong>
+                    (<code>' '</code>), a diferencia de las cadenas de texto (<code>string</code>) que emplean comillas
+                    dobles (<code>" "</code>).</p>
+                <p>La clase estructural detrás de este tipo de dato primitivo es <code>System.Char</code>, la cual
+                    provee
+                    métodos estáticos esenciales para analizar y categorizar caracteres (por ejemplo, verificar si un
+                    carácter es una letra, un número o un espacio en blanco).</p>
+                <div class="explainer-box">
+                    <h3>Secuencias de Escape Frecuentes</h3>
+                    <p>Las secuencias de escape permiten representar caracteres especiales que no se pueden escribir
+                        directamente en el código:</p>
+                    <ul>
+                        <li><code>\'</code>: Comilla simple.</li>
+                        <li><code>\"</code>: Comilla doble.</li>
+                        <li><code>\\</code>: Barra invertida (backslash).</li>
+                        <li><code>\n</code>: Salto de línea (New Line).</li>
+                        <li><code>\t</code>: Tabulación horizontal.</li>
+                        <li><code>\0</code>: Carácter nulo (Null).</li>
+                        <li><code>\uXXXX</code>: Especificación de carácter Unicode usando código hexadecimal de 4
+                            dígitos.
+                        </li>
+                    </ul>
+                </div>
+                <div class="explainer-box">
+                    <h3>Ejemplo Práctico de Variables Char y Métodos de System.Char</h3>
+                    <pre><code><span class="comment">// 1. Declaración e inicialización básica de variables char</span>
 <span class="type">char</span> letraInicial = <span class="string">'A'</span>;
 <span class="type">char</span> simboloSuma = <span class="string">'+'</span>;
 <span class="type">char</span> digito = <span class="string">'7'</span>;
@@ -309,26 +512,27 @@
 
 Console.WriteLine(<span class="string">"Carácter: "</span> + caracterEvaluar + <span class="string">" | En mayúscula: "</span> + mayuscula);
 Console.WriteLine(<span class="string">"Código ASCII de "</span> + letraInicial + <span class="string">": "</span> + codigoAscii);</code></pre>
-            </div>
-        </section>
-
-        <section>
-            <h2>5. Operadores Aritméticos y Operadores Lógicos</h2>
-            <p>Los operadores permiten manipular los datos de las variables para realizar cálculos matemáticos y
-                evaluaciones de condiciones:</p>
-            <ul>
-                <li><strong>Operadores Aritméticos:</strong> Utilizados para operaciones matemáticas básicas: suma
-                    (<code>+</code>), resta (<code>-</code>), multiplicación (<code>*</code>), división (<code>/</code>)
-                    y el módulo o residuo de una división (<code>%</code>).</li>
-                <li><strong>Operadores Lógicos:</strong> Permiten combinar expresiones booleanas: la conjunción
-                    <code>&amp;&amp;</code> (AND — verdadero si ambas partes se cumplen), la disyunción <code>||</code>
-                    (OR — verdadero si al menos una se cumple) y la negación <code>!</code> (NOT — invierte el valor
-                    booleano).
-                </li>
-            </ul>
-            <div class="explainer-box">
-                <h3>Ejemplo de Operadores Aritméticos y Lógicos</h3>
-                <pre><code><span class="comment">// Operadores Aritméticos</span>
+                </div>
+            </section>
+            <section class="topic">
+                <h2>2.3 Operadores aritméticos, relacionales y lógicos</h2>
+                <p>Los operadores permiten manipular los datos de las variables para realizar cálculos matemáticos y
+                    evaluaciones de condiciones:</p>
+                <ul>
+                    <li><strong>Operadores Aritméticos:</strong> Utilizados para operaciones matemáticas básicas: suma
+                        (<code>+</code>), resta (<code>-</code>), multiplicación (<code>*</code>), división
+                        (<code>/</code>)
+                        y el módulo o residuo de una división (<code>%</code>).</li>
+                    <li><strong>Operadores Lógicos:</strong> Permiten combinar expresiones booleanas: la conjunción
+                        <code>&amp;&amp;</code> (AND — verdadero si ambas partes se cumplen), la disyunción
+                        <code>||</code>
+                        (OR — verdadero si al menos una se cumple) y la negación <code>!</code> (NOT — invierte el valor
+                        booleano).
+                    </li>
+                </ul>
+                <div class="explainer-box">
+                    <h3>Ejemplo de Operadores Aritméticos y Lógicos</h3>
+                    <pre><code><span class="comment">// Operadores Aritméticos</span>
 <span class="type">int</span> a = <span class="string">10</span>;
 <span class="type">int</span> b = <span class="string">3</span>;
 <span class="type">int</span> suma = a + b;       <span class="comment">// Resultado: 13</span>
@@ -343,26 +547,35 @@ Console.WriteLine(<span class="string">"Código ASCII de "</span> + letraInicial
 
 <span class="comment">// OR lógico (verdadero porque al menos uno es verdadero)</span>
 <span class="type">bool</span> accesoAlternativo = esAdulto || tienePermiso;</code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-3">
+            <div class="unit-title"><span class="unit-number">Unidad 3</span>
+                <h2>Entrada y salida por consola</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>6. Lectura y Escritura por Consola</h2>
-            <p>Para interactuar con la consola de comandos en C#, utilizamos los métodos estáticos provistos por la
-                clase <code>Console</code> del espacio de nombres <code>System</code>:</p>
-            <ul>
-                <li><strong>Escritura:</strong> <code>Console.WriteLine()</code> muestra un texto y realiza un salto de
-                    línea. <code>Console.Write()</code> muestra el texto manteniendo el cursor en la misma línea.</li>
-                <li><strong>Lectura:</strong> <code>Console.ReadLine()</code> captura la cadena de texto ingresada por
-                    el usuario hasta presionar <em>Enter</em> (retorna un tipo <code>string</code>).</li>
-                <li><strong>Conversión de Datos:</strong> Dado que la consola recibe texto, se requiere la conversión
-                    explícita mediante métodos como <code>int.Parse()</code> o <code>int.Parse()</code> para
-                    operar con tipos numéricos.</li>
-            </ul>
-
-            <div class="explainer-box">
-                <h3>Ejemplo Práctico de Entrada y Salida</h3>
-                <pre><code><span class="comment">// Escritura básica en consola</span>
+            <div class="unit-intro">Una vez que existen variables y tipos de datos, se aprende a recibir información del
+                usuario, convertirla y mostrar resultados.</div>
+            <section class="topic">
+                <h2>3.1 Entrada y salida por consola</h2>
+                <p>Para interactuar con la consola de comandos en C#, utilizamos los métodos estáticos provistos por la
+                    clase <code>Console</code> del espacio de nombres <code>System</code>:</p>
+                <ul>
+                    <li><strong>Escritura:</strong> <code>Console.WriteLine()</code> muestra un texto y realiza un salto
+                        de
+                        línea. <code>Console.Write()</code> muestra el texto manteniendo el cursor en la misma línea.
+                    </li>
+                    <li><strong>Lectura:</strong> <code>Console.ReadLine()</code> captura la cadena de texto ingresada
+                        por
+                        el usuario hasta presionar <em>Enter</em> (retorna un tipo <code>string</code>).</li>
+                    <li><strong>Conversión de Datos:</strong> Dado que la consola recibe texto, se requiere la
+                        conversión
+                        explícita mediante métodos como <code>int.Parse()</code> o <code>int.Parse()</code> para
+                        operar con tipos numéricos.</li>
+                </ul>
+                <div class="explainer-box">
+                    <h3>Ejemplo Práctico de Entrada y Salida</h3>
+                    <pre><code><span class="comment">// Escritura básica en consola</span>
 Console.Write(<span class="string">"Ingrese su nombre: "</span>);
 <span class="type">string</span> usuario = Console.ReadLine(); <span class="comment">// Lectura de cadena</span>
 
@@ -373,28 +586,36 @@ Console.Write(<span class="string">"Ingrese su edad: "</span>);
 <span class="comment">// Mostrar el resultado concatenando variables</span>
 Console.WriteLine(<span class="string">"Hola "</span> + usuario + <span class="string">", el año que viene tendrás "</span> + (edadUsuario + <span class="string">1</span>) + <span class="string">" años."</span>);
 Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar una tecla</span></code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-4">
+            <div class="unit-title"><span class="unit-number">Unidad 4</span>
+                <h2>Toma de decisiones</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>7. Estructuras Condicionales (if, else if, else)</h2>
-            <p>Permiten ejecutar bloques de código específicos condicionados al resultado de expresiones booleanas:</p>
-            <ul>
-                <li><code>if</code>: Evalúa una condición inicial. Si es verdadera, ejecuta el bloque delimitado.</li>
-                <li><code>else if</code>: Permite encadenar evaluaciones secuenciales adicionales.</li>
-                <li><code>else</code>: Bloque de captura final que se ejecuta si ninguna condición previa resulta
-                    verdadera.</li>
-            </ul>
-            <div class="explainer-box">
-                <h3>Ejemplo Completo de Estructura if - else if - else</h3>
-                <pre><code><span class="type">int</span> nota = <span class="string">16</span>;
+            <div class="unit-intro">Las condiciones aparecen después de conocer datos, operadores y entrada de
+                información. Se empieza con if y se continúa con switch.</div>
+            <section class="topic">
+                <h2>4.1 Estructuras condicionales: if, else if, else</h2>
+                <p>Permiten ejecutar bloques de código específicos condicionados al resultado de expresiones booleanas:
+                </p>
+                <ul>
+                    <li><code>if</code>: Evalúa una condición inicial. Si es verdadera, ejecuta el bloque delimitado.
+                    </li>
+                    <li><code>else if</code>: Permite encadenar evaluaciones secuenciales adicionales.</li>
+                    <li><code>else</code>: Bloque de captura final que se ejecuta si ninguna condición previa resulta
+                        verdadera.</li>
+                </ul>
+                <div class="explainer-box">
+                    <h3>Ejemplo Completo de Estructura if - else if - else</h3>
+                    <pre><code><span class="type">int</span> nota = <span class="string">16</span>;
 <span class="type">bool</span> asistenciaPerfecta = <span class="keyword">true</span>;
 
-<span class="keyword">if</span> (nota >= <span class="string">18</span> &amp;&amp; asistenciaPerfecta)
+<span class="keyword">if</span> (nota &gt;= <span class="string">18</span> &amp;&amp; asistenciaPerfecta)
 {
     Console.WriteLine(<span class="string">"¡Excelente! Obtentor de BECA de Honor."</span>);
 }
-<span class="keyword">else if</span> (nota >= <span class="string">10</span> || asistenciaPerfecta)
+<span class="keyword">else if</span> (nota &gt;= <span class="string">10</span> || asistenciaPerfecta)
 {
     Console.WriteLine(<span class="string">"Aprobado de manera regular o por asistencia."</span>);
 }
@@ -402,17 +623,16 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
 {
     Console.WriteLine(<span class="string">"Reprobado. Debe cursar nuevamente la asignatura."</span>);
 }</code></pre>
-            </div>
-        </section>
-
-        <section>
-            <h2>8. Estructura de Selección Múltiple (switch)</h2>
-            <p>Evalúa una expresión contra múltiples valores constantes discretos definidos en bloques
-                <code>case</code>.
-            </p>
-            <div class="explainer-box">
-                <h3>Ejemplo de Switch</h3>
-                <pre><code><span class="type">int</span> diaSemana = <span class="string">3</span>;
+                </div>
+            </section>
+            <section class="topic">
+                <h2>4.2 Selección múltiple con switch</h2>
+                <p>Evalúa una expresión contra múltiples valores constantes discretos definidos en bloques
+                    <code>case</code>.
+                </p>
+                <div class="explainer-box">
+                    <h3>Ejemplo de Switch</h3>
+                    <pre><code><span class="type">int</span> diaSemana = <span class="string">3</span>;
 
 <span class="keyword">switch</span> (diaSemana)
 {
@@ -429,44 +649,53 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
         Console.WriteLine(<span class="string">"Otro día"</span>);
         <span class="keyword">break</span>;
 }</code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-5">
+            <div class="unit-title"><span class="unit-number">Unidad 5</span>
+                <h2>Procesamiento de texto</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>9. Manejo de Cadenas de Texto (Strings) en C# 5.0</h2>
-            <p>En C#, las cadenas son objetos de la clase <code>System.String</code> que representan secuencias
-                inmutables de caracteres. Debido a su <strong>inmutabilidad</strong>, ningún método altera la cadena
-                original; en su lugar, procesan la información y <strong>retornan una nueva instancia de
-                    <code>string</code></strong> con el resultado que puede guardarse en otra variable o reasignarse.
-            </p>
-
-            <p><strong>Encadenamiento de Métodos (Method Chaining):</strong> Gracias a que los métodos de cadenas
-                devuelven un nuevo objeto <code>string</code>, es posible conectar múltiples métodos en una sola línea
-                de código. La evaluación se realiza de izquierda a derecha, aplicando cada transformación al resultado
-                del método anterior.</p>
-
-            <div class="explainer-box">
-                <h3>Resumen de Métodos Más Útiles</h3>
-                <ul>
-                    <li><strong>Transformación:</strong> <code>ToLower()</code>, <code>ToUpper()</code>,
-                        <code>Trim()</code>.
-                    </li>
-                    <li><strong>Búsqueda y Verificación:</strong> <code>StartsWith()</code>, <code>EndsWith()</code>,
-                        <code>Contains()</code>, <code>IndexOf()</code>, <code>LastIndexOf()</code>.
-                    </li>
-                    <li><strong>Extracción y Modificación:</strong> <code>Substring()</code>, <code>Replace()</code>,
-                        <code>Remove()</code>.
-                    </li>
-                    <li><strong>Segmentación y Unión:</strong> <code>Split()</code>, <code>string.Join()</code>.</li>
-                    <li><strong>Evaluación de Vacíos:</strong> <code>string.IsNullOrWhiteSpace()</code>,
-                        <code>string.IsNullOrEmpty()</code>.
-                    </li>
-                </ul>
-            </div>
-
-            <div class="explainer-box">
-                <h3>Ejemplos Prácticos de Métodos y Encadenamiento</h3>
-                <pre><code><span class="type">string</span> cadenaBase = <span class="string">"   Código de Producto: PRD-98765-VEN.xlsx   "</span>;
+            <div class="unit-intro">Antes de trabajar con colecciones, el estudiante aprende a manipular cadenas:
+                buscar, extraer, reemplazar, dividir y validar texto.</div>
+            <section class="topic">
+                <h2>5.1 Manejo de cadenas de texto (string)</h2>
+                <p>En C#, las cadenas son objetos de la clase <code>System.String</code> que representan secuencias
+                    inmutables de caracteres. Debido a su <strong>inmutabilidad</strong>, ningún método altera la cadena
+                    original; en su lugar, procesan la información y <strong>retornan una nueva instancia de
+                        <code>string</code></strong> con el resultado que puede guardarse en otra variable o
+                    reasignarse.
+                </p>
+                <p><strong>Encadenamiento de Métodos (Method Chaining):</strong> Gracias a que los métodos de cadenas
+                    devuelven un nuevo objeto <code>string</code>, es posible conectar múltiples métodos en una sola
+                    línea
+                    de código. La evaluación se realiza de izquierda a derecha, aplicando cada transformación al
+                    resultado
+                    del método anterior.</p>
+                <div class="explainer-box">
+                    <h3>Resumen de Métodos Más Útiles</h3>
+                    <ul>
+                        <li><strong>Transformación:</strong> <code>ToLower()</code>, <code>ToUpper()</code>,
+                            <code>Trim()</code>.
+                        </li>
+                        <li><strong>Búsqueda y Verificación:</strong> <code>StartsWith()</code>,
+                            <code>EndsWith()</code>,
+                            <code>Contains()</code>, <code>IndexOf()</code>, <code>LastIndexOf()</code>.
+                        </li>
+                        <li><strong>Extracción y Modificación:</strong> <code>Substring()</code>,
+                            <code>Replace()</code>,
+                            <code>Remove()</code>.
+                        </li>
+                        <li><strong>Segmentación y Unión:</strong> <code>Split()</code>, <code>string.Join()</code>.
+                        </li>
+                        <li><strong>Evaluación de Vacíos:</strong> <code>string.IsNullOrWhiteSpace()</code>,
+                            <code>string.IsNullOrEmpty()</code>.
+                        </li>
+                    </ul>
+                </div>
+                <div class="explainer-box">
+                    <h3>Ejemplos Prácticos de Métodos y Encadenamiento</h3>
+                    <pre><code><span class="type">string</span> cadenaBase = <span class="string">"   Código de Producto: PRD-98765-VEN.xlsx   "</span>;
 
 <span class="comment">// 1. Encadenamiento de Métodos (Method Chaining en una sola línea)</span>
 <span class="type">string</span> limpioYFormateado = cadenaBase.Trim().ToLower().Replace(<span class="string">".xlsx"</span>, <span class="string">".pdf"</span>);
@@ -520,117 +749,33 @@ Console.ReadKey(); <span class="comment">// Pausa la ejecución hasta presionar 
 <span class="type">double</span> precio = <span class="string">850.75</span>;
 <span class="type">string</span> reporte = <span class="type">string</span>.Format(<span class="string">"Producto: {0} | Precio: ${1:F2}"</span>, producto, precio);
 Console.WriteLine(reporte);</code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-6">
+            <div class="unit-title"><span class="unit-number">Unidad 6</span>
+                <h2>Repetición y estructuras de datos</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>10. Arreglos (Arrays) y Colecciones de Datos</h2>
-            <p>Las estructuras de datos permiten almacenar y gestionar conjuntos de elementos en memoria. En C# contamos
-                con arreglos estáticos de tamaño fijo y colecciones genéricas dinámicas que se adaptan automáticamente
-                al número de elementos.</p>
-            <p><strong>Espacio de Nombres Requerido:</strong> Para utilizar colecciones genéricas como
-                <code>List&lt;T&gt;</code>, <code>Stack&lt;T&gt;</code> y <code>Queue&lt;T&gt;</code>, es obligatorio
-                incluir al inicio del archivo la directiva <code>using System.Collections.Generic;</code>.
-            </p>
-
-            <div class="explainer-box">
-                <h3>1. Arreglos Unidimensionales (Vectores)</h3>
-                <p>Poseen una dimensión finita y un índice basado en cero.</p>
-                <pre><code><span class="comment">// Declaración e inicialización directa</span>
-<span class="type">string</span>[] tecnologias = { <span class="string">"C#"</span>, <span class="string">"Visual Studio"</span>, <span class="string">"ADO.NET"</span> };
-Console.WriteLine(<span class="string">"Primer elemento: "</span> + tecnologias[<span class="string">0</span>]);
-
-<span class="comment">// Declaración reservando tamaño fijo</span>
-<span class="type">int</span>[] numeros = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">3</span>];
-numeros[<span class="string">0</span>] = <span class="string">10</span>;
-numeros[<span class="string">1</span>] = <span class="string">20</span>;
-numeros[<span class="string">2</span>] = <span class="string">30</span>;</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>2. Arreglos Multidimensionales (Matrices) y Dentados</h3>
-                <p>C# soporta matrices rectangulares bidimensionales (filas y columnas) y arreglos de arreglos (arreglos
-                    dentados o <em>jagged arrays</em>).</p>
-                <pre><code><span class="comment">// Matriz rectangular (2 filas x 3 columnas)</span>
-<span class="type">int</span>[,] matriz = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">2</span>, <span class="string">3</span>] { 
-    { <span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span> }, 
-    { <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span> } 
-};
-Console.WriteLine(<span class="string">"Elemento fila 1, col 2: "</span> + matriz[<span class="string">1</span>, <span class="string">2</span>]); <span class="comment">// Imprime 6</span>
-
-<span class="comment">// Arreglo Dentado (Jagged Array): Arreglo cuyos elementos son otros arreglos</span>
-<span class="type">int</span>[][] dentado = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">2</span>][];
-dentado[<span class="string">0</span>] = <span class="keyword">new</span> <span class="type">int</span>[] { <span class="string">1</span>, <span class="string">2</span> };
-dentado[<span class="string">1</span>] = <span class="keyword">new</span> <span class="type">int</span>[] { <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span> };
-Console.WriteLine(<span class="string">"Elemento del arreglo dentado: "</span> + dentado[<span class="string">1</span>][<span class="string">2</span>]); <span class="comment">// Imprime 5</span></code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>3. Listas Dinámicas (List&lt;T&gt;)</h3>
-                <p>Permiten agregar, eliminar y buscar elementos de manera dinámica sin definir un límite
-                    predeterminado.</p>
-                <pre><code>List&lt;<span class="type">string</span>&gt; estudiantes = <span class="keyword">new</span> List&lt;<span class="type">string</span>&gt;();
-estudiantes.Add(<span class="string">"Ana"</span>);
-estudiantes.Add(<span class="string">"Carlos"</span>);
-estudiantes.Add(<span class="string">"Beatriz"</span>);
-
-estudiantes.Remove(<span class="string">"Carlos"</span>); <span class="comment">// Remueve por valor</span>
-
-<span class="keyword">foreach</span> (<span class="type">string</span> est <span class="keyword">in</span> estudiantes)
-{
-    Console.WriteLine(<span class="string">"Estudiante: "</span> + est);
-}</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>4. Pilas (Stack&lt;T&gt;) y Colas (Queue&lt;T&gt;)</h3>
-                <p>Estructuras dinámicas que ordenan el procesamiento de sus elementos mediante políticas específicas:
-                </p>
+            <div class="unit-intro">Primero se aprenden los bucles porque permiten recorrer y procesar colecciones.
+                Después se presentan arrays, matrices, listas, pilas y colas.</div>
+            <section class="topic">
+                <h2>6.1 Estructuras de repetición: for, while, do-while y foreach</h2>
+                <p>Permiten la ejecución iterativa de bloques de código bajo condiciones específicas de control:</p>
                 <ul>
-                    <li><strong>Stack&lt;T&gt; (Pila):</strong> Estructura de tipo <strong>LIFO</strong> (<em>Last In,
-                            First Out</em> - Último en entrar, primero en salir). Usa <code>Push()</code> para agregar y
-                        <code>Pop()</code> para retirar.
-                    </li>
-                    <li><strong>Queue&lt;T&gt; (Cola):</strong> Estructura de tipo <strong>FIFO</strong> (<em>First In,
-                            First Out</em> - Primero en entrar, primero en salir). Usa <code>Enqueue()</code> para
-                        encolar y <code>Dequeue()</code> para desencolar.</li>
+                    <li><strong>Bucle <code>for</code>:</strong> Controla el número de iteraciones mediante una variable
+                        de
+                        inicialización, una condición límite y un paso de incremento/decremento.</li>
+                    <li><strong>Bucle <code>while</code>:</strong> Evalúa la condición booleana <em>antes</em> de cada
+                        ciclo; si es falsa inicialmente, el bloque se omite por completo.</li>
+                    <li><strong>Bucle <code>do-while</code>:</strong> Evalúa la condición <em>después</em> de ejecutar
+                        el
+                        bloque, garantizando al menos una ejecución inicial.</li>
+                    <li><strong>Bucle <code>foreach</code>:</strong> Recorre de forma directa y de sólo lectura los
+                        elementos contenidos en arreglos o colecciones tipadas sin requerir índices manuales.</li>
                 </ul>
-                <pre><code><span class="comment">// Uso de Pilas (Stack - LIFO)</span>
-Stack&lt;<span class="type">string</span>&gt; historialNavegacion = <span class="keyword">new</span> Stack&lt;<span class="type">string</span>&gt;();
-historialNavegacion.Push(<span class="string">"Google.com"</span>);
-historialNavegacion.Push(<span class="string">"Github.com"</span>);
-historialNavegacion.Push(<span class="string">"StackOverflow.com"</span>);
-
-<span class="type">string</span> ultimaPagina = historialNavegacion.Pop(); <span class="comment">// Extrae "StackOverflow.com"</span>
-Console.WriteLine(<span class="string">"Página removida de la pila: "</span> + ultimaPagina);
-
-<span class="comment">// Uso de Colas (Queue - FIFO)</span>
-Queue&lt;<span class="type">string</span>&gt; colaImpresion = <span class="keyword">new</span> Queue&lt;<span class="type">string</span>&gt;();
-colaImpresion.Enqueue(<span class="string">"Documento1.pdf"</span>);
-colaImpresion.Enqueue(<span class="string">"Reporte.xlsx"</span>);
-colaImpresion.Enqueue(<span class="string">"Plano.dwg"</span>);
-
-<span class="type">string</span> primerDocumento = colaImpresion.Dequeue(); <span class="comment">// Extrae "Documento1.pdf"</span>
-Console.WriteLine(<span class="string">"Atendiendo en la cola: "</span> + primerDocumento);</code></pre>
-            </div>
-        </section>
-
-        <section>
-            <h2>11. Estructuras de Repetición (Bucles o Ciclos)</h2>
-            <p>Permiten la ejecución iterativa de bloques de código bajo condiciones específicas de control:</p>
-            <ul>
-                <li><strong>Bucle <code>for</code>:</strong> Controla el número de iteraciones mediante una variable de
-                    inicialización, una condición límite y un paso de incremento/decremento.</li>
-                <li><strong>Bucle <code>while</code>:</strong> Evalúa la condición booleana <em>antes</em> de cada
-                    ciclo; si es falsa inicialmente, el bloque se omite por completo.</li>
-                <li><strong>Bucle <code>do-while</code>:</strong> Evalúa la condición <em>después</em> de ejecutar el
-                    bloque, garantizando al menos una ejecución inicial.</li>
-                <li><strong>Bucle <code>foreach</code>:</strong> Recorre de forma directa y de sólo lectura los
-                    elementos contenidos en arreglos o colecciones tipadas sin requerir índices manuales.</li>
-            </ul>
-            <div class="explainer-box">
-                <h3>Ejemplo de Bucles (for, while, do-while y foreach)</h3>
-                <pre><code><span class="comment">// 1. Bucle For</span>
+                <div class="explainer-box">
+                    <h3>Ejemplo de Bucles (for, while, do-while y foreach)</h3>
+                    <pre><code><span class="comment">// 1. Bucle For</span>
 Console.WriteLine(<span class="string">"--- Ciclo For ---"</span>);
 <span class="keyword">for</span> (<span class="type">int</span> i = <span class="string">1</span>; i &lt;= <span class="string">3</span>; i++)
 {
@@ -640,7 +785,7 @@ Console.WriteLine(<span class="string">"--- Ciclo For ---"</span>);
 <span class="comment">// 2. Bucle While</span>
 Console.WriteLine(<span class="string">"--- Ciclo While ---"</span>);
 <span class="type">int</span> contador = <span class="string">2</span>;
-<span class="keyword">while</span> (contador > <span class="string">0</span>)
+<span class="keyword">while</span> (contador &gt; <span class="string">0</span>)
 {
     Console.WriteLine(<span class="string">"Cuenta regresiva: "</span> + contador);
     contador--;
@@ -661,44 +806,144 @@ Console.WriteLine(<span class="string">"--- Ciclo Foreach ---"</span>);
 {
     Console.WriteLine(<span class="string">"Componente: "</span> + mod);
 }</code></pre>
+                </div>
+            </section>
+            <section class="topic">
+                <h2>6.2 Arreglos y colecciones de datos</h2>
+                <p>Las estructuras de datos permiten almacenar y gestionar conjuntos de elementos en memoria. En C#
+                    contamos
+                    con arreglos estáticos de tamaño fijo y colecciones genéricas dinámicas que se adaptan
+                    automáticamente
+                    al número de elementos.</p>
+                <p><strong>Espacio de Nombres Requerido:</strong> Para utilizar colecciones genéricas como
+                    <code>List&lt;T&gt;</code>, <code>Stack&lt;T&gt;</code> y <code>Queue&lt;T&gt;</code>, es
+                    obligatorio
+                    incluir al inicio del archivo la directiva <code>using System.Collections.Generic;</code>.
+                </p>
+                <div class="explainer-box">
+                    <h3>1. Arreglos Unidimensionales (Vectores)</h3>
+                    <p>Poseen una dimensión finita y un índice basado en cero.</p>
+                    <pre><code><span class="comment">// Declaración e inicialización directa</span>
+<span class="type">string</span>[] tecnologias = { <span class="string">"C#"</span>, <span class="string">"Visual Studio"</span>, <span class="string">"ADO.NET"</span> };
+Console.WriteLine(<span class="string">"Primer elemento: "</span> + tecnologias[<span class="string">0</span>]);
+
+<span class="comment">// Declaración reservando tamaño fijo</span>
+<span class="type">int</span>[] numeros = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">3</span>];
+numeros[<span class="string">0</span>] = <span class="string">10</span>;
+numeros[<span class="string">1</span>] = <span class="string">20</span>;
+numeros[<span class="string">2</span>] = <span class="string">30</span>;</code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>2. Arreglos Multidimensionales (Matrices) y Dentados</h3>
+                    <p>C# soporta matrices rectangulares bidimensionales (filas y columnas) y arreglos de arreglos
+                        (arreglos
+                        dentados o <em>jagged arrays</em>).</p>
+                    <pre><code><span class="comment">// Matriz rectangular (2 filas x 3 columnas)</span>
+<span class="type">int</span>[,] matriz = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">2</span>, <span class="string">3</span>] { 
+    { <span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span> }, 
+    { <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span> } 
+};
+Console.WriteLine(<span class="string">"Elemento fila 1, col 2: "</span> + matriz[<span class="string">1</span>, <span class="string">2</span>]); <span class="comment">// Imprime 6</span>
+
+<span class="comment">// Arreglo Dentado (Jagged Array): Arreglo cuyos elementos son otros arreglos</span>
+<span class="type">int</span>[][] dentado = <span class="keyword">new</span> <span class="type">int</span>[<span class="string">2</span>][];
+dentado[<span class="string">0</span>] = <span class="keyword">new</span> <span class="type">int</span>[] { <span class="string">1</span>, <span class="string">2</span> };
+dentado[<span class="string">1</span>] = <span class="keyword">new</span> <span class="type">int</span>[] { <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span> };
+Console.WriteLine(<span class="string">"Elemento del arreglo dentado: "</span> + dentado[<span class="string">1</span>][<span class="string">2</span>]); <span class="comment">// Imprime 5</span></code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>3. Listas Dinámicas (List&lt;T&gt;)</h3>
+                    <p>Permiten agregar, eliminar y buscar elementos de manera dinámica sin definir un límite
+                        predeterminado.</p>
+                    <pre><code>List&lt;<span class="type">string</span>&gt; estudiantes = <span class="keyword">new</span> List&lt;<span class="type">string</span>&gt;();
+estudiantes.Add(<span class="string">"Ana"</span>);
+estudiantes.Add(<span class="string">"Carlos"</span>);
+estudiantes.Add(<span class="string">"Beatriz"</span>);
+
+estudiantes.Remove(<span class="string">"Carlos"</span>); <span class="comment">// Remueve por valor</span>
+
+<span class="keyword">foreach</span> (<span class="type">string</span> est <span class="keyword">in</span> estudiantes)
+{
+    Console.WriteLine(<span class="string">"Estudiante: "</span> + est);
+}</code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>4. Pilas (Stack&lt;T&gt;) y Colas (Queue&lt;T&gt;)</h3>
+                    <p>Estructuras dinámicas que ordenan el procesamiento de sus elementos mediante políticas
+                        específicas:
+                    </p>
+                    <ul>
+                        <li><strong>Stack&lt;T&gt; (Pila):</strong> Estructura de tipo <strong>LIFO</strong> (<em>Last
+                                In,
+                                First Out</em> - Último en entrar, primero en salir). Usa <code>Push()</code> para
+                            agregar y
+                            <code>Pop()</code> para retirar.
+                        </li>
+                        <li><strong>Queue&lt;T&gt; (Cola):</strong> Estructura de tipo <strong>FIFO</strong> (<em>First
+                                In,
+                                First Out</em> - Primero en entrar, primero en salir). Usa <code>Enqueue()</code> para
+                            encolar y <code>Dequeue()</code> para desencolar.</li>
+                    </ul>
+                    <pre><code><span class="comment">// Uso de Pilas (Stack - LIFO)</span>
+Stack&lt;<span class="type">string</span>&gt; historialNavegacion = <span class="keyword">new</span> Stack&lt;<span class="type">string</span>&gt;();
+historialNavegacion.Push(<span class="string">"Google.com"</span>);
+historialNavegacion.Push(<span class="string">"Github.com"</span>);
+historialNavegacion.Push(<span class="string">"StackOverflow.com"</span>);
+
+<span class="type">string</span> ultimaPagina = historialNavegacion.Pop(); <span class="comment">// Extrae "StackOverflow.com"</span>
+Console.WriteLine(<span class="string">"Página removida de la pila: "</span> + ultimaPagina);
+
+<span class="comment">// Uso de Colas (Queue - FIFO)</span>
+Queue&lt;<span class="type">string</span>&gt; colaImpresion = <span class="keyword">new</span> Queue&lt;<span class="type">string</span>&gt;();
+colaImpresion.Enqueue(<span class="string">"Documento1.pdf"</span>);
+colaImpresion.Enqueue(<span class="string">"Reporte.xlsx"</span>);
+colaImpresion.Enqueue(<span class="string">"Plano.dwg"</span>);
+
+<span class="type">string</span> primerDocumento = colaImpresion.Dequeue(); <span class="comment">// Extrae "Documento1.pdf"</span>
+Console.WriteLine(<span class="string">"Atendiendo en la cola: "</span> + primerDocumento);</code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-7">
+            <div class="unit-title"><span class="unit-number">Unidad 7</span>
+                <h2>Métodos y modularización</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>12. Declaración y Uso de Funciones (Métodos)</h2>
-            <p>Un <strong>método</strong> es un bloque de código con nombre que encapsula una tarea específica,
-                permitiendo su reutilización, modularidad y mantenimiento. En C#, todos los métodos deben declararse
-                dentro de una clase o estructura.</p>
-
-            <div class="explainer-box">
-                <h3>12.1. Sintaxis General de un Método</h3>
-                <pre><code>[modificador_acceso] [static] tipo_retorno NombreMetodo([parámetros])
+            <div class="unit-intro">Con las bases del lenguaje consolidadas, el código se divide en métodos
+                reutilizables: parámetros, retorno, ref/out, sobrecarga, alcance y recursividad.</div>
+            <section class="topic">
+                <h2>7.1 Métodos y modularización</h2>
+                <p>Un <strong>método</strong> es un bloque de código con nombre que encapsula una tarea específica,
+                    permitiendo su reutilización, modularidad y mantenimiento. En C#, todos los métodos deben declararse
+                    dentro de una clase o estructura.</p>
+                <div class="explainer-box">
+                    <h3>12.1. Sintaxis General de un Método</h3>
+                    <pre><code>[modificador_acceso] [static] tipo_retorno NombreMetodo([parámetros])
 {
     // Cuerpo del método
     [return valor;]
 }</code></pre>
-                <ul>
-                    <li><strong>modificador_acceso:</strong> <code>public</code>, <code>private</code>,
-                        <code>protected</code>, <code>internal</code>. Controla la visibilidad.
-                    </li>
-                    <li><strong>static:</strong> Indica que el método pertenece a la clase, no a una instancia.</li>
-                    <li><strong>tipo_retorno:</strong> Tipo de dato devuelto (<code>int</code>, <code>string</code>,
-                        <code>void</code>, etc.).
-                    </li>
-                    <li><strong>NombreMetodo:</strong> Identificador en PascalCase por convención.</li>
-                    <li><strong>parámetros:</strong> Lista opcional de variables tipadas que recibe el método.</li>
-                </ul>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.2. Métodos <code>static</code> vs Métodos de Instancia</h3>
-                <ul>
-                    <li><strong>Método <code>static</code>:</strong> Se invoca directamente desde la clase sin crear
-                        objetos. No puede acceder a miembros de instancia.</li>
-                    <li><strong>Método de instancia:</strong> Requiere crear un objeto con <code>new</code> para poder
-                        invocarlo. Puede acceder a campos y propiedades del objeto.</li>
-                </ul>
-                <pre><code><span class="keyword">class</span> <span class="type">Calculadora</span>
+                    <ul>
+                        <li><strong>modificador_acceso:</strong> <code>public</code>, <code>private</code>,
+                            <code>protected</code>, <code>internal</code>. Controla la visibilidad.
+                        </li>
+                        <li><strong>static:</strong> Indica que el método pertenece a la clase, no a una instancia.</li>
+                        <li><strong>tipo_retorno:</strong> Tipo de dato devuelto (<code>int</code>, <code>string</code>,
+                            <code>void</code>, etc.).
+                        </li>
+                        <li><strong>NombreMetodo:</strong> Identificador en PascalCase por convención.</li>
+                        <li><strong>parámetros:</strong> Lista opcional de variables tipadas que recibe el método.</li>
+                    </ul>
+                </div>
+                <div class="explainer-box">
+                    <h3>12.2. Métodos <code>static</code> vs Métodos de Instancia</h3>
+                    <ul>
+                        <li><strong>Método <code>static</code>:</strong> Se invoca directamente desde la clase sin crear
+                            objetos. No puede acceder a miembros de instancia.</li>
+                        <li><strong>Método de instancia:</strong> Requiere crear un objeto con <code>new</code> para
+                            poder
+                            invocarlo. Puede acceder a campos y propiedades del objeto.</li>
+                    </ul>
+                    <pre><code><span class="keyword">class</span> <span class="type">Calculadora</span>
 {
     <span class="comment">// Método estático: no necesita instancia</span>
     <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> Sumar(<span class="type">int</span> a, <span class="type">int</span> b)
@@ -727,32 +972,34 @@ Console.WriteLine(<span class="string">"--- Ciclo Foreach ---"</span>);
         Console.WriteLine(<span class="string">"Suma: "</span> + suma + <span class="string">" | Producto: "</span> + producto);
     }
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.3. Parámetros por Valor, por Referencia (<code>ref</code>) y de Salida (<code>out</code>)</h3>
-                <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
-                    <tr style="background:#eef;">
-                        <th style="border:1px solid #ccc; padding:6px;">Modificador</th>
-                        <th style="border:1px solid #ccc; padding:6px;">Comportamiento</th>
-                    </tr>
-                    <tr>
-                        <td style="border:1px solid #ccc; padding:6px;">(ninguno)</td>
-                        <td style="border:1px solid #ccc; padding:6px;"><strong>Por valor:</strong> se copia el valor.
-                            Cambios internos no afectan al original.</td>
-                    </tr>
-                    <tr>
-                        <td style="border:1px solid #ccc; padding:6px;"><code>ref</code></td>
-                        <td style="border:1px solid #ccc; padding:6px;"><strong>Por referencia:</strong> el método puede
-                            modificar la variable original. Debe inicializarse antes.</td>
-                    </tr>
-                    <tr>
-                        <td style="border:1px solid #ccc; padding:6px;"><code>out</code></td>
-                        <td style="border:1px solid #ccc; padding:6px;"><strong>Salida:</strong> el método debe
-                            asignarle un valor antes de retornar. No requiere inicialización previa.</td>
-                    </tr>
-                </table>
-                <pre><code><span class="keyword">class</span> <span class="type">Program</span>
+                </div>
+                <div class="explainer-box">
+                    <h3>12.3. Parámetros por Valor, por Referencia (<code>ref</code>) y de Salida (<code>out</code>)
+                    </h3>
+                    <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
+                        <tr style="background:#eef;">
+                            <th style="border:1px solid #ccc; padding:6px;">Modificador</th>
+                            <th style="border:1px solid #ccc; padding:6px;">Comportamiento</th>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;">(ninguno)</td>
+                            <td style="border:1px solid #ccc; padding:6px;"><strong>Por valor:</strong> se copia el
+                                valor.
+                                Cambios internos no afectan al original.</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;"><code>ref</code></td>
+                            <td style="border:1px solid #ccc; padding:6px;"><strong>Por referencia:</strong> el método
+                                puede
+                                modificar la variable original. Debe inicializarse antes.</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #ccc; padding:6px;"><code>out</code></td>
+                            <td style="border:1px solid #ccc; padding:6px;"><strong>Salida:</strong> el método debe
+                                asignarle un valor antes de retornar. No requiere inicialización previa.</td>
+                        </tr>
+                    </table>
+                    <pre><code><span class="keyword">class</span> <span class="type">Program</span>
 {
     <span class="comment">// Por valor: no modifica el original</span>
     <span class="keyword">static</span> <span class="keyword">void</span> DuplicarPorValor(<span class="type">int</span> numero)
@@ -796,13 +1043,12 @@ Console.WriteLine(<span class="string">"--- Ciclo Foreach ---"</span>);
         }
     }
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.4. Parámetros Opcionales y Arreglo <code>params</code></h3>
-                <p><strong>Parámetros opcionales:</strong> Se definen con un valor predeterminado. Deben ubicarse al
-                    final de la lista.</p>
-                <pre><code><span class="keyword">static</span> <span class="keyword">void</span> Presentar(<span class="type">string</span> nombre, <span class="type">string</span> titulo = <span class="string">"Estudiante"</span>)
+                </div>
+                <div class="explainer-box">
+                    <h3>12.4. Parámetros Opcionales y Arreglo <code>params</code></h3>
+                    <p><strong>Parámetros opcionales:</strong> Se definen con un valor predeterminado. Deben ubicarse al
+                        final de la lista.</p>
+                    <pre><code><span class="keyword">static</span> <span class="keyword">void</span> Presentar(<span class="type">string</span> nombre, <span class="type">string</span> titulo = <span class="string">"Estudiante"</span>)
 {
     Console.WriteLine(<span class="string">"Hola, "</span> + titulo + <span class="string">" "</span> + nombre);
 }
@@ -810,10 +1056,10 @@ Console.WriteLine(<span class="string">"--- Ciclo Foreach ---"</span>);
 <span class="comment">// Invocaciones válidas:</span>
 Presentar(<span class="string">"Ana"</span>);                    <span class="comment">// Usa "Estudiante"</span>
 Presentar(<span class="string">"Luis"</span>, <span class="string">"Ingeniero"</span>);      <span class="comment">// Usa "Ingeniero"</span></code></pre>
-
-                <p><strong>Arreglo <code>params</code>:</strong> Permite recibir un número variable de argumentos del
-                    mismo tipo.</p>
-                <pre><code><span class="keyword">static</span> <span class="type">int</span> SumarTodos(<span class="keyword">params</span> <span class="type">int</span>[] numeros)
+                    <p><strong>Arreglo <code>params</code>:</strong> Permite recibir un número variable de argumentos
+                        del
+                        mismo tipo.</p>
+                    <pre><code><span class="keyword">static</span> <span class="type">int</span> SumarTodos(<span class="keyword">params</span> <span class="type">int</span>[] numeros)
 {
     <span class="type">int</span> total = <span class="string">0</span>;
     <span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> numeros)
@@ -827,14 +1073,13 @@ Presentar(<span class="string">"Luis"</span>, <span class="string">"Ingeniero"</
 <span class="type">int</span> r1 = SumarTodos(<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>);
 <span class="type">int</span> r2 = SumarTodos(<span class="string">10</span>, <span class="string">20</span>, <span class="string">30</span>, <span class="string">40</span>, <span class="string">50</span>);
 <span class="type">int</span> r3 = SumarTodos(); <span class="comment">// Arreglo vacío</span></code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.5. Sobrecarga de Métodos (Overloading)</h3>
-                <p>C# permite definir varios métodos con el <strong>mismo nombre</strong> pero <strong>distinta
-                        firma</strong> (número o tipo de parámetros). El compilador resuelve cuál invocar según los
-                    argumentos.</p>
-                <pre><code><span class="keyword">class</span> <span class="type">Area</span>
+                </div>
+                <div class="explainer-box">
+                    <h3>12.5. Sobrecarga de Métodos (Overloading)</h3>
+                    <p>C# permite definir varios métodos con el <strong>mismo nombre</strong> pero <strong>distinta
+                            firma</strong> (número o tipo de parámetros). El compilador resuelve cuál invocar según los
+                        argumentos.</p>
+                    <pre><code><span class="keyword">class</span> <span class="type">Area</span>
 {
     <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Calcular(<span class="type">double</span> lado)
     {
@@ -860,13 +1105,13 @@ Presentar(<span class="string">"Luis"</span>, <span class="string">"Ingeniero"</
 Console.WriteLine(Area.Calcular(<span class="string">5</span>));           <span class="comment">// 25</span>
 Console.WriteLine(Area.Calcular(<span class="string">4</span>, <span class="string">6</span>));        <span class="comment">// 24</span>
 Console.WriteLine(Area.Calcular(<span class="string">3</span>, <span class="keyword">true</span>));     <span class="comment">// 28.27...</span></code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.6. Recursividad</h3>
-                <p>Un método recursivo se invoca a sí mismo con un <strong>caso base</strong> que detiene la recursión.
-                </p>
-                <pre><code><span class="keyword">static</span> <span class="type">long</span> Factorial(<span class="type">int</span> n)
+                </div>
+                <div class="explainer-box">
+                    <h3>12.6. Recursividad</h3>
+                    <p>Un método recursivo se invoca a sí mismo con un <strong>caso base</strong> que detiene la
+                        recursión.
+                    </p>
+                    <pre><code><span class="keyword">static</span> <span class="type">long</span> Factorial(<span class="type">int</span> n)
 {
     <span class="keyword">if</span> (n &lt;= <span class="string">1</span>) <span class="keyword">return</span> <span class="string">1</span>;          <span class="comment">// Caso base</span>
     <span class="keyword">return</span> n * Factorial(n - <span class="string">1</span>);   <span class="comment">// Llamada recursiva</span>
@@ -881,17 +1126,16 @@ Console.WriteLine(Area.Calcular(<span class="string">3</span>, <span class="keyw
 <span class="comment">// Uso:</span>
 Console.WriteLine(<span class="string">"Factorial de 5: "</span> + Factorial(<span class="string">5</span>));   <span class="comment">// 120</span>
 Console.WriteLine(<span class="string">"Fibonacci(7): "</span> + Fibonacci(<span class="string">7</span>));      <span class="comment">// 13</span></code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.7. Ámbito y Duración de Variables</h3>
-                <ul>
-                    <li><strong>Variables locales:</strong> declaradas dentro del método, existen solo durante su
-                        ejecución.</li>
-                    <li><strong>Parámetros:</strong> locales al método.</li>
-                    <li><strong>Campos estáticos:</strong> persisten durante toda la vida de la aplicación.</li>
-                </ul>
-                <pre><code><span class="keyword">class</span> <span class="type">Contador</span>
+                </div>
+                <div class="explainer-box">
+                    <h3>12.7. Ámbito y Duración de Variables</h3>
+                    <ul>
+                        <li><strong>Variables locales:</strong> declaradas dentro del método, existen solo durante su
+                            ejecución.</li>
+                        <li><strong>Parámetros:</strong> locales al método.</li>
+                        <li><strong>Campos estáticos:</strong> persisten durante toda la vida de la aplicación.</li>
+                    </ul>
+                    <pre><code><span class="keyword">class</span> <span class="type">Contador</span>
 {
     <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> totalLlamadas = <span class="string">0</span>; <span class="comment">// Campo estático persistente</span>
 
@@ -901,11 +1145,10 @@ Console.WriteLine(<span class="string">"Fibonacci(7): "</span> + Fibonacci(<span
         Console.WriteLine(<span class="string">"Llamadas acumuladas: "</span> + totalLlamadas);
     }
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.8. Ejemplo Integrador: Calculadora con Múltiples Métodos</h3>
-                <pre><code><span class="keyword">class</span> <span class="type">CalculadoraCompleta</span>
+                </div>
+                <div class="explainer-box">
+                    <h3>12.8. Ejemplo Integrador: Calculadora con Múltiples Métodos</h3>
+                    <pre><code><span class="keyword">class</span> <span class="type">CalculadoraCompleta</span>
 {
     <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">double</span> Sumar(<span class="type">double</span> a, <span class="type">double</span> b)
     {
@@ -966,14 +1209,13 @@ Console.WriteLine(<span class="string">"Fibonacci(7): "</span> + Fibonacci(<span
         Console.WriteLine(<span class="string">"2^10 = "</span> + CalculadoraCompleta.Potencia(<span class="string">2</span>, <span class="string">10</span>));
     }
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>12.9. Ejemplo con Múltiples Valores de Retorno mediante <code>out</code></h3>
-                <p>En C# 5.0 no existen las tuplas; para devolver varios valores se usan parámetros
-                    <code>out</code>.
-                </p>
-                <pre><code><span class="keyword">static</span> <span class="keyword">void</span> CalcularEstadisticas(<span class="type">int</span>[] datos, <span class="keyword">out</span> <span class="type">int</span> minimo, <span class="keyword">out</span> <span class="type">int</span> maximo, <span class="keyword">out</span> <span class="type">double</span> promedio)
+                </div>
+                <div class="explainer-box">
+                    <h3>12.9. Ejemplo con Múltiples Valores de Retorno mediante <code>out</code></h3>
+                    <p>En C# 5.0 no existen las tuplas; para devolver varios valores se usan parámetros
+                        <code>out</code>.
+                    </p>
+                    <pre><code><span class="keyword">static</span> <span class="keyword">void</span> CalcularEstadisticas(<span class="type">int</span>[] datos, <span class="keyword">out</span> <span class="type">int</span> minimo, <span class="keyword">out</span> <span class="type">int</span> maximo, <span class="keyword">out</span> <span class="type">double</span> promedio)
 {
     minimo = datos[<span class="string">0</span>];
     maximo = datos[<span class="string">0</span>];
@@ -994,91 +1236,93 @@ Console.WriteLine(<span class="string">"Fibonacci(7): "</span> + Fibonacci(<span
 <span class="type">double</span> prom;
 CalcularEstadisticas(valores, <span class="keyword">out</span> min, <span class="keyword">out</span> max, <span class="keyword">out</span> prom);
 Console.WriteLine(<span class="string">"Mín: "</span> + min + <span class="string">" | Máx: "</span> + max + <span class="string">" | Prom: "</span> + prom.ToString(<span class="string">"F2"</span>));</code></pre>
+                </div>
+            </section>
+        </div>
+        <div class="unit" id="unidad-8">
+            <div class="unit-title"><span class="unit-number">Unidad 8</span>
+                <h2>LINQ: consultar y transformar colecciones</h2>
             </div>
-        </section>
-
-        <section>
-            <h2>13. Consultas Integradas con LINQ (Language Integrated Query)</h2>
-            <p><strong>LINQ</strong> es un conjunto de extensiones del lenguaje C# que permite realizar
-                <strong>consultas tipadas</strong> sobre cualquier colección que implemente
-                <code>IEnumerable&lt;T&gt;</code> (arreglos, <code>List&lt;T&gt;</code>,
-                <code>Dictionary&lt;K,V&gt;</code>, <code>DataSet</code>, XML, etc.). Fue introducido en .NET 3.5 y
-                perfeccionado en .NET 4.5 (Visual Studio 2012).
-            </p>
-            <p><strong>Ventajas:</strong></p>
-            <ul>
-                <li>Sintaxis unificada para distintas fuentes de datos.</li>
-                <li>Verificación en tiempo de compilación (tipado fuerte).</li>
-                <li>IntelliSense completo en Visual Studio.</li>
-                <li>Composición de consultas mediante encadenamiento.</li>
-            </ul>
-            <p><strong>Espacio de Nombres Requerido:</strong> Para habilitar el uso de LINQ en C# 5.0, agregue al inicio
-                del archivo la directiva <code>using System.Linq;</code>.</p>
-
-            <div class="explainer-box">
-                <h3>13.1. Dos Sintaxis Equivalentes</h3>
-                <p><strong>A) Sintaxis de Consulta (Query Syntax):</strong> similar a SQL, más legible para filtros
-                    complejos.</p>
-                <p><strong>B) Sintaxis de Métodos (Method Syntax):</strong> usa métodos de extensión y expresiones
-                    lambda, más compacta y potente.</p>
-                <pre><code><span class="comment">// Se requiere: using System.Linq;</span>
+            <div class="unit-intro">LINQ se presenta al final porque combina colecciones, métodos, expresiones lambda y
+                procesamiento de datos.</div>
+            <section class="topic">
+                <h2>8.1 Consultas integradas con LINQ</h2>
+                <p><strong>LINQ</strong> es un conjunto de extensiones del lenguaje C# que permite realizar
+                    <strong>consultas tipadas</strong> sobre cualquier colección que implemente
+                    <code>IEnumerable&lt;T&gt;</code> (arreglos, <code>List&lt;T&gt;</code>,
+                    <code>Dictionary&lt;K,V&gt;</code>, <code>DataSet</code>, XML, etc.). Fue introducido en .NET 3.5 y
+                    perfeccionado en .NET 4.5 (Visual Studio 2012).
+                </p>
+                <p><strong>Ventajas:</strong></p>
+                <ul>
+                    <li>Sintaxis unificada para distintas fuentes de datos.</li>
+                    <li>Verificación en tiempo de compilación (tipado fuerte).</li>
+                    <li>IntelliSense completo en Visual Studio.</li>
+                    <li>Composición de consultas mediante encadenamiento.</li>
+                </ul>
+                <p><strong>Espacio de Nombres Requerido:</strong> Para habilitar el uso de LINQ en C# 5.0, agregue al
+                    inicio
+                    del archivo la directiva <code>using System.Linq;</code>.</p>
+                <div class="explainer-box">
+                    <h3>13.1. Dos Sintaxis Equivalentes</h3>
+                    <p><strong>A) Sintaxis de Consulta (Query Syntax):</strong> similar a SQL, más legible para filtros
+                        complejos.</p>
+                    <p><strong>B) Sintaxis de Métodos (Method Syntax):</strong> usa métodos de extensión y expresiones
+                        lambda, más compacta y potente.</p>
+                    <pre><code><span class="comment">// Se requiere: using System.Linq;</span>
 
 <span class="type">int</span>[] numeros = { <span class="string">5</span>, <span class="string">12</span>, <span class="string">8</span>, <span class="string">21</span>, <span class="string">3</span>, <span class="string">17</span>, <span class="string">30</span>, <span class="string">4</span> };
 
 <span class="comment">// Query Syntax</span>
 <span class="keyword">var</span> mayoresQuery = <span class="keyword">from</span> n <span class="keyword">in</span> numeros
-                   <span class="keyword">where</span> n > <span class="string">10</span>
+                   <span class="keyword">where</span> n &gt; <span class="string">10</span>
                    <span class="keyword">orderby</span> n <span class="keyword">descending</span>
                    <span class="keyword">select</span> n;
 
 <span class="comment">// Method Syntax (equivalente)</span>
-<span class="keyword">var</span> mayoresMetodo = numeros.Where(n => n > <span class="string">10</span>)
-                           .OrderByDescending(n => n);
+<span class="keyword">var</span> mayoresMetodo = numeros.Where(n =&gt; n &gt; <span class="string">10</span>)
+                           .OrderByDescending(n =&gt; n);
 
 <span class="comment">// Ambas producen el mismo resultado</span>
 <span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> mayoresQuery)
 {
     Console.WriteLine(n);
 }</code></pre>
-            </div>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.2. Filtrado (<code>Where</code>)</h3>
+                    <pre><code><span class="type">string</span>[] frutas = { <span class="string">"Manzana"</span>, <span class="string">"Pera"</span>, <span class="string">"Mango"</span>, <span class="string">"Melón"</span>, <span class="string">"Uva"</span> };
 
-            <div class="explainer-box">
-                <h3>13.2. Filtrado (<code>Where</code>)</h3>
-                <pre><code><span class="type">string</span>[] frutas = { <span class="string">"Manzana"</span>, <span class="string">"Pera"</span>, <span class="string">"Mango"</span>, <span class="string">"Melón"</span>, <span class="string">"Uva"</span> };
-
-<span class="keyword">var</span> conM = frutas.Where(f => f.StartsWith(<span class="string">"M"</span>));
+<span class="keyword">var</span> conM = frutas.Where(f =&gt; f.StartsWith(<span class="string">"M"</span>));
 <span class="keyword">foreach</span> (<span class="type">string</span> f <span class="keyword">in</span> conM)
 {
     Console.WriteLine(f); <span class="comment">// Manzana, Mango, Melón</span>
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.3. Proyección (<code>Select</code>)</h3>
-                <p>Transforma cada elemento en otro tipo o forma.</p>
-                <pre><code><span class="keyword">var</span> longitudes = frutas.Select(f => f.Length);
+                </div>
+                <div class="explainer-box">
+                    <h3>13.3. Proyección (<code>Select</code>)</h3>
+                    <p>Transforma cada elemento en otro tipo o forma.</p>
+                    <pre><code><span class="keyword">var</span> longitudes = frutas.Select(f =&gt; f.Length);
 <span class="keyword">foreach</span> (<span class="type">int</span> len <span class="keyword">in</span> longitudes)
 {
     Console.WriteLine(<span class="string">"Longitud: "</span> + len);
 }
 
 <span class="comment">// Proyección a tipo anónimo (C# 3.0+)</span>
-<span class="keyword">var</span> resumen = frutas.Select(f => <span class="keyword">new</span> { Nombre = f, Letras = f.Length });
+<span class="keyword">var</span> resumen = frutas.Select(f =&gt; <span class="keyword">new</span> { Nombre = f, Letras = f.Length });
 <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> resumen)
 {
-    Console.WriteLine(item.Nombre + <span class="string">" -> "</span> + item.Letras);
+    Console.WriteLine(item.Nombre + <span class="string">" -&gt; "</span> + item.Letras);
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.4. Ordenamiento (<code>OrderBy</code>, <code>ThenBy</code>)</h3>
-                <pre><code><span class="keyword">var</span> ordenadas = frutas.OrderBy(f => f.Length)
-                      .ThenBy(f => f); <span class="comment">// Desempate alfabético</span></code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.5. Agrupación (<code>GroupBy</code>)</h3>
-                <pre><code><span class="keyword">var</span> porLongitud = frutas.GroupBy(f => f.Length);
+                </div>
+                <div class="explainer-box">
+                    <h3>13.4. Ordenamiento (<code>OrderBy</code>, <code>ThenBy</code>)</h3>
+                    <pre><code><span class="keyword">var</span> ordenadas = frutas.OrderBy(f =&gt; f.Length)
+                      .ThenBy(f =&gt; f); <span class="comment">// Desempate alfabético</span></code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.5. Agrupación (<code>GroupBy</code>)</h3>
+                    <pre><code><span class="keyword">var</span> porLongitud = frutas.GroupBy(f =&gt; f.Length);
 
 <span class="keyword">foreach</span> (<span class="keyword">var</span> grupo <span class="keyword">in</span> porLongitud)
 {
@@ -1088,89 +1332,85 @@ Console.WriteLine(<span class="string">"Mín: "</span> + min + <span class="stri
         Console.WriteLine(<span class="string">"  - "</span> + f);
     }
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.6. Partición (<code>Take</code>, <code>Skip</code>)</h3>
-                <pre><code><span class="keyword">var</span> primerosTres = frutas.Take(<span class="string">3</span>);
+                </div>
+                <div class="explainer-box">
+                    <h3>13.6. Partición (<code>Take</code>, <code>Skip</code>)</h3>
+                    <pre><code><span class="keyword">var</span> primerosTres = frutas.Take(<span class="string">3</span>);
 <span class="keyword">var</span> saltandoDos  = frutas.Skip(<span class="string">2</span>);
 <span class="keyword">var</span> rango        = frutas.Skip(<span class="string">1</span>).Take(<span class="string">2</span>);</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.7. Agregación (<code>Count</code>, <code>Sum</code>, <code>Min</code>, <code>Max</code>,
-                    <code>Average</code>)
-                </h3>
-                <pre><code><span class="type">int</span>[] ventas = { <span class="string">120</span>, <span class="string">340</span>, <span class="string">560</span>, <span class="string">230</span>, <span class="string">780</span> };
+                </div>
+                <div class="explainer-box">
+                    <h3>13.7. Agregación (<code>Count</code>, <code>Sum</code>, <code>Min</code>, <code>Max</code>,
+                        <code>Average</code>)
+                    </h3>
+                    <pre><code><span class="type">int</span>[] ventas = { <span class="string">120</span>, <span class="string">340</span>, <span class="string">560</span>, <span class="string">230</span>, <span class="string">780</span> };
 
 Console.WriteLine(<span class="string">"Total: "</span>    + ventas.Sum());
 Console.WriteLine(<span class="string">"Mínimo: "</span>   + ventas.Min());
 Console.WriteLine(<span class="string">"Máximo: "</span>   + ventas.Max());
 Console.WriteLine(<span class="string">"Promedio: "</span> + ventas.Average().ToString(<span class="string">"F2"</span>));
 Console.WriteLine(<span class="string">"Cantidad: "</span> + ventas.Count());
-Console.WriteLine(<span class="string">"Mayores a 300: "</span> + ventas.Count(v => v > <span class="string">300</span>));</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.8. Búsqueda de Elementos (<code>First</code>, <code>FirstOrDefault</code>, <code>Single</code>,
-                    <code>Any</code>, <code>All</code>)
-                </h3>
-                <pre><code><span class="type">int</span> primero     = ventas.First();                    <span class="comment">// Lanza excepción si vacío</span>
+Console.WriteLine(<span class="string">"Mayores a 300: "</span> + ventas.Count(v =&gt; v &gt; <span class="string">300</span>));</code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.8. Búsqueda de Elementos (<code>First</code>, <code>FirstOrDefault</code>,
+                        <code>Single</code>,
+                        <code>Any</code>, <code>All</code>)
+                    </h3>
+                    <pre><code><span class="type">int</span> primero     = ventas.First();                    <span class="comment">// Lanza excepción si vacío</span>
 <span class="type">int</span> primeroDef  = ventas.FirstOrDefault();           <span class="comment">// Devuelve 0 si vacío</span>
-<span class="type">bool</span> hayAltos   = ventas.Any(v => v > <span class="string">700</span>);          <span class="comment">// true</span>
-<span class="type">bool</span> todosPos   = ventas.All(v => v > <span class="string">0</span>);            <span class="comment">// true</span>
+<span class="type">bool</span> hayAltos   = ventas.Any(v =&gt; v &gt; <span class="string">700</span>);          <span class="comment">// true</span>
+<span class="type">bool</span> todosPos   = ventas.All(v =&gt; v &gt; <span class="string">0</span>);            <span class="comment">// true</span>
 
 <span class="comment">// Single: exactamente un elemento que cumpla</span>
 <span class="keyword">try</span>
 {
-    <span class="type">int</span> unico = ventas.Single(v => v == <span class="string">560</span>);
+    <span class="type">int</span> unico = ventas.Single(v =&gt; v == <span class="string">560</span>);
     Console.WriteLine(<span class="string">"Encontrado: "</span> + unico);
 }
 <span class="keyword">catch</span> (InvalidOperationException ex)
 {
     Console.WriteLine(<span class="string">"No hay exactamente uno: "</span> + ex.Message);
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.9. Operadores de Conjuntos (<code>Distinct</code>, <code>Union</code>, <code>Intersect</code>,
-                    <code>Except</code>)
-                </h3>
-                <pre><code><span class="type">int</span>[] A = { <span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span> };
+                </div>
+                <div class="explainer-box">
+                    <h3>13.9. Operadores de Conjuntos (<code>Distinct</code>, <code>Union</code>,
+                        <code>Intersect</code>,
+                        <code>Except</code>)
+                    </h3>
+                    <pre><code><span class="type">int</span>[] A = { <span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span> };
 <span class="type">int</span>[] B = { <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>, <span class="string">7</span>, <span class="string">8</span> };
 
 <span class="keyword">var</span> union        = A.Union(B);        <span class="comment">// 1,2,3,4,5,6,7,8</span>
 <span class="keyword">var</span> interseccion = A.Intersect(B);    <span class="comment">// 4,5</span>
 <span class="keyword">var</span> diferencia   = A.Except(B);       <span class="comment">// 1,2,3</span>
 <span class="keyword">var</span> distintos    = <span class="keyword">new</span>[] { <span class="string">1</span>, <span class="string">1</span>, <span class="string">2</span>, <span class="string">2</span>, <span class="string">3</span> }.Distinct(); <span class="comment">// 1,2,3</span></code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.10. Expresiones Lambda en LINQ</h3>
-                <p>Una <strong>expresión lambda</strong> es una función anónima compacta. Sintaxis:
-                    <code>(parámetros) =&gt; expresión_o_bloque</code>.
-                </p>
-                <pre><code><span class="comment">// Lambda de expresión</span>
-Func&lt;<span class="type">int</span>, <span class="type">int</span>&gt; cuadrado = x => x * x;
+                </div>
+                <div class="explainer-box">
+                    <h3>13.10. Expresiones Lambda en LINQ</h3>
+                    <p>Una <strong>expresión lambda</strong> es una función anónima compacta. Sintaxis:
+                        <code>(parámetros) =&gt; expresión_o_bloque</code>.
+                    </p>
+                    <pre><code><span class="comment">// Lambda de expresión</span>
+Func&lt;<span class="type">int</span>, <span class="type">int</span>&gt; cuadrado = x =&gt; x * x;
 
 <span class="comment">// Lambda de bloque</span>
-Func&lt;<span class="type">int</span>, <span class="type">int</span>, <span class="type">int</span>&gt; sumar = (a, b) =>
+Func&lt;<span class="type">int</span>, <span class="type">int</span>, <span class="type">int</span>&gt; sumar = (a, b) =&gt;
 {
     <span class="type">int</span> resultado = a + b;
     <span class="keyword">return</span> resultado;
 };
 
 <span class="comment">// Uso en LINQ</span>
-<span class="keyword">var</span> pares = numeros.Where(n => n % <span class="string">2</span> == <span class="string">0</span>);
-<span class="keyword">var</span> ordenados = numeros.OrderBy(n => n);</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.11. Evaluación Diferida (Deferred Execution)</h3>
-                <p>Las consultas LINQ <strong>no se ejecutan</strong> al definirse, sino al iterarlas
-                    (<code>foreach</code>) o al invocar un operador de agregación. Esto permite componer consultas
-                    eficientemente.</p>
-                <pre><code><span class="keyword">var</span> consulta = numeros.Where(n => n > <span class="string">10</span>); <span class="comment">// Aún no se ejecuta</span>
+<span class="keyword">var</span> pares = numeros.Where(n =&gt; n % <span class="string">2</span> == <span class="string">0</span>);
+<span class="keyword">var</span> ordenados = numeros.OrderBy(n =&gt; n);</code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.11. Evaluación Diferida (Deferred Execution)</h3>
+                    <p>Las consultas LINQ <strong>no se ejecutan</strong> al definirse, sino al iterarlas
+                        (<code>foreach</code>) o al invocar un operador de agregación. Esto permite componer consultas
+                        eficientemente.</p>
+                    <pre><code><span class="keyword">var</span> consulta = numeros.Where(n =&gt; n &gt; <span class="string">10</span>); <span class="comment">// Aún no se ejecuta</span>
 
 <span class="comment">// Se ejecuta aquí:</span>
 <span class="keyword">foreach</span> (<span class="type">int</span> n <span class="keyword">in</span> consulta)
@@ -1180,17 +1420,17 @@ Func&lt;<span class="type">int</span>, <span class="type">int</span>, <span clas
 
 <span class="comment">// También se ejecuta aquí:</span>
 <span class="type">int</span> total = consulta.Count();</code></pre>
-                <p><strong>Forzar ejecución inmediata:</strong> <code>ToList()</code>, <code>ToArray()</code>,
-                    <code>ToDictionary()</code>.
-                </p>
-                <pre><code>List&lt;<span class="type">int</span>&gt; listaInmediata = numeros.Where(n => n > <span class="string">10</span>).ToList();</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.12. LINQ sobre Colecciones de Objetos</h3>
-                <p>Para este ejemplo se define una clase con propiedades auto-implementadas (compatibles con C# 3.0+).
-                </p>
-                <pre><code><span class="keyword">class</span> <span class="type">Producto</span>
+                    <p><strong>Forzar ejecución inmediata:</strong> <code>ToList()</code>, <code>ToArray()</code>,
+                        <code>ToDictionary()</code>.
+                    </p>
+                    <pre><code>List&lt;<span class="type">int</span>&gt; listaInmediata = numeros.Where(n =&gt; n &gt; <span class="string">10</span>).ToList();</code></pre>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.12. LINQ sobre Colecciones de Objetos</h3>
+                    <p>Para este ejemplo se define una clase con propiedades auto-implementadas (compatibles con C#
+                        3.0+).
+                    </p>
+                    <pre><code><span class="keyword">class</span> <span class="type">Producto</span>
 {
     <span class="keyword">public</span> <span class="type">string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
     <span class="keyword">public</span> <span class="type">double</span> Precio { <span class="keyword">get</span>; <span class="keyword">set</span>; }
@@ -1206,14 +1446,14 @@ inventario.Add(<span class="keyword">new</span> Producto { Nombre = <span class=
 
 <span class="comment">// 1. Filtrar productos tecnológicos mayores a $100</span>
 <span class="keyword">var</span> techCaros = <span class="keyword">from</span> p <span class="keyword">in</span> inventario
-                <span class="keyword">where</span> p.Categoria == <span class="string">"Tecnología"</span> &amp;&amp; p.Precio > <span class="string">100</span>
+                <span class="keyword">where</span> p.Categoria == <span class="string">"Tecnología"</span> &amp;&amp; p.Precio &gt; <span class="string">100</span>
                 <span class="keyword">orderby</span> p.Precio <span class="keyword">descending</span>
                 <span class="keyword">select</span> p;
 
-Console.WriteLine(<span class="string">"--- Tecnología > $100 ---"</span>);
+Console.WriteLine(<span class="string">"--- Tecnología &gt; $100 ---"</span>);
 <span class="keyword">foreach</span> (<span class="keyword">var</span> p <span class="keyword">in</span> techCaros)
 {
-    Console.WriteLine(p.Nombre + <span class="string">" -> $"</span> + p.Precio.ToString(<span class="string">"F2"</span>));
+    Console.WriteLine(p.Nombre + <span class="string">" -&gt; $"</span> + p.Precio.ToString(<span class="string">"F2"</span>));
 }
 
 <span class="comment">// 2. Agrupar por categoría y calcular totales</span>
@@ -1223,8 +1463,8 @@ Console.WriteLine(<span class="string">"--- Tecnología > $100 ---"</span>);
                        {
                            Categoria = g.Key,
                            Cantidad  = g.Count(),
-                           Total     = g.Sum(x => x.Precio),
-                           Promedio  = g.Average(x => x.Precio)
+                           Total     = g.Sum(x =&gt; x.Precio),
+                           Promedio  = g.Average(x =&gt; x.Precio)
                        };
 
 Console.WriteLine(<span class="string">"--- Resumen por categoría ---"</span>);
@@ -1237,19 +1477,18 @@ Console.WriteLine(<span class="string">"--- Resumen por categoría ---"</span>);
 
 <span class="comment">// 3. Proyección a tipo anónimo</span>
 <span class="keyword">var</span> nombresYPrecios = inventario
-    .Where(p => p.Precio &lt; <span class="string">30</span>)
-    .Select(p => <span class="keyword">new</span> { p.Nombre, p.Precio });
+    .Where(p =&gt; p.Precio &lt; <span class="string">30</span>)
+    .Select(p =&gt; <span class="keyword">new</span> { p.Nombre, p.Precio });
 
 Console.WriteLine(<span class="string">"--- Productos económicos ---"</span>);
 <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> nombresYPrecios)
 {
     Console.WriteLine(item.Nombre + <span class="string">": $"</span> + item.Precio);
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.13. LINQ con <code>Join</code> (Combinación de Colecciones)</h3>
-                <pre><code><span class="keyword">class</span> <span class="type">Cliente</span>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.13. LINQ con <code>Join</code> (Combinación de Colecciones)</h3>
+                    <pre><code><span class="keyword">class</span> <span class="type">Cliente</span>
 {
     <span class="keyword">public</span> <span class="type">int</span> Id { <span class="keyword">get</span>; <span class="keyword">set</span>; }
     <span class="keyword">public</span> <span class="type">string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
@@ -1284,31 +1523,33 @@ pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">
 {
     Console.WriteLine(r.Cliente + <span class="string">" - Pedido #"</span> + r.Pedido + <span class="string">" - $"</span> + r.Monto);
 }</code></pre>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.14. Buenas Prácticas con LINQ</h3>
-                <ol>
-                    <li><strong>Usar <code>Any()</code> en lugar de <code>Count() &gt; 0</code></strong> para verificar
-                        existencia (más eficiente).</li>
-                    <li><strong>Evitar múltiples enumeraciones:</strong> materializar con <code>ToList()</code> si se
-                        reutilizará.</li>
-                    <li><strong>Preferir Method Syntax</strong> para consultas simples y encadenamientos largos.</li>
-                    <li><strong>Usar Query Syntax</strong> cuando haya <code>join</code>, <code>group by</code> o
-                        múltiples <code>from</code>.</li>
-                    <li><strong>No abusar de LINQ en bucles críticos:</strong> puede introducir sobrecarga.</li>
-                    <li><strong>Nombrar variables de rango descriptivamente:</strong>
-                        <code>from producto in inventario</code> en lugar de <code>from p in inv</code>.
-                    </li>
-                    <li><strong>Aprovechar la evaluación diferida</strong> para construir consultas dinámicas.</li>
-                    <li><strong>Usar <code>string.Format()</code></strong> para dar formato a salidas (C# 5.0 no tiene
-                        interpolación).</li>
-                </ol>
-            </div>
-
-            <div class="explainer-box">
-                <h3>13.15. Ejemplo Integrador: Sistema de Reportes con LINQ</h3>
-                <pre><code><span class="comment">// using System;</span>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.14. Buenas Prácticas con LINQ</h3>
+                    <ol>
+                        <li><strong>Usar <code>Any()</code> en lugar de <code>Count() &gt; 0</code></strong> para
+                            verificar
+                            existencia (más eficiente).</li>
+                        <li><strong>Evitar múltiples enumeraciones:</strong> materializar con <code>ToList()</code> si
+                            se
+                            reutilizará.</li>
+                        <li><strong>Preferir Method Syntax</strong> para consultas simples y encadenamientos largos.
+                        </li>
+                        <li><strong>Usar Query Syntax</strong> cuando haya <code>join</code>, <code>group by</code> o
+                            múltiples <code>from</code>.</li>
+                        <li><strong>No abusar de LINQ en bucles críticos:</strong> puede introducir sobrecarga.</li>
+                        <li><strong>Nombrar variables de rango descriptivamente:</strong>
+                            <code>from producto in inventario</code> en lugar de <code>from p in inv</code>.
+                        </li>
+                        <li><strong>Aprovechar la evaluación diferida</strong> para construir consultas dinámicas.</li>
+                        <li><strong>Usar <code>string.Format()</code></strong> para dar formato a salidas (C# 5.0 no
+                            tiene
+                            interpolación).</li>
+                    </ol>
+                </div>
+                <div class="explainer-box">
+                    <h3>13.15. Ejemplo Integrador: Sistema de Reportes con LINQ</h3>
+                    <pre><code><span class="comment">// using System;</span>
 <span class="comment">// using System.Collections.Generic;</span>
 <span class="comment">// using System.Linq;</span>
 
@@ -1334,9 +1575,9 @@ pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">
 
         <span class="comment">// 1. Estudiantes destacados (promedio &gt;= 17)</span>
         <span class="keyword">var</span> destacados = estudiantes
-            .Where(e => e.Promedio &gt;= <span class="string">17</span>)
-            .OrderByDescending(e => e.Promedio)
-            .Select(e => <span class="keyword">new</span> { e.Nombre, e.Promedio });
+            .Where(e =&gt; e.Promedio &gt;= <span class="string">17</span>)
+            .OrderByDescending(e =&gt; e.Promedio)
+            .Select(e =&gt; <span class="keyword">new</span> { e.Nombre, e.Promedio });
 
         Console.WriteLine(<span class="string">"--- Destacados ---"</span>);
         <span class="keyword">foreach</span> (<span class="keyword">var</span> e <span class="keyword">in</span> destacados)
@@ -1346,13 +1587,13 @@ pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">
 
         <span class="comment">// 2. Promedio general por carrera</span>
         <span class="keyword">var</span> porCarrera = estudiantes
-            .GroupBy(e => e.Carrera)
-            .Select(g => <span class="keyword">new</span>
+            .GroupBy(e =&gt; e.Carrera)
+            .Select(g =&gt; <span class="keyword">new</span>
             {
                 Carrera  = g.Key,
                 Cantidad = g.Count(),
-                Promedio = g.Average(e => e.Promedio),
-                Mejor    = g.Max(e => e.Promedio)
+                Promedio = g.Average(e =&gt; e.Promedio),
+                Mejor    = g.Max(e =&gt; e.Promedio)
             });
 
         Console.WriteLine(<span class="string">"--- Resumen por carrera ---"</span>);
@@ -1363,34 +1604,34 @@ pedidos.Add(<span class="keyword">new</span> Pedido { Id = <span class="string">
         }
 
         <span class="comment">// 3. Top 3 por promedio</span>
-        <span class="keyword">var</span> top3 = estudiantes.OrderByDescending(e => e.Promedio).Take(<span class="string">3</span>);
+        <span class="keyword">var</span> top3 = estudiantes.OrderByDescending(e =&gt; e.Promedio).Take(<span class="string">3</span>);
         Console.WriteLine(<span class="string">"--- Top 3 ---"</span>);
         <span class="keyword">foreach</span> (<span class="keyword">var</span> e <span class="keyword">in</span> top3)
         {
-            Console.WriteLine(e.Nombre + <span class="string">" -> "</span> + e.Promedio);
+            Console.WriteLine(e.Nombre + <span class="string">" -&gt; "</span> + e.Promedio);
         }
 
         <span class="comment">// 4. ¿Hay algún reprobado (promedio &lt; 13)?</span>
-        <span class="type">bool</span> hayReprobados = estudiantes.Any(e => e.Promedio &lt; <span class="string">13</span>);
+        <span class="type">bool</span> hayReprobados = estudiantes.Any(e =&gt; e.Promedio &lt; <span class="string">13</span>);
         Console.WriteLine(<span class="string">"\n¿Hay reprobados? "</span> + (hayReprobados ? <span class="string">"Sí"</span> : <span class="string">"No"</span>));
 
         <span class="comment">// 5. Estadísticas globales</span>
         Console.WriteLine(<span class="string">"\nTotal: "</span> + estudiantes.Count()
-                          + <span class="string">" | Promedio global: "</span> + estudiantes.Average(e => e.Promedio).ToString(<span class="string">"F2"</span>)
-                          + <span class="string">" | Edad máxima: "</span> + estudiantes.Max(e => e.Edad));
+                          + <span class="string">" | Promedio global: "</span> + estudiantes.Average(e =&gt; e.Promedio).ToString(<span class="string">"F2"</span>)
+                          + <span class="string">" | Edad máxima: "</span> + estudiantes.Max(e =&gt; e.Edad));
     }
 }</code></pre>
-            </div>
-        </section>
-
-
-
-    </div>
-
+                </div>
+            </section>
+        </div>
+        <div class="explainer-box"><strong>Ruta de aprendizaje sugerida: </strong>conocer el lenguaje → crear un
+            programa → guardar y operar datos → leer datos del usuario → tomar decisiones → procesar texto → repetir
+            procesos → trabajar con colecciones → crear métodos reutilizables → consultar y transformar colecciones con
+            LINQ.</div>
+    </main>
     <footer>
-        <p>Generado por profesor: Ing.Robyir Loreto - Compatible con Visual Studio 2012 (C# 5.0)</p>
+        <p>Guía organizada para estudio progresivo de C# 5.0 y Visual Studio 2012.</p>
     </footer>
-
 </body>
 
 </html>
