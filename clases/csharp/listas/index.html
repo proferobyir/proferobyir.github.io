@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominando List<T> en C# 5.0 | Guía Práctica</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --card-bg: #252526;
+            --text-color: #d4d4d4;
+            --accent-cyan: #4ec9b0;
+            --accent-orange: #ce9178;
+            --accent-blue: #569cd6;
+            --accent-yellow: #dcdcaa;
+            --border-color: #333333;
+            --code-bg: #1e1e1e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 15px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--accent-cyan);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #2d2d2d;
+            color: var(--accent-yellow);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid #454545;
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .highlight {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 12px 0;
+            color: #dcdcaa;
+        }
+
+        .keyword {
+            color: var(--accent-blue);
+        }
+
+        .type {
+            color: var(--accent-cyan);
+        }
+
+        .string {
+            color: var(--accent-orange);
+        }
+
+        .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .tip-box {
+            background: rgba(78, 201, 176, 0.1);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 12px;
+            border-radius: 0 6px 6px 0;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 30px;
+            }
+
+            header h1 {
+                font-size: 2.2rem;
+            }
+
+            section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <h1>⚡ List&lt;T&gt; y LINQ en C# 5.0</h1>
+            <p>Guía rápida, directa y visual para dominar colecciones dinámicas.</p>
+            <span class="badge">Visual Studio 2012 / .NET 4.5 Compatible</span>
+        </header>
+
+        <!-- SECCIÓN 1 -->
+        <section>
+            <h2>📦 1. ¿Qué es una List&lt;T&gt;?</h2>
+            <p>Olvídate de los arreglos estáticos de tamaño fijo. Una <span class="highlight">List&lt;T&gt;</span> es
+                una mochila inteligente que crece y se encoge automáticamente a medida que agregas o eliminas elementos.
+            </p>
+            <div class="tip-box">
+                💡 La <strong>T</strong> significa <em>Tipo</em>. Puedes crear listas de enteros (`List&lt;int&gt;`), de
+                textos (`List&lt;string&gt;`) o de objetos personalizados.
+            </div>
+            <pre><code><span class="comment">// Crear e inicializar en una sola línea (C# 5.0)</span>
+<span class="type">List&lt;string&gt;</span> heroes = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Batman"</span>, <span class="string">"Flash"</span>, <span class="string">"Superman"</span> };</code></pre>
+        </section>
+
+        <!-- SECCIÓN 2 -->
+        <section>
+            <h2>🛠️ 2. El Arsenal de Métodos Esenciales</h2>
+            <p>Operaciones básicas para manipular tu lista en el día a día:</p>
+            <ul>
+                <li><strong>.Add(item):</strong> Agrega un elemento al final.</li>
+                <li><strong>.Insert(index, item):</strong> Inserta un elemento en una posición exacta.</li>
+                <li><strong>.Remove(item):</strong> Borra la primera coincidencia de un valor.</li>
+                <li><strong>.RemoveAt(index):</strong> Borra el elemento ubicado en una posición específica.</li>
+                <li><strong>.Count:</strong> Devuelve la cantidad actual de elementos (¡vital para bucles!).</li>
+                <li><strong>.Sort():</strong> Ordena alfabéticamente o de menor a mayor de inmediato.</li>
+            </ul>
+        </section>
+
+        <!-- SECCIÓN 3 -->
+        <section>
+            <h2>🔍 3. Superpoderes LINQ (De Básico a Avanzado)</h2>
+            <p>LINQ permite hacer consultas expresivas sobre tus listas sin escribir bucles complejos.</p>
+
+            <h3>Filtro Rápido (.Where) y Proyección (.Select)</h3>
+            <pre><code><span class="type">List&lt;int&gt;</span> puntuaciones = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 45, 85, 90, 30, 100 };
+
+<span class="comment">// Filtrar elementos mayores a 60</span>
+<span class="type">var</span> aprobados = puntuaciones.<span class="keyword">Where</span>(p => p > 60).<span class="keyword">ToList</span>();</code></pre>
+
+            <h3>⚡ Nivel Avanzado: El Método .Zip()</h3>
+            <p>El método <span class="highlight">.Zip()</span> es una joya oculta de LINQ. Te permite **fusionar dos
+                listas elemento por elemento** aplicando una regla de combinación, creando una secuencia nueva.</p>
+            <pre><code><span class="type">List&lt;string&gt;</span> nombres = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Ana"</span>, <span class="string">"Luis"</span>, <span class="string">"Carlos"</span> };
+<span class="type">List&lt;int&gt;</span> edades = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 20, 25, 30 };
+
+<span class="comment">// Fusionamos ambas listas en una sola lista de textos combinados</span>
+<span class="type">List&lt;string&gt;</span> resultado = nombres.<span class="keyword">Zip</span>(edades, (nombre, edad) => 
+    nombre + <span class="string">" tiene "</span> + edad + <span class="string">" años"</span>
+).<span class="keyword">ToList</span>();
+
+<span class="comment">// Resultado en consola:</span>
+<span class="comment">// "Ana tiene 20 años"</span>
+<span class="comment">// "Luis tiene 25 años"</span>
+<span class="comment">// "Carlos tiene 30 años"</span></code></pre>
+        </section>
+
+        <!-- SECCIÓN 4 -->
+        <section>
+            <h2>🚀 4. Código Completo para Probar</h2>
+            <p>Copia y pega este programa de consola en tu Visual Studio 2012 para ver todo en acción:</p>
+            <pre><code><span class="keyword">using</span> System;
+<span class="keyword">using</span> System.Collections.Generic;
+<span class="keyword">using</span> System.Linq;
+
+<span class="keyword">namespace</span> <span class="type">DemoListas</span>
+{
+    <span class="keyword">class</span> <span class="type">Program</span>
+    {
+        <span class="keyword">static</span> <span class="keyword">void</span> <span class="type">Main</span>(<span class="keyword">string</span>[] args)
+        {
+            <span class="type">List&lt;string&gt;</span> lenguajes = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"C#"</span>, <span class="string">"PHP"</span>, <span class="string">"JavaScript"</span> };
+            
+            lenguajes.<span class="keyword">Add</span>(<span class="string">"Python"</span>);
+            lenguajes.<span class="keyword">Sort</span>();
+
+            Console.WriteLine(<span class="string">"--- LISTA ORDENADA ---"</span>);
+            <span class="keyword">foreach</span> (<span class="keyword">string</span> lang <span class="keyword">in</span> lenguajes)
+            {
+                Console.WriteLine(lang);
+            }
+
+            Console.ReadKey();
+        }
+    }
+}</code></pre>
+        </section>
+    </div>
+
+</body>
+
+</html>
