@@ -291,7 +291,8 @@ Console.WriteLine(lista.Count);    <span class="comment">// 1</span></code></pre
                     específica.</li>
                 <li><strong>.Remove(item):</strong> Borra la primera coincidencia de un valor. Devuelve
                     <code>true</code>
-                    si lo encontró.</li>
+                    si lo encontró.
+                </li>
                 <li><strong>.RemoveAt(index):</strong> Borra el elemento ubicado en una posición específica.</li>
                 <li><strong>.RemoveAll(predicado):</strong> Elimina todos los elementos que cumplan una condición.</li>
                 <li><strong>.Clear():</strong> Elimina todos los elementos de la lista.</li>
@@ -341,6 +342,53 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
                 <code>List&lt;T&gt;</code>.
             </p>
 
+            <div class="tip-box">
+                <strong>Antes de empezar:</strong> para usar LINQ necesitas la directiva
+                <code>using System.Linq;</code> al inicio del archivo. Sin ella, ninguno de los métodos de esta sección
+                estará disponible.
+            </div>
+
+            <!-- ============================================================ -->
+            <h3>Anatomía de una consulta LINQ</h3>
+            <p>Toda consulta LINQ con sintaxis de métodos sigue este patrón general:</p>
+            <pre><code>coleccion.Metodo1(criterio).Metodo2(transformacion).Metodo3()</code></pre>
+            <p>Vamos a desglosar cada parte:</p>
+            <ul>
+                <li><strong><code>coleccion</code>:</strong> la fuente de datos. Puede ser una
+                    <code>List&lt;T&gt;</code>, un
+                    array, un <code>Dictionary</code>, o cualquier objeto que implemente
+                    <code>IEnumerable&lt;T&gt;</code>.</li>
+                <li><strong><code>.Metodo1</code>:</strong> el primer operador LINQ. Cada operador se invoca con un
+                    punto
+                    (<code>.</code>) porque es un método de extensión sobre <code>IEnumerable&lt;T&gt;</code>.</li>
+                <li><strong><code>(criterio)</code>:</strong> el argumento del operador. Casi siempre es una
+                    <strong>expresión lambda</strong> que define qué hacer con cada elemento.
+                </li>
+                <li><strong>Encadenamiento:</strong> el resultado de un operador se convierte en la entrada del
+                    siguiente.
+                    Esto se llama <em>fluent syntax</em> o sintaxis fluida.</li>
+            </ul>
+
+            <h4>¿Qué es una expresión lambda?</h4>
+            <p>Una <strong>expresión lambda</strong> es una función anónima y compacta. Su sintaxis es:</p>
+            <pre><code>parametro => expresion</code></pre>
+            <ul>
+                <li><strong><code>parametro</code>:</strong> el nombre que le das a cada elemento de la colección
+                    mientras
+                    LINQ la recorre. Puedes llamarlo como quieras (<code>x</code>, <code>p</code>, <code>nombre</code>,
+                    <code>item</code>...).
+                </li>
+                <li><strong><code>=&gt;</code>:</strong> se lee "va hacia" o "tal que". Separa el parámetro de la
+                    lógica.</li>
+                <li><strong><code>expresion</code>:</strong> el resultado que se devuelve para cada elemento. Puede ser
+                    un
+                    booleano (para filtrar), un valor transformado (para proyectar) o una clave (para ordenar/agrupar).
+                </li>
+            </ul>
+            <pre><code><span class="comment">// Esta lambda: p => p > 60</span>
+<span class="comment">// Se lee: "para cada p, devuelve true si p es mayor que 60"</span></code></pre>
+
+            <!-- ============================================================ -->
             <h3>Filtro Rápido (.Where) y Proyección (.Select)</h3>
             <pre><code><span class="type">List&lt;int&gt;</span> puntuaciones = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 45, 85, 90, 30, 100 };
 
@@ -356,6 +404,47 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
     .<span class="keyword">Select</span>(p => <span class="string">"Puntuación: "</span> + p)
     .<span class="keyword">ToList</span>();</code></pre>
 
+            <h4>Desglose paso a paso</h4>
+            <ul>
+                <li><strong><code>puntuaciones</code>:</strong> la lista origen (<code>List&lt;int&gt;</code>).</li>
+                <li><strong><code>.Where(p =&gt; p &gt; 60)</code>:</strong>
+                    <ul>
+                        <li><code>Where</code> = operador de filtrado. Recorre cada elemento y solo deja pasar los que
+                            cumplen la condición.</li>
+                        <li><code>p</code> = nombre temporal del elemento actual (podría ser <code>x</code> o
+                            <code>numero</code>).
+                        </li>
+                        <li><code>=&gt;</code> = separador de la lambda.</li>
+                        <li><code>p &gt; 60</code> = condición booleana. Si es <code>true</code>, el elemento pasa; si
+                            es
+                            <code>false</code>, se descarta.
+                        </li>
+                    </ul>
+                </li>
+                <li><strong><code>.ToList()</code>:</strong> materializa el resultado. Sin este método,
+                    <code>aprobados</code>
+                    sería una consulta diferida (no ejecutada todavía). <code>ToList()</code> fuerza la ejecución y
+                    devuelve
+                    una nueva <code>List&lt;int&gt;</code>.</li>
+                <li><strong><code>var</code>:</strong> el compilador infiere el tipo. En este caso,
+                    <code>aprobados</code> es
+                    <code>List&lt;int&gt;</code>.
+                </li>
+                <li><strong><code>.Select(p =&gt; p * p)</code>:</strong>
+                    <ul>
+                        <li><code>Select</code> = operador de proyección. Transforma cada elemento en otra cosa.</li>
+                        <li><code>p * p</code> = la transformación aplicada. Cada número se convierte en su cuadrado.
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Encadenamiento:</strong> <code>.Where(...).Select(...)</code> primero filtra y luego
+                    transforma.
+                    El orden importa: si inviertes el orden, transformarías elementos que luego descartarías (más
+                    trabajo
+                    innecesario).</li>
+            </ul>
+
+            <!-- ============================================================ -->
             <h3>Ordenamiento con OrderBy y ThenBy</h3>
             <pre><code><span class="type">List&lt;string&gt;</span> nombres = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Carlos"</span>, <span class="string">"Ana"</span>, <span class="string">"Luis"</span>, <span class="string">"Beatriz"</span> };
 
@@ -368,6 +457,35 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
     .<span class="keyword">ThenBy</span>(n => n)
     .<span class="keyword">ToList</span>();</code></pre>
 
+            <h4>Desglose paso a paso</h4>
+            <ul>
+                <li><strong><code>.OrderBy(n =&gt; n)</code>:</strong>
+                    <ul>
+                        <li><code>OrderBy</code> = operador de ordenamiento ascendente.</li>
+                        <li><code>n =&gt; n</code> = la clave de ordenamiento. Aquí la clave es el propio elemento
+                            (orden
+                            alfabético).</li>
+                        <li>Podrías usar <code>n =&gt; n.Length</code> para ordenar por longitud, o
+                            <code>n =&gt; n[0]</code>
+                            para ordenar por la primera letra.</li>
+                    </ul>
+                </li>
+                <li><strong><code>.OrderByDescending(n =&gt; n)</code>:</strong> igual que <code>OrderBy</code>, pero
+                    invierte
+                    el orden (de Z a A, o de mayor a menor).</li>
+                <li><strong><code>.ThenBy(n =&gt; n)</code>:</strong> segundo criterio de orden. Solo se usa después de
+                    <code>OrderBy</code> o <code>OrderByDescending</code>. Si dos elementos empatan en el primer
+                    criterio,
+                    se ordenan por este segundo.
+                </li>
+                <li><strong>Ejemplo mental:</strong> con <code>OrderBy(n =&gt; n.Length).ThenBy(n =&gt; n)</code>,
+                    primero se
+                    agrupan por longitud y dentro de cada grupo se ordenan alfabéticamente. "Ana" (3) va antes que
+                    "Luis"
+                    (4), y "Luis" antes que "Carlos" (6).</li>
+            </ul>
+
+            <!-- ============================================================ -->
             <h3>Agrupación con GroupBy</h3>
             <pre><code><span class="type">List&lt;string&gt;</span> palabras = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"sol"</span>, <span class="string">"luna"</span>, <span class="string">"mar"</span>, <span class="string">"cielo"</span>, <span class="string">"pan"</span> };
 
@@ -380,6 +498,33 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
         Console.WriteLine(<span class="string">"  - "</span> + palabra);
 }</code></pre>
 
+            <h4>Desglose paso a paso</h4>
+            <ul>
+                <li><strong><code>.GroupBy(p =&gt; p.Length)</code>:</strong>
+                    <ul>
+                        <li><code>GroupBy</code> = operador de agrupación.</li>
+                        <li><code>p =&gt; p.Length</code> = la <strong>clave de agrupación</strong>. Todos los elementos
+                            que
+                            devuelvan la misma clave caen en el mismo grupo.</li>
+                        <li>El resultado es una secuencia de objetos <code>IGrouping&lt;int, string&gt;</code>: cada uno
+                            tiene
+                            una <code>Key</code> (la clave común) y es a la vez una colección de los elementos de ese
+                            grupo.</li>
+                    </ul>
+                </li>
+                <li><strong><code>foreach (var grupo in grupos)</code>:</strong> recorre cada grupo.</li>
+                <li><strong><code>grupo.Key</code>:</strong> la clave compartida por todos los elementos del grupo. En
+                    este
+                    ejemplo, la longitud de las palabras (3, 4, 5).</li>
+                <li><strong><code>foreach (var palabra in grupo)</code>:</strong> el grupo en sí es iterable, así que
+                    puedes
+                    recorrer sus elementos individuales.</li>
+                <li><strong>Resultado esperado:</strong> grupo Key=3 → "sol", "mar", "pan"; grupo Key=4 → "luna"; grupo
+                    Key=5
+                    → "cielo".</li>
+            </ul>
+
+            <!-- ============================================================ -->
             <h3>Agregaciones: Sum, Average, Min, Max, Count</h3>
             <pre><code><span class="type">List&lt;int&gt;</span> ventas = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 120, 340, 560, 80, 900 };
 
@@ -390,6 +535,29 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
 <span class="type">int</span> cantidad = ventas.<span class="keyword">Count</span>();
 <span class="type">int</span> mayoresA200 = ventas.<span class="keyword">Count</span>(v => v > 200);</code></pre>
 
+            <h4>Desglose paso a paso</h4>
+            <ul>
+                <li><strong><code>.Sum()</code>:</strong> recorre toda la colección y suma todos los elementos. Devuelve
+                    un
+                    único valor. No recibe parámetros si sumas los valores tal cual.</li>
+                <li><strong><code>.Average()</code>:</strong> suma todos los elementos y divide entre la cantidad.
+                    Devuelve
+                    <code>double</code> para preservar decimales.
+                </li>
+                <li><strong><code>.Min()</code> / <code>.Max()</code>:</strong> devuelven el menor o mayor elemento
+                    según el
+                    comparador por defecto del tipo.</li>
+                <li><strong><code>.Count()</code>:</strong> sin argumentos, devuelve la cantidad total de elementos. Es
+                    equivalente a la propiedad <code>Count</code> de la lista, pero funciona también sobre cualquier
+                    <code>IEnumerable&lt;T&gt;</code>.
+                </li>
+                <li><strong><code>.Count(v =&gt; v &gt; 200)</code>:</strong> con una lambda, cuenta solo los elementos
+                    que
+                    cumplen la condición. Es equivalente a <code>.Where(v =&gt; v &gt; 200).Count()</code>, pero más
+                    eficiente porque no crea una colección intermedia.</li>
+            </ul>
+
+            <!-- ============================================================ -->
             <h3>Búsqueda con First, FirstOrDefault, Single</h3>
             <pre><code><span class="type">List&lt;string&gt;</span> ciudades = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Bogotá"</span>, <span class="string">"Lima"</span>, <span class="string">"Santiago"</span>, <span class="string">"Quito"</span> };
 
@@ -398,10 +566,34 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
 <span class="type">string</span> oDefault = ciudades.<span class="keyword">FirstOrDefault</span>(c => c == <span class="string">"Madrid"</span>); <span class="comment">// null si no existe</span>
 <span class="type">string</span> unica = ciudades.<span class="keyword">Single</span>(c => c == <span class="string">"Lima"</span>);           <span class="comment">// Lanza si hay 0 o más de 1</span></code></pre>
 
+            <h4>Desglose paso a paso</h4>
+            <ul>
+                <li><strong><code>.First()</code>:</strong> devuelve el primer elemento de la secuencia. Si la colección
+                    está
+                    vacía, lanza <code>InvalidOperationException</code>.</li>
+                <li><strong><code>.First(c =&gt; c.StartsWith("S"))</code>:</strong> devuelve el primer elemento que
+                    cumpla la
+                    condición. <code>c.StartsWith("S")</code> es el método de string que verifica si empieza con "S".
+                </li>
+                <li><strong><code>.FirstOrDefault(...)</code>:</strong> igual que <code>First</code>, pero si no
+                    encuentra
+                    nada devuelve el valor predeterminado del tipo (<code>null</code> para string, <code>0</code> para
+                    int,
+                    etc.) en lugar de lanzar excepción.</li>
+                <li><strong><code>.Single(c =&gt; c == "Lima")</code>:</strong> espera exactamente <strong>un</strong>
+                    elemento que cumpla la condición. Si hay 0 o más de 1, lanza excepción. Es útil cuando sabes que el
+                    resultado debe ser único.</li>
+                <li><strong><code>.SingleOrDefault(...)</code>:</strong> como <code>Single</code>, pero devuelve el
+                    valor
+                    predeterminado si no encuentra ninguno (aunque sigue lanzando si hay más de uno).</li>
+            </ul>
+
+            <!-- ============================================================ -->
             <h3>Nivel Avanzado: El Método .Zip()</h3>
             <p>El método <span class="highlight">.Zip()</span> es una joya oculta de LINQ. Te permite
                 <strong>fusionar dos listas elemento por elemento</strong> aplicando una regla de combinación, creando
-                una secuencia nueva. La longitud del resultado será la de la lista más corta.
+                una
+                secuencia nueva. La longitud del resultado será la de la lista más corta.
             </p>
             <pre><code><span class="type">List&lt;string&gt;</span> nombres = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Ana"</span>, <span class="string">"Luis"</span>, <span class="string">"Carlos"</span> };
 <span class="type">List&lt;int&gt;</span> edades = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 20, 25, 30 };
@@ -416,29 +608,103 @@ frutas.<span class="keyword">Reverse</span>();                    <span class="c
 <span class="comment">// "Luis tiene 25 años"</span>
 <span class="comment">// "Carlos tiene 30 años"</span></code></pre>
 
+            <h4>Desglose paso a paso</h4>
+            <ul>
+                <li><strong><code>nombres.Zip(edades, ...)</code>:</strong> <code>Zip</code> se invoca sobre la primera
+                    secuencia (<code>nombres</code>) y recibe como primer argumento la segunda secuencia
+                    (<code>edades</code>).</li>
+                <li><strong><code>(nombre, edad) =&gt; ...</code>:</strong> la lambda de combinación recibe
+                    <strong>dos parámetros</strong> (uno de cada lista) porque está fusionando dos secuencias. El primer
+                    parámetro (<code>nombre</code>) viene de <code>nombres</code>; el segundo (<code>edad</code>) viene
+                    de
+                    <code>edades</code>.
+                </li>
+                <li><strong><code>nombre + " tiene " + edad + " años"</code>:</strong> la regla de combinación. Se
+                    concatena
+                    el nombre con la edad para formar una nueva cadena.</li>
+                <li><strong>Emparejamiento:</strong> el primer elemento de <code>nombres</code> se empareja con el
+                    primero de
+                    <code>edades</code>, el segundo con el segundo, y así sucesivamente. Si una lista es más corta, los
+                    elementos sobrantes de la otra se ignoran.
+                </li>
+                <li><strong><code>.ToList()</code>:</strong> materializa la secuencia fusionada en una nueva
+                    <code>List&lt;string&gt;</code>.
+                </li>
+            </ul>
+
+            <!-- ============================================================ -->
             <h3>Otras operaciones LINQ útiles</h3>
             <ul>
-                <li><strong>.Any(predicado):</strong> Devuelve <code>true</code> si algún elemento cumple la condición.
+                <li><strong><code>.Any(predicado)</code>:</strong> devuelve <code>true</code> si algún elemento cumple
+                    la
+                    condición. Sin argumentos, devuelve <code>true</code> si la colección tiene al menos un elemento.
+                    <br><em>Ejemplo:</em> <code>lista.Any(x =&gt; x &gt; 100)</code> → ¿hay algún valor mayor a 100?
                 </li>
-                <li><strong>.All(predicado):</strong> Devuelve <code>true</code> si todos cumplen la condición.</li>
-                <li><strong>.Distinct():</strong> Elimina elementos duplicados.</li>
-                <li><strong>.Skip(n) / .Take(n):</strong> Omite o toma los primeros n elementos (útil para paginación).
+                <li><strong><code>.All(predicado)</code>:</strong> devuelve <code>true</code> solo si
+                    <strong>todos</strong>
+                    los elementos cumplen la condición.
+                    <br><em>Ejemplo:</em> <code>lista.All(x =&gt; x &gt; 0)</code> → ¿todos son positivos?
                 </li>
-                <li><strong>.Concat(otraLista):</strong> Concatena dos secuencias.</li>
-                <li><strong>.Union(otraLista):</strong> Une sin duplicados.</li>
-                <li><strong>.Intersect(otraLista):</strong> Elementos comunes entre ambas.</li>
-                <li><strong>.Except(otraLista):</strong> Elementos de la primera que no están en la segunda.</li>
-                <li><strong>.ToDictionary(clave, valor):</strong> Convierte la lista en un diccionario.</li>
-                <li><strong>.ToList() / .ToArray():</strong> Materializan la consulta en una colección concreta.</li>
+                <li><strong><code>.Distinct()</code>:</strong> elimina elementos duplicados comparando por igualdad.
+                    <br><em>Ejemplo:</em> <code>{1, 2, 2, 3}.Distinct()</code> → <code>{1, 2, 3}</code>.
+                </li>
+                <li><strong><code>.Skip(n)</code>:</strong> omite los primeros <code>n</code> elementos y devuelve el
+                    resto.
+                    <br><em>Ejemplo:</em> <code>lista.Skip(2)</code> → salta los dos primeros.
+                </li>
+                <li><strong><code>.Take(n)</code>:</strong> devuelve solo los primeros <code>n</code> elementos.
+                    <br><em>Ejemplo:</em> <code>lista.Take(3)</code> → los tres primeros. Combinado con
+                    <code>Skip</code>
+                    sirve para paginación: <code>lista.Skip(pagina * 10).Take(10)</code>.
+                </li>
+                <li><strong><code>.Concat(otraLista)</code>:</strong> concatena dos secuencias sin eliminar duplicados.
+                    <br><em>Ejemplo:</em> <code>{1, 2}.Concat({2, 3})</code> → <code>{1, 2, 2, 3}</code>.
+                </li>
+                <li><strong><code>.Union(otraLista)</code>:</strong> une dos secuencias eliminando duplicados.
+                    <br><em>Ejemplo:</em> <code>{1, 2}.Union({2, 3})</code> → <code>{1, 2, 3}</code>.
+                </li>
+                <li><strong><code>.Intersect(otraLista)</code>:</strong> devuelve solo los elementos comunes a ambas.
+                    <br><em>Ejemplo:</em> <code>{1, 2, 3}.Intersect({2, 3, 4})</code> → <code>{2, 3}</code>.
+                </li>
+                <li><strong><code>.Except(otraLista)</code>:</strong> devuelve los elementos de la primera que
+                    <strong>no</strong>
+                    están en la segunda.
+                    <br><em>Ejemplo:</em> <code>{1, 2, 3}.Except({2, 3})</code> → <code>{1}</code>.
+                </li>
+                <li><strong><code>.ToDictionary(clave, valor)</code>:</strong> convierte la lista en un
+                    <code>Dictionary&lt;TKey, TValue&gt;</code> usando dos lambdas: una para la clave y otra para el
+                    valor.
+                    <br><em>Ejemplo:</em> <code>personas.ToDictionary(p =&gt; p.Id, p =&gt; p.Nombre)</code>.
+                </li>
+                <li><strong><code>.ToList() / .ToArray():</code></strong> materializan la consulta en una colección
+                    concreta.
+                    Sin ellos, la consulta permanece como un <code>IEnumerable&lt;T&gt;</code> diferido.</li>
             </ul>
 
             <div class="tip-box">
-                <strong>Diferencia entre ejecución diferida y materialización:</strong> LINQ usa ejecución diferida.
-                La consulta no se ejecuta hasta que se itera o se materializa con <code>ToList()</code>,
-                <code>ToArray()</code>, <code>Count()</code>, etc. Esto permite optimizar y encadenar operaciones.
+                <strong>Ejecución diferida vs. materialización:</strong> LINQ usa ejecución diferida. La consulta no se
+                ejecuta hasta que se itera (por ejemplo, con un <code>foreach</code>) o se materializa con
+                <code>ToList()</code>, <code>ToArray()</code>, <code>Count()</code>, <code>First()</code>, etc. Esto
+                permite
+                encadenar muchas operaciones sin recorrer la colección varias veces. Pero cuidado: si modificas la lista
+                original antes de iterar el resultado, los cambios se reflejarán en la consulta.
             </div>
-        </section>
 
+            <h4>Ejemplo comparativo: diferido vs. materializado</h4>
+            <pre><code><span class="type">List&lt;int&gt;</span> nums = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 1, 2, 3 };
+
+<span class="comment">// Consulta diferida: todavía no se ejecuta</span>
+<span class="type">var</span> consulta = nums.<span class="keyword">Where</span>(n => n > 1);
+
+<span class="comment">// Modificamos la lista original</span>
+nums.<span class="keyword">Add</span>(4);
+
+<span class="comment">// Ahora se ejecuta, y el 4 también aparece</span>
+<span class="keyword">foreach</span> (<span class="type">var</span> n <span class="keyword">in</span> consulta)
+    Console.WriteLine(n); <span class="comment">// 2, 3, 4</span>
+
+<span class="comment">// Si hubiéramos hecho ToList() antes de modificar, solo veríamos 2 y 3</span></code></pre>
+        </section>
         <!-- SECCIÓN 4 -->
         <section>
             <h2>4. Código Completo para Probar</h2>
