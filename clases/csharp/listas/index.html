@@ -1,10 +1,9 @@
-<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dominando List<T> en C# 5.0 | Guía Práctica</title>
+    <title>Dominando List&lt;T&gt; en C# 5.0 | Guía Práctica Completa</title>
     <style>
         :root {
             --bg-color: #1e1e1e;
@@ -79,6 +78,20 @@
             gap: 8px;
         }
 
+        h3 {
+            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            color: var(--accent-yellow);
+            font-size: 1rem;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
         p {
             margin-bottom: 12px;
             font-size: 0.95rem;
@@ -101,6 +114,10 @@
             color: #dcdcaa;
         }
 
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
         .keyword {
             color: var(--accent-blue);
         }
@@ -118,7 +135,8 @@
             font-style: italic;
         }
 
-        ul {
+        ul,
+        ol {
             margin-left: 20px;
             margin-bottom: 12px;
         }
@@ -135,6 +153,34 @@
             border-radius: 0 6px 6px 0;
             margin: 15px 0;
             font-size: 0.9rem;
+        }
+
+        .warning-box {
+            background: rgba(206, 145, 120, 0.1);
+            border-left: 4px solid var(--accent-orange);
+            padding: 12px;
+            border-radius: 0 6px 6px 0;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2d2d2d;
+            color: var(--accent-cyan);
         }
 
         @media (min-width: 768px) {
@@ -158,53 +204,205 @@
     <div class="container">
         <!-- HEADER -->
         <header>
-            <h1>⚡ List&lt;T&gt; y LINQ en C# 5.0</h1>
-            <p>Guía rápida, directa y visual para dominar colecciones dinámicas.</p>
+            <h1>List&lt;T&gt; y LINQ en C# 5.0</h1>
+            <p>Guía completa, directa y visual para dominar colecciones dinámicas.</p>
             <span class="badge">Visual Studio 2012 / .NET 4.5 Compatible</span>
         </header>
 
         <!-- SECCIÓN 1 -->
         <section>
-            <h2>📦 1. ¿Qué es una List&lt;T&gt;?</h2>
+            <h2>1. ¿Qué es una List&lt;T&gt;?</h2>
             <p>Olvídate de los arreglos estáticos de tamaño fijo. Una <span class="highlight">List&lt;T&gt;</span> es
                 una mochila inteligente que crece y se encoge automáticamente a medida que agregas o eliminas elementos.
+                A diferencia de los arrays tradicionales, no necesitas declarar un tamaño fijo al momento de crearla.
             </p>
             <div class="tip-box">
-                💡 La <strong>T</strong> significa <em>Tipo</em>. Puedes crear listas de enteros (`List&lt;int&gt;`), de
-                textos (`List&lt;string&gt;`) o de objetos personalizados.
+                La <strong>T</strong> significa <em>Tipo</em>. Puedes crear listas de enteros
+                (<code>List&lt;int&gt;</code>),
+                de textos (<code>List&lt;string&gt;</code>) o de objetos personalizados como
+                <code>List&lt;Persona&gt;</code>.
+                Esto se conoce como <strong>programación genérica</strong>, y permite que el compilador verifique los
+                tipos
+                en tiempo de compilación, evitando errores en tiempo de ejecución.
             </div>
             <pre><code><span class="comment">// Crear e inicializar en una sola línea (C# 5.0)</span>
-<span class="type">List&lt;string&gt;</span> heroes = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Batman"</span>, <span class="string">"Flash"</span>, <span class="string">"Superman"</span> };</code></pre>
+<span class="type">List&lt;string&gt;</span> heroes = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Batman"</span>, <span class="string">"Flash"</span>, <span class="string">"Superman"</span> };
+
+<span class="comment">// También puedes crear una lista vacía y agregar elementos después</span>
+<span class="type">List&lt;int&gt;</span> numeros = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span>();
+numeros.<span class="keyword">Add</span>(10);
+numeros.<span class="keyword">Add</span>(20);
+numeros.<span class="keyword">Add</span>(30);</code></pre>
+
+            <h3>Diferencia entre Array y List&lt;T&gt;</h3>
+            <table>
+                <tr>
+                    <th>Característica</th>
+                    <th>Array</th>
+                    <th>List&lt;T&gt;</th>
+                </tr>
+                <tr>
+                    <td>Tamaño</td>
+                    <td>Fijo al declarar</td>
+                    <td>Dinámico, crece automáticamente</td>
+                </tr>
+                <tr>
+                    <td>Métodos de búsqueda</td>
+                    <td>Limitados</td>
+                    <td>Amplia variedad (Add, Remove, Find, Sort, etc.)</td>
+                </tr>
+                <tr>
+                    <td>LINQ</td>
+                    <td>Compatible</td>
+                    <td>Compatible y más natural</td>
+                </tr>
+                <tr>
+                    <td>Rendimiento</td>
+                    <td>Ligeramente más rápido en acceso por índice</td>
+                    <td>Muy bueno, con overhead mínimo</td>
+                </tr>
+            </table>
+
+            <h3>Capacidad vs. Cantidad</h3>
+            <p>Una <code>List&lt;T&gt;</code> tiene dos propiedades importantes que suelen confundirse:</p>
+            <ul>
+                <li><strong>Count:</strong> número de elementos actualmente almacenados.</li>
+                <li><strong>Capacity:</strong> número de elementos que la lista puede contener antes de necesitar
+                    redimensionarse internamente. Cuando se supera, la capacidad se duplica automáticamente.</li>
+            </ul>
+            <pre><code><span class="type">List&lt;int&gt;</span> lista = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span>();
+Console.WriteLine(lista.Capacity); <span class="comment">// 0</span>
+lista.<span class="keyword">Add</span>(1);
+Console.WriteLine(lista.Capacity); <span class="comment">// 4 (se redimensiona automáticamente)</span>
+Console.WriteLine(lista.Count);    <span class="comment">// 1</span></code></pre>
         </section>
 
         <!-- SECCIÓN 2 -->
         <section>
-            <h2>🛠️ 2. El Arsenal de Métodos Esenciales</h2>
+            <h2>2. El Arsenal de Métodos Esenciales</h2>
             <p>Operaciones básicas para manipular tu lista en el día a día:</p>
             <ul>
-                <li><strong>.Add(item):</strong> Agrega un elemento al final.</li>
-                <li><strong>.Insert(index, item):</strong> Inserta un elemento en una posición exacta.</li>
-                <li><strong>.Remove(item):</strong> Borra la primera coincidencia de un valor.</li>
+                <li><strong>.Add(item):</strong> Agrega un elemento al final de la lista.</li>
+                <li><strong>.AddRange(IEnumerable&lt;T&gt;):</strong> Agrega todos los elementos de otra colección al
+                    final.</li>
+                <li><strong>.Insert(index, item):</strong> Inserta un elemento en una posición exacta, desplazando los
+                    siguientes.</li>
+                <li><strong>.InsertRange(index, coleccion):</strong> Inserta una colección completa en una posición
+                    específica.</li>
+                <li><strong>.Remove(item):</strong> Borra la primera coincidencia de un valor. Devuelve
+                    <code>true</code>
+                    si lo encontró.</li>
                 <li><strong>.RemoveAt(index):</strong> Borra el elemento ubicado en una posición específica.</li>
-                <li><strong>.Count:</strong> Devuelve la cantidad actual de elementos (¡vital para bucles!).</li>
+                <li><strong>.RemoveAll(predicado):</strong> Elimina todos los elementos que cumplan una condición.</li>
+                <li><strong>.Clear():</strong> Elimina todos los elementos de la lista.</li>
+                <li><strong>.Count:</strong> Devuelve la cantidad actual de elementos (vital para bucles).</li>
+                <li><strong>.Contains(item):</strong> Devuelve <code>true</code> si el elemento existe en la lista.</li>
+                <li><strong>.IndexOf(item):</strong> Devuelve el índice de la primera coincidencia, o -1 si no existe.
+                </li>
                 <li><strong>.Sort():</strong> Ordena alfabéticamente o de menor a mayor de inmediato.</li>
+                <li><strong>.Reverse():</strong> Invierte el orden de los elementos.</li>
+                <li><strong>.ToArray():</strong> Convierte la lista en un array.</li>
+                <li><strong>.Find(predicado):</strong> Devuelve el primer elemento que cumpla la condición.</li>
+                <li><strong>.FindAll(predicado):</strong> Devuelve una nueva lista con todos los que cumplan la
+                    condición.</li>
+                <li><strong>.Exists(predicado):</strong> Devuelve <code>true</code> si algún elemento cumple la
+                    condición.</li>
+                <li><strong>.ForEach(accion):</strong> Ejecuta una acción sobre cada elemento.</li>
             </ul>
+
+            <h3>Ejemplo práctico de métodos básicos</h3>
+            <pre><code><span class="type">List&lt;string&gt;</span> frutas = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Manzana"</span>, <span class="string">"Pera"</span>, <span class="string">"Uva"</span> };
+
+frutas.<span class="keyword">Add</span>(<span class="string">"Naranja"</span>);              <span class="comment">// Agrega al final</span>
+frutas.<span class="keyword">Insert</span>(1, <span class="string">"Plátano"</span>);           <span class="comment">// Inserta en posición 1</span>
+frutas.<span class="keyword">Remove</span>(<span class="string">"Pera"</span>);                <span class="comment">// Elimina "Pera"</span>
+frutas.<span class="keyword">RemoveAt</span>(0);                   <span class="comment">// Elimina el primero</span>
+
+<span class="keyword">if</span> (frutas.<span class="keyword">Contains</span>(<span class="string">"Uva"</span>))
+    Console.WriteLine(<span class="string">"La lista contiene Uva"</span>);
+
+<span class="type">int</span> indice = frutas.<span class="keyword">IndexOf</span>(<span class="string">"Naranja"</span>);
+Console.WriteLine(<span class="string">"Naranja está en el índice: "</span> + indice);
+
+frutas.<span class="keyword">Sort</span>();                       <span class="comment">// Ordena alfabéticamente</span>
+frutas.<span class="keyword">Reverse</span>();                    <span class="comment">// Invierte el orden</span></code></pre>
+
+            <div class="warning-box">
+                <strong>Importante:</strong> <code>Remove</code> solo elimina la primera coincidencia. Si necesitas
+                eliminar todas las coincidencias, usa <code>RemoveAll</code> con un predicado.
+            </div>
         </section>
 
         <!-- SECCIÓN 3 -->
         <section>
-            <h2>🔍 3. Superpoderes LINQ (De Básico a Avanzado)</h2>
-            <p>LINQ permite hacer consultas expresivas sobre tus listas sin escribir bucles complejos.</p>
+            <h2>3. Superpoderes LINQ (De Básico a Avanzado)</h2>
+            <p>LINQ (Language Integrated Query) permite hacer consultas expresivas sobre tus listas sin escribir bucles
+                complejos. Es una de las características más poderosas de C# y se integra perfectamente con
+                <code>List&lt;T&gt;</code>.
+            </p>
 
             <h3>Filtro Rápido (.Where) y Proyección (.Select)</h3>
             <pre><code><span class="type">List&lt;int&gt;</span> puntuaciones = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 45, 85, 90, 30, 100 };
 
 <span class="comment">// Filtrar elementos mayores a 60</span>
-<span class="type">var</span> aprobados = puntuaciones.<span class="keyword">Where</span>(p => p > 60).<span class="keyword">ToList</span>();</code></pre>
+<span class="type">var</span> aprobados = puntuaciones.<span class="keyword">Where</span>(p => p > 60).<span class="keyword">ToList</span>();
 
-            <h3>⚡ Nivel Avanzado: El Método .Zip()</h3>
-            <p>El método <span class="highlight">.Zip()</span> es una joya oculta de LINQ. Te permite **fusionar dos
-                listas elemento por elemento** aplicando una regla de combinación, creando una secuencia nueva.</p>
+<span class="comment">// Proyección: transformar cada elemento</span>
+<span class="type">var</span> cuadrados = puntuaciones.<span class="keyword">Select</span>(p => p * p).<span class="keyword">ToList</span>();
+
+<span class="comment">// Encadenar Where y Select</span>
+<span class="type">var</span> resultado = puntuaciones
+    .<span class="keyword">Where</span>(p => p >= 50)
+    .<span class="keyword">Select</span>(p => <span class="string">"Puntuación: "</span> + p)
+    .<span class="keyword">ToList</span>();</code></pre>
+
+            <h3>Ordenamiento con OrderBy y ThenBy</h3>
+            <pre><code><span class="type">List&lt;string&gt;</span> nombres = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Carlos"</span>, <span class="string">"Ana"</span>, <span class="string">"Luis"</span>, <span class="string">"Beatriz"</span> };
+
+<span class="type">var</span> ordenados = nombres.<span class="keyword">OrderBy</span>(n => n).<span class="keyword">ToList</span>();          <span class="comment">// Ascendente</span>
+<span class="type">var</span> descendente = nombres.<span class="keyword">OrderByDescending</span>(n => n).<span class="keyword">ToList</span>(); <span class="comment">// Descendente</span>
+
+<span class="comment">// Ordenar por múltiples criterios</span>
+<span class="type">var</span> porLongitudYLuegoAlfabetico = nombres
+    .<span class="keyword">OrderBy</span>(n => n.Length)
+    .<span class="keyword">ThenBy</span>(n => n)
+    .<span class="keyword">ToList</span>();</code></pre>
+
+            <h3>Agrupación con GroupBy</h3>
+            <pre><code><span class="type">List&lt;string&gt;</span> palabras = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"sol"</span>, <span class="string">"luna"</span>, <span class="string">"mar"</span>, <span class="string">"cielo"</span>, <span class="string">"pan"</span> };
+
+<span class="type">var</span> grupos = palabras.<span class="keyword">GroupBy</span>(p => p.Length);
+
+<span class="keyword">foreach</span> (<span class="type">var</span> grupo <span class="keyword">in</span> grupos)
+{
+    Console.WriteLine(<span class="string">"Palabras de "</span> + grupo.Key + <span class="string">" letras:"</span>);
+    <span class="keyword">foreach</span> (<span class="type">var</span> palabra <span class="keyword">in</span> grupo)
+        Console.WriteLine(<span class="string">"  - "</span> + palabra);
+}</code></pre>
+
+            <h3>Agregaciones: Sum, Average, Min, Max, Count</h3>
+            <pre><code><span class="type">List&lt;int&gt;</span> ventas = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 120, 340, 560, 80, 900 };
+
+<span class="type">int</span> total = ventas.<span class="keyword">Sum</span>();
+<span class="type">double</span> promedio = ventas.<span class="keyword">Average</span>();
+<span class="type">int</span> minimo = ventas.<span class="keyword">Min</span>();
+<span class="type">int</span> maximo = ventas.<span class="keyword">Max</span>();
+<span class="type">int</span> cantidad = ventas.<span class="keyword">Count</span>();
+<span class="type">int</span> mayoresA200 = ventas.<span class="keyword">Count</span>(v => v > 200);</code></pre>
+
+            <h3>Búsqueda con First, FirstOrDefault, Single</h3>
+            <pre><code><span class="type">List&lt;string&gt;</span> ciudades = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Bogotá"</span>, <span class="string">"Lima"</span>, <span class="string">"Santiago"</span>, <span class="string">"Quito"</span> };
+
+<span class="type">string</span> primera = ciudades.<span class="keyword">First</span>();                       <span class="comment">// Lanza excepción si está vacía</span>
+<span class="type">string</span> primeraConS = ciudades.<span class="keyword">First</span>(c => c.StartsWith(<span class="string">"S"</span>));
+<span class="type">string</span> oDefault = ciudades.<span class="keyword">FirstOrDefault</span>(c => c == <span class="string">"Madrid"</span>); <span class="comment">// null si no existe</span>
+<span class="type">string</span> unica = ciudades.<span class="keyword">Single</span>(c => c == <span class="string">"Lima"</span>);           <span class="comment">// Lanza si hay 0 o más de 1</span></code></pre>
+
+            <h3>Nivel Avanzado: El Método .Zip()</h3>
+            <p>El método <span class="highlight">.Zip()</span> es una joya oculta de LINQ. Te permite
+                <strong>fusionar dos listas elemento por elemento</strong> aplicando una regla de combinación, creando
+                una secuencia nueva. La longitud del resultado será la de la lista más corta.
+            </p>
             <pre><code><span class="type">List&lt;string&gt;</span> nombres = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Ana"</span>, <span class="string">"Luis"</span>, <span class="string">"Carlos"</span> };
 <span class="type">List&lt;int&gt;</span> edades = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 20, 25, 30 };
 
@@ -217,12 +415,35 @@
 <span class="comment">// "Ana tiene 20 años"</span>
 <span class="comment">// "Luis tiene 25 años"</span>
 <span class="comment">// "Carlos tiene 30 años"</span></code></pre>
+
+            <h3>Otras operaciones LINQ útiles</h3>
+            <ul>
+                <li><strong>.Any(predicado):</strong> Devuelve <code>true</code> si algún elemento cumple la condición.
+                </li>
+                <li><strong>.All(predicado):</strong> Devuelve <code>true</code> si todos cumplen la condición.</li>
+                <li><strong>.Distinct():</strong> Elimina elementos duplicados.</li>
+                <li><strong>.Skip(n) / .Take(n):</strong> Omite o toma los primeros n elementos (útil para paginación).
+                </li>
+                <li><strong>.Concat(otraLista):</strong> Concatena dos secuencias.</li>
+                <li><strong>.Union(otraLista):</strong> Une sin duplicados.</li>
+                <li><strong>.Intersect(otraLista):</strong> Elementos comunes entre ambas.</li>
+                <li><strong>.Except(otraLista):</strong> Elementos de la primera que no están en la segunda.</li>
+                <li><strong>.ToDictionary(clave, valor):</strong> Convierte la lista en un diccionario.</li>
+                <li><strong>.ToList() / .ToArray():</strong> Materializan la consulta en una colección concreta.</li>
+            </ul>
+
+            <div class="tip-box">
+                <strong>Diferencia entre ejecución diferida y materialización:</strong> LINQ usa ejecución diferida.
+                La consulta no se ejecuta hasta que se itera o se materializa con <code>ToList()</code>,
+                <code>ToArray()</code>, <code>Count()</code>, etc. Esto permite optimizar y encadenar operaciones.
+            </div>
         </section>
 
         <!-- SECCIÓN 4 -->
         <section>
-            <h2>🚀 4. Código Completo para Probar</h2>
-            <p>Copia y pega este programa de consola en tu Visual Studio 2012 para ver todo en acción:</p>
+            <h2>4. Código Completo para Probar</h2>
+            <p>Copia y pega este programa de consola en tu Visual Studio 2012 para ver todo en acción. Incluye ejemplos
+                de listas, métodos esenciales y consultas LINQ:</p>
             <pre><code><span class="keyword">using</span> System;
 <span class="keyword">using</span> System.Collections.Generic;
 <span class="keyword">using</span> System.Linq;
@@ -233,9 +454,12 @@
     {
         <span class="keyword">static</span> <span class="keyword">void</span> <span class="type">Main</span>(<span class="keyword">string</span>[] args)
         {
+            <span class="comment">// 1. Crear e inicializar una lista</span>
             <span class="type">List&lt;string&gt;</span> lenguajes = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"C#"</span>, <span class="string">"PHP"</span>, <span class="string">"JavaScript"</span> };
             
+            <span class="comment">// 2. Agregar, insertar y ordenar</span>
             lenguajes.<span class="keyword">Add</span>(<span class="string">"Python"</span>);
+            lenguajes.<span class="keyword">Insert</span>(0, <span class="string">"Java"</span>);
             lenguajes.<span class="keyword">Sort</span>();
 
             Console.WriteLine(<span class="string">"--- LISTA ORDENADA ---"</span>);
@@ -244,10 +468,143 @@
                 Console.WriteLine(lang);
             }
 
+            <span class="comment">// 3. Consultas LINQ</span>
+            Console.WriteLine(<span class="string">"\n--- LENGUAJES CON MÁS DE 3 LETRAS ---"</span>);
+            <span class="type">var</span> largos = lenguajes.<span class="keyword">Where</span>(l => l.Length > 3).<span class="keyword">ToList</span>();
+            largos.<span class="keyword">ForEach</span>(l => Console.WriteLine(l));
+
+            <span class="comment">// 4. Zip: fusionar dos listas</span>
+            <span class="type">List&lt;string&gt;</span> nombres = <span class="keyword">new</span> <span class="type">List&lt;string&gt;</span> { <span class="string">"Ana"</span>, <span class="string">"Luis"</span>, <span class="string">"Carlos"</span> };
+            <span class="type">List&lt;int&gt;</span> edades = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 20, 25, 30 };
+
+            Console.WriteLine(<span class="string">"\n--- FUSIÓN CON ZIP ---"</span>);
+            <span class="type">var</span> fusion = nombres.<span class="keyword">Zip</span>(edades, (n, e) => n + <span class="string">" tiene "</span> + e + <span class="string">" años"</span>).<span class="keyword">ToList</span>();
+            fusion.<span class="keyword">ForEach</span>(f => Console.WriteLine(f));
+
+            <span class="comment">// 5. Agregaciones</span>
+            <span class="type">List&lt;int&gt;</span> ventas = <span class="keyword">new</span> <span class="type">List&lt;int&gt;</span> { 120, 340, 560, 80, 900 };
+            Console.WriteLine(<span class="string">"\n--- AGREGACIONES ---"</span>);
+            Console.WriteLine(<span class="string">"Suma: "</span> + ventas.<span class="keyword">Sum</span>());
+            Console.WriteLine(<span class="string">"Promedio: "</span> + ventas.<span class="keyword">Average</span>());
+            Console.WriteLine(<span class="string">"Máximo: "</span> + ventas.<span class="keyword">Max</span>());
+            Console.WriteLine(<span class="string">"Mínimo: "</span> + ventas.<span class="keyword">Min</span>());
+
             Console.ReadKey();
         }
     }
 }</code></pre>
+        </section>
+
+        <!-- SECCIÓN 5 -->
+        <section>
+            <h2>5. Buenas Prácticas y Errores Comunes</h2>
+
+            <h3>Buenas prácticas</h3>
+            <ul>
+                <li>Inicializa las listas con una capacidad estimada si conoces el tamaño aproximado:
+                    <code>new List&lt;int&gt;(100)</code>. Esto evita redimensionamientos innecesarios.
+                </li>
+                <li>Usa <code>var</code> solo cuando el tipo sea evidente por el contexto.</li>
+                <li>Prefiere LINQ para consultas declarativas y bucles <code>foreach</code> cuando necesites efectos
+                    secundarios.</li>
+                <li>Usa <code>FirstOrDefault</code> en lugar de <code>First</code> cuando no estés seguro de que exista
+                    el elemento.</li>
+                <li>Recuerda que LINQ es de ejecución diferida: si modificas la lista original antes de iterar el
+                    resultado, los cambios se reflejarán.</li>
+            </ul>
+
+            <h3>Errores comunes</h3>
+            <ul>
+                <li><strong>IndexOutOfRangeException:</strong> intentar acceder a un índice que no existe. Verifica
+                    siempre <code>Count</code> antes de usar <code>lista[i]</code>.</li>
+                <li><strong>InvalidOperationException con First/Single:</strong> cuando la secuencia está vacía o hay
+                    más de un elemento. Usa <code>FirstOrDefault</code> o <code>SingleOrDefault</code>.</li>
+                <li><strong>Modificar la lista mientras se itera:</strong> lanza excepción. Usa <code>for</code> inverso
+                    o crea una copia con <code>ToList()</code>.</li>
+                <li><strong>Confundir Count con Capacity:</strong> <code>Count</code> es la cantidad real de elementos;
+                    <code>Capacity</code> es el espacio reservado.
+                </li>
+                <li><strong>Olvidar el <code>using System.Linq;</code>:</strong> sin él, los métodos LINQ no están
+                    disponibles.</li>
+            </ul>
+
+            <div class="tip-box">
+                <strong>Recuerda:</strong> <code>List&lt;T&gt;</code> implementa <code>IEnumerable&lt;T&gt;</code>,
+                <code>ICollection&lt;T&gt;</code> e <code>IList&lt;T&gt;</code>. Esto la hace compatible con LINQ, con
+                bucles <code>foreach</code> y con la mayoría de APIs de .NET que esperan colecciones genéricas.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6 -->
+        <section>
+            <h2>6. Resumen de Métodos LINQ Más Usados</h2>
+            <table>
+                <tr>
+                    <th>Método</th>
+                    <th>Descripción</th>
+                    <th>Ejemplo</th>
+                </tr>
+                <tr>
+                    <td>Where</td>
+                    <td>Filtra elementos según una condición</td>
+                    <td><code>lista.Where(x => x > 5)</code></td>
+                </tr>
+                <tr>
+                    <td>Select</td>
+                    <td>Proyecta/transforma cada elemento</td>
+                    <td><code>lista.Select(x => x * 2)</code></td>
+                </tr>
+                <tr>
+                    <td>OrderBy</td>
+                    <td>Ordena ascendente</td>
+                    <td><code>lista.OrderBy(x => x)</code></td>
+                </tr>
+                <tr>
+                    <td>ThenBy</td>
+                    <td>Segundo criterio de orden</td>
+                    <td><code>.ThenBy(x => x.Nombre)</code></td>
+                </tr>
+                <tr>
+                    <td>GroupBy</td>
+                    <td>Agrupa por clave</td>
+                    <td><code>lista.GroupBy(x => x.Edad)</code></td>
+                </tr>
+                <tr>
+                    <td>Sum / Average</td>
+                    <td>Suma o promedio</td>
+                    <td><code>lista.Sum()</code></td>
+                </tr>
+                <tr>
+                    <td>Min / Max</td>
+                    <td>Mínimo o máximo</td>
+                    <td><code>lista.Max()</code></td>
+                </tr>
+                <tr>
+                    <td>First / FirstOrDefault</td>
+                    <td>Primer elemento (o null)</td>
+                    <td><code>lista.FirstOrDefault()</code></td>
+                </tr>
+                <tr>
+                    <td>Any / All</td>
+                    <td>¿Alguno o todos cumplen?</td>
+                    <td><code>lista.Any(x => x > 0)</code></td>
+                </tr>
+                <tr>
+                    <td>Distinct</td>
+                    <td>Elimina duplicados</td>
+                    <td><code>lista.Distinct()</code></td>
+                </tr>
+                <tr>
+                    <td>Skip / Take</td>
+                    <td>Paginación</td>
+                    <td><code>lista.Skip(10).Take(5)</code></td>
+                </tr>
+                <tr>
+                    <td>Zip</td>
+                    <td>Fusiona dos secuencias</td>
+                    <td><code>a.Zip(b, (x, y) => x + y)</code></td>
+                </tr>
+            </table>
         </section>
     </div>
 
