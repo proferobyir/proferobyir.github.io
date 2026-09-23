@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Definitiva de LINQ en C# 5.0 | De Básico a Experto</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --bg-color: #011627;
+            --surface-color: #01111d;
+            --surface-card: #161616;
+            --surface-code: #011627;
+            --border-color: #1d3b53;
+            --border-card: #393939;
+            --text-main: #d6deeb;
+            --text-muted: #c6c6c6;
+            --accent-blue: #82aaff;
+            --accent-cyan: #7fdbca;
+            --accent-green: #addb67;
+            --accent-orange: #f78c6c;
+            --accent-purple: #c792ea;
+            --accent-red: #ef5350;
+            --accent-yellow: #ecc48d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Header / Navbar */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(1, 17, 29, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        @media (min-width: 640px) {
+            .header-container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .header-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        header h1 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 0.5px;
+        }
+
+        @media (min-width: 640px) {
+            header h1 {
+                font-size: 1.125rem;
+            }
+        }
+
+        .badge-net {
+            font-size: 0.75rem;
+            font-family: 'Fira Code', monospace;
+            color: var(--accent-blue);
+            background-color: var(--bg-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Contenedor Principal */
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        @media (min-width: 640px) {
+            main {
+                padding: 40px 20px;
+            }
+        }
+
+        /* Secciones y Tarjetas */
+        section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .intro-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-glow {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 128px;
+            height: 128px;
+            background: rgba(130, 170, 255, 0.05);
+            border-radius: 50%;
+            filter: blur(24px);
+            pointer-events: none;
+        }
+
+        .intro-card h2 {
+            font-size: 1.25rem;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (min-width: 640px) {
+            .intro-card h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .intro-card p {
+            font-size: 0.9rem;
+            color: rgba(214, 222, 235, 0.9);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .intro-card p {
+                font-size: 1rem;
+            }
+        }
+
+        .alert-box {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border-card);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 0.85rem;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+        }
+
+        /* Cabeceras de Nivel */
+        .level-header {
+            padding-left: 16px;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .level-header.nivel-2 {
+            border-left-color: var(--accent-blue);
+        }
+
+        .level-header.nivel-3 {
+            border-left-color: var(--accent-purple);
+        }
+
+        .level-header.nivel-4 {
+            border-left-color: var(--accent-orange);
+        }
+
+        .level-header.nivel-5 {
+            border-left-color: var(--accent-red);
+        }
+
+        .level-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .level-header.nivel-2 .level-tag {
+            color: var(--accent-blue);
+        }
+
+        .level-header.nivel-3 .level-tag {
+            color: var(--accent-purple);
+        }
+
+        .level-header.nivel-4 .level-tag {
+            color: var(--accent-orange);
+        }
+
+        .level-header.nivel-5 .level-tag {
+            color: var(--accent-red);
+        }
+
+        .level-header h3 {
+            font-size: 1.25rem;
+            color: #ffffff;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        @media (min-width: 640px) {
+            .level-header h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .level-header p {
+            font-size: 0.875rem;
+            color: rgba(214, 222, 235, 0.8);
+        }
+
+        /* Bloques de Código / Ejemplos */
+        .code-card {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-card-header {
+            background-color: #262626;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .code-title {
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .nivel-2-title {
+            color: var(--accent-blue) !important;
+        }
+
+        .nivel-3-title {
+            color: var(--accent-purple) !important;
+        }
+
+        .nivel-4-title {
+            color: var(--accent-orange) !important;
+        }
+
+        .nivel-5-title {
+            color: var(--accent-red) !important;
+        }
+
+        .code-subtitle {
+            color: var(--text-muted);
+        }
+
+        .code-card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .code-card-body {
+                padding: 24px;
+            }
+        }
+
+        .code-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            background-color: var(--surface-code);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 640px) {
+            pre {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Resaltado de Sintaxis Manual */
+        .kw {
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
+
+        .type {
+            color: var(--accent-yellow);
+        }
+
+        .method {
+            color: var(--accent-blue);
+        }
+
+        .string {
+            color: var(--accent-green);
+        }
+
+        .number {
+            color: var(--accent-orange);
+        }
+
+        .comment {
+            color: #637777;
+            font-style: italic;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+            padding: 24px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(214, 222, 235, 0.6);
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header / Navbar móvil first -->
+    <header>
+        <div class="header-container">
+            <div class="header-title-wrapper">
+                <span class="status-dot"></span>
+                <h1>C# 5.0 &bull; LINQ Masterclass Estricta (Básico a Experto)</h1>
+            </div>
+            <div class="badge-net">
+                .NET Framework 4.5 / C# 5.0 (Sin async streams / Sin string interpolation $)
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main>
+
+        <!-- Introducción / Concepto -->
+        <section>
+            <div class="intro-card">
+                <div class="intro-glow"></div>
+                <h2><span style="color: var(--accent-orange);">#</span> Restricciones Arquitectónicas de C# 5.0</h2>
+                <p>
+                    Esta guía se encuentra rigurosamente adaptada a la especificación oficial de <strong
+                        style="color: var(--accent-yellow);">C# 5.0 (.NET Framework 4.5)</strong>. Se omiten
+                    conscientemente características posteriores (como la interpolación de cadenas <code
+                        style="color: var(--accent-green);">$"..."</code> introducida en C# 6, o los streams asíncronos
+                    de C# 8), utilizando exclusivamente concatenación tradicional <code
+                        style="color: var(--accent-green);">string.Format</code> o concatenación por operador <code
+                        style="color: var(--accent-purple);">+</code>, junto con la sintaxis clásica de expresiones
+                    lambda y métodos de extensión de .NET 4.5.
+                </p>
+                <div class="alert-box">
+                    <span style="color: var(--accent-green);">Norma C# 5:</span> Todos los ejemplos de esta clase
+                    compilan sin errores en <span style="color: #ffffff;">Visual Studio 2012 / 2013</span> utilizando el
+                    motor base de C# 5.0.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= NIVEL 1: BÁSICO ================= -->
+        <section>
+            <div class="level-header">
+                <span class="level-tag">Nivel 1</span>
+                <h3>1. Fundamentos Básicos (Filtrado, Selección y Ordenamiento)</h3>
+                <p>Operadores elementales para extraer, transformar y ordenar colecciones en memoria bajo C# 5.0.</p>
+            </div>
+
+            <!-- Ej 1.1 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title">Ejemplo 1.1: Filtrado condicional con Where</span>
+                    <span class="code-subtitle">C# 5.0 / IEnumerable</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Filtra elementos que cumplen múltiples criterios lógicos booleanos usando
+                        expresiones lambda estándar de C# 5.</p>
+                    <pre><code><span class="kw">using</span> System;
+<span class="kw">using</span> System.Collections.Generic;
+<span class="kw">using</span> System.Linq;
+
+<span class="kw">class</span> <span class="type">Program</span> {
+    <span class="kw">static void</span> <span class="method">Main</span>() {
+        List&lt;<span class="kw">int</span>&gt; numeros = <span class="kw">new</span> List&lt;<span class="kw">int</span>&gt; { <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span> };
+
+        <span class="comment">// Filtrar números pares mayores a 4</span>
+        var paresMayores = numeros.<span class="method">Where</span>(<span class="type">n</span> => n % <span class="number">2</span> == <span class="number">0</span> && n > <span class="number">4</span>);
+
+        <span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> paresMayores) {
+            Console.WriteLine(n); <span class="comment">// Salida: 6, 8, 10</span>
+        }
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 1.2 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title">Ejemplo 1.2: Proyección de datos con Select</span>
+                    <span class="code-subtitle">C# 5.0 / Tipos Anónimos</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Transforma una lista de objetos complejos en una estructura proyectada al vuelo
+                        empleando <code style="color: var(--accent-cyan);">string.Format</code> nativo de .NET 4.5.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Empleado</span> {
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public decimal</span> Sueldo { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var empleados = <span class="kw">new</span> List&lt;Empleado&gt; {
+    <span class="kw">new</span> Empleado { Nombre = <span class="string">"Roberto"</span>, Sueldo = <span class="number">1200m</span> },
+    <span class="kw">new</span> Empleado { Nombre = <span class="string">"Sofía"</span>, Sueldo = <span class="number">1800m</span> }
+};
+
+var resumen = empleados.<span class="method">Select</span>(<span class="type">e</span> => <span class="kw">new</span> {
+    Identificacion = e.Nombre.ToUpper(),
+    BonoAnual = e.Sueldo * <span class="number">12m</span>
+});
+
+<span class="kw">foreach</span> (var item <span class="kw">in</span> resumen) {
+    Console.WriteLine(string.Format(<span class="string">"Empl: {0} | Bono: ${1}"</span>, item.Identificacion, item.BonoAnual));
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 1.3 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title">Ejemplo 1.3: Ordenamiento secuencial con OrderBy y ThenBy</span>
+                    <span class="code-subtitle">C# 5.0 / Sorting</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Ordena elementos aplicando jerarquías de múltiples propiedades
+                        ascendentes/descendentes en C# 5.0.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Alumno</span> {
+    <span class="kw">public int</span> Grado { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public int</span> Nota { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var listaAlumnos = <span class="kw">new</span> List&lt;Alumno&gt; {
+    <span class="kw">new</span> Alumno { Grado = <span class="number">5</span>, Nota = <span class="number">18</span>, Nombre = <span class="string">"Luis"</span> },
+    <span class="kw">new</span> Alumno { Grado = <span class="number">4</span>, Nota = <span class="number">20</span>, Nombre = <span class="string">"Carla"</span> },
+    <span class="kw">new</span> Alumno { Grado = <span class="number">5</span>, Nota = <span class="number">14</span>, Nombre = <span class="string">"Daniel"</span> }
+};
+
+var ordenados = listaAlumnos
+    .<span class="method">OrderBy</span>(<span class="type">a</span> => a.Grado)
+    .<span class="method">ThenByDescending</span>(<span class="type">a</span> => a.Nota);
+
+<span class="kw">foreach</span> (Alumno a <span class="kw">in</span> ordenados) {
+    Console.WriteLine(string.Format(<span class="string">"Grado: {0} - {1} (Nota: {2})"</span>, a.Grado, a.Nombre, a.Nota));
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= NIVEL 2: INTERMEDIO ================= -->
+        <section>
+            <div class="level-header nivel-2">
+                <span class="level-tag">Nivel 2</span>
+                <h3>2. Operaciones Intermedias (Agrupamiento, Paginación y Cuantificadores)</h3>
+                <p>Técnicas de particionamiento, agrupamiento estadístico y evaluación lógica global.</p>
+            </div>
+
+            <!-- Ej 2.1 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-2-title">Ejemplo 2.1: Agrupamiento avanzado con GroupBy</span>
+                    <span class="code-subtitle">C# 5.0 / IGrouping</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Agrupa elementos y calcula métricas como el total de elementos y sumas
+                        parciales por clave en C# 5.0.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Factura</span> {
+    <span class="kw">public string</span> Cliente { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public decimal</span> Monto { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var facturas = <span class="kw">new</span> List&lt;Factura&gt; {
+    <span class="kw">new</span> Factura { Cliente = <span class="string">"Empresa A"</span>, Monto = <span class="number">500m</span> },
+    <span class="kw">new</span> Factura { Cliente = <span class="string">"Empresa B"</span>, Monto = <span class="number">300m</span> },
+    <span class="kw">new</span> Factura { Cliente = <span class="string">"Empresa A"</span>, Monto = <span class="number">150m</span> }
+};
+
+var reporte = facturas
+    .<span class="method">GroupBy</span>(<span class="type">f</span> => f.Cliente)
+    .<span class="method">Select</span>(<span class="type">g</span> => <span class="kw">new</span> {
+        Cliente = g.Key,
+        CantidadFacturas = g.<span class="method">Count</span>(),
+        MontoTotal = g.<span class="method">Sum</span>(<span class="type">f</span> => f.Monto)
+    });
+
+<span class="kw">foreach</span> (var r <span class="kw">in</span> reporte) {
+    Console.WriteLine(string.Format(<span class="string">"Cliente: {0} | Facturas: {1} | Total: ${2}"</span>, r.Cliente, r.CantidadFacturas, r.MontoTotal));
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 2.2 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-2-title">Ejemplo 2.2: Paginación eficiente con Skip y Take</span>
+                    <span class="code-subtitle">C# 5.0 / Paging</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Implementa saltos y límites en memoria para control de lotes y paginación de
+                        grillas en .NET 4.5.</p>
+                    <pre><code><span class="kw">int</span> paginaActual = <span class="number">2</span>;
+<span class="kw">int</span> tamanoPagina = <span class="number">3</span>;
+
+List&lt;<span class="kw">string</span>&gt; logs = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt; { <span class="string">"L1"</span>, <span class="string">"L2"</span>, <span class="string">"L3"</span>, <span class="string">"L4"</span>, <span class="string">"L5"</span>, <span class="string">"L6"</span>, <span class="string">"L7"</span> };
+
+var registrosPagina = logs
+    .<span class="method">Skip</span>((paginaActual - <span class="number">1</span>) * tamanoPagina)
+    .<span class="method">Take</span>(tamanoPagina);
+
+<span class="kw">foreach</span> (<span class="kw">string</span> log <span class="kw">in</span> registrosPagina) {
+    Console.WriteLine(log); <span class="comment">// Salida: L4, L5, L6</span>
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 2.3 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-2-title">Ejemplo 2.3: Validación con Cuantificadores (Any, All,
+                        Contains)</span>
+                    <span class="code-subtitle">C# 5.0 / Predicates</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Verifica condiciones booleanas globales sobre colecciones enteras de forma
+                        optimizada en C# 5.</p>
+                    <pre><code>List&lt;<span class="kw">int</span>&gt; inventario = <span class="kw">new</span> List&lt;<span class="kw">int</span>&gt; { <span class="number">12</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">20</span> };
+
+<span class="kw">bool</span> hayStockCritico = inventario.<span class="method">Any</span>(<span class="type">stock</span> => stock &lt; <span class="number">10</span>);
+<span class="kw">bool</span> todosDisponibles = inventario.<span class="method">All</span>(<span class="type">stock</span> => stock > <span class="number">0</span>);
+<span class="kw">bool</span> existeExacto = inventario.<span class="method">Contains</span>(<span class="number">20</span>);
+
+Console.WriteLine(string.Format(<span class="string">"¿Hay stock crítico?: {0}"</span>, hayStockCritico));
+Console.WriteLine(string.Format(<span class="string">"¿Todos tienen stock positivo?: {0}"</span>, todosDisponibles));</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= NIVEL 3: AVANZADO ================= -->
+        <section>
+            <div class="level-header nivel-3">
+                <span class="level-tag">Nivel 3</span>
+                <h3>3. Patrones Avanzados (Joins, SelectMany y Reducción Aggregate)</h3>
+                <p>Operaciones de cruce relacional, aplanamiento de jerarquías y cálculos acumulados personalizados.</p>
+            </div>
+
+            <!-- Ej 3.1 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-3-title">Ejemplo 3.1: Cruce relacional con Join (Inner Join)</span>
+                    <span class="code-subtitle">C# 5.0 / Relational Join</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Vincula dos colecciones separadas por una clave común emulando una sentencia
+                        SQL JOIN en C# 5.0.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Rol</span> {
+    <span class="kw">public int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="kw">public class</span> <span class="type">Usuario</span> {
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public int</span> RolId { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var roles = <span class="kw">new</span> List&lt;Rol&gt; {
+    <span class="kw">new</span> Rol { Id = <span class="number">1</span>, Nombre = <span class="string">"Administrador"</span> },
+    <span class="kw">new</span> Rol { Id = <span class="number">2</span>, Nombre = <span class="string">"Desarrollador"</span> }
+};
+
+var usuarios = <span class="kw">new</span> List&lt;Usuario&gt; {
+    <span class="kw">new</span> Usuario { Nombre = <span class="string">"Ana"</span>, RolId = <span class="number">1</span> },
+    <span class="kw">new</span> Usuario { Nombre = <span class="string">"Carlos"</span>, RolId = <span class="number">2</span> }
+};
+
+var consultaJoin = usuarios.<span class="method">Join</span>(
+    roles,
+    <span class="type">u</span> => u.RolId,
+    <span class="type">r</span> => r.Id,
+    (<span class="type">u</span>, <span class="type">r</span>) => <span class="kw">new</span> { Usuario = u.Nombre, Rol = r.Nombre }
+);
+
+<span class="kw">foreach</span> (var item <span class="kw">in</span> consultaJoin) {
+    Console.WriteLine(string.Format(<span class="string">"Usuario: {0} -> Rol: {1}"</span>, item.Usuario, item.Rol));
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 3.2 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-3-title">Ejemplo 3.2: Aplanamiento de estructuras con
+                        SelectMany</span>
+                    <span class="code-subtitle">C# 5.0 / Flattening</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Convierte colecciones anidadas (listas dentro de listas) en una única secuencia
+                        plana continua en C# 5.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Departamento</span> {
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> List&lt;<span class="kw">string</span>&gt; Empleados { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var depts = <span class="kw">new</span> List&lt;Departamento&gt; {
+    <span class="kw">new</span> Departamento { Nombre = <span class="string">"TI"</span>, Empleados = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt; { <span class="string">"Pedro"</span>, <span class="string">"Lucía"</span> } },
+    <span class="kw">new</span> Departamento { Nombre = <span class="string">"Ventas"</span>, Empleados = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt; { <span class="string">"Marco"</span> } }
+};
+
+var todosEmpleados = depts.<span class="method">SelectMany</span>(<span class="type">d</span> => d.Empleados);
+<span class="kw">foreach</span> (<span class="kw">string</span> emp <span class="kw">in</span> todosEmpleados) {
+    Console.WriteLine(emp); <span class="comment">// Pedro, Lucía, Marco</span>
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 3.3 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-3-title">Ejemplo 3.3: Acumulación avanzada con Aggregate</span>
+                    <span class="code-subtitle">C# 5.0 / Reduce Pattern</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Reduce colecciones enteras aplicando un acumulador con lógica algorítmica
+                        personalizada en C# 5.0.</p>
+                    <pre><code>List&lt;<span class="kw">int</span>&gt; valores = <span class="kw">new</span> List&lt;<span class="kw">int</span>&gt; { <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> };
+
+<span class="comment">// Calcular productoratoria acumulada (2 * 3 * 4 = 24)</span>
+<span class="kw">int</span> resultado = valores.<span class="method">Aggregate</span>(<span class="number">1</span>, (<span class="type">acumulador</span>, <span class="type">val</span>) => acumulador * val);
+
+Console.WriteLine(string.Format(<span class="string">"Resultado acumulado: {0}"</span>, resultado));</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= NIVEL 4: PROFESIONAL ================= -->
+        <section>
+            <div class="level-header nivel-4">
+                <span class="level-tag">Nivel 4</span>
+                <h3>4. Nivel Profesional (Deferred Execution, Lookups y GroupJoin)</h3>
+                <p>Gestión de rendimiento bajo el capó, estructuras optimizadas de acceso y operaciones jerárquicas en
+                    .NET 4.5.</p>
+            </div>
+
+            <!-- Ej 4.1 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-4-title">Ejemplo 4.1: Demostración de Evaluación Diferida vs
+                        Inmediata</span>
+                    <span class="code-subtitle">C# 5.0 / Performance</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Ilustra cómo una consulta diferida reevalúa sus elementos si la fuente
+                        subyacente cambia antes de ser iterada en C# 5.0.</p>
+                    <pre><code>List&lt;<span class="kw">int</span>&gt; numeros = <span class="kw">new</span> List&lt;<span class="kw">int</span>&gt; { <span class="number">1</span>, <span class="number">2</span> };
+
+<span class="comment">// Consulta diferida (Aún no se ejecuta)</span>
+var consultaDiferida = numeros.<span class="method">Where</span>(<span class="type">n</span> => n > <span class="number">1</span>);
+
+numeros.<span class="method">Add</span>(<span class="number">5</span>); <span class="comment">// Modificamos la fuente antes de iterar</span>
+
+<span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> consultaDiferida) {
+    Console.WriteLine(n); <span class="comment">// Imprime 2 y 5 (captura el cambio dinámicamente)</span>
+}
+
+<span class="comment">// Ejecución inmediata forzada con ToList()</span>
+var listaInmediata = numeros.<span class="method">Where</span>(<span class="type">n</span> => n > <span class="number">1</span>).<span class="method">ToList</span>();</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 4.2 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-4-title">Ejemplo 4.2: Diccionarios de acceso rápido con
+                        ToLookup</span>
+                    <span class="code-subtitle">C# 5.0 / ILookup&lt;TKey, TElement&gt;</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Crea un diccionario de múltiples valores por clave optimizado para búsquedas
+                        O(1) de ejecución inmediata en .NET 4.5.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Articulo</span> {
+    <span class="kw">public string</span> Categoria { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Titulo { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var items = <span class="kw">new</span> List&lt;Articulo&gt; {
+    <span class="kw">new</span> Articulo { Categoria = <span class="string">"Libros"</span>, Titulo = <span class="string">"C# Avanzado"</span> },
+    <span class="kw">new</span> Articulo { Categoria = <span class="string">"Libros"</span>, Titulo = <span class="string">"Clean Code"</span> },
+    <span class="kw">new</span> Articulo { Categoria = <span class="string">"Hardware"</span>, Titulo = <span class="string">"SSD NVMe"</span> }
+};
+
+<span class="comment">// Lookup indexa inmediatamente por clave permitiendo múltiples elementos</span>
+var lookup = items.<span class="method">ToLookup</span>(<span class="type">i</span> => i.Categoria);
+
+<span class="kw">foreach</span> (Articulo libro <span class="kw">in</span> lookup[<span class="string">"Libros"</span>]) {
+    Console.WriteLine(libro.Titulo);
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 4.3 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-4-title">Ejemplo 4.3: Agrupamiento relacional jerárquico con
+                        GroupJoin</span>
+                    <span class="code-subtitle">C# 5.0 / Hierarchical Join</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Realiza un Left Join relacional estructurando los elementos secundarios como
+                        una sub-colección por registro principal en C# 5.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Cat</span> {
+    <span class="kw">public int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="kw">public class</span> <span class="type">Prod</span> {
+    <span class="kw">public int</span> CatId { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+var categorias = <span class="kw">new</span> List&lt;Cat&gt; {
+    <span class="kw">new</span> Cat { Id = <span class="number">1</span>, Nombre = <span class="string">"Frutas"</span> },
+    <span class="kw">new</span> Cat { Id = <span class="number">2</span>, Nombre = <span class="string">"Herramientas"</span> }
+};
+
+var productos = <span class="kw">new</span> List&lt;Prod&gt; {
+    <span class="kw">new</span> Prod { CatId = <span class="number">1</span>, Nombre = <span class="string">"Manzana"</span> },
+    <span class="kw">new</span> Prod { CatId = <span class="number">1</span>, Nombre = <span class="string">"Pera"</span> }
+};
+
+var resultado = categorias.<span class="method">GroupJoin</span>(
+    productos,
+    <span class="type">c</span> => c.Id,
+    <span class="type">p</span> => p.CatId,
+    (<span class="type">c</span>, <span class="type">prods</span>) => <span class="kw">new</span> { Categoria = c.Nombre, Prods = prods }
+);
+
+<span class="kw">foreach</span> (var item <span class="kw">in</span> resultado) {
+    Console.WriteLine(string.Format(<span class="string">"Cat: {0} ({1} productos)"</span>, item.Categoria, item.Prods.<span class="method">Count</span>()));
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= NIVEL 5: EXPERTO ================= -->
+        <section>
+            <div class="level-header nivel-5">
+                <span class="level-tag">Nivel 5</span>
+                <h3>5. Nivel Experto (Métodos de Extensión Custom, IEqualityComparer y Expression Trees)</h3>
+                <p>Arquitectura avanzada de metaprogramación, extensiones a medida y control de colisiones en conjuntos
+                    complejos bajo C# 5.0.</p>
+            </div>
+
+            <!-- Ej 5.1 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-5-title">Ejemplo 5.1: Creación de un Método de Extensión LINQ
+                        Custom</span>
+                    <span class="code-subtitle">C# 5.0 / Custom Extension Method & yield return</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Implementa un operador LINQ personalizado reutilizable aplicando el modificador
+                        <code style="color: var(--accent-cyan);">this</code> sobre <code
+                            style="color: var(--accent-cyan);">IEnumerable&lt;T&gt;</code> mediante <code
+                            style="color: var(--accent-cyan);">yield return</code> en C# 5.0.</p>
+                    <pre><code><span class="kw">public static class</span> <span class="type">LinqExtensions</span> {
+    <span class="comment">// Método de extensión custom para particionar en lotes (Batching) compatible con C# 5.0 / .NET 4.5</span>
+    <span class="kw">public static</span> IEnumerable&lt;IEnumerable&lt;<span class="kw">T</span>&gt;&gt; <span class="method">Batch</span>&lt;<span class="kw">T</span>&gt;(<span class="kw">this</span> IEnumerable&lt;T&gt; source, <span class="kw">int</span> size) {
+        List&lt;T&gt; bucket = <span class="kw">null</span>;
+        <span class="kw">foreach</span> (T item <span class="kw">in</span> source) {
+            <span class="kw">if</span> (bucket == <span class="kw">null</span>) {
+                bucket = <span class="kw">new</span> List&lt;T&gt;(size);
+            }
+            bucket.<span class="method">Add</span>(item);
+            <span class="kw">if</span> (bucket.Count == size) {
+                <span class="kw">yield return</span> bucket;
+                bucket = <span class="kw">null</span>;
+            }
+        }
+        <span class="kw">if</span> (bucket != <span class="kw">null</span>) {
+            <span class="kw">yield return</span> bucket;
+        }
+    }
+}
+
+<span class="comment">// Uso: IEnumerable&lt;IEnumerable&lt;int&gt;&gt; lotes = items.Batch(10);</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 5.2 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-5-title">Ejemplo 5.2: Distinct avanzado con IEqualityComparer
+                        personalizado</span>
+                    <span class="code-subtitle">C# 5.0 / IEqualityComparer</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Filtra duplicados en objetos complejos basándose en criterios lógicos internos
+                        mediante un comparador dedicado en C# 5.0.</p>
+                    <pre><code><span class="kw">public class</span> <span class="type">Cliente</span> {
+    <span class="kw">public string</span> Cedula { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="kw">public class</span> <span class="type">ClienteComparer</span> : IEqualityComparer&lt;Cliente&gt; {
+    <span class="kw">public bool</span> <span class="method">Equals</span>(Cliente x, Cliente y) {
+        <span class="kw">if</span> (object.ReferenceEquals(x, y)) <span class="kw">return true</span>;
+        <span class="kw">if</span> (x == <span class="kw">null</span> || y == <span class="kw">null</span>) <span class="kw">return false</span>;
+        <span class="kw">return</span> x.Cedula == y.Cedula;
+    }
+    <span class="kw">public int</span> <span class="method">GetHashCode</span>(Cliente obj) {
+        <span class="kw">if</span> (obj == <span class="kw">null</span>) <span class="kw">return</span> <span class="number">0</span>;
+        <span class="kw">return</span> obj.Cedula == <span class="kw">null</span> ? <span class="number">0</span> : obj.Cedula.<span class="method">GetHashCode</span>();
+    }
+}
+
+List&lt;Cliente&gt; listaClientes = <span class="kw">new</span> List&lt;Cliente&gt;();
+<span class="comment">// Uso avanzado con Distinct pasando el comparador en C# 5.0</span>
+var clientesUnicos = listaClientes.<span class="method">Distinct</span>(<span class="kw">new</span> ClienteComparer());</code></pre>
+                </div>
+            </div>
+
+            <!-- Ej 5.3 -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <span class="code-title nivel-5-title">Ejemplo 5.3: Construcción Dinámica de Árboles de Expresión
+                        (Expression Trees)</span>
+                    <span class="code-subtitle">C# 5.0 / Expression&lt;Func&lt;T, bool&gt;&gt;</span>
+                </div>
+                <div class="code-card-body">
+                    <p class="code-desc">Construye dinámicamente árboles de expresión en tiempo de ejecución para
+                        traducir consultas LINQ a SQL u otros motores remotos usando la API de <code
+                            style="color: var(--accent-cyan);">System.Linq.Expressions</code> en C# 5.0.</p>
+                    <pre><code><span class="kw">using</span> System.Linq.Expressions;
+
+<span class="kw">public class</span> <span class="type">Producto</span> {
+    <span class="kw">public decimal</span> Precio { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="comment">// Crear parámetro x para la entidad Producto</span>
+ParameterExpression param = Expression.<span class="method">Parameter</span>(<span class="kw">typeof</span>(Producto), <span class="string">"p"</span>);
+
+<span class="comment">// Propiedad p.Precio</span>
+MemberExpression propiedadPrecio = Expression.<span class="method">Property</span>(param, <span class="string">"Precio"</span>);
+ConstantExpression valorConstante = Expression.<span class="method">Constant</span>(<span class="number">1000m</span>);
+
+<span class="comment">// Construir expresión booleana: p.Precio > 1000</span>
+BinaryExpression operacionGT = Expression.<span class="method">GreaterThan</span>(propiedadPrecio, valorConstante);
+
+<span class="comment">// Envolver en Expression&lt;Func&lt;Producto, bool&gt;&gt;</span>
+Expression&lt;Func&lt;Producto, <span class="kw">bool</span>&gt;&gt; lambdaExp = Expression.<span class="method">Lambda</span>&lt;Func&lt;Producto, <span class="kw">bool</span>&gt;&gt;(operacionGT, param);
+
+<span class="comment">// Compilar y ejecutar en memoria</span>
+Func&lt;Producto, <span class="kw">bool</span>&gt; predicadoCompilado = lambdaExp.<span class="method">Compile</span>();
+<span class="kw">bool</span> cumple = predicadoCompilado(<span class="kw">new</span> Producto { Precio = <span class="number">1500m</span> });
+
+Console.WriteLine(string.Format(<span class="string">"¿Cumple la expresión dinámica?: {0}"</span>, cumple));</code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Guía Completa LINQ C# 5.0 &bull; CSS Puro &bull; Compatible .NET Framework 4.5</p>
+    </footer>
+
+</body>
+
+</html>
