@@ -129,9 +129,12 @@ Router# disable
         </ol>
     </div>
     <div class="carbon-box">
-        <pre>! 1. Excluir el rango de direcciones IP reservadas (ej: del .1 al .10)
+        <pre>
+            ! 0. Entrar al modo de configuración global
 Router> enable
 Router# configure terminal
+
+! 1. Excluir el rango de direcciones IP reservadas (del .1 al .10)
 Router(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10
 
 ! 2. Crear el pool de DHCP y definir red, gateway y DNS
@@ -141,7 +144,13 @@ Router(config-dhcp)# default-router 192.168.1.1
 Router(config-dhcp)# dns-server 8.8.8.8
 Router(config-dhcp)# exit
 
-! 3. Guardar cambios y salir de forma segura
+! 3. Configurar y encender la interfaz del router (Gateway)
+Router(config)# interface GigabitEthernet0/0
+Router(config-if)# ip address 192.168.1.1 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+! 4. Guardar cambios y salir de forma segura
 Router(config)# end
 Router# copy running-config startup-config
 Router# disable
