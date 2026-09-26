@@ -79,7 +79,7 @@
             Cambios (<code>configure terminal</code>).</li>
     </ul>
 
-    <h2>Pasos Previos a la Configuración (Router o Switch)</h2>
+    <h2>Pasos Previos y Verificación Inicial</h2>
     <div class="explanation">
         <p><strong>¡Atención!</strong> Tanto en routers como en switches, antes de ejecutar cualquier comando de
             configuración, debes pasar por los modos de seguridad de la CLI:</p>
@@ -92,25 +92,59 @@
                 <code>Router(config)#</code> o <code>Switch(config)#</code>).
             </li>
         </ol>
-        <p>Solo estando en <strong><code>config#</code></strong> podrás configurar interfaces, IPs o crear VLANs.</p>
+        <p>Para verificar el estado de las interfaces y sus nombres antes de configurar, ejecuta este comando en modo
+            privilegiado (<code>#</code>):</p>
+        <pre class="carbon-box"><code>show ip interface brief</code></pre>
+        <p><strong>Para salir de forma segura</strong> de la sesión de administración y volver al modo de usuario sin
+            que el equipo intente traducir comandos erróneos como DNS, utiliza:</p>
+        <pre class="carbon-box"><code>disable</code></pre>
     </div>
-    <div class="explanation">
 
-        <p>Para saber cómo se llaman las interfaces a configurar tanto en los routers como en los switches, ejecutamos
-            el siguiente comando sin necesidad de estar en el modo privilegiado (<code>#</code>):</p>
-        <pre class="carbon-box"><code> show ip interface brief</code></pre>
-    </div>
-    <h2>Configuración de Routers</h2>
-
+    <h2>Configuración Básica de Routers (Dirección IP y Estado)</h2>
     <div class="carbon-box">
-        <pre>! Asegúrate de haber hecho 'enable' antes:
+        <pre>! 1. Entrar a configuración global y configurar interfaz
+Router> enable
 Router# configure terminal
 Router(config)# interface GigabitEthernet0/0
 Router(config-if)# ip address 192.168.1.1 255.255.255.0
 Router(config-if)# no shutdown
 Router(config-if)# exit
+
+! 2. Guardar cambios y cerrar sesión de forma segura
 Router(config)# end
 Router# copy running-config startup-config
+Router# disable
+</pre>
+    </div>
+
+    <h2>Configuración de Servidor DHCP en un Router Cisco</h2>
+    <div class="explanation">
+        <p><strong>¿Cómo activar un servidor DHCP en el router?</strong> En lugar de configurar IPs estáticas en cada
+            PC, el router puede asignarlas automáticamente siguiendo estos pasos:</p>
+        <ol>
+            <li>Excluir las IPs reservadas (como el Gateway) para que no las asigne a equipos.</li>
+            <li>Crear y nombrar el bloque o pool de DHCP.</li>
+            <li>Definir la red y su máscara.</li>
+            <li>Asignar la puerta de enlace predeterminada y el DNS.</li>
+        </ol>
+    </div>
+    <div class="carbon-box">
+        <pre>! 1. Excluir el rango de direcciones IP reservadas (ej: del .1 al .10)
+Router> enable
+Router# configure terminal
+Router(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10
+
+! 2. Crear el pool de DHCP y definir red, gateway y DNS
+Router(config)# ip dhcp pool RED_LAN
+Router(config-dhcp)# network 192.168.1.0 255.255.255.0
+Router(config-dhcp)# default-router 192.168.1.1
+Router(config-dhcp)# dns-server 8.8.8.8
+Router(config-dhcp)# exit
+
+! 3. Guardar cambios y salir de forma segura
+Router(config)# end
+Router# copy running-config startup-config
+Router# disable
 </pre>
     </div>
 
@@ -123,9 +157,11 @@ Router# copy running-config startup-config
         </ul>
     </div>
 
-    <h2>Configuración de 3 VLANs y Asignación de Puertos</h2>
+    <h2>Configuración de VLANs y Asignación de Puertos en Switches</h2>
     <div class="carbon-box">
-        <pre>! 1. Crear las VLANs (Estando en Switch(config)#)
+        <pre>! 1. Crear las VLANs
+Switch> enable
+Switch# configure terminal
 Switch(config)# vlan 10
 Switch(config-vlan)# name VENTAS
 Switch(config-vlan)# exit
@@ -136,7 +172,7 @@ Switch(config)# vlan 30
 Switch(config-vlan)# name IT
 Switch(config-vlan)# exit
 
-! 2. Asignar los rangos de puertos
+! 2. Asignar los rangos de puertos a cada VLAN
 Switch(config)# interface range fastEthernet 0/1-8
 Switch(config-if-range)# switchport mode access
 Switch(config-if-range)# switchport access vlan 10
@@ -150,24 +186,28 @@ Switch(config-if-range)# exit
 Switch(config)# interface range fastEthernet 0/17-24
 Switch(config-if-range)# switchport mode access
 Switch(config-if-range)# switchport access vlan 30
-Switch(config-if-range)# exit</pre>
+Switch(config-if-range)# exit
+
+! 3. Guardar cambios y cerrar sesión de forma segura
+Switch(config)# end
+Switch# copy running-config startup-config
+Switch# disable
+</pre>
     </div>
 
     <h2>Persistencia: Guardar los cambios</h2>
     <div class="explanation">
-        <p><strong>¡No olvides guardar!</strong> En Cisco IOS, los cambios realizados se almacenan en la memoria RAM
-            (<code>running-config</code>), la cual es volátil. Si apagas o reinicias el dispositivo en Packet Tracer,
-            <strong>perderás toda la configuración</strong>.
+        <p><strong>¡No olvides guardar!</strong> En Cisco IOS, los cambios se almacenan en la memoria RAM
+            (<code>running-config</code>), la cual es volátil. Si reinicias en Packet Tracer, <strong>perderás
+                todo</strong>.
         </p>
-        <p>Para hacer los cambios permanentes, debes copiarlos a la NVRAM (<code>startup-config</code>) ejecutando el
-            siguiente comando en el modo privilegiado (<code>#</code>):</p>
-        <p>Primero ejecutamos: :</p>
-        <pre class="carbon-box"><code>end</code></pre>
-        <p>Luego ejecutamos:</p>
-        <pre class="carbon-box"><code>copy running-config startup-config</code></pre>
+        <p>Pasos de salida y guardado definitivo:</p>
+        <ul>
+            <li>Salir de configuración global: <code>end</code>[cite: 2]</li>
+            <li>Guardar en NVRAM: <code>copy running-config startup-config</code>[cite: 2]</li>
+            <li>Cerrar sesión de administrador de forma segura: <code>disable</code>[cite: 2]</li>
+        </ul>
     </div>
-
-
 
     <h2>Resumen de Comandos Frecuentes</h2>
     <table>
@@ -178,6 +218,11 @@ Switch(config-if-range)# exit</pre>
         <tr>
             <td><code>enable</code></td>
             <td>Accede al modo privilegiado.</td>
+        </tr>
+        <tr>
+            <td><code>disable</code></td>
+            <td>Regresa del modo privilegiado al modo de usuario (cierra sesión de administración de forma segura
+                evitado bloqueos DNS).</td>
         </tr>
         <tr>
             <td><code>configure terminal</code></td>
@@ -198,6 +243,22 @@ Switch(config-if-range)# exit</pre>
         <tr>
             <td><code>no shutdown</code></td>
             <td>Activa una interfaz que está apagada.</td>
+        </tr>
+        <tr>
+            <td><code>ip dhcp excluded-address</code></td>
+            <td>Excluye direcciones IP del rango que se asignará por DHCP.</td>
+        </tr>
+        <tr>
+            <td><code>ip dhcp pool</code></td>
+            <td>Crea y accede al menú de configuración del servidor DHCP.</td>
+        </tr>
+        <tr>
+            <td><code>network</code></td>
+            <td>Define la red principal y máscara de subred para el pool DHCP.</td>
+        </tr>
+        <tr>
+            <td><code>default-router</code></td>
+            <td>Establece la puerta de enlace predeterminada para los clientes DHCP.</td>
         </tr>
     </table>
 </body>
