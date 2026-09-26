@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objetos Avanzados de MariaDB/MySQL e Integración con Node.js</title>
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --secondary-color: #6c757d;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #212529;
+      --code-bg: #1e1e1e;
+      --code-color: #d4d4d4;
+      --border-radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem 1rem;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--secondary-color);
+      font-size: 0.95rem;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-card {
+      background-color: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-card h2 {
+      font-size: 1.25rem;
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-card h3 {
+      font-size: 1.05rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p, ul {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+
+    li {
+      margin-bottom: 0.3rem;
+    }
+
+    .callout {
+      background-color: #e7f1ff;
+      border-left: 4px solid var(--primary-color);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      font-size: 0.9rem;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-color);
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      overflow-x: auto;
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      white-space: pre;
+    }
+
+    code {
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      background-color: #e9ecef;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    pre code {
+      background-color: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 2rem;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .section-card {
+        padding: 2rem;
+      }
+
+      .section-card h2 {
+        font-size: 1.5rem;
+      }
+
+      pre {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Objetos Avanzados en MariaDB / MySQL</h1>
+    <p>Electiva III: Integración con Node.js y Arquitectura MVC</p>
+  </header>
+
+  <main>
+
+    <!-- NOTA SOBRE CLIENTES Y DELIMITADORES -->
+    <section class="section-card">
+      <h2>Acotación Técnica Importante: Delimitadores en MariaDB</h2>
+      <p>Al crear objetos guardados como <strong>Triggers</strong>, <strong>Funciones</strong> o <strong>Procedimientos Almacenados</strong>, el motor de la base de datos necesita procesar múltiples sentencias terminadas en punto y coma (<code>;</code>) como un solo bloque.</p>
+      
+      <div class="callout">
+        <strong>Uso del <code>DELIMITER</code> según el cliente de BD:</strong>
+        <ul>
+          <li><strong>Línea de comandos / phpMyAdmin:</strong> Es obligatorio redefinir el delimitador usando <code>DELIMITER //</code> antes del bloque de código y restaurarlo con <code>DELIMITER ;</code> al final.</li>
+          <li><strong>DBeaver / MySQL Workbench / HeidiSQL:</strong> Estos clientes gestionan la delimitación automáticamente cuando seleccionas el bloque de código completo o utilizas sus interfaces visuales/editores dedicados. Si ejecutas como script completo, la directiva <code>DELIMITER //</code> también es compatible.</li>
+        </ul>
+      </div>
+
+      <pre><code>-- Ejemplo de sintaxis con cambio de delimitador
+DELIMITER //
+
+CREATE PROCEDURE sp_ejemplo()
+BEGIN
+    -- Múltiples sentencias terminadas en ;
+    SELECT * FROM productos;
+END //
+
+DELIMITER ;</code></pre>
+    </section>
+
+    <!-- EJEMPLO 1 -->
+    <section class="section-card">
+      <h2>Ejemplo 1: Transacciones y Triggers (Integridad de Datos)</h2>
+      <p>Garantía de operaciones atómicas ACID y automatización de auditorías en el motor de base de datos sin sobrecargar la aplicación Node.js.</p>
+
+      <h3>1. Tabla para historial de auditoría</h3>
+      <pre><code>CREATE TABLE historial_precios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    producto_id INT NOT NULL,
+    precio_anterior DECIMAL(10, 2) NOT NULL,
+    precio_nuevo DECIMAL(10, 2) NOT NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+
+      <h3>2. Creación del Trigger</h3>
+      <pre><code>DELIMITER //
+
+CREATE TRIGGER trg_auditoria_precio_producto
+AFTER UPDATE ON productos
+FOR EACH ROW
+BEGIN
+    IF OLD.precio &lt;&gt; NEW.precio THEN
+        INSERT INTO historial_precios (producto_id, precio_anterior, precio_nuevo)
+        VALUES (OLD.id, OLD.precio, NEW.precio);
+    END IF;
+END //
+
+DELIMITER ;</code></pre>
+
+      <h3>3. Transacción en MariaDB / MySQL</h3>
+      <pre><code>START TRANSACTION;
+
+INSERT INTO pedidos (cliente_id, fecha, total) VALUES (1, NOW(), 150.00);
+SET @pedido_id = LAST_INSERT_ID();
+
+INSERT INTO detalles_pedido (pedido_id, producto_id, cantidad, precio) VALUES (@pedido_id, 5, 2, 75.00);
+UPDATE productos SET stock = stock - 2 WHERE id = 5;
+
+-- Si todo es correcto:
+COMMIT;
+-- En caso de error:
+-- ROLLBACK;</code></pre>
+    </section>
+
+    <!-- EJEMPLO 2 -->
+    <section class="section-card">
+      <h2>Ejemplo 2: Vistas y Stored Functions (Abstracción y Optimización)</h2>
+      <p>Simplificación de consultas repetitivas complejas (<code>JOIN</code>s) y encapsulamiento de cálculos en el servidor de base de datos.</p>
+
+      <h3>1. Creación de una Vista (`VIEW`)</h3>
+      <p>Abstrae la complejidad de unir múltiples tablas para consumirla en Node.js de forma directa.</p>
+      <pre><code>CREATE VIEW v_resumen_pedidos AS
+SELECT 
+    p.id AS pedido_id,
+    c.nombre AS cliente,
+    c.email AS email_cliente,
+    p.total,
+    p.fecha
+FROM pedidos p
+INNER JOIN clientes c ON p.cliente_id = c.id;
+
+-- Consulta desde la aplicación:
+SELECT * FROM v_resumen_pedidos WHERE total &gt; 100.00;</code></pre>
+
+      <h3>2. Creación de una Stored Function</h3>
+      <pre><code>DELIMITER //
+
+CREATE FUNCTION fn_calcular_iva(monto DECIMAL(10,2), porcentaje DECIMAL(4,2))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    RETURN monto * (porcentaje / 100);
+END //
+
+DELIMITER ;
+
+-- Uso en consultas:
+SELECT id, total, fn_calcular_iva(total, 16.00) AS iva FROM pedidos;</code></pre>
+    </section>
+
+    <!-- EJEMPLO 3 -->
+    <section class="section-card">
+      <h2>Ejemplo 3: Stored Procedures (Procedimientos Almacenados)</h2>
+      <p>Encapsulamiento de lógica de negocio completa dentro de MariaDB con control de flujo y manejo de excepciones.</p>
+
+      <pre><code>DELIMITER //
+
+CREATE PROCEDURE sp_registrar_compra(
+    IN p_cliente_id INT,
+    IN p_producto_id INT,
+    IN p_cantidad INT,
+    OUT p_resultado VARCHAR(100)
+)
+BEGIN
+    DECLARE v_stock_actual INT;
+    DECLARE v_precio DECIMAL(10,2);
+    
+    -- Manejo de excepciones: deshacer en caso de error SQL
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET p_resultado = 'ERROR: Transacción abortada por fallo en el sistema.';
+    END;
+
+    START TRANSACTION;
+
+    SELECT stock, precio INTO v_stock_actual, v_precio 
+    FROM productos WHERE id = p_producto_id;
+
+    IF v_stock_actual &gt;= p_cantidad THEN
+        UPDATE productos SET stock = stock - p_cantidad WHERE id = p_producto_id;
+        
+        INSERT INTO pedidos (cliente_id, fecha, total) 
+        VALUES (p_cliente_id, NOW(), v_precio * p_cantidad);
+        
+        COMMIT;
+        SET p_resultado = 'ÉXITO: Compra registrada correctamente.';
+    ELSE
+        ROLLBACK;
+        SET p_resultado = 'RECHAZADO: Stock insuficiente.';
+    END IF;
+END //
+
+DELIMITER ;</code></pre>
+    </section>
+
+    <!-- EJEMPLO 4 -->
+    <section class="section-card">
+      <h2>Ejemplo 4: Integración desde Node.js (Patrón MVC)</h2>
+      <p>Consumo de objetos avanzados desde el Modelo en una API REST construida con Express y el conector <code>mysql2/promise</code>.</p>
+
+      <h3>1. Modelo de Datos (`models/pedidoModel.js`)</h3>
+      <pre><code>const db = require('../config/db');
+
+class PedidoModel {
+  // Consumo de Vista
+  static async obtenerResumen() {
+    const [rows] = await db.query('SELECT * FROM v_resumen_pedidos');
+    return rows;
+  }
+
+  // Ejecución de Stored Procedure con parámetros de entrada/salida
+  static async registrarCompra(clienteId, productoId, cantidad) {
+    const [rows] = await db.query(
+      'CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;',
+      [clienteId, productoId, cantidad]
+    );
+    // MariaDB/MySQL devuelve array de resultados; el valor del OUT está en el segundo dataset
+    return rows[1][0].resultado;
+  }
+}
+
+module.exports = PedidoModel;</code></pre>
+
+      <h3>2. Controlador (`controllers/pedidoController.js`)</h3>
+      <pre><code>const PedidoModel = require('../models/pedidoModel');
+
+const getResumen = async (req, res) =&gt; {
+  try {
+    const datos = await PedidoModel.obtenerResumen();
+    res.json({ status: 'success', data: datos });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+};
+
+const crearPedido = async (req, res) =&gt; {
+  const { clienteId, productoId, cantidad } = req.body;
+  try {
+    const resultado = await PedidoModel.registrarCompra(clienteId, productoId, cantidad);
+    res.json({ status: 'processed', message: resultado });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+};
+
+module.exports = { getResumen, crearPedido };</code></pre>
+    </section>
+
+  </main>
+
+</body>
+</html>
