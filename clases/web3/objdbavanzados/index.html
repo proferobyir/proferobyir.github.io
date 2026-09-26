@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Objetos Avanzados de MariaDB/MySQL e Integración con Node.js</title>
+  <title>Objetos Avanzados de MariaDB/MySQL e Integración con Node.js y Express</title>
   <style>
     :root {
       --primary-color: #0d6efd;
@@ -172,7 +172,7 @@
 
   <header>
     <h1>Objetos Avanzados en MariaDB / MySQL</h1>
-    <p>Electiva III: Integración con Node.js y Arquitectura MVC</p>
+    <p>Electiva III: Integración con Node.js, Express y Arquitectura MVC</p>
   </header>
 
   <main>
@@ -402,66 +402,114 @@ DELIMITER ;</code></pre>
 
     <!-- EJEMPLO 4 -->
     <section class="section-card">
-      <h2>Ejemplo 4: Integración desde Node.js (Patrón MVC)</h2>
-      <p>Consumo de objetos avanzados desde el Modelo en una API REST construida con Express y el conector <code>mysql2/promise</code>.</p>
+      <h2>Ejemplo 4: Integración API REST en Express (Patrón MVC)</h2>
+      <p>Consumo de Objetos Avanzados de MariaDB/MySQL mediante funciones exported dentro del Modelo y Controlador de Express con el paquete <code>mysql2/promise</code>.</p>
 
       <h3>1. Modelo de Datos (`models/pedidoModel.js`)</h3>
       <pre><code>const db = require('../config/db');
 
-class PedidoModel {
-  // Consumo de Vista
-  static async obtenerResumen() {
-    const [rows] = await db.query('SELECT * FROM v_resumen_pedidos');
-    return rows;
-  }
+// Función exportada para consultar la vista
+const obtenerResumenPedidos = async () =&gt; {
+  const [rows] = await db.query('SELECT * FROM v_resumen_pedidos');
+  return rows;
+};
 
-  // Ejecución de Stored Procedure con parámetros de entrada y lectura del parámetro OUT
-  static async registrarCompra(clienteId, productoId, cantidad) {
-    const [rows] = await db.query(
-      'CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;',
-      [clienteId, productoId, cantidad]
-    );
-    // MariaDB/MySQL devuelve múltiples result sets. 
-    // rows[1][0].resultado contiene la respuesta guardada en la variable de sesión @resultado
-    return rows[1][0].resultado;
-  }
-}
+// Función exportada para ejecutar el procedimiento almacenado
+const registrarCompraSP = async (clienteId, productoId, cantidad) =&gt; {
+  const [rows] = await db.query(
+    'CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;',
+    [clienteId, productoId, cantidad]
+  );
+  // MariaDB devuelve arreglos múltiples. rows[1][0].resultado extrae la respuesta de @resultado
+  return rows[1][0].resultado;
+};
 
-module.exports = PedidoModel;</code></pre>
+module.exports = {
+  obtenerResumenPedidos,
+  registrarCompraSP
+};</code></pre>
       <div class="explanation">
-        <strong>Explicación detallada:</strong>
+        <strong>Explicación del Modelo:</strong>
         <ul>
-          <li><code>db.query('SELECT * FROM v_resumen_pedidos')</code>: Llama a la vista como si fuera una tabla normal, delegando los <code>JOIN</code>s pesados a MariaDB.</li>
-          <li><code>CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;</code>: Usa marcadores de posición <code>?</code> para evitar inyecciones SQL. Envía los datos y asigna el parámetro de salida <code>OUT</code> a la variable de sesión <code>@resultado</code>, leyéndola inmediatamente con un <code>SELECT</code>.</li>
-          <li><code>rows[1][0].resultado</code>: Al ejecutar sentencias múltiples compuestas, el driver devuelve un arreglo con las respuestas de cada sentencia. El índice 1 contiene la respuesta del <code>SELECT @resultado</code>.</li>
+          <li><code>obtenerResumenPedidos</code>: Realiza un <code>SELECT</code> directo sobre la Vista <code>v_resumen_pedidos</code>. Toda la lógica de los <code>JOIN</code>s es procesada eficientemente por el motor MariaDB.</li>
+          <li><code>registrarCompraSP</code>: Ejecuta el procedimiento almacenado con los marcadores de posición <code>?</code> (evitando inyecciones SQL). Pasa la variable de sesión <code>@resultado</code> para capturar el valor de salida (<code>OUT</code>) y ejecuta inmediatamente el <code>SELECT @resultado</code> en la misma conexión.</li>
         </ul>
       </div>
 
-      <h3>2. Controlador (`controllers/pedidoController.js`)</h3>
-      <pre><code>const PedidoModel = require('../models/pedidoModel');
+      <h3>2. Controlador API REST (`controllers/pedidoController.js`)</h3>
+      <pre><code>const pedidoModel = require('../models/pedidoModel');
 
+// GET /api/pedidos/resumen
 const getResumen = async (req, res) =&gt; {
   try {
-    const datos = await PedidoModel.obtenerResumen();
-    res.json({ status: 'success', data: datos });
+    const pedidos = await pedidoModel.obtenerResumenPedidos();
+    res.status(200).json({
+      status: 'success',
+      data: pedidos
+    });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(500).json({
+      status: 'error',
+      message: 'Error al consultar el resumen de pedidos: ' + error.message
+    });
   }
 };
 
+// POST /api/pedidos/comprar
 const crearPedido = async (req, res) =&gt; {
   const { clienteId, productoId, cantidad } = req.body;
+
+  if (!clienteId || !productoId || !cantidad) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Faltan campos obligatorios en el cuerpo de la petición.'
+    });
+  }
+
   try {
-    const resultado = await PedidoModel.registrarCompra(clienteId, productoId, cantidad);
-    res.json({ status: 'processed', message: resultado });
+    const resultado = await pedidoModel.registrarCompraSP(clienteId, productoId, cantidad);
+    
+    // Si el procedimiento devolvió un rechazo por stock
+    if (resultado.startsWith('RECHAZADO')) {
+      return res.status(400).json({ status: 'fail', message: resultado });
+    }
+
+    res.status(201).json({
+      status: 'success',
+      message: resultado
+    });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(500).json({
+      status: 'error',
+      message: 'Error interno al procesar la compra: ' + error.message
+    });
   }
 };
 
-module.exports = { getResumen, crearPedido };</code></pre>
+module.exports = {
+  getResumen,
+  crearPedido
+};</code></pre>
+
+      <h3>3. Definición de Rutas (`routes/pedidoRoutes.js`)</h3>
+      <pre><code>const express = require('express');
+const router = express.Router();
+const pedidoController = require('../controllers/pedidoController');
+
+// Endpoint GET para obtener el resumen mediante la Vista
+router.get('/resumen', pedidoController.getResumen);
+
+// Endpoint POST para procesar una compra mediante el Stored Procedure
+router.post('/comprar', pedidoController.crearPedido);
+
+module.exports = router;</code></pre>
       <div class="explanation">
-        <strong>Explicación:</strong> El controlador se mantiene limpio e higiénico. Recibe las peticiones HTTP de la API, delega la ejecución al modelo que interactúa con MariaDB y responde con JSON estandarizado.
+        <strong>Explicación del Controlador y Rutas:</strong>
+        <ul>
+          <li>Mantiene la arquitectura MVC pura basada en funciones, sin clases sintácticas.</li>
+          <li>El Controlador valida los datos de entrada (`req.body`), invoca la función del Modelo y responde con códigos HTTP estándar (`200 OK`, `201 Created`, `400 Bad Request`, `500 Internal Server Error`).</li>
+          <li>El archivo de rutas mapea cada verbo HTTP (`GET`, `POST`) al método del controlador correspondiente.</li>
+        </ul>
       </div>
     </section>
 
