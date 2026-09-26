@@ -75,27 +75,37 @@
 
     .section-card h3 {
       font-size: 1.05rem;
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       margin-bottom: 0.5rem;
+      color: #333;
     }
 
-    p, ul {
+    p, ul, ol {
       margin-bottom: 1rem;
       font-size: 0.95rem;
     }
 
-    ul {
+    ul, ol {
       padding-left: 1.2rem;
     }
 
     li {
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.4rem;
     }
 
     .callout {
       background-color: #e7f1ff;
       border-left: 4px solid var(--primary-color);
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      font-size: 0.9rem;
+    }
+
+    .concept-box {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 0.85rem 1rem;
       margin-bottom: 1rem;
       border-radius: 0 var(--border-radius) var(--border-radius) 0;
       font-size: 0.9rem;
@@ -125,6 +135,14 @@
       background-color: transparent;
       padding: 0;
       color: inherit;
+    }
+
+    .explanation {
+      background-color: #f1f3f5;
+      padding: 0.75rem 1rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
     }
 
     @media (min-width: 768px) {
@@ -159,6 +177,35 @@
 
   <main>
 
+    <!-- FUNDAMENTOS TEÓRICOS -->
+    <section class="section-card">
+      <h2>Fundamentos Teóricos: Transacciones, ACID y Símbolo @</h2>
+      
+      <div class="concept-box">
+        <strong>¿Qué es una Transacción?</strong>
+        <p>Es un conjunto de una o varias operaciones SQL (<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>) que se ejecutan como una sola unidad indivisible de trabajo. O se ejecutan todas con éxito, o no se ejecuta ninguna (volviendo al estado original).</p>
+      </div>
+
+      <div class="concept-box">
+        <strong>Propiedades ACID de la Base de Datos:</strong>
+        <ul>
+          <li><strong>A - Atomicidad (Atomic):</strong> Principio de "todo o nada". Si una sola consulta dentro del bloque falla, se revierte toda la operación.</li>
+          <li><strong>C - Consistencia (Consistency):</strong> La base de datos pasa de un estado válido a otro estado válido, respetando todas las reglas e integridades.</li>
+          <li><strong>I - Aislamiento (Isolation):</strong> Transacciones concurrentes no interfieren entre sí. Los datos intermedios no se ven hasta confirmar.</li>
+          <li><strong>D - Durabilidad (Durability):</strong> Una vez confirmada la transacción (<code>COMMIT</code>), los cambios se guardan permanentemente en disco.</li>
+        </ul>
+      </div>
+
+      <div class="concept-box">
+        <strong>Uso del símbolo @ en MariaDB / MySQL:</strong>
+        <p>El símbolo <code>@</code> antepuesto a una palabra identifica una <strong>Variable de Sesión de Usuario</strong> (ej. <code>@pedido_id</code>).</p>
+        <ul>
+          <li><strong>Variables Locales (sin @):</strong> Se declaran con <code>DECLARE</code> y solo existen dentro de un bloque <code>BEGIN ... END</code> de un procedimiento o función.</li>
+          <li><strong>Variables de Sesión (con @):</strong> Viven durante toda la conexión del usuario. Se usan para capturar valores generados (como <code>LAST_INSERT_ID()</code>) o para leer parámetros de salida (<code>OUT</code>) en procedimientos almacenados desde la consola o desde Node.js.</li>
+        </ul>
+      </div>
+    </section>
+
     <!-- NOTA SOBRE CLIENTES Y DELIMITADORES -->
     <section class="section-card">
       <h2>Acotación Técnica Importante: Delimitadores en MariaDB</h2>
@@ -168,7 +215,7 @@
         <strong>Uso del <code>DELIMITER</code> según el cliente de BD:</strong>
         <ul>
           <li><strong>Línea de comandos / phpMyAdmin:</strong> Es obligatorio redefinir el delimitador usando <code>DELIMITER //</code> antes del bloque de código y restaurarlo con <code>DELIMITER ;</code> al final.</li>
-          <li><strong>DBeaver / MySQL Workbench / HeidiSQL:</strong> Estos clientes gestionan la delimitación automáticamente cuando seleccionas el bloque de código completo o utilizas sus interfaces visuales/editores dedicados. Si ejecutas como script completo, la directiva <code>DELIMITER //</code> también es compatible.</li>
+          <li><strong>DBeaver / MySQL Workbench / HeidiSQL:</strong> Estos clientes gestionan la delimitación automáticamente cuando seleccionas el bloque completo o usas la interfaz visual. Si ejecutas como script completo, la directiva <code>DELIMITER //</code> también es compatible.</li>
         </ul>
       </div>
 
@@ -182,6 +229,9 @@ BEGIN
 END //
 
 DELIMITER ;</code></pre>
+      <div class="explanation">
+        <strong>Explicación del bloque:</strong> <code>DELIMITER //</code> le dice al cliente que reemplace el caracter final del comando (que usualmente es <code>;</code>) por <code>//</code>. Esto evita que el motor se detenga al leer el primer <code>;</code> dentro del bloque de código. Al finalizar con <code>END //</code>, restauramos con <code>DELIMITER ;</code>.
+      </div>
     </section>
 
     <!-- EJEMPLO 1 -->
@@ -197,8 +247,11 @@ DELIMITER ;</code></pre>
     precio_nuevo DECIMAL(10, 2) NOT NULL,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );</code></pre>
+      <div class="explanation">
+        <strong>Explicación:</strong> Creamos una tabla desacoplada que servirá de bitácora para guardar automáticamente un registro cada vez que el precio de un producto sea modificado.
+      </div>
 
-      <h3>2. Creación del Trigger</h3>
+      <h3>2. Creación del Trigger de Auditoría</h3>
       <pre><code>DELIMITER //
 
 CREATE TRIGGER trg_auditoria_precio_producto
@@ -212,8 +265,16 @@ BEGIN
 END //
 
 DELIMITER ;</code></pre>
+      <div class="explanation">
+        <strong>Explicación detallada:</strong>
+        <ul>
+          <li><code>AFTER UPDATE ON productos FOR EACH ROW</code>: Indica que el código se disparará automáticamente inmediatamente después de actualizar cada fila de la tabla productos.</li>
+          <li><code>OLD</code> y <code>NEW</code>: Son estructuras especiales. <code>OLD.precio</code> es el precio antes de la actualización; <code>NEW.precio</code> es el nuevo valor.</li>
+          <li><code>IF OLD.precio &lt;&gt; NEW.precio THEN</code>: Evalúa si el precio realmente cambió antes de insertar en la bitácora, evitando registros innecesarios si solo se actualizó otro campo (como el nombre).</li>
+        </ul>
+      </div>
 
-      <h3>3. Transacción en MariaDB / MySQL</h3>
+      <h3>3. Control Manual de Transacción en MariaDB / MySQL</h3>
       <pre><code>START TRANSACTION;
 
 INSERT INTO pedidos (cliente_id, fecha, total) VALUES (1, NOW(), 150.00);
@@ -222,10 +283,19 @@ SET @pedido_id = LAST_INSERT_ID();
 INSERT INTO detalles_pedido (pedido_id, producto_id, cantidad, precio) VALUES (@pedido_id, 5, 2, 75.00);
 UPDATE productos SET stock = stock - 2 WHERE id = 5;
 
--- Si todo es correcto:
+-- Si todo es correcto y no hay fallas:
 COMMIT;
--- En caso de error:
+
+-- En caso de error en algún paso intermedio:
 -- ROLLBACK;</code></pre>
+      <div class="explanation">
+        <strong>Explicación detallada:</strong>
+        <ul>
+          <li><code>START TRANSACTION;</code>: Inicia la unidad indivisible de trabajo y deshabilita la confirmación automática (autocommit).</li>
+          <li><code>SET @pedido_id = LAST_INSERT_ID();</code>: Guarda en la variable de sesión <code>@pedido_id</code> el ID autogenerado del pedido recién insertado para usarlo en la siguiente fila de detalle.</li>
+          <li><code>COMMIT;</code>: Aplica todos los cambios permanentemente en disco si todas las sentencias fueron exitosas. Si alguna fallara, se debe ejecutar <code>ROLLBACK;</code> para revertir todo al estado inicial.</li>
+        </ul>
+      </div>
     </section>
 
     <!-- EJEMPLO 2 -->
@@ -234,7 +304,6 @@ COMMIT;
       <p>Simplificación de consultas repetitivas complejas (<code>JOIN</code>s) y encapsulamiento de cálculos en el servidor de base de datos.</p>
 
       <h3>1. Creación de una Vista (`VIEW`)</h3>
-      <p>Abstrae la complejidad de unir múltiples tablas para consumirla en Node.js de forma directa.</p>
       <pre><code>CREATE VIEW v_resumen_pedidos AS
 SELECT 
     p.id AS pedido_id,
@@ -247,6 +316,9 @@ INNER JOIN clientes c ON p.cliente_id = c.id;
 
 -- Consulta desde la aplicación:
 SELECT * FROM v_resumen_pedidos WHERE total &gt; 100.00;</code></pre>
+      <div class="explanation">
+        <strong>Explicación:</strong> La vista actúa como una tabla virtual. Oculta la complejidad de hacer <code>JOIN</code>s repetitivos. Desde la aplicación Node.js solo se invoca con un simple <code>SELECT</code>.
+      </div>
 
       <h3>2. Creación de una Stored Function</h3>
       <pre><code>DELIMITER //
@@ -260,8 +332,16 @@ END //
 
 DELIMITER ;
 
--- Uso en consultas:
+-- Uso en consultas SQL:
 SELECT id, total, fn_calcular_iva(total, 16.00) AS iva FROM pedidos;</code></pre>
+      <div class="explanation">
+        <strong>Explicación detallada:</strong>
+        <ul>
+          <li><code>RETURNS DECIMAL(10,2)</code>: Declara qué tipo de dato devolverá la función.</li>
+          <li><code>DETERMINISTIC</code>: Le comunica al motor que para las mismas entradas, la función siempre retornará la misma salida. Esto optimiza la memoria caché.</li>
+          <li><code>RETURN ...</code>: Realiza el cálculo matemático y retorna el valor directamente en la consulta.</li>
+        </ul>
+      </div>
     </section>
 
     <!-- EJEMPLO 3 -->
@@ -281,7 +361,7 @@ BEGIN
     DECLARE v_stock_actual INT;
     DECLARE v_precio DECIMAL(10,2);
     
-    -- Manejo de excepciones: deshacer en caso de error SQL
+    -- Manejo de excepciones (Manejador de Errores SQL)
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -308,6 +388,16 @@ BEGIN
 END //
 
 DELIMITER ;</code></pre>
+      <div class="explanation">
+        <strong>Explicación detallada:</strong>
+        <ul>
+          <li><code>IN / OUT</code>: Parámetros de entrada (<code>IN</code>) que vienen desde Node.js y parámetros de salida (<code>OUT</code>) para devolver datos/mensajes.</li>
+          <li><code>DECLARE v_stock_actual INT;</code>: Declaración de variables locales privadas (sin <code>@</code>), válidas solo dentro del bloque <code>BEGIN ... END</code>.</li>
+          <li><code>DECLARE EXIT HANDLER FOR SQLEXCEPTION</code>: Equivalente a un bloque <code>catch</code>. Si ocurre un fallo inesperado de SQL, ejecuta <code>ROLLBACK</code> inmediatamente y le asigna el error a <code>p_resultado</code>.</li>
+          <li><code>SELECT stock, precio INTO ...</code>: Consulta la base de datos y asigna los valores a las variables locales.</li>
+          <li><code>IF ... ELSE</code>: Estructura condicional para tomar decisiones: si hay stock, descuenta inventario, inserta el pedido, hace <code>COMMIT</code> y retorna éxito; si no, hace <code>ROLLBACK</code> y rechaza.</li>
+        </ul>
+      </div>
     </section>
 
     <!-- EJEMPLO 4 -->
@@ -325,18 +415,27 @@ class PedidoModel {
     return rows;
   }
 
-  // Ejecución de Stored Procedure con parámetros de entrada/salida
+  // Ejecución de Stored Procedure con parámetros de entrada y lectura del parámetro OUT
   static async registrarCompra(clienteId, productoId, cantidad) {
     const [rows] = await db.query(
       'CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;',
       [clienteId, productoId, cantidad]
     );
-    // MariaDB/MySQL devuelve array de resultados; el valor del OUT está en el segundo dataset
+    // MariaDB/MySQL devuelve múltiples result sets. 
+    // rows[1][0].resultado contiene la respuesta guardada en la variable de sesión @resultado
     return rows[1][0].resultado;
   }
 }
 
 module.exports = PedidoModel;</code></pre>
+      <div class="explanation">
+        <strong>Explicación detallada:</strong>
+        <ul>
+          <li><code>db.query('SELECT * FROM v_resumen_pedidos')</code>: Llama a la vista como si fuera una tabla normal, delegando los <code>JOIN</code>s pesados a MariaDB.</li>
+          <li><code>CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;</code>: Usa marcadores de posición <code>?</code> para evitar inyecciones SQL. Envía los datos y asigna el parámetro de salida <code>OUT</code> a la variable de sesión <code>@resultado</code>, leyéndola inmediatamente con un <code>SELECT</code>.</li>
+          <li><code>rows[1][0].resultado</code>: Al ejecutar sentencias múltiples compuestas, el driver devuelve un arreglo con las respuestas de cada sentencia. El índice 1 contiene la respuesta del <code>SELECT @resultado</code>.</li>
+        </ul>
+      </div>
 
       <h3>2. Controlador (`controllers/pedidoController.js`)</h3>
       <pre><code>const PedidoModel = require('../models/pedidoModel');
@@ -361,9 +460,13 @@ const crearPedido = async (req, res) =&gt; {
 };
 
 module.exports = { getResumen, crearPedido };</code></pre>
+      <div class="explanation">
+        <strong>Explicación:</strong> El controlador se mantiene limpio e higiénico. Recibe las peticiones HTTP de la API, delega la ejecución al modelo que interactúa con MariaDB y responde con JSON estandarizado.
+      </div>
     </section>
 
   </main>
 
 </body>
 </html>
+
