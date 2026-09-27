@@ -570,7 +570,7 @@ const obtenerResumenPedidos = async () =&gt; {
   return rows;
 };
 
-// Función exportada para ejecutar el procedimiento almacenado
+// Funktion exportada para ejecutar el procedimiento almacenado
 const registrarCompraSP = async (clienteId, productoId, cantidad) =&gt; {
   const [rows] = await db.query(
     'CALL sp_registrar_compra(?, ?, ?, @resultado); SELECT @resultado AS resultado;',
@@ -630,7 +630,6 @@ const crearPedido = async (req, res) =&gt; {
   try {
     const resultado = await pedidoModel.registrarCompraSP(clienteId, productoId, cantidad);
     
-    // Si el procedimiento devolvió un rechazo por stock
     if (resultado.startsWith('RECHAZADO')) {
       return res.status(400).json({ status: 'fail', message: resultado });
     }
@@ -674,6 +673,92 @@ module.exports = router;</code></pre>
           <li>El archivo de rutas mapea cada verbo HTTP (<code>GET</code>, <code>POST</code>) al método del controlador
             correspondiente.</li>
         </ul>
+      </div>
+    </section>
+
+    <!-- PASO 5: GUÍA DE PRÁCTICAS EN LOCALHOST / PHPMYADMIN -->
+    <section class="section-card">
+      <h2>5. Guía de Prácticas en Localhost / phpMyAdmin</h2>
+      <p>Una vez creada la base de datos base, tus estudiantes pueden realizar las siguientes pruebas paso a paso
+        directamente desde la pestaña <strong>SQL</strong> de su phpMyAdmin de forma totalmente independiente:</p>
+
+      <h3>Práctica 1: Crear y Probar el Trigger de Auditoría de Precios</h3>
+      <p>Si se ejecuta este bloque de forma aislada, primero creamos el disparador (asegurándonos de limpiarlo por si ya
+        existe), luego insertamos un producto de prueba y finalmente ejecutamos la actualización que disparará la
+        auditoría:</p>
+      <pre><code>-- 1. Crear el Trigger de auditoría (por si se prueba de forma independiente)
+DROP TRIGGER IF EXISTS trg_auditoria_precio_producto;
+
+DELIMITER //
+CREATE TRIGGER trg_auditoria_precio_producto
+AFTER UPDATE ON productos
+FOR EACH ROW
+BEGIN
+    IF OLD.precio &lt;&gt; NEW.precio THEN
+        INSERT INTO historial_precios (producto_id, precio_anterior, precio_nuevo)
+        VALUES (OLD.id, OLD.precio, NEW.precio);
+    END IF;
+END //
+DELIMITER ;
+
+-- 2. Insertar un producto nuevo de prueba
+INSERT INTO productos (nombre, precio, stock) VALUES ('Monitor 24 pulgadas', 200.00, 15);
+
+-- 3. Modificar el precio de ese producto recién insertado (esto activa el Trigger automáticamente)
+UPDATE productos SET precio = 220.00 WHERE nombre = 'Monitor 24 pulgadas';
+
+-- 4. Consultar la tabla de auditoría para comprobar que el cambio quedó registrado
+SELECT * FROM historial_precios;</code></pre>
+      <div class="explanation">
+        <strong>Resultado esperado:</strong> Verás registrado en la tabla <code>historial_precios</code> cómo el precio
+        anterior era <code>200.00</code> y el nuevo valor pasó a <code>220.00</code> gracias al trigger.
+      </div>
+
+      <h3>Práctica 2: Probar la Función Almacenada de IVA</h3>
+      <p>Utiliza la función matemática dentro de una consulta <code>SELECT</code> común para calcular impuestos al
+        vuelo.</p>
+      <pre><code>-- Calcular el IVA (16%) del precio de todos los productos
+SELECT 
+    nombre, 
+    precio AS precio_base, 
+    fn_calcular_iva(precio, 16.00) AS monto_iva,
+    (precio + fn_calcular_iva(precio, 16.00)) AS precio_con_iva
+FROM productos;</code></pre>
+      <div class="explanation">
+        <strong>Resultado esperado:</strong> Una lista de productos donde cada uno muestra desglosado su impuesto
+        calculado dinámicamente por la función <code>fn_calcular_iva</code>.
+      </div>
+
+      <h3>Práctica 3: Probar la Vista Relacional</h3>
+      <p>Consulta el resumen consolidado de pedidos sin necesidad de escribir cláusulas <code>JOIN</code> manuales.</p>
+      <pre><code>-- Consultar todos los registros de la vista
+SELECT * FROM v_resumen_pedidos;
+
+-- Filtrar registros mediante la vista
+SELECT * FROM v_resumen_pedidos WHERE cliente = 'Ana Pérez';</code></pre>
+      <div class="explanation">
+        <strong>Resultado esperado:</strong> La unión limpia entre los datos del cliente y los pedidos realizados,
+        optimizando la lectura directa.
+      </div>
+
+      <h3>Práctica 4: Probar el Procedimiento Almacenado de Compra Segura (Transacción y Stock)</h3>
+      <p>Simula una compra exitosa y una compra rechazada por falta de inventario ejecutando el procedimiento almacenado
+        y capturando su variable de salida.</p>
+      <pre><code>-- CASO A: Compra Exitosa (Cliente ID 1 compra 2 unidades del Producto ID 2)
+CALL sp_registrar_compra(1, 2, 2, @resultado);
+SELECT @resultado AS mensaje_transaccion;
+
+-- Verificar cómo disminuyó el stock del producto 2 (de 50 a 48)
+SELECT id, nombre, stock FROM productos WHERE id = 2;
+
+-- CASO B: Compra Rechazada por Stock Insuficiente (Intentar comprar 999 unidades)
+CALL sp_registrar_compra(2, 1, 999, @resultado);
+SELECT @resultado AS mensaje_transaccion;</code></pre>
+      <div class="explanation">
+        <strong>Resultado esperado:</strong> En el Caso A, la variable <code>@resultado</code> mostrará el mensaje de
+        éxito y la base de datos actualizará el stock de forma atómica. En el Caso B, el manejador detectará que el
+        inventario no es suficiente, disparando un <code>ROLLBACK</code> interno y devolviendo el mensaje de rechazo sin
+        alterar los datos previos.
       </div>
     </section>
 
