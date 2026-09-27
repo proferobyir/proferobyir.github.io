@@ -115,6 +115,43 @@
       font-size: 0.9rem;
     }
 
+    /* Estilos para la tabla comparativa */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+      border-radius: var(--border-radius);
+      border: 1px solid #dee2e6;
+    }
+
+    table.comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+      background-color: #ffffff;
+    }
+
+    table.comparison-table th,
+    table.comparison-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    table.comparison-table th {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    table.comparison-table tr:hover {
+      background-color: #f1f3f5;
+    }
+
+    table.comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
     pre {
       background-color: var(--code-bg);
       color: var(--code-color);
@@ -463,6 +500,58 @@ END</code></pre>
       <div class="explanation">
         <strong>Detalles clave:</strong> Centralizan la lógica de negocio en el servidor de base de datos, reduciendo el
         tráfico de red y protegiendo la integridad transaccional.
+      </div>
+
+      <h3>F. Tabla Comparativa: Procedimiento Almacenado vs. Función Almacenada</h3>
+      <p>Para comprender con claridad cuándo utilizar cada objeto dentro del motor de base de datos, revisa la siguiente
+        tabla comparativa:</p>
+
+      <div class="table-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>Procedimiento Almacenado (PROCEDURE)</th>
+              <th>Función Almacenada (FUNCTION)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Valor de retorno</strong></td>
+              <td>No retorna un valor directo; usa parámetros OUT / INOUT o conjuntos de resultados.</td>
+              <td>Debe retornar obligatoriamente un único valor usando la cláusula RETURNS y RETURN.</td>
+            </tr>
+            <tr>
+              <td><strong>Forma de invocación</strong></td>
+              <td>Se ejecuta exclusivamente con la sentencia CALL.</td>
+              <td>Se puede invocar dentro de cualquier sentencia SQL (como un SELECT, WHERE o UPDATE).</td>
+            </tr>
+            <tr>
+              <td><strong>Parámetros</strong></td>
+              <td>Permite parámetros de tipo IN, OUT e INOUT.</td>
+              <td>Solo permite parámetros de entrada de tipo IN.</td>
+            </tr>
+            <tr>
+              <td><strong>Modificación de datos</strong></td>
+              <td>Permite realizar operaciones complejas de manipulación de datos (INSERT, UPDATE, DELETE) y control de
+                transacciones.</td>
+              <td>Está diseñada para cálculos y consultas; por lo general, no se recomienda realizar operaciones de
+                modificación de datos en su interior.</td>
+            </tr>
+            <tr>
+              <td><strong>Uso en sentencias SQL</strong></td>
+              <td>No se puede insertar directamente dentro de una consulta SQL normal.</td>
+              <td>Se puede anidar e integrar directamente dentro de otras consultas SQL.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="explanation">
+        <strong>Resumen de selección:</strong> Utiliza un <strong>Procedimiento Almacenado</strong> cuando necesites
+        alterar múltiples tablas, ejecutar transacciones (<code>COMMIT</code> / <code>ROLLBACK</code>) o retornar
+        mensajes de estado. Utiliza una <strong>Función Almacenada</strong> cuando requieras realizar cálculos
+        matemáticos, formateo de cadenas o validaciones rápidas que necesiten ser incrustadas directamente en el flujo
+        de una consulta <code>SELECT</code>.
       </div>
     </section>
 
