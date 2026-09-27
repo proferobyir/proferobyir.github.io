@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manual didáctico de clases y objetos en C# 5">
+    <title>C# 5 — Clases y Objetos</title>
+
+    <style>
+        /* =========================================================
+   MOBILE FIRST
+   ========================================================= */
+        :root {
+            --bg: #f4f6f8;
+            --card: #ffffff;
+            --text: #20252b;
+            --muted: #5f6b76;
+            --primary: #2457a6;
+            --primary-soft: #eaf1ff;
+            --accent: #f0a202;
+            --accent-soft: #fff5d9;
+            --success: #26734d;
+            --success-soft: #e6f6ed;
+            --danger: #a63d40;
+            --danger-soft: #fdebec;
+            --border: #dfe4ea;
+            --code-bg: #17202a;
+            --code-text: #f4f7fa;
+            --shadow: 0 4px 14px rgba(0, 0, 0, .07);
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        a {
+            color: var(--primary);
+        }
+
+        header {
+            background: linear-gradient(135deg, #173b73, #2457a6);
+            color: white;
+            padding: 28px 16px 24px;
+        }
+
+        .header-inner {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 8px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .15);
+            font-size: .78rem;
+            font-weight: bold;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 1.9rem;
+            line-height: 1.15;
+        }
+
+        .subtitle {
+            margin: 0;
+            max-width: 720px;
+            color: #eaf1ff;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(255, 255, 255, .97);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .nav-inner {
+            display: flex;
+            gap: 8px;
+            max-width: 1000px;
+            margin: auto;
+            padding: 9px 12px;
+            white-space: nowrap;
+        }
+
+        nav a {
+            display: inline-block;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: #eef2f6;
+            color: #263746;
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: bold;
+        }
+
+        main {
+            width: min(100% - 24px, 1000px);
+            margin: 20px auto 50px;
+        }
+
+        section {
+            scroll-margin-top: 70px;
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-number {
+            display: inline-block;
+            color: white;
+            background: var(--primary);
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: .78rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 1.4rem;
+            line-height: 1.25;
+        }
+
+        h3 {
+            margin: 18px 0 8px;
+            font-size: 1.08rem;
+        }
+
+        p {
+            margin: 8px 0 12px;
+        }
+
+        ul,
+        ol {
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
+        strong {
+            color: #182b3f;
+        }
+
+        .code-title {
+            margin-top: 14px;
+            padding: 7px 10px;
+            border-radius: 8px 8px 0 0;
+            background: #263646;
+            color: #fff;
+            font-size: .8rem;
+            font-weight: bold;
+        }
+
+        pre {
+            margin: 0 0 14px;
+            padding: 14px;
+            overflow-x: auto;
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 0 0 10px 10px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: .88rem;
+            line-height: 1.55;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        code:not(pre code) {
+            padding: 2px 5px;
+            border-radius: 5px;
+            background: #eef1f4;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: .92em;
+        }
+
+        .tip,
+        .warning,
+        .check,
+        .remember {
+            margin: 14px 0;
+            padding: 13px 14px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+
+        .tip {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+        }
+
+        .warning {
+            background: var(--danger-soft);
+            border-color: var(--danger);
+        }
+
+        .check {
+            background: var(--success-soft);
+            border-color: var(--success);
+        }
+
+        .remember {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+
+        .box-title {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .diagram {
+            margin: 14px 0;
+            padding: 15px;
+            border: 1px dashed #b8c2cd;
+            border-radius: 12px;
+            background: #fafbfc;
+            text-align: center;
+        }
+
+        .diagram .arrow {
+            display: block;
+            margin: 8px 0;
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .diagram-box {
+            display: inline-block;
+            min-width: 150px;
+            padding: 10px 12px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            background: var(--primary-soft);
+            font-weight: bold;
+        }
+
+        .two-col {
+            display: block;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 480px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #edf1f5;
+        }
+
+        .step {
+            margin: 12px 0;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fbfcfd;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            margin-right: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .mini-task {
+            padding: 12px;
+            border: 2px dashed #c8d0d8;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        footer {
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            padding: 0 12px;
+            color: var(--muted);
+            font-size: .88rem;
+        }
+
+        /* =========================================================
+   TABLET / DESKTOP
+   ========================================================= */
+        @media (min-width: 700px) {
+            body {
+                font-size: 17px;
+            }
+
+            header {
+                padding: 42px 24px 36px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            main {
+                margin-top: 28px;
+            }
+
+            .card {
+                padding: 26px;
+            }
+
+            .two-col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+            }
+
+            pre {
+                font-size: .92rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-inner">
+            <span class="eyebrow">C# 5 · Manual de aprendizaje</span>
+            <h1>Clases y Objetos</h1>
+            <p class="subtitle">
+                De cero a <code>List&lt;Objeto&gt;</code>: comprende el concepto, crea objetos,
+                modifica sus datos y recórrelos con <code>foreach</code>.
+            </p>
+        </div>
+    </header>
+
+    <nav aria-label="Índice del manual">
+        <div class="nav-inner">
+            <a href="#inicio">Inicio</a>
+            <a href="#clase">Clase</a>
+            <a href="#objeto">Objeto</a>
+            <a href="#atributos">Atributos</a>
+            <a href="#new">new</a>
+            <a href="#metodos">Métodos</a>
+            <a href="#list">List</a>
+            <a href="#foreach">foreach</a>
+            <a href="#ejercicio">Práctica</a>
+            <a href="#resumen">Resumen</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <section id="inicio">
+            <div class="card">
+                <span class="section-number">ANTES DE EMPEZAR</span>
+                <h2>¿Qué vamos a aprender?</h2>
+                <p>
+                    Hasta ahora has trabajado con datos individuales y colecciones como
+                    <code>List</code>. Ahora aprenderás a crear tus propios tipos de datos.
+                </p>
+
+                <div class="diagram">
+                    <div class="diagram-box">CLASE</div>
+                    <span class="arrow">↓ crea</span>
+                    <div class="diagram-box">OBJETO</div>
+                    <span class="arrow">↓ puede estar dentro de</span>
+                    <div class="diagram-box">List&lt;OBJETO&gt;</div>
+                </div>
+
+                <div class="remember">
+                    <span class="box-title">🎯 Idea central</span>
+                    Una <strong>clase</strong> es el molde. Un <strong>objeto</strong> es una
+                    instancia creada a partir de ese molde.
+                </div>
+
+                <div class="check">
+                    <span class="box-title">✓ Meta de esta guía</span>
+                    Al finalizar podrás crear una clase pública, crear objetos de ella,
+                    almacenar varios objetos en un <code>List</code> y recorrerlos con
+                    <code>foreach</code>.
+                </div>
+            </div>
+        </section>
+
+        <section id="clase">
+            <div class="card">
+                <span class="section-number">01</span>
+                <h2>¿Qué es una clase?</h2>
+
+                <p>
+                    Una <strong>clase</strong> es una descripción o molde que define qué
+                    información y qué comportamientos tendrán los objetos que creemos.
+                </p>
+
+                <p>
+                    Imagina un formulario de estudiante. Todos los estudiantes pueden tener
+                    nombre, edad y nota, aunque cada estudiante tendrá valores diferentes.
+                </p>
+
+                <div class="diagram">
+                    <div class="diagram-box">CLASE: Estudiante</div>
+                    <p>Define:</p>
+                    <strong>Nombre · Edad · Nota</strong>
+                </div>
+
+                <div class="tip">
+                    <span class="box-title">💡 Piensa así</span>
+                    La clase describe <strong>cómo será</strong> un objeto.
+                    Todavía no estamos hablando de un estudiante específico.
+                </div>
+
+                <h3>Primera clase pública</h3>
+
+                <div class="code-title">C# 5 — Estudiante.cs</div>
+                <pre><code>public class Estudiante
+{
+    public string Nombre;
+    public int Edad;
+    public double Nota;
+}</code></pre>
+
+                <div class="check">
+                    <span class="box-title">✓ Observa</span>
+                    <code>public class Estudiante</code> significa que estamos declarando
+                    una clase pública llamada <code>Estudiante</code>.
+                </div>
+            </div>
+        </section>
+
+        <section id="objeto">
+            <div class="card">
+                <span class="section-number">02</span>
+                <h2>¿Qué es un objeto?</h2>
+
+                <p>
+                    Un <strong>objeto</strong> es una instancia concreta de una clase.
+                    Es decir, es algo que podemos crear utilizando la clase como molde.
+                </p>
+
+                <div class="diagram">
+                    <div class="diagram-box">Clase: Estudiante</div>
+                    <span class="arrow">↓ new</span>
+                    <div class="two-col">
+                        <div class="diagram-box">estudiante1</div>
+                        <div class="diagram-box">estudiante2</div>
+                    </div>
+                </div>
+
+                <h3>Crear nuestro primer objeto</h3>
+
+                <div class="code-title">C# 5</div>
+                <pre><code>Estudiante estudiante1 = new Estudiante();</code></pre>
+
+                <p>Observa los nombres cuidadosamente:</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parte</th>
+                                <th>Significado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Estudiante</code></td>
+                                <td>El tipo / clase que estamos utilizando.</td>
+                            </tr>
+                            <tr>
+                                <td><code>estudiante1</code></td>
+                                <td>La variable que referencia al objeto.</td>
+                            </tr>
+                            <tr>
+                                <td><code>new</code></td>
+                                <td>Crea una nueva instancia.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Estudiante()</code></td>
+                                <td>Construye una instancia de la clase.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="warning">
+                    <span class="box-title">⚠️ Regla visual para aprender</span>
+                    Evitaremos llamar al objeto exactamente igual que a la clase.
+                    Usaremos <code>Estudiante</code> para la clase y
+                    <code>estudiante1</code>, <code>estudiante2</code>, etc. para los objetos.
+                    Así la diferencia se ve claramente.
+                </div>
+            </div>
+        </section>
+
+        <section id="atributos">
+            <div class="card">
+                <span class="section-number">03</span>
+                <h2>Los datos del objeto: atributos</h2>
+
+                <p>
+                    Nuestra clase tiene tres atributos:
+                </p>
+
+                <pre><code>public string Nombre;
+public int Edad;
+public double Nota;</code></pre>
+
+                <p>
+                    Cada objeto tendrá sus propios valores.
+                </p>
+
+                <h3>Asignar datos al objeto</h3>
+
+                <pre><code>Estudiante estudiante1 = new Estudiante();
+
+estudiante1.Nombre = "Ana";
+estudiante1.Edad = 19;
+estudiante1.Nota = 16;</code></pre>
+
+                <div class="diagram">
+                    <div class="diagram-box">estudiante1</div>
+                    <p>
+                        Nombre → Ana<br>
+                        Edad → 19<br>
+                        Nota → 16
+                    </p>
+                </div>
+
+                <h3>Crear otro objeto</h3>
+
+                <pre><code>Estudiante estudiante2 = new Estudiante();
+
+estudiante2.Nombre = "Luis";
+estudiante2.Edad = 20;
+estudiante2.Nota = 12;</code></pre>
+
+                <div class="check">
+                    <span class="box-title">✓ Comprueba</span>
+                    Los dos objetos pertenecen a la misma clase, pero contienen
+                    <strong>datos diferentes</strong>.
+                </div>
+            </div>
+        </section>
+
+        <section id="new">
+            <div class="card">
+                <span class="section-number">04</span>
+                <h2>Entendiendo <code>new</code></h2>
+
+                <p>
+                    La palabra <code>new</code> indica que queremos crear una nueva instancia.
+                </p>
+
+                <pre><code>Estudiante estudiante1 = new Estudiante();
+Estudiante estudiante2 = new Estudiante();</code></pre>
+
+                <div class="diagram">
+                    <div class="diagram-box">Estudiante</div>
+                    <span class="arrow">new ↓</span>
+                    <div class="two-col">
+                        <div>
+                            <div class="diagram-box">estudiante1</div>
+                            <p>Ana · 19 · 16</p>
+                        </div>
+                        <div>
+                            <div class="diagram-box">estudiante2</div>
+                            <p>Luis · 20 · 12</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="remember">
+                    <span class="box-title">🧠 Frase para recordar</span>
+                    <code>Clase</code> = molde.
+                    <code>new</code> = crear.
+                    <code>Objeto</code> = instancia creada.
+                </div>
+            </div>
+        </section>
+
+        <section id="metodos">
+            <div class="card">
+                <span class="section-number">05</span>
+                <h2>Un comportamiento: los métodos</h2>
+
+                <p>
+                    Una clase también puede tener acciones. En programación orientada a
+                    objetos, esas acciones se representan mediante <strong>métodos</strong>.
+                </p>
+
+                <p>
+                    Por ejemplo, podemos pedirle al estudiante que muestre sus datos.
+                </p>
+
+                <div class="code-title">Clase Estudiante</div>
+                <pre><code>public class Estudiante
+{
+    public string Nombre;
+    public int Edad;
+    public double Nota;
+
+    public void MostrarDatos()
+    {
+        Console.WriteLine("Nombre: " + Nombre);
+        Console.WriteLine("Edad: " + Edad);
+        Console.WriteLine("Nota: " + Nota);
+    }
+}</code></pre>
+
+                <h3>Utilizar el método</h3>
+
+                <pre><code>Estudiante estudiante1 = new Estudiante();
+
+estudiante1.Nombre = "Ana";
+estudiante1.Edad = 19;
+estudiante1.Nota = 16;
+
+estudiante1.MostrarDatos();</code></pre>
+
+                <div class="tip">
+                    <span class="box-title">💡 Observa la diferencia</span>
+                    <strong>Atributos</strong> representan información.
+                    <strong>Métodos</strong> representan acciones o comportamientos.
+                </div>
+
+                <div class="warning">
+                    <span class="box-title">⚠️ No te adelantes</span>
+                    En esta primera aproximación no necesitamos todavía profundizar en
+                    encapsulamiento, propiedades, herencia o polimorfismo.
+                    Primero hay que dominar la relación clase → objeto.
+                </div>
+            </div>
+        </section>
+
+        <section id="list">
+            <div class="card">
+                <span class="section-number">06</span>
+                <h2>Una lista de objetos</h2>
+
+                <p>
+                    Ya conoces <code>List</code>. Ahora vamos a combinarlo con clases.
+                </p>
+
+                <p>
+                    Antes teníamos, por ejemplo:
+                </p>
+
+                <pre><code>List&lt;string&gt; nombres = new List&lt;string&gt;();</code></pre>
+
+                <p>
+                    Ahora podemos crear una lista cuyos elementos sean objetos
+                    <code>Estudiante</code>:
+                </p>
+
+                <pre><code>List&lt;Estudiante&gt; estudiantes =
+    new List&lt;Estudiante&gt;();</code></pre>
+
+                <div class="diagram">
+                    <div class="diagram-box">List&lt;Estudiante&gt;</div>
+                    <span class="arrow">↓</span>
+                    <div>estudiante1</div>
+                    <div>estudiante2</div>
+                    <div>estudiante3</div>
+                </div>
+
+                <h3>Agregar objetos a la lista</h3>
+
+                <pre><code>estudiantes.Add(estudiante1);
+estudiantes.Add(estudiante2);</code></pre>
+
+                <div class="check">
+                    <span class="box-title">✓ Punto importante</span>
+                    La lista no contiene solamente nombres o números.
+                    Ahora contiene <strong>objetos completos</strong>.
+                </div>
+
+                <h3>Programa completo hasta este punto</h3>
+
+                <pre><code>List&lt;Estudiante&gt; estudiantes =
+    new List&lt;Estudiante&gt;();
+
+Estudiante estudiante1 = new Estudiante();
+
+estudiante1.Nombre = "Ana";
+estudiante1.Edad = 19;
+estudiante1.Nota = 16;
+
+Estudiante estudiante2 = new Estudiante();
+
+estudiante2.Nombre = "Luis";
+estudiante2.Edad = 20;
+estudiante2.Nota = 12;
+
+estudiantes.Add(estudiante1);
+estudiantes.Add(estudiante2);</code></pre>
+            </div>
+        </section>
+
+        <section id="foreach">
+            <div class="card">
+                <span class="section-number">07</span>
+                <h2>Recorrer objetos con <code>foreach</code></h2>
+
+                <p>
+                    Ahora viene una de las partes más importantes: recorrer todos los
+                    objetos almacenados en la lista.
+                </p>
+
+                <pre><code>foreach (Estudiante estudiante in estudiantes)
+{
+    Console.WriteLine(estudiante.Nombre);
+}</code></pre>
+
+                <h3>¿Qué significa cada parte?</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>foreach</strong>: indica que vamos a recorrer una colección.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Estudiante</strong>: indica el tipo de elemento que vamos a recibir.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>estudiante</strong>: es la variable que representa al elemento
+                    actual durante cada vuelta.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>in estudiantes</strong>: indica que recorreremos la lista
+                    llamada <code>estudiantes</code>.
+                </div>
+
+                <h3>Podemos acceder a todos sus atributos</h3>
+
+                <pre><code>foreach (Estudiante estudiante in estudiantes)
+{
+    Console.WriteLine("Nombre: " + estudiante.Nombre);
+    Console.WriteLine("Edad: " + estudiante.Edad);
+    Console.WriteLine("Nota: " + estudiante.Nota);
+
+    Console.WriteLine("----------------");
+}</code></pre>
+
+                <div class="diagram">
+                    <div class="diagram-box">estudiantes</div>
+                    <span class="arrow">↓ foreach</span>
+                    <p>1ª vuelta → estudiante1</p>
+                    <p>2ª vuelta → estudiante2</p>
+                    <p>3ª vuelta → estudiante3</p>
+                </div>
+
+                <div class="remember">
+                    <span class="box-title">🧠 Una forma sencilla de leerlo</span>
+                    “Por cada <strong>estudiante</strong> que exista dentro de
+                    <strong>estudiantes</strong>, haz lo que está entre las llaves”.
+                </div>
+            </div>
+        </section>
+
+        <section id="recorrido">
+            <div class="card">
+                <span class="section-number">08</span>
+                <h2>Corrida en frío: clase + objeto + List + foreach</h2>
+
+                <p>
+                    Antes de ejecutar, intenta descubrir qué imprimirá el programa.
+                </p>
+
+                <pre><code>List&lt;Estudiante&gt; estudiantes =
+    new List&lt;Estudiante&gt;();
+
+Estudiante estudiante1 = new Estudiante();
+estudiante1.Nombre = "Ana";
+estudiante1.Nota = 16;
+
+Estudiante estudiante2 = new Estudiante();
+estudiante2.Nombre = "Luis";
+estudiante2.Nota = 12;
+
+estudiantes.Add(estudiante1);
+estudiantes.Add(estudiante2);
+
+foreach (Estudiante estudiante in estudiantes)
+{
+    Console.WriteLine(estudiante.Nombre);
+    Console.WriteLine(estudiante.Nota);
+}</code></pre>
+
+                <h3>Tabla de seguimiento</h3>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vuelta</th>
+                                <th>Objeto actual</th>
+                                <th>Nombre</th>
+                                <th>Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>estudiante1</td>
+                                <td>Ana</td>
+                                <td>16</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>estudiante2</td>
+                                <td>Luis</td>
+                                <td>12</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mini-task">
+                    <strong>🎯 Ahora tú:</strong>
+                    sin ejecutar el programa, escribe en una hoja exactamente qué aparecerá
+                    en la consola y en qué orden.
+                </div>
+            </div>
+        </section>
+
+        <section id="indice">
+            <div class="card">
+                <span class="section-number">09</span>
+                <h2>Acceder a un objeto por posición</h2>
+
+                <p>
+                    Como ya sabemos que una lista tiene posiciones, también podemos obtener
+                    un objeto específico.
+                </p>
+
+                <pre><code>Estudiante estudiante = estudiantes[0];
+
+Console.WriteLine(estudiante.Nombre);</code></pre>
+
+                <p>
+                    Si la lista contiene:
+                </p>
+
+                <pre><code>0 → estudiante1
+1 → estudiante2</code></pre>
+
+                <p>
+                    entonces <code>estudiantes[0]</code> representa el primer objeto.
+                </p>
+
+                <div class="tip">
+                    <span class="box-title">💡 Conexión con lo aprendido</span>
+                    Esto es exactamente la misma idea de <code>List</code> que ya conoces.
+                    La diferencia es que ahora cada posición contiene un objeto en lugar de
+                    un dato simple.
+                </div>
+            </div>
+        </section>
+
+        <section id="ejercicio">
+            <div class="card">
+                <span class="section-number">10</span>
+                <h2>Ejercicio guiado</h2>
+
+                <p>
+                    Vamos a construir una pequeña lista de productos.
+                </p>
+
+                <h3>Paso 1 — Crear la clase</h3>
+
+                <pre><code>public class Producto
+{
+    public string Nombre;
+    public double Precio;
+}</code></pre>
+
+                <h3>Paso 2 — Crear dos objetos</h3>
+
+                <pre><code>Producto producto1 = new Producto();
+producto1.Nombre = "Teclado";
+producto1.Precio = 25;
+
+Producto producto2 = new Producto();
+producto2.Nombre = "Mouse";
+producto2.Precio = 15;</code></pre>
+
+                <h3>Paso 3 — Crear la lista</h3>
+
+                <pre><code>List&lt;Producto&gt; productos =
+    new List&lt;Producto&gt;();</code></pre>
+
+                <h3>Paso 4 — Agregar los objetos</h3>
+
+                <pre><code>productos.Add(producto1);
+productos.Add(producto2);</code></pre>
+
+                <h3>Paso 5 — Recorrer con foreach</h3>
+
+                <pre><code>foreach (Producto producto in productos)
+{
+    Console.WriteLine(producto.Nombre);
+    Console.WriteLine(producto.Precio);
+}</code></pre>
+
+                <div class="check">
+                    <span class="box-title">✓ Reto</span>
+                    Agrega un tercer producto y consigue que aparezca automáticamente
+                    al recorrer la lista. No cambies el <code>foreach</code>.
+                </div>
+
+                <div class="mini-task">
+                    <strong>🔥 Reto adicional:</strong>
+                    agrega un atributo <code>int Stock</code> a la clase y muestra también
+                    el stock de cada producto.
+                </div>
+            </div>
+        </section>
+
+        <section id="errores">
+            <div class="card">
+                <span class="section-number">11</span>
+                <h2>Errores frecuentes</h2>
+
+                <div class="warning">
+                    <span class="box-title">❌ Confundir clase y objeto</span>
+                    Clase: <code>Estudiante</code><br>
+                    Objeto: <code>estudiante1</code>
+                </div>
+
+                <div class="warning">
+                    <span class="box-title">❌ Olvidar <code>new</code></span>
+                    Para crear una instancia:
+                    <code>Estudiante estudiante1 = new Estudiante();</code>
+                </div>
+
+                <div class="warning">
+                    <span class="box-title">❌ Pensar que todos los objetos tienen los mismos datos</span>
+                    <code>estudiante1.Nombre</code> y <code>estudiante2.Nombre</code>
+                    pueden tener valores diferentes.
+                </div>
+
+                <div class="warning">
+                    <span class="box-title">❌ Confundir la lista con el objeto</span>
+                    <code>estudiantes</code> es la colección.
+                    <code>estudiante</code> dentro del <code>foreach</code> representa
+                    el objeto actual.
+                </div>
+            </div>
+        </section>
+
+        <section id="resumen">
+            <div class="card">
+                <span class="section-number">12</span>
+                <h2>Resumen visual</h2>
+
+                <div class="diagram">
+                    <div class="diagram-box">CLASE</div>
+                    <p><strong>Estudiante</strong></p>
+
+                    <span class="arrow">↓ new</span>
+
+                    <div class="two-col">
+                        <div>
+                            <div class="diagram-box">estudiante1</div>
+                            <p>Nombre: Ana<br>Edad: 19<br>Nota: 16</p>
+                        </div>
+
+                        <div>
+                            <div class="diagram-box">estudiante2</div>
+                            <p>Nombre: Luis<br>Edad: 20<br>Nota: 12</p>
+                        </div>
+                    </div>
+
+                    <span class="arrow">↓ Add()</span>
+
+                    <div class="diagram-box">List&lt;Estudiante&gt;</div>
+
+                    <span class="arrow">↓ foreach</span>
+
+                    <p>Recorremos cada objeto.</p>
+                </div>
+
+                <h3>Las 7 ideas que debes recordar</h3>
+
+                <ol>
+                    <li>Una <strong>clase</strong> es un molde.</li>
+                    <li>Un <strong>objeto</strong> es una instancia de una clase.</li>
+                    <li><code>new</code> crea una nueva instancia.</li>
+                    <li>Los objetos tienen sus propios datos.</li>
+                    <li>Una clase puede tener atributos y métodos.</li>
+                    <li><code>List&lt;Estudiante&gt;</code> puede almacenar objetos <code>Estudiante</code>.</li>
+                    <li><code>foreach</code> permite recorrer cada objeto de la lista.</li>
+                </ol>
+
+                <div class="remember">
+                    <span class="box-title">🧠 Fórmula mental</span>
+                    <strong>Clase → new → Objeto → List → foreach</strong>
+                </div>
+
+                <div class="check">
+                    <span class="box-title">✓ Antes de pasar al siguiente tema</span>
+                    Si puedes explicar esa fórmula con tus propias palabras y hacer una
+                    corrida en frío de un ejemplo como los anteriores, ya tienes la base
+                    necesaria para continuar posteriormente con temas más avanzados.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        Manual didáctico · C# 5 · Clases públicas, objetos, List y foreach
+    </footer>
+
+</body>
+
+</html>
