@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial C# 5: Clases y Métodos</title>
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131c31;
+            --bg-code: #070a12;
+            --bg-code-header: #111827;
+            --border-color: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #2563eb;
+            --accent-green: #10b981;
+            --accent-purple: #a855f7;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Fira Code', Consolas, Monaco, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            padding-bottom: 4rem;
+        }
+
+        header {
+            background-color: rgba(11, 15, 25, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text h1 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            background-color: #1e293b;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: #334155;
+        }
+
+        .nav-link.primary {
+            background-color: var(--accent-blue);
+        }
+
+        .nav-link.primary:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        main {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .hero h2 {
+                font-size: 2.25rem;
+            }
+        }
+
+        .hero p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (min-width: 640px) {
+            .card {
+                padding: 2rem;
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .card.blue::before {
+            background-color: var(--accent-blue);
+        }
+
+        .card.green::before {
+            background-color: var(--accent-green);
+        }
+
+        .card.purple::before {
+            background-color: var(--accent-purple);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .card-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .card.blue .step-number {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .card.green .step-number {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .card.purple .step-number {
+            background: rgba(168, 85, 247, 0.2);
+            color: #c084fc;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        @media (min-width: 640px) {
+            .card-title {
+                font-size: 1.15rem;
+            }
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            background-color: #1e293b;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-body p {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .card-body p {
+                font-size: 0.9rem;
+            }
+        }
+
+        .info-box {
+            background-color: rgba(30, 58, 138, 0.3);
+            border: 1px solid rgba(30, 58, 138, 0.5);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #93c5fd;
+            margin-top: 1rem;
+        }
+
+        .code-container {
+            margin-top: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-code);
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: var(--bg-code-header);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background-color: #ef4444;
+        }
+
+        .dot-yellow {
+            background-color: #f59e0b;
+        }
+
+        .dot-green {
+            background-color: #10b981;
+        }
+
+        .file-name {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        .copy-btn {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: var(--text-main);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: #334155;
+            border-color: #475569;
+        }
+
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        @media (min-width: 640px) {
+            pre {
+                font-size: 0.85rem;
+                padding: 1.25rem;
+            }
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .steps-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .step-box {
+            background-color: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .step-box-title {
+            color: #c084fc;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-box p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        code.inline {
+            font-family: var(--font-mono);
+            background-color: #1e293b;
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+            color: #60a5fa;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            padding-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo-area">
+                <div class="logo-icon">💻</div>
+                <div class="logo-text">
+                    <h1>C# 5 Tutoriales</h1>
+                    <p>Clases, Arreglos y Métodos</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="#paso1" class="nav-link">Repaso</a>
+                <a href="#paso2" class="nav-link primary">Métodos</a>
+                <a href="#github" class="nav-link">GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="badge">🎓 Programación Orientada a Objetos • Visual Studio 2012</div>
+            <h2>Evolucionando de Clases con Datos a <span style="color: var(--accent-blue);">Clases con Métodos</span>
+            </h2>
+            <p>Guía paso a paso para repasar la tarea de notas de estudiantes y dar el salto fundamental hacia la
+                encapsulación de comportamiento en C# 5.</p>
+        </section>
+
+        <section id="paso1" class="card blue">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="step-number">1</div>
+                    <div class="card-title">Repaso: Resolución de la Tarea Anterior</div>
+                </div>
+                <span class="card-tag">Propiedades Públicas</span>
+            </div>
+            <div class="card-body">
+                <p>En la sesión anterior construimos clases formadas únicamente por propiedades públicas (nombre,
+                    arreglo de notas y promedio). Toda la lógica matemática y los cálculos se realizaban directamente
+                    dentro del ciclo en el método <code class="inline">Main</code>.</p>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="window-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                        <span class="file-name">Program.cs (Versión Base)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode('code1', this)">📋 Copiar Código</button>
+                </div>
+                <pre id="code1"><code>using System;
+using System.Collections.Generic;
+
+namespace TareaEstudiantes
+{
+    public class Estudiante
+    {
+        public string Nombre;
+        public double[] Notas = new double[3];
+        public double Promedio;
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            List&lt;Estudiante&gt; listaEstudiantes = new List&lt;Estudiante&gt;();
+            string opcion = "s";
+
+            while (opcion.ToLower() == "s")
+            {
+                Estudiante est = new Estudiante();
+
+                Console.Write("\nIngrese el nombre del estudiante: ");
+                est.Nombre = Console.ReadLine();
+
+                double suma = 0;
+                for (int i = 0; i &lt; 3; i++)
+                {
+                    Console.Write("Ingrese la nota {0}: ", (i + 1));
+                    est.Notas[i] = Convert.ToDouble(Console.ReadLine());
+                    suma += est.Notas[i];
+                }
+
+                est.Promedio = suma / 3;
+                listaEstudiantes.Add(est);
+
+                Console.Write("\n¿Desea registrar otro estudiante? ('s' para seguir): ");
+                opcion = Console.ReadLine();
+            }
+
+            Console.WriteLine("\n--- LISTADO DE ESTUDIANTES ---");
+            foreach (var e in listaEstudiantes)
+            {
+                Console.WriteLine("Estudiante: {0} | Promedio: {1:F2}", e.Nombre, e.Promedio);
+            }
+
+            Console.WriteLine("\nPresione cualquier tecla para salir...");
+            Console.ReadKey();
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="paso2" class="card green">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="step-number">2</div>
+                    <div class="card-title">Avanzando: Añadiendo Métodos a la Clase</div>
+                </div>
+                <span class="card-tag">Comportamiento POO</span>
+            </div>
+            <div class="card-body">
+                <p>Para evolucionar en nuestra clase de hoy, daremos el paso clave de la Programación Orientada a
+                    Objetos: agregar <strong>métodos</strong> dentro de la clase <code class="inline">Estudiante</code>
+                    para que ella misma calcule su promedio e imprima sus datos.</p>
+                <p>Incorporamos dos subrutinas o métodos públicos:</p>
+                <ul
+                    style="list-style-type: disc; margin-left: 1.25rem; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.5rem;">
+                    <li><code class="inline">CalcularPromedio()</code>: Recorre el arreglo interno y calcula la nota
+                        final.</li>
+                    <li><code class="inline">MostrarDatos()</code>: Imprime la información formateada limpiamente.</li>
+                </ul>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="window-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                        <span class="file-name">EstudianteConMetodos.cs (Versión Avanzada)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode('code2', this)">📋 Copiar Código</button>
+                </div>
+                <pre id="code2"><code>using System;
+using System.Collections.Generic;
+
+namespace ClasesConMetodos
+{
+    public class Estudiante
+    {
+        public string Nombre;
+        public double[] Notas = new double[3];
+        public double Promedio;
+
+        public void CalcularPromedio()
+        {
+            double suma = 0;
+            for (int i = 0; i &lt; Notas.Length; i++)
+            {
+                suma += Notas[i];
+            }
+            Promedio = suma / Notas.Length;
+        }
+
+        public void MostrarDatos()
+        {
+            Console.WriteLine("Estudiante: {0} - Promedio Final: {1:F2}", Nombre, Promedio);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            List&lt;Estudiante&gt; listaEstudiantes = new List&lt;Estudiante&gt;();
+            string opcion = "s";
+
+            while (opcion.ToLower() == "s")
+            {
+                Estudiante est = new Estudiante();
+
+                Console.Write("\nIngrese el nombre del estudiante: ");
+                est.Nombre = Console.ReadLine();
+
+                for (int i = 0; i &lt; 3; i++)
+                {
+                    Console.Write("Ingrese la nota {0}: ", (i + 1));
+                    est.Notas[i] = Convert.ToDouble(Console.ReadLine());
+                }
+
+                est.CalcularPromedio();
+                listaEstudiantes.Add(est);
+
+                Console.Write("\n¿Desea registrar otro estudiante? ('s' para seguir): ");
+                opcion = Console.ReadLine();
+            }
+
+            Console.WriteLine("\n--- LISTADO OFICIAL DE ESTUDIANTES ---");
+            foreach (var e in listaEstudiantes)
+            {
+                e.MostrarDatos();
+            }
+
+            Console.WriteLine("\nPresione cualquier tecla para salir...");
+            Console.ReadKey();
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="github" class="card purple">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="step-number">3</div>
+                    <div class="card-title">Guía Paso a Paso para Publicar en GitHub Pages</div>
+                </div>
+                <span class="card-tag">Despliegue Web</span>
+            </div>
+            <div class="card-body">
+                <p>Sigue estos sencillos pasos para almacenar esta guía en tu repositorio y compartirla con tus
+                    estudiantes en línea:</p>
+
+                <div class="steps-grid">
+                    <div class="step-box">
+                        <div class="step-box-title">1. Crear Repositorio</div>
+                        <p>Entra a <a href="https://github.com" target="_blank"
+                                style="color: #60a5fa; text-decoration: underline;">GitHub</a>, crea un repositorio
+                            público nuevo con el nombre <code class="inline">clase-csharp-metodos</code>.</p>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-box-title">2. Subir Archivo HTML</div>
+                        <p>Haz clic en <em>Add file &gt; Upload files</em>, arrastra este archivo guardado estrictamente
+                            como <code class="inline">index.html</code> y pulsa <em>Commit changes</em>.</p>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-box-title">3. Activar Pages</div>
+                        <p>Ve a <strong>Settings &gt; Pages</strong>, en <em>Branch</em> selecciona la rama <code
+                                class="inline">main</code> / <code class="inline">/(root)</code> y guarda los cambios.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Tutorial de C# 5 • Preparado para clases presenciales y laboratorios de programación.</p>
+        <p style="margin-top: 0.25rem;">Diseñado con tema oscuro estilo IDE • HTML5 y CSS Nativo Responsivo</p>
+    </footer>
+
+    <div id="toast" class="toast">
+        <span>✅</span> <span id="toast-msg">¡Código copiado al portapapeles!</span>
+    </div>
+
+    <script>
+        // Función de copia nativa robusta compatible con iFrames y dispositivos móviles
+        function copyCode(elementId, btnElement) {
+            const codeText = document.getElementById(elementId).innerText;
+
+            const textArea = document.createElement("textarea");
+            textArea.value = codeText;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("¡Código copiado con éxito!");
+                    const originalHTML = btnElement.innerHTML;
+                    btnElement.innerHTML = '✅ ¡Copiado!';
+                    btnElement.style.borderColor = '#10b981';
+                    setTimeout(() => {
+                        btnElement.innerHTML = originalHTML;
+                        btnElement.style.borderColor = '#334155';
+                    }, 2000);
+                } else {
+                    showToast("No se pudo copiar el código.");
+                }
+            } catch (err) {
+                showToast("Error al intentar copiar.");
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+
+</body>
+
+</html>
