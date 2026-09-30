@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase: Estructura de una Clase y Métodos en POO</title>
+    <style>
+        /* CSS RESET & VARIABLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --code-bg: #0f172a;
+            --code-text: #f8fafc;
+            --border: #e2e8f0;
+            --accent: #10b981;
+            --accent-bg: #ecfdf5;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        /* HEADER */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.5rem;
+        }
+
+        .task-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .task-box ul {
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        /* GRID CONCEPTUAL PARA LAS PARTES DE UNA CLASE */
+        .parts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .part-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #fafafa;
+        }
+
+        .part-card.properties {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .part-card.methods {
+            border-left: 4px solid var(--accent);
+        }
+
+        .part-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .part-card.properties h3 {
+            color: #1d4ed8;
+        }
+
+        .part-card.methods h3 {
+            color: #047857;
+        }
+
+        .analogy-box {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* BLOQUES DE CÓDIGO */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            margin: 1rem 0;
+            line-height: 1.4;
+        }
+
+        code .keyword { color: #569cd6; }
+        code .type { color: #4ec9b0; }
+        code .method { color: #dcdcaa; }
+        code .comment { color: #6a9955; }
+        code .string { color: #ce9178; }
+
+        .note {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* MEDIA QUERIES (DESKTOP / TABLET) */
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 1.1rem;
+            }
+
+            .card {
+                padding: 1.75rem;
+            }
+
+            .parts-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            pre {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Programación Orientada a Objetos</h1>
+        <p>Estructura de una Clase: Propiedades, Métodos y Listas de Objetos</p>
+    </header>
+
+    <main>
+        <!-- SECCIÓN NUEVA: PARTES DE UNA CLASE -->
+        <section class="card">
+            <h2>1. ¿Cuáles son las partes de una Clase?</h2>
+            <p>Una <strong>clase</strong> es una plantilla o molde para crear objetos. Se compone principalmente de dos partes fundamentales:</p>
+
+            <div class="parts-grid">
+                <!-- PROPIEDADES -->
+                <div class="part-card properties">
+                    <h3>📦 Propiedades (o Atributos)</h3>
+                    <p><strong>¿Qué son?</strong> Son las características, variables o datos que definen el estado de un objeto.</p>
+                    <p><strong>¿Para qué funcionan?</strong> Sirven para almacenar la información de cada objeto generado por la clase.</p>
+                    <p><em>Ejemplo en Estudiante:</em> <code>Nombre</code>, <code>Notas</code>, <code>Promedio</code>.</p>
+                </div>
+
+                <!-- MÉTODOS -->
+                <div class="part-card methods">
+                    <h3>⚙️ Métodos (o Funciones)</h3>
+                    <p><strong>¿Qué son?</strong> Son bloques de código o funciones declaradas dentro de la clase que definen su comportamiento.</p>
+                    <p><strong>¿Para qué funcionan?</strong> Sirven para procesar, manipular o realizar cálculos sobre los datos guardados en las propiedades.</p>
+                    <p><em>Ejemplo en Estudiante:</em> <code>CalcularPromedio()</code>, <code>MostrarInformacion()</code>.</p>
+                </div>
+            </div>
+
+            <div class="analogy-box">
+                💡 <strong>Analogía:</strong> Piensa en un teléfono celular. Sus <strong>propiedades</strong> son su marca, modelo, color y porcentaje de batería. Sus <strong>métodos</strong> son las acciones que realiza: <code>Llamar()</code>, <code>TomarFoto()</code> o <code>CargarBateria()</code>.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: PLANTEAMIENTO DE LA TAREA -->
+        <section class="card">
+            <h2>2. Planteamiento del Ejercicio</h2>
+            <div class="task-box">
+                <p><strong>Requerimiento:</strong> Crear un programa que solicite la nota de <em>n</em> cantidad de estudiantes.</p>
+                <ul>
+                    <li>Usar una <strong>Lista</strong> del tipo <code>Estudiante</code>.</li>
+                    <li>Propiedades: <code>Nombre</code>, <code>Notas</code> (arreglo de 3 notas) y <code>Promedio</code>.</li>
+                    <li>El programa usará un bucle donde el usuario decidirá cuándo salir (pulsando <strong>'s'</strong> para continuar u otra tecla para salir).</li>
+                </ul>
+            </div>
+            <p>A diferencia de la clase anterior donde solo declaramos propiedades, hoy encapsularemos la lógica agregando los <strong>métodos</strong> necesarios.</p>
+        </section>
+
+        <!-- SECCIÓN 3: CÓDIGO DE LA CLASE CON MÉTODOS -->
+        <section class="card">
+            <h2>3. Código de la Clase <code>Estudiante</code></h2>
+            <p>Implementación de propiedades y métodos en C#:</p>
+
+<pre><code><span class="keyword">public class</span> <span class="type">Estudiante</span>
+{
+    <span class="comment">// 1. PROPIEDADES (Datos)</span>
+    <span class="keyword">public string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public double</span>[] Notas { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">new double</span>[3];
+    <span class="keyword">public double</span> Promedio { <span class="keyword">private set</span>; }
+
+    <span class="comment">// 2. MÉTODOS (Comportamiento)</span>
+
+    <span class="comment">// Método para calcular el promedio de las 3 notas</span>
+    <span class="keyword">public void</span> <span class="method">CalcularPromedio</span>()
+    {
+        <span class="keyword">double</span> suma = 0;
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; Notas.Length; i++)
+        {
+            suma += Notas[i];
+        }
+        <span class="keyword">this</span>.Promedio = suma / Notas.Length;
+    }
+
+    <span class="comment">// Método para mostrar los resultados en pantalla</span>
+    <span class="keyword">public void</span> <span class="method">MostrarInformacion</span>()
+    {
+        Console.WriteLine(<span class="string">$"Nombre: {Nombre}"</span>);
+        Console.WriteLine(<span class="string">$"Notas: [{Notas[0]}, {Notas[1]}, {Notas[2]}]"</span>);
+        Console.WriteLine(<span class="string">$"Promedio: {Promedio:F2}"</span>);
+        Console.WriteLine(<span class="string">"-----------------------------------"</span>);
+    }
+}</code></pre>
+        </section>
+
+        <!-- SECCIÓN 4: PROGRAMA PRINCIPAL -->
+        <section class="card">
+            <h2>4. Programa Principal (Manejo de la Lista)</h2>
+            <p>Creación de la lista dinámica para registrar <em>n</em> estudiantes:</p>
+
+<pre><code><span class="keyword">List</span>&lt;<span class="type">Estudiante</span>&gt; listaEstudiantes = <span class="keyword">new List</span>&lt;<span class="type">Estudiante</span>&gt;();
+<span class="keyword">string</span> opcion;
+
+<span class="keyword">do</span>
+{
+    <span class="type">Estudiante</span> est = <span class="keyword">new</span> <span class="type">Estudiante</span>();
+
+    Console.Write(<span class="string">"Ingrese el nombre del estudiante: "</span>);
+    est.Nombre = Console.ReadLine();
+
+    <span class="comment">// Lectura de las 3 notas</span>
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; 3; i++)
+    {
+        Console.Write(<span class="string">$"Ingrese la nota {i + 1}: "</span>);
+        est.Notas[i] = <span class="type">Convert</span>.ToDouble(Console.ReadLine());
+    }
+
+    <span class="comment">// Invocación del método para calcular el promedio</span>
+    est.<span class="method">CalcularPromedio</span>();
+
+    <span class="comment">// Se guarda el objeto completo en la lista</span>
+    listaEstudiantes.Add(est);
+
+    Console.Write(<span class="string">"¿Desea ingresar otro estudiante? (s = sí / otra tecla = salir): "</span>);
+    opcion = Console.ReadLine().ToLower();
+
+} <span class="keyword">while</span> (opcion == <span class="string">"s"</span>);
+
+<span class="comment">// RECORRIDO Y MOSTRADO DE RESULTADOS</span>
+Console.WriteLine(<span class="string">"\n=== LISTA DE ESTUDIANTES REGISTRADOS ==="</span>);
+<span class="keyword">foreach</span> (<span class="type">Estudiante</span> e <span class="keyword">in</span> listaEstudiantes)
+{
+    <span class="comment">// Invocación del método para mostrar la información</span>
+    e.<span class="method">MostrarInformacion</span>();
+}</code></pre>
+
+            <div class="note">
+                <strong>Punto clave a resaltar en clase:</strong> Observen cómo el bucle principal no realiza operaciones matemáticas directas ni múltiples concatenaciones; simplemente llama a <code>est.CalcularPromedio()</code> y a <code>e.MostrarInformacion()</code>. Esto es el principio de **encapsulamiento**.
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Material Docente | Algoritmos y Programación II</p>
+    </footer>
+
+</body>
+</html>
+
