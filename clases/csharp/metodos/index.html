@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clase: Estructura de una Clase y Métodos en POO</title>
+    <title>Clase: Estructura de una Clase, Namespaces y Métodos en C# 5</title>
     <style>
         /* CSS RESET & VARIABLES */
         * {
@@ -23,7 +23,7 @@
             --code-text: #f8fafc;
             --border: #e2e8f0;
             --accent: #10b981;
-            --accent-bg: #ecfdf5;
+            --purple: #8b5cf6;
         }
 
         body {
@@ -92,7 +92,7 @@
             margin-top: 0.5rem;
         }
 
-        /* GRID CONCEPTUAL PARA LAS PARTES DE UNA CLASE */
+        /* CONCEPTUAL CARDS */
         .parts-grid {
             display: flex;
             flex-direction: column;
@@ -105,6 +105,10 @@
             border-radius: 8px;
             padding: 1rem;
             background-color: #fafafa;
+        }
+
+        .part-card.namespace-card {
+            border-left: 4px solid var(--purple);
         }
 
         .part-card.properties {
@@ -123,13 +127,9 @@
             gap: 0.5rem;
         }
 
-        .part-card.properties h3 {
-            color: #1d4ed8;
-        }
-
-        .part-card.methods h3 {
-            color: #047857;
-        }
+        .part-card.namespace-card h3 { color: #6d28d9; }
+        .part-card.properties h3 { color: #1d4ed8; }
+        .part-card.methods h3 { color: #047857; }
 
         .analogy-box {
             background-color: #f1f5f9;
@@ -139,7 +139,7 @@
             font-size: 0.95rem;
         }
 
-        /* BLOQUES DE CÓDIGO */
+        /* CODE BLOCKS */
         pre {
             background-color: var(--code-bg);
             color: var(--code-text);
@@ -175,170 +175,189 @@
             font-size: 0.85rem;
         }
 
-        /* MEDIA QUERIES (DESKTOP / TABLET) */
+        /* DESKTOP RESPONSIVE */
         @media (min-width: 768px) {
-            body {
-                padding: 2rem;
-            }
-
-            header h1 {
-                font-size: 2rem;
-            }
-
-            header p {
-                font-size: 1.1rem;
-            }
-
-            .card {
-                padding: 1.75rem;
-            }
-
+            body { padding: 2rem; }
+            header h1 { font-size: 2rem; }
+            header p { font-size: 1.1rem; }
+            .card { padding: 1.75rem; }
             .parts-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
             }
-
-            pre {
-                font-size: 0.95rem;
+            .parts-grid .full-width {
+                grid-column: span 2;
             }
+            pre { font-size: 0.95rem; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Programación Orientada a Objetos</h1>
-        <p>Estructura de una Clase: Propiedades, Métodos y Listas de Objetos</p>
+        <h1>Programación Orientada a Objetos (C# 5.0)</h1>
+        <p>Conceptos Básicos: Namespaces, Propiedades, Métodos y Listas</p>
     </header>
 
     <main>
-        <!-- SECCIÓN NUEVA: PARTES DE UNA CLASE -->
+        <!-- SECCIÓN 1: CONCEPTOS TEÓRICOS -->
         <section class="card">
-            <h2>1. ¿Cuáles son las partes de una Clase?</h2>
-            <p>Una <strong>clase</strong> es una plantilla o molde para crear objetos. Se compone principalmente de dos partes fundamentales:</p>
+            <h2>1. Conceptos Fundamentales en C#</h2>
+            <p>Antes de crear clases u objetos, debemos entender cómo se organizan y estructuran en C#:</p>
 
             <div class="parts-grid">
+                <!-- NAMESPACE -->
+                <div class="part-card namespace-card full-width">
+                    <h3>📁 Espacio de Nombres (Namespace)</h3>
+                    <p><strong>¿Qué es?</strong> Es un contenedor lógico utilizado para organizar y agrupar clases relacionadas dentro de un proyecto.</p>
+                    <p><strong>¿Para qué sirve?</strong> Evita colisiones de nombres (conflictos cuando dos clases se llaman igual en distintos módulos) y permite organizar el código de manera modular e higiénica.</p>
+                    <p><em>Analogía:</em> Funciona exactamente igual que las <strong>carpetas de tu computadora</strong>. Puedes tener dos archivos con el mismo nombre siempre y cuando estén en distintas carpetas (namespaces).</p>
+                </div>
+
                 <!-- PROPIEDADES -->
                 <div class="part-card properties">
-                    <h3>📦 Propiedades (o Atributos)</h3>
-                    <p><strong>¿Qué son?</strong> Son las características, variables o datos que definen el estado de un objeto.</p>
-                    <p><strong>¿Para qué funcionan?</strong> Sirven para almacenar la información de cada objeto generado por la clase.</p>
-                    <p><em>Ejemplo en Estudiante:</em> <code>Nombre</code>, <code>Notas</code>, <code>Promedio</code>.</p>
+                    <h3>📦 Propiedades (Atributos)</h3>
+                    <p><strong>¿Qué son?</strong> Variables o miembros que almacenan la información y el estado de un objeto.</p>
+                    <p><strong>¿Para qué sirven?</strong> Para definir las características del objeto (ej. Nombre, Notas, Promedio).</p>
                 </div>
 
                 <!-- MÉTODOS -->
                 <div class="part-card methods">
-                    <h3>⚙️ Métodos (o Funciones)</h3>
-                    <p><strong>¿Qué son?</strong> Son bloques de código o funciones declaradas dentro de la clase que definen su comportamiento.</p>
-                    <p><strong>¿Para qué funcionan?</strong> Sirven para procesar, manipular o realizar cálculos sobre los datos guardados en las propiedades.</p>
-                    <p><em>Ejemplo en Estudiante:</em> <code>CalcularPromedio()</code>, <code>MostrarInformacion()</code>.</p>
+                    <h3>⚙️ Métodos (Comportamientos)</h3>
+                    <p><strong>¿Qué son?</strong> Funciones o acciones encapsuladas dentro de la clase.</p>
+                    <p><strong>¿Para qué sirven?</strong> Para procesar o manipular las propiedades (ej. <code>CalcularPromedio()</code>, <code>MostrarInformacion()</code>).</p>
                 </div>
             </div>
 
             <div class="analogy-box">
-                💡 <strong>Analogía:</strong> Piensa en un teléfono celular. Sus <strong>propiedades</strong> son su marca, modelo, color y porcentaje de batería. Sus <strong>métodos</strong> son las acciones que realiza: <code>Llamar()</code>, <code>TomarFoto()</code> o <code>CargarBateria()</code>.
+                💡 <strong>Ejemplo Integrador:</strong> En <code>SistemaEducativo.Modelos</code> (Namespace), la clase <code>Estudiante</code> tiene el atributo <code>Nombre</code> (Propiedad) y la acción <code>CalcularPromedio()</code> (Método).
             </div>
         </section>
 
-        <!-- SECCIÓN 2: PLANTEAMIENTO DE LA TAREA -->
+        <!-- SECCIÓN 2: TAREA -->
         <section class="card">
             <h2>2. Planteamiento del Ejercicio</h2>
             <div class="task-box">
                 <p><strong>Requerimiento:</strong> Crear un programa que solicite la nota de <em>n</em> cantidad de estudiantes.</p>
                 <ul>
-                    <li>Usar una <strong>Lista</strong> del tipo <code>Estudiante</code>.</li>
-                    <li>Propiedades: <code>Nombre</code>, <code>Notas</code> (arreglo de 3 notas) y <code>Promedio</code>.</li>
-                    <li>El programa usará un bucle donde el usuario decidirá cuándo salir (pulsando <strong>'s'</strong> para continuar u otra tecla para salir).</li>
+                    <li>Usar un <code>namespace</code> apropiado para el proyecto.</li>
+                    <li>Utilizar una <code>List&lt;Estudiante&gt;</code> para almacenar los registros.</li>
+                    <li>Cada estudiante debe incluir: <code>Nombre</code>, <code>Notas</code> (arreglo de 3 notas) y <code>Promedio</code>.</li>
+                    <li>Controlar el bucle solicitando al usuario si desea continuar (pulsando 's' para continuar u otra tecla para salir).</li>
                 </ul>
             </div>
-            <p>A diferencia de la clase anterior donde solo declaramos propiedades, hoy encapsularemos la lógica agregando los <strong>métodos</strong> necesarios.</p>
         </section>
 
-        <!-- SECCIÓN 3: CÓDIGO DE LA CLASE CON MÉTODOS -->
+        <!-- SECCIÓN 3: CÓDIGO DE LA CLASE EN C# 5 -->
         <section class="card">
-            <h2>3. Código de la Clase <code>Estudiante</code></h2>
-            <p>Implementación de propiedades y métodos en C#:</p>
+            <h2>3. Definición de la Clase en C# 5.0</h2>
+            <p>Estructura utilizando sintaxis compatible con C# 5.0 (.NET Framework 4.5):</p>
 
-<pre><code><span class="keyword">public class</span> <span class="type">Estudiante</span>
+<pre><code><span class="keyword">using</span> System;
+
+<span class="keyword">namespace</span> SistemaEducativo.Modelos
 {
-    <span class="comment">// 1. PROPIEDADES (Datos)</span>
-    <span class="keyword">public string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
-    <span class="keyword">public double</span>[] Notas { <span class="keyword">get</span>; <span class="keyword">set</span>; } = <span class="keyword">new double</span>[3];
-    <span class="keyword">public double</span> Promedio { <span class="keyword">private set</span>; }
-
-    <span class="comment">// 2. MÉTODOS (Comportamiento)</span>
-
-    <span class="comment">// Método para calcular el promedio de las 3 notas</span>
-    <span class="keyword">public void</span> <span class="method">CalcularPromedio</span>()
+    <span class="keyword">public class</span> <span class="type">Estudiante</span>
     {
-        <span class="keyword">double</span> suma = 0;
-        <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; Notas.Length; i++)
+        <span class="comment">// 1. PROPIEDADES (Sintaxis C# 5)</span>
+        <span class="keyword">public string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+        <span class="keyword">public double</span>[] Notas { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+        <span class="keyword">public double</span> Promedio { <span class="keyword">get</span>; <span class="keyword">private set</span>; }
+
+        <span class="comment">// CONSTRUCTOR (Inicialización de arreglos en C# 5)</span>
+        <span class="keyword">public</span> <span class="type">Estudiante</span>()
         {
-            suma += Notas[i];
+            Notas = <span class="keyword">new double</span>[3];
         }
-        <span class="keyword">this</span>.Promedio = suma / Notas.Length;
-    }
 
-    <span class="comment">// Método para mostrar los resultados en pantalla</span>
-    <span class="keyword">public void</span> <span class="method">MostrarInformacion</span>()
-    {
-        Console.WriteLine(<span class="string">$"Nombre: {Nombre}"</span>);
-        Console.WriteLine(<span class="string">$"Notas: [{Notas[0]}, {Notas[1]}, {Notas[2]}]"</span>);
-        Console.WriteLine(<span class="string">$"Promedio: {Promedio:F2}"</span>);
-        Console.WriteLine(<span class="string">"-----------------------------------"</span>);
+        <span class="comment">// 2. MÉTODOS</span>
+
+        <span class="comment">// Método para calcular el promedio de las 3 notas</span>
+        <span class="keyword">public void</span> <span class="method">CalcularPromedio</span>()
+        {
+            <span class="keyword">double</span> suma = 0;
+            <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; Notas.Length; i++)
+            {
+                suma += Notas[i];
+            }
+            <span class="keyword">this</span>.Promedio = suma / Notas.Length;
+        }
+
+        <span class="comment">// Método para mostrar los datos en pantalla (Formateo C# 5)</span>
+        <span class="keyword">public void</span> <span class="method">MostrarInformacion</span>()
+        {
+            Console.WriteLine(<span class="string">"Nombre: {0}"</span>, <span class="keyword">this</span>.Nombre);
+            Console.WriteLine(<span class="string">"Notas: [{0}, {1}, {2}]"</span>, <span class="keyword">this</span>.Notas[0], <span class="keyword">this</span>.Notas[1], <span class="keyword">this</span>.Notas[2]);
+            Console.WriteLine(<span class="string">"Promedio: {0:F2}"</span>, <span class="keyword">this</span>.Promedio);
+            Console.WriteLine(<span class="string">"-----------------------------------"</span>);
+        }
     }
 }</code></pre>
         </section>
 
-        <!-- SECCIÓN 4: PROGRAMA PRINCIPAL -->
+        <!-- SECCIÓN 4: PROGRAMA PRINCIPAL EN C# 5 -->
         <section class="card">
-            <h2>4. Programa Principal (Manejo de la Lista)</h2>
-            <p>Creación de la lista dinámica para registrar <em>n</em> estudiantes:</p>
+            <h2>4. Programa Principal (Program.cs)</h2>
+            <p>Uso de <code>List&lt;Estudiante&gt;</code> e invocación de métodos:</p>
 
-<pre><code><span class="keyword">List</span>&lt;<span class="type">Estudiante</span>&gt; listaEstudiantes = <span class="keyword">new List</span>&lt;<span class="type">Estudiante</span>&gt;();
-<span class="keyword">string</span> opcion;
+<pre><code><span class="keyword">using</span> System;
+<span class="keyword">using</span> System.Collections.Generic;
+<span class="keyword">using</span> SistemaEducativo.Modelos; <span class="comment">// Importación del Namespace</span>
 
-<span class="keyword">do</span>
+<span class="keyword">namespace</span> SistemaEducativo
 {
-    <span class="type">Estudiante</span> est = <span class="keyword">new</span> <span class="type">Estudiante</span>();
-
-    Console.Write(<span class="string">"Ingrese el nombre del estudiante: "</span>);
-    est.Nombre = Console.ReadLine();
-
-    <span class="comment">// Lectura de las 3 notas</span>
-    <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; 3; i++)
+    <span class="keyword">class</span> <span class="type">Program</span>
     {
-        Console.Write(<span class="string">$"Ingrese la nota {i + 1}: "</span>);
-        est.Notas[i] = <span class="type">Convert</span>.ToDouble(Console.ReadLine());
+        <span class="keyword">static void</span> Main(<span class="keyword">string</span>[] args)
+        {
+            List&lt;<span class="type">Estudiante</span>&gt; listaEstudiantes = <span class="keyword">new</span> List&lt;<span class="type">Estudiante</span>&gt;();
+            <span class="keyword">string</span> opcion;
+
+            <span class="keyword">do</span>
+            {
+                <span class="type">Estudiante</span> est = <span class="keyword">new</span> <span class="type">Estudiante</span>();
+
+                Console.Write(<span class="string">"Ingrese el nombre del estudiante: "</span>);
+                est.Nombre = Console.ReadLine();
+
+                <span class="comment">// Lectura de las 3 notas</span>
+                <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; 3; i++)
+                {
+                    Console.Write(<span class="string">"Ingrese la nota {0}: "</span>, i + 1);
+                    est.Notas[i] = Convert.ToDouble(Console.ReadLine());
+                }
+
+                <span class="comment">// Invocación del método encapsulado</span>
+                est.<span class="method">CalcularPromedio</span>();
+
+                <span class="comment">// Guardar objeto en la lista</span>
+                listaEstudiantes.Add(est);
+
+                Console.Write(<span class="string">"¿Desea ingresar otro estudiante? (s = sí / otra tecla = salir): "</span>);
+                opcion = Console.ReadLine().ToLower();
+
+            } <span class="keyword">while</span> (opcion == <span class="string">"s"</span>);
+
+            <span class="comment">// RECORRIDO Y MOSTRADO DE RESULTADOS</span>
+            Console.WriteLine(<span class="string">"\n=== LISTA DE ESTUDIANTES REGISTRADOS ==="</span>);
+            <span class="keyword">foreach</span> (<span class="type">Estudiante</span> e <span class="keyword">in</span> listaEstudiantes)
+            {
+                e.<span class="method">MostrarInformacion</span>();
+            }
+
+            Console.ReadKey();
+        }
     }
-
-    <span class="comment">// Invocación del método para calcular el promedio</span>
-    est.<span class="method">CalcularPromedio</span>();
-
-    <span class="comment">// Se guarda el objeto completo en la lista</span>
-    listaEstudiantes.Add(est);
-
-    Console.Write(<span class="string">"¿Desea ingresar otro estudiante? (s = sí / otra tecla = salir): "</span>);
-    opcion = Console.ReadLine().ToLower();
-
-} <span class="keyword">while</span> (opcion == <span class="string">"s"</span>);
-
-<span class="comment">// RECORRIDO Y MOSTRADO DE RESULTADOS</span>
-Console.WriteLine(<span class="string">"\n=== LISTA DE ESTUDIANTES REGISTRADOS ==="</span>);
-<span class="keyword">foreach</span> (<span class="type">Estudiante</span> e <span class="keyword">in</span> listaEstudiantes)
-{
-    <span class="comment">// Invocación del método para mostrar la información</span>
-    e.<span class="method">MostrarInformacion</span>();
 }</code></pre>
 
             <div class="note">
-                <strong>Punto clave a resaltar en clase:</strong> Observen cómo el bucle principal no realiza operaciones matemáticas directas ni múltiples concatenaciones; simplemente llama a <code>est.CalcularPromedio()</code> y a <code>e.MostrarInformacion()</code>. Esto es el principio de **encapsulamiento**.
+                <strong>Nota pedagógica para C# 5:</strong> Recordar a los estudiantes que en C# 5 las propiedades auto-implementadas no admiten inicialización directa en línea (como <code>= new double[3];</code>) ni interpolación de cadenas con <code>$</code>. Por ello se utiliza el constructor para instanciar el arreglo y <code>Console.WriteLine("{0}", val)</code> para las salidas.
             </div>
         </section>
     </main>
 
     <footer>
-        <p>Material Docente | Algoritmos y Programación II</p>
+        <p>Material Docente | Programación Orientada a Objetos</p>
     </footer>
 
 </body>
