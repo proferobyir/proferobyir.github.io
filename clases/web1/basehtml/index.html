@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Curso práctico de HTML desde cero impartido por el Ing. Robyir Loreto.">
+    <title>HTML Desde Cero | Ing. Robyir Loreto</title>
+
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fbff;
+            --text: #14213d;
+            --text-soft: #52617a;
+            --primary: #315efb;
+            --primary-dark: #1e46d9;
+            --primary-soft: #eaf0ff;
+            --secondary: #0d9488;
+            --accent: #f59e0b;
+            --border: #dce4f0;
+            --success: #15803d;
+            --shadow: 0 12px 32px rgba(20, 33, 61, 0.08);
+            --radius: 18px;
+            --radius-small: 12px;
+            --max-width: 1180px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        code,
+        pre {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        }
+
+        /* Utilidades */
+        .container {
+            width: min(100% - 2rem, var(--max-width));
+            margin-inline: auto;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .section-heading {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-heading h2 {
+            margin: 0.45rem 0 0.65rem;
+            font-size: clamp(1.65rem, 5vw, 2.5rem);
+            line-height: 1.15;
+        }
+
+        .section-heading p {
+            max-width: 720px;
+            margin: 0;
+            color: var(--text-soft);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-size: 0.82rem;
+            font-weight: 750;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-height: 48px;
+            padding: 0.75rem 1rem;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 8px 18px rgba(49, 94, 251, 0.25);
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .button-secondary {
+            background: #ffffff;
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .button-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Encabezado */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid rgba(220, 228, 240, 0.9);
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(14px);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            min-height: 72px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: #ffffff;
+            font-size: 1.05rem;
+            box-shadow: 0 8px 18px rgba(49, 94, 251, 0.25);
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .desktop-nav {
+            display: none;
+        }
+
+        .header-cta {
+            display: none;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 3.25rem 0 2.5rem;
+            background:
+                radial-gradient(circle at top right, rgba(49, 94, 251, 0.12), transparent 30%),
+                linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+        }
+
+        .hero-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .hero h1 {
+            max-width: 720px;
+            margin: 0.7rem 0 1rem;
+            font-size: clamp(2.2rem, 9vw, 4.7rem);
+            line-height: 1.04;
+            letter-spacing: -0.055em;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero-description {
+            max-width: 650px;
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 1.04rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .teacher {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .teacher-avatar {
+            display: grid;
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+            place-items: center;
+            border-radius: 50%;
+            background: #dff7f3;
+            color: var(--secondary);
+            font-weight: 900;
+        }
+
+        .teacher strong,
+        .teacher small {
+            display: block;
+        }
+
+        .teacher small {
+            color: var(--text-soft);
+        }
+
+        .hero-card {
+            align-self: start;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-card-title {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .lesson-number {
+            padding: 0.4rem 0.65rem;
+            border-radius: 8px;
+            background: #effdf4;
+            color: var(--success);
+            font-size: 0.8rem;
+            font-weight: 850;
+        }
+
+        .mini-progress {
+            height: 9px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #e8eef8;
+        }
+
+        .mini-progress span {
+            display: block;
+            width: 25%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--primary), #7c3aed);
+        }
+
+        .next-lesson {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding-top: 1rem;
+        }
+
+        .next-icon {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .next-lesson p,
+        .next-lesson small {
+            margin: 0;
+        }
+
+        .next-lesson small {
+            color: var(--text-soft);
+        }
+
+        /* Barra de enfoque */
+        .focus-strip {
+            padding: 1rem 0;
+            border-block: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .focus-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .focus-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem;
+        }
+
+        .focus-icon {
+            display: grid;
+            flex: 0 0 38px;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .focus-item strong,
+        .focus-item span {
+            display: block;
+        }
+
+        .focus-item span {
+            color: var(--text-soft);
+            font-size: 0.9rem;
+        }
+
+        /* Navegación de módulos */
+        .course-nav {
+            padding: 2.5rem 0 1rem;
+        }
+
+        .module-links {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .module-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--text-soft);
+            font-size: 0.94rem;
+            font-weight: 750;
+        }
+
+        .module-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .module-link-number {
+            display: grid;
+            width: 30px;
+            height: 30px;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 0.78rem;
+            font-weight: 900;
+        }
+
+        /* Secciones principales */
+        main section[id] {
+            scroll-margin-top: 90px;
+        }
+
+        .module {
+            padding: 3.5rem 0;
+        }
+
+        .module:nth-of-type(even) {
+            background: var(--surface);
+        }
+
+        .lesson-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .lesson-card {
+            display: flex;
+            flex-direction: column;
+            padding: 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: 0 8px 18px rgba(20, 33, 61, 0.04);
+        }
+
+        .lesson-card h3 {
+            margin: 0.85rem 0 0.45rem;
+            font-size: 1.15rem;
+        }
+
+        .lesson-card p {
+            margin: 0;
+            color: var(--text-soft);
+        }
+
+        .lesson-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-soft);
+            font-size: 0.88rem;
+        }
+
+        .lesson-status {
+            color: var(--success);
+            font-weight: 800;
+        }
+
+        /* Bloques de aprendizaje */
+        .content-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .info-panel,
+        .code-panel,
+        .checklist,
+        .practice-card {
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+
+        .info-panel h3,
+        .code-panel h3,
+        .checklist h3,
+        .practice-card h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+
+        .info-panel p,
+        .practice-card p {
+            color: var(--text-soft);
+        }
+
+        .info-panel ul,
+        .checklist ul {
+            display: grid;
+            gap: 0.7rem;
+            margin: 1rem 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .info-panel li,
+        .checklist li {
+            display: flex;
+            gap: 0.65rem;
+            color: var(--text-soft);
+        }
+
+        .info-panel li::before {
+            content: "→";
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            display: grid;
+            flex: 0 0 22px;
+            width: 22px;
+            height: 22px;
+            place-items: center;
+            border-radius: 50%;
+            background: #eaf9ee;
+            color: var(--success);
+            font-size: 0.76rem;
+            font-weight: 900;
+        }
+
+        .code-panel {
+            overflow: hidden;
+            background: #172033;
+            color: #e9f0ff;
+        }
+
+        .code-panel h3 {
+            color: #ffffff;
+        }
+
+        .code-panel p {
+            color: #b6c4dc;
+        }
+
+        pre {
+            overflow-x: auto;
+            margin: 1rem 0 0;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: #0e1524;
+            font-size: 0.82rem;
+            line-height: 1.7;
+        }
+
+        .code-blue {
+            color: #8ab4ff;
+        }
+
+        .code-green {
+            color: #83e6a7;
+        }
+
+        .code-yellow {
+            color: #ffd580;
+        }
+
+        /* Formularios */
+        .demo-form {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            gap: 0.45rem;
+        }
+
+        label {
+            color: var(--text);
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.85rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: #ffffff;
+            color: var(--text);
+            font: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(49, 94, 251, 0.14);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-note {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 0.85rem;
+        }
+
+        /* Tablas */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+
+        table {
+            width: 100%;
+            min-width: 580px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        td {
+            color: var(--text-soft);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Proyecto final */
+        .project {
+            padding: 3.5rem 0;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.13), transparent 35%),
+                #172033;
+            color: #ffffff;
+        }
+
+        .project .section-heading p {
+            color: #c8d4e8;
+        }
+
+        .project-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .project-card {
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .project-card h3 {
+            margin-top: 0.8rem;
+        }
+
+        .project-card p {
+            margin-bottom: 0;
+            color: #d9e4f5;
+        }
+
+        .project-number {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .project-action {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .project-action .button-secondary {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: transparent;
+            color: #ffffff;
+        }
+
+        .project-action .button-secondary:hover {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        /* Pie */
+        footer {
+            padding: 2rem 0;
+            background: #0e1524;
+            color: #d1dbeb;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-content p {
+            margin: 0;
+            color: #aab9d0;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+
+        /* Tablet */
+        @media (min-width: 640px) {
+            .hero {
+                padding: 4.5rem 0 3rem;
+            }
+
+            .hero-actions,
+            .project-action {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .hero-actions .button {
+                width: auto;
+            }
+
+            .focus-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .module-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .lesson-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .project-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .footer-content {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Escritorio */
+        @media (min-width: 960px) {
+            .desktop-nav {
+                display: flex;
+                align-items: center;
+                gap: 1.25rem;
+                color: var(--text-soft);
+                font-size: 0.9rem;
+                font-weight: 750;
+            }
+
+            .desktop-nav a:hover {
+                color: var(--primary);
+            }
+
+            .header-cta {
+                display: inline-flex;
+                min-height: 40px;
+                padding: 0.55rem 0.85rem;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1.25fr 0.75fr;
+                align-items: center;
+                gap: 4rem;
+            }
+
+            .hero-card {
+                padding: 1.5rem;
+            }
+
+            .module-links {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .lesson-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .module {
+                padding: 5rem 0;
+            }
+
+            .content-grid {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="#inicio" aria-label="Ir al inicio del curso">
+                <span class="brand-mark">&lt;/&gt;</span>
+                <span>HTML<span>•</span>Ruta</span>
+            </a>
+
+            <nav class="desktop-nav" aria-label="Navegación principal">
+                <a href="#modulos">Módulos</a>
+                <a href="#practica">Práctica</a>
+                <a href="#proyecto">Proyecto final</a>
+            </nav>
+
+            <a class="button button-primary header-cta" href="#modulos">
+                Ver ruta
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="inicio">
+            <div class="container hero-grid">
+                <div>
+                    <p class="eyebrow">Curso práctico · Desde cero</p>
+
+                    <h1>
+                        Aprende <span>HTML</span> paso a paso y crea tu primer sitio web.
+                    </h1>
+
+                    <p class="hero-description">
+                        Una ruta de aprendizaje clara para comprender la estructura de una
+                        página web, practicar con etiquetas esenciales y terminar creando
+                        un blog en HTML.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#modulos">
+                            Comenzar el curso <span aria-hidden="true">→</span>
+                        </a>
+
+                        <a class="button button-secondary" href="#proyecto">
+                            Ver proyecto final
+                        </a>
+                    </div>
+
+                    <div class="teacher">
+                        <div class="teacher-avatar" aria-hidden="true">IR</div>
+                        <div>
+                            <strong>Profesor: Ing. Robyir Loreto</strong>
+                            <small>Guía práctica para construir bases sólidas en la web</small>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="hero-card" aria-label="Resumen de avance del curso">
+                    <div class="hero-card-top">
+                        <div>
+                            <p class="hero-card-title">Tu ruta de hoy</p>
+                            <small>Comienza por lo esencial</small>
+                        </div>
+                        <span class="lesson-number">01 / 08</span>
+                    </div>
+
+                    <div class="mini-progress" aria-label="Progreso inicial del curso">
+                        <span></span>
+                    </div>
+
+                    <div class="next-lesson">
+                        <div class="next-icon" aria-hidden="true">01</div>
+                        <div>
+                            <p><strong>Fundamentos de HTML</strong></p>
+                            <small>Qué es, cómo funciona y cómo crear tu proyecto</small>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <aside class="focus-strip" aria-label="Características del curso">
+            <div class="container focus-grid">
+                <div class="focus-item">
+                    <div class="focus-icon" aria-hidden="true">1</div>
+                    <div>
+                        <strong>Un paso a la vez</strong>
+                        <span>Lecciones organizadas en bloques concretos.</span>
+                    </div>
+                </div>
+
+                <div class="focus-item">
+                    <div class="focus-icon" aria-hidden="true">&lt;/&gt;</div>
+                    <div>
+                        <strong>Ejemplos directos</strong>
+                        <span>Código breve para probar desde el primer día.</span>
+                    </div>
+                </div>
+
+                <div class="focus-item">
+                    <div class="focus-icon" aria-hidden="true">✓</div>
+                    <div>
+                        <strong>Objetivo visible</strong>
+                        <span>Siempre sabrás qué practicar y qué sigue.</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="course-nav" id="modulos">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Mapa del curso</p>
+                    <h2>Elige un módulo y avanza con claridad</h2>
+                    <p>
+                        Cada módulo reúne las etiquetas y conceptos presentados en el curso,
+                        desde la estructura inicial hasta la creación de un blog.
+                    </p>
+                </div>
+
+                <nav class="module-links" aria-label="Módulos del curso">
+                    <a class="module-link" href="#fundamentos">
+                        <span class="module-link-number">01</span>
+                        Fundamentos
+                    </a>
+
+                    <a class="module-link" href="#texto">
+                        <span class="module-link-number">02</span>
+                        Texto y estructura
+                    </a>
+
+                    <a class="module-link" href="#enlaces">
+                        <span class="module-link-number">03</span>
+                        Enlaces e imágenes
+                    </a>
+
+                    <a class="module-link" href="#formularios">
+                        <span class="module-link-number">04</span>
+                        Formularios
+                    </a>
+
+                    <a class="module-link" href="#colecciones">
+                        <span class="module-link-number">05</span>
+                        Listas y tablas
+                    </a>
+
+                    <a class="module-link" href="#proyecto">
+                        <span class="module-link-number">06</span>
+                        Blog final
+                    </a>
+                </nav>
+            </div>
+        </section>
+
+        <section class="module" id="fundamentos">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Módulo 01</p>
+                    <h2>Fundamentos: prepara tu primer proyecto</h2>
+                    <p>
+                        HTML es el lenguaje que describe la estructura de una página web.
+                        Comienza creando una carpeta de trabajo, un archivo
+                        <code>index.html</code> y ábrelo en tu navegador.
+                    </p>
+                </div>
+
+                <div class="lesson-grid">
+                    <article class="lesson-card">
+                        <span class="tag">Concepto</span>
+                        <h3>¿Qué es HTML?</h3>
+                        <p>
+                            Es el lenguaje de marcado que permite organizar títulos, textos,
+                            enlaces, imágenes, formularios y otros elementos de una web.
+                        </p>
+                        <div class="lesson-card-footer">
+                            <span>Base del curso</span>
+                            <span class="lesson-status">Listo para iniciar</span>
+                        </div>
+                    </article>
+
+                    <article class="lesson-card">
+                        <span class="tag">Preparación</span>
+                        <h3>Editor y carpeta</h3>
+                        <p>
+                            Usa un editor como Visual Studio Code, crea una carpeta para el
+                            proyecto y guarda ahí todos los archivos relacionados.
+                        </p>
+                        <div class="lesson-card-footer">
+                            <span>Organización</span>
+                            <span class="lesson-status">Paso esencial</span>
+                        </div>
+                    </article>
+
+                    <article class="lesson-card">
+                        <span class="tag">Primer archivo</span>
+                        <h3>El archivo index.html</h3>
+                        <p>
+                            Crea <code>index.html</code> como punto de entrada del proyecto y
+                            actualiza el navegador cada vez que guardes cambios.
+                        </p>
+                        <div class="lesson-card-footer">
+                            <span>Práctica rápida</span>
+                            <span class="lesson-status">5 minutos</span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="content-grid" style="margin-top: 1.5rem;">
+                    <article class="info-panel">
+                        <h3>Tu objetivo en este módulo</h3>
+                        <ul>
+                            <li>Crear una carpeta llamada <code>mi-primer-sitio</code>.</li>
+                            <li>Abrir esa carpeta desde tu editor de código.</li>
+                            <li>Crear y guardar el archivo <code>index.html</code>.</li>
+                            <li>Abrir el archivo en el navegador para ver tus cambios.</li>
+                        </ul>
+                    </article>
+
+                    <article class="code-panel">
+                        <h3>Primer archivo HTML</h3>
+                        <p>Escribe esta estructura para comenzar.</p>
+                        <pre><code><span class="code-blue">&lt;!DOCTYPE html&gt;</span>
+<span class="code-blue">&lt;html</span> <span class="code-yellow">lang</span>=<span class="code-green">"es"</span><span class="code-blue">&gt;</span>
+  <span class="code-blue">&lt;head&gt;</span>
+    <span class="code-blue">&lt;title&gt;</span>Mi primer sitio<span class="code-blue">&lt;/title&gt;</span>
+  <span class="code-blue">&lt;/head&gt;</span>
+  <span class="code-blue">&lt;body&gt;</span>
+    <span class="code-blue">&lt;h1&gt;</span>Hola, mundo<span class="code-blue">&lt;/h1&gt;</span>
+  <span class="code-blue">&lt;/body&gt;</span>
+<span class="code-blue">&lt;/html&gt;</span></code></pre>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="module" id="texto">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Módulo 02</p>
+                    <h2>Construye la estructura y el contenido de tu página</h2>
+                    <p>
+                        Aprende para qué sirven <code>DOCTYPE</code>, <code>html</code>,
+                        <code>head</code>, <code>body</code>, títulos, párrafos, comentarios
+                        y etiquetas de apoyo como <code>span</code> y <code>br</code>.
+                    </p>
+                </div>
+
+                <div class="content-grid">
+                    <article class="info-panel">
+                        <h3>Etiquetas que debes reconocer</h3>
+                        <ul>
+                            <li><code>&lt;!DOCTYPE html&gt;</code>: indica que el documento usa HTML5.</li>
+                            <li><code>&lt;head&gt;</code>: incluye información de configuración.</li>
+                            <li><code>&lt;title&gt;</code>: define el título de la pestaña.</li>
+                            <li><code>&lt;body&gt;</code>: contiene lo que verá la persona visitante.</li>
+                            <li><code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code>: organizan la jerarquía de títulos.
+                            </li>
+                            <li><code>&lt;p&gt;</code>: crea un párrafo de texto.</li>
+                        </ul>
+                    </article>
+
+                    <article class="code-panel">
+                        <h3>Jerarquía de contenido</h3>
+                        <p>Usa los títulos para ordenar ideas, no solo para cambiar el tamaño del texto.</p>
+                        <pre><code><span class="code-blue">&lt;h1&gt;</span>Curso de HTML<span class="code-blue">&lt;/h1&gt;</span>
+
+<span class="code-blue">&lt;h2&gt;</span>¿Qué aprenderás?<span class="code-blue">&lt;/h2&gt;</span>
+<span class="code-blue">&lt;p&gt;</span>
+  Crearás páginas web con una estructura clara.
+<span class="code-blue">&lt;/p&gt;</span>
+
+<span class="code-blue">&lt;hr&gt;</span>
+
+<span class="code-blue">&lt;p&gt;</span>
+  Este texto tiene un <span class="code-blue">&lt;span&gt;</span>detalle importante<span class="code-blue">&lt;/span&gt;</span>.
+  <span class="code-blue">&lt;br&gt;</span>
+  Esta frase aparece en otra línea.
+<span class="code-blue">&lt;/p&gt;</span>
+
+<span class="code-yellow">&lt;!-- Este comentario no se muestra en pantalla --&gt;</span></code></pre>
+                    </article>
+                </div>
+
+                <div class="checklist" style="margin-top: 1.5rem;">
+                    <h3>Checklist de práctica</h3>
+                    <ul>
+                        <li>Cambia el contenido de <code>&lt;title&gt;</code> por un título descriptivo.</li>
+                        <li>Escribe un <code>&lt;h1&gt;</code> para el tema principal de tu página.</li>
+                        <li>Agrega dos secciones usando <code>&lt;h2&gt;</code> y párrafos.</li>
+                        <li>Incluye una línea horizontal con <code>&lt;hr&gt;</code>.</li>
+                        <li>Agrega un comentario para explicar una parte del código.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="module" id="enlaces">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Módulo 03</p>
+                    <h2>Conecta páginas y muestra imágenes</h2>
+                    <p>
+                        Los enlaces permiten navegar hacia otras páginas o secciones. Las
+                        imágenes enriquecen el contenido cuando se usan con rutas claras y
+                        texto alternativo útil.
+                    </p>
+                </div>
+
+                <div class="lesson-grid">
+                    <article class="lesson-card">
+                        <span class="tag">Enlaces</span>
+                        <h3>La etiqueta anchor</h3>
+                        <p>
+                            Usa <code>&lt;a&gt;</code> junto con el atributo
+                            <code>href</code> para definir a dónde debe ir una persona al hacer clic.
+                        </p>
+                        <div class="lesson-card-footer">
+                            <span><code>href</code></span>
+                            <span class="lesson-status">Navegación</span>
+                        </div>
+                    </article>
+
+                    <article class="lesson-card">
+                        <span class="tag">Nueva pestaña</span>
+                        <h3>El atributo target</h3>
+                        <p>
+                            Utiliza <code>target="_blank"</code> cuando el enlace deba abrirse
+                            en una nueva pestaña del navegador.
+                        </p>
+                        <div class="lesson-card-footer">
+                            <span><code>target</code></span>
+                            <span class="lesson-status">Opcional</span>
+                        </div>
+                    </article>
+
+                    <article class="lesson-card">
+                        <span class="tag">Imágenes</span>
+                        <h3>La etiqueta img</h3>
+                        <p>
+                            Usa <code>src</code> para la ruta de la imagen y
+                            <code>alt</code> para describirla cuando no pueda visualizarse.
+                        </p>
+                        <div class="lesson-card-footer">
+                            <span><code>src</code> + <code>alt</code></span>
+                            <span class="lesson-status">Esencial</span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="content-grid" style="margin-top: 1.5rem;">
+                    <article class="code-panel">
+                        <h3>Ejemplo de enlace</h3>
+                        <pre><code><span class="code-blue">&lt;a</span>
+  <span class="code-yellow">href</span>=<span class="code-green">"https://www.ejemplo.com"</span>
+  <span class="code-yellow">target</span>=<span class="code-green">"_blank"</span>
+<span class="code-blue">&gt;</span>
+  Visitar recurso
+<span class="code-blue">&lt;/a&gt;</span></code></pre>
+                    </article>
+
+                    <article class="code-panel">
+                        <h3>Ejemplo de imagen</h3>
+                        <pre><code><span class="code-blue">&lt;img</span>
+  <span class="code-yellow">src</span>=<span class="code-green">"img/mi-imagen.jpg"</span>
+  <span class="code-yellow">alt</span>=<span class="code-green">"Descripción breve de la imagen"</span>
+  <span class="code-yellow">width</span>=<span class="code-green">"400"</span>
+<span class="code-blue">&gt;</span></code></pre>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="module" id="formularios">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Módulo 04</p>
+                    <h2>Recibe información con formularios</h2>
+                    <p>
+                        Un formulario reúne datos de una persona usuaria mediante
+                        <code>label</code>, <code>input</code>, <code>textarea</code> y
+                        botones. Relaciona cada etiqueta con su campo usando
+                        <code>for</code> e <code>id</code>.
+                    </p>
+                </div>
+
+                <div class="content-grid">
+                    <article class="info-panel">
+                        <h3>Elementos principales</h3>
+                        <ul>
+                            <li><code>&lt;form&gt;</code>: agrupa los campos de captura.</li>
+                            <li><code>&lt;label&gt;</code>: explica qué se solicita en un campo.</li>
+                            <li><code>&lt;input&gt;</code>: captura datos de una sola línea.</li>
+                            <li><code>&lt;textarea&gt;</code>: permite escribir mensajes más extensos.</li>
+                            <li><code>name</code>: identifica el dato al enviarlo.</li>
+                            <li><code>placeholder</code>: ofrece un ejemplo o pista dentro del campo.</li>
+                        </ul>
+                    </article>
+
+                    <article class="practice-card">
+                        <h3>Prueba un formulario</h3>
+                        <p>
+                            Esta es una demostración visual. Puedes escribir en los campos
+                            para observar su comportamiento.
+                        </p>
+
+                        <form class="demo-form" action="#" onsubmit="return false;">
+                            <div class="form-row">
+                                <label for="nombre">Nombre</label>
+                                <input id="nombre" name="nombre" type="text" placeholder="Ejemplo: Ana Pérez">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="correo">Correo electrónico</label>
+                                <input id="correo" name="correo" type="email" placeholder="ana@correo.com">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="comentario">Comentario</label>
+                                <textarea id="comentario" name="comentario"
+                                    placeholder="Escribe una duda o idea..."></textarea>
+                            </div>
+
+                            <button class="button button-primary" type="submit">
+                                Enviar práctica
+                            </button>
+
+                            <p class="form-note">
+                                Este ejemplo no envía datos a ningún servidor.
+                            </p>
+                        </form>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="module" id="colecciones">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Módulo 05</p>
+                    <h2>Organiza información con listas y tablas</h2>
+                    <p>
+                        Usa listas cuando el contenido se entiende mejor como una secuencia
+                        o colección. Emplea tablas cuando necesites comparar datos en filas
+                        y columnas.
+                    </p>
+                </div>
+
+                <div class="content-grid">
+                    <article class="code-panel">
+                        <h3>Lista ordenada</h3>
+                        <pre><code><span class="code-blue">&lt;ol&gt;</span>
+  <span class="code-blue">&lt;li&gt;</span>Crear la carpeta<span class="code-blue">&lt;/li&gt;</span>
+  <span class="code-blue">&lt;li&gt;</span>Abrir index.html<span class="code-blue">&lt;/li&gt;</span>
+  <span class="code-blue">&lt;li&gt;</span>Escribir contenido<span class="code-blue">&lt;/li&gt;</span>
+<span class="code-blue">&lt;/ol&gt;</span>
+
+<span class="code-blue">&lt;ul&gt;</span>
+  <span class="code-blue">&lt;li&gt;</span>Títulos<span class="code-blue">&lt;/li&gt;</span>
+  <span class="code-blue">&lt;li&gt;</span>Párrafos<span class="code-blue">&lt;/li&gt;</span>
+  <span class="code-blue">&lt;li&gt;</span>Enlaces<span class="code-blue">&lt;/li&gt;</span>
+<span class="code-blue">&lt;/ul&gt;</span></code></pre>
+                    </article>
+
+                    <article class="info-panel">
+                        <h3>Cuándo usar cada una</h3>
+                        <ul>
+                            <li>Usa <code>&lt;ol&gt;</code> cuando el orden sí importa.</li>
+                            <li>Usa <code>&lt;ul&gt;</code> para grupos de elementos sin secuencia.</li>
+                            <li>Usa <code>&lt;table&gt;</code> para datos comparables por columna.</li>
+                            <li>Incluye <code>&lt;th&gt;</code> para encabezados y <code>&lt;td&gt;</code> para celdas
+                                de datos.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="table-wrapper" style="margin-top: 1.5rem;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Etiqueta</th>
+                                <th>Función</th>
+                                <th>Ejemplo de uso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>&lt;ul&gt;</code></td>
+                                <td>Lista sin orden</td>
+                                <td>Temas que aprenderás</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;ol&gt;</code></td>
+                                <td>Lista ordenada</td>
+                                <td>Pasos para publicar una página</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;table&gt;</code></td>
+                                <td>Tabla de datos</td>
+                                <td>Horario de clases o comparación de recursos</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;tr&gt;</code></td>
+                                <td>Fila de la tabla</td>
+                                <td>Una nueva línea de información</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="project" id="proyecto">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow" style="color: #9db7ff;">Proyecto final</p>
+                    <h2>Construye un blog sencillo con HTML</h2>
+                    <p>
+                        Integra lo aprendido creando una página con encabezado, artículos,
+                        títulos, imágenes, enlaces y secciones organizadas mediante
+                        <code>div</code>, <code>id</code> y <code>class</code>.
+                    </p>
+                </div>
+
+                <div class="project-grid">
+                    <article class="project-card">
+                        <div class="project-number">1</div>
+                        <h3>Define la estructura</h3>
+                        <p>
+                            Crea el encabezado del blog y separa el contenido principal en
+                            artículos o secciones.
+                        </p>
+                    </article>
+
+                    <article class="project-card">
+                        <div class="project-number">2</div>
+                        <h3>Agrega contenido</h3>
+                        <p>
+                            Incluye títulos, párrafos, imágenes y enlaces que permitan
+                            recorrer tu publicación.
+                        </p>
+                    </article>
+
+                    <article class="project-card">
+                        <div class="project-number">3</div>
+                        <h3>Organiza con atributos</h3>
+                        <p>
+                            Usa <code>class</code> para agrupar elementos similares e
+                            <code>id</code> para identificar secciones concretas.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="project-action">
+                    <a class="button button-primary" href="#fundamentos">
+                        Repasar desde el inicio
+                    </a>
+                    <a class="button button-secondary" href="#formularios">
+                        Practicar formularios
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div>
+                <strong>HTML•Ruta</strong>
+                <p>Curso de HTML desde cero · Profesor: Ing. Robyir Loreto</p>
+            </div>
+
+            <nav class="footer-links" aria-label="Enlaces del pie de página">
+                <a href="#inicio">Inicio</a>
+                <a href="#modulos">Módulos</a>
+                <a href="#proyecto">Proyecto final</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+
+</html>
