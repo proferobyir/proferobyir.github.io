@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Docente: Mapeo y Redireccionamiento de Puertos</title>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #334155;
+            --accent-blue: #0284c7;
+            --accent-blue-hover: #0369a1;
+            --accent-green: #16a34a;
+            --accent-amber: #d97706;
+            --accent-red: #dc2626;
+            --border-color: #cbd5e1;
+            --border-focus: #0284c7;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --base-font-size: 19px;
+            --line-height: 1.65;
+        }
+
+        /* Modo Oscuro Accesible */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0f172a;
+                --bg-card: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #cbd5e1;
+                --accent-blue: #38bdf8;
+                --accent-blue-hover: #7dd3fc;
+                --accent-green: #4ade80;
+                --accent-amber: #fbbf24;
+                --accent-red: #f87171;
+                --border-color: #334155;
+                --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+                --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: var(--base-font-size);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: var(--line-height);
+            padding: 0 0 60px 0;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.25;
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            background-color: rgba(2, 132, 199, 0.15);
+            color: var(--accent-blue);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--accent-blue);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .badge-green {
+            background-color: rgba(22, 163, 74, 0.15);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        /* Navegación rápida por secciones */
+        nav {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            background-color: rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .nav-link:hover, .nav-link:focus {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            border-color: var(--accent-blue);
+        }
+
+        /* Contenedor Principal */
+        main {
+            max-width: 1000px;
+            margin: 1.5rem auto 0 auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.75rem 1.25rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin: 1.25rem 0 0.75rem 0;
+        }
+
+        p {
+            margin-bottom: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 0.6rem;
+        }
+
+        strong {
+            color: var(--text-main);
+        }
+
+        /* Callouts / Avisos de Destaque */
+        .callout {
+            padding: 1.25rem;
+            border-radius: 10px;
+            margin: 1.25rem 0;
+            border-left: 6px solid var(--accent-blue);
+            background-color: rgba(2, 132, 199, 0.08);
+        }
+
+        .callout-warning {
+            border-left-color: var(--accent-amber);
+            background-color: rgba(217, 119, 6, 0.08);
+        }
+
+        .callout-alert {
+            border-left-color: var(--accent-red);
+            background-color: rgba(220, 38, 38, 0.08);
+        }
+
+        .callout-title {
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin-bottom: 0.4rem;
+            display: block;
+            color: var(--text-main);
+        }
+
+        /* Tablas Accesibles y Adaptables */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--text-main);
+            font-weight: 800;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Diagramas Visuales CSS */
+        .diagram-container {
+            background-color: rgba(0,0,0,0.03);
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            text-align: center;
+        }
+
+        @media (min-width: 640px) {
+            .diagram-container {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+        }
+
+        .diagram-box {
+            background-color: var(--bg-card);
+            border: 2px solid var(--accent-blue);
+            padding: 0.85rem;
+            border-radius: 8px;
+            min-width: 130px;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .diagram-arrow {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-amber);
+        }
+
+        .simulator-card {
+            border: 2px solid var(--accent-blue);
+            background-color: rgba(2, 132, 199, 0.03);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            min-height: 54px; /* Tamaño táctil accesible */
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .sim-result {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-card);
+            display: none;
+        }
+
+        .sim-logs {
+            font-family: monospace;
+            font-size: 0.9rem;
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 0.75rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        /* Botón Volver Arriba */
+        .btn-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            z-index: 90;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <h1 class="header-title">Guía Docente: Mapeo y Redireccionamiento de Puertos</h1>
+            <div class="header-meta">
+                <span class="badge">⏱️ Duración: 90 Minutos</span>
+                <span class="badge badge-green">🎓 Nivel: Técnico / Universitario</span>
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Navegación por módulos">
+        <div class="nav-container">
+            <a href="#modulo1" class="nav-link">1. El Problema</a>
+            <a href="#modulo2" class="nav-link">2. Conceptos Clave</a>
+            <a href="#modulo3" class="nav-link">3. Anatomía</a>
+            <a href="#modulo4" class="nav-link">4. Casos Reales</a>
+            <a href="#modulo5" class="nav-link">5. Seguridad</a>
+            <a href="#simulador" class="nav-link">⚡ Simulador</a>
+            <a href="#evaluacion" class="nav-link">📝 Evaluación</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <section id="modulo1">
+            <h2>1. El Gran Problema (¿Por qué existe esto?)</h2>
+            <p>Para entender el redireccionamiento de puertos, primero debemos recordar un dilema fundamental del protocolo IPv4: <strong>la escasez de direcciones IP públicas</strong>.</p>
+            
+            <div class="callout">
+                <span class="callout-title">💡 La Analogía del Edificio de Oficinas:</span>
+                Imagine un gran edificio corporativo. El edificio tiene <strong>una sola dirección postal</strong> visible desde la calle (IP Pública). Dentro del edificio viven 50 empleados en distintas oficinas numéricas (IPs Privadas). Si un mensajero llega a la puerta principal y dice <em>"traigo un paquete para la oficina 2"</em>, el recepcionista (Router NAT) sabrá a dónde entregarlo. Pero si el mensajero solo llega sin especificar destinatario ni extensión, se queda varado en la recepción.
+            </div>
+
+            <h3>Diferencia Crucial de IPs:</h3>
+            <ul>
+                <li><strong>IP Pública:</strong> La identidad única que te asigna tu proveedor de Internet (ISP) visible en todo el mundo. Solo hay una por Router/Módem.</li>
+                <li><strong>IP Privada:</strong> La dirección interna de cada equipo dentro de tu red local (ejemplo: <code>192.168.1.15</code>, <code>10.0.0.5</code>). Inaccesible directamente desde Internet.</li>
+                <li><strong>El Rol de NAT:</strong> Traduce el tráfico que <em>sale</em> de tu red interna hacia Internet. Sin embargo, NAT por defecto <strong>bloquea cualquier petición entrante no solicitada</strong> por seguridad.</li>
+            </ul>
+        </section>
+
+        <section id="modulo2">
+            <h2>2. Conceptos Clave (Port Forwarding vs. Port Mapping)</h2>
+            <p>Es muy común confundir o usar como sinónimos ambos términos. Aquí marcamos la diferencia pedagógica exacta:</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Mapeo / Reenvío</th>
+                            <th>Ejemplo Práctico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Port Forwarding (1:1)</strong></td>
+                            <td>Mantiene el mismo número de puerto afuera y adentro. El puerto WAN y LAN coinciden.</td>
+                            <td>Llega al puerto <code>80</code> (HTTP) en la WAN $\rightarrow$ Pasa exactamente al puerto <code>80</code> del Servidor local.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Port Mapping (Traducción)</strong></td>
+                            <td>Asigna un puerto externo WAN totalmente distinto al puerto interno LAN donde corre el servicio real.</td>
+                            <td>Llega al puerto <code>8080</code> en la WAN $\rightarrow$ El Router traduce y entrega en el puerto <code>80</code> del Servidor local.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="diagram-container">
+                <div class="diagram-box">Cliente en Internet<br><small>Petición a 200.1.2.3:8080</small></div>
+                <div class="diagram-arrow">➔</div>
+                <div class="diagram-box" style="border-color: var(--accent-amber);">Router (NAT)<br><small>Regla: 8080 ➔ 192.168.1.50:80</small></div>
+                <div class="diagram-arrow">➔</div>
+                <div class="diagram-box" style="border-color: var(--accent-green);">Servidor Web<br><small>Recibe en 192.168.1.50:80</small></div>
+            </div>
+        </section>
+
+        <section id="modulo3">
+            <h2>3. Anatomía de una Regla de Mapeo</h2>
+            <p>Cuando abres la interfaz gráfica de un Router o Firewall (Cisco, Mikrotik, TP-Link, PfSense), te encontrarás siempre con 5 campos fundamentales:</p>
+
+            <ol>
+                <li><strong>Nombre del Servicio (Rule Name):</strong> Etiqueta identificativa (ej: <code>Camaras_Seguridad</code>, <code>Servidor_Web</code>).</li>
+                <li><strong>Protocolo:</strong> Por lo general <code>TCP</code> (orientado a conexión confiable como Web/SSH) o <code>UDP</code> (rápido para streaming/juegos).</li>
+                <li><strong>Puerto Externo / WAN (External Port):</strong> El puerto "público" que escribirán los usuarios desde afuera en Internet.</li>
+                <li><strong>IP Destino Local / LAN (Internal IP):</strong> La IP estática del equipo en la red privada que aloja el servicio.</li>
+                <li><strong>Puerto Interno / LAN (Internal Port):</strong> El puerto real en el cual el servicio está escuchando la conexión dentro de ese equipo.</li>
+            </ol>
+        </section>
+
+        <section id="modulo4">
+            <h2>4. Casos de Uso Reales: Múltiples Servidores en 1 IP Pública</h2>
+            <p>¿Qué ocurre si en una empresa u hogar tenemos **3 servidores web distintos** en la misma LAN, pero el proveedor de Internet solo nos otorga **1 sola IP Pública**?</p>
+            <p>No podemos enviar todo el tráfico del puerto estándar <code>80</code> a los 3 equipos a la vez. La solución es el <strong>Port Mapping</strong> empleando puertos externos no estándar:</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Servidor Interno</th>
+                            <th>IP Local (LAN)</th>
+                            <th>Puerto Interno</th>
+                            <th>Puerto Externo WAN</th>
+                            <th>Acceso desde Internet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Servidor Web A</td>
+                            <td><code>192.168.1.10</code></td>
+                            <td>80 (HTTP)</td>
+                            <td><strong>8081</strong></td>
+                            <td><code>200.1.2.3:8081</code></td>
+                        </tr>
+                        <tr>
+                            <td>Servidor Web B</td>
+                            <td><code>192.168.1.11</code></td>
+                            <td>80 (HTTP)</td>
+                            <td><strong>8082</strong></td>
+                            <td><code>200.1.2.3:8082</code></td>
+                        </tr>
+                        <tr>
+                            <td>Consola de Servidor C</td>
+                            <td><code>192.168.1.12</code></td>
+                            <td>22 (SSH)</td>
+                            <td><strong>2222</strong></td>
+                            <td><code>200.1.2.3:2222</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="modulo5">
+            <h2>5. Recomendaciones y Seguridad</h2>
+
+            <div class="callout callout-alert">
+                <span class="callout-title">⚠️ ¡Atención Docente! Énfasis en Ciberseguridad:</span>
+                Abrir un puerto en el Router equivale a quitar un cerrojo de la puerta principal de la empresa. Los bots automatizados escanean rangos completos de IPs públicas todo el tiempo.
+            </div>
+
+            <ul>
+                <li><strong>Evitar puertos por defecto expuestos:</strong> Nunca dejes expuesto directamente el puerto <code>3389</code> (Escritorio Remoto Windows) o <code>22</code> (SSH) hacia afuera. Mapealos a puertos altos aleatorios (ej: <code>45233</code>). Esto evita el 90% del escaneo masivo de bots ("Security by Obscurity").</li>
+                <li><strong>Fijar IPs Internas (IPs Estáticas o Reserva DHCP):</strong> Si el router le cambia la IP al servidor mediante DHCP dinámico mañana, la regla de Port Forwarding apuntará a un equipo equivocado y fallará.</li>
+                <li><strong>La alternativa profesional (VPN):</strong> En entornos corporativos reales, en lugar de mapear 20 puertos para administración remota, es infinitamente más seguro implementar una **red privada virtual (VPN)** para ingresar a la LAN.</li>
+            </ul>
+        </section>
+
+        <section id="simulador" class="simulator-card">
+            <h2>⚡ Simulador Interactivo de Mapeo de Puertos</h2>
+            <p>Configura una regla en el Router simulado y envía una petición desde un cliente en Internet para verificar el comportamiento de la red.</p>
+
+            <form id="sim-form" onsubmit="event.preventDefault(); probarSimulacion();">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ext-port">Puerto Externo WAN (Router):</label>
+                        <input type="number" id="ext-port" value="8080" required min="1" max="65535">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="int-ip">IP Interna LAN del Servidor:</label>
+                        <select id="int-ip">
+                            <option value="192.168.1.50">192.168.1.50 (Servidor Web - Escucha Port 80)</option>
+                            <option value="192.168.1.100">192.168.1.100 (Servidor SSH - Escucha Port 22)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="int-port">Puerto Interno LAN:</label>
+                        <input type="number" id="int-port" value="80" required min="1" max="65535">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="protocol">Protocolo:</label>
+                        <select id="protocol">
+                            <option value="TCP">TCP</option>
+                            <option value="UDP">UDP</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="incoming-port">Simular Petición entrante desde Internet al Puerto WAN:</label>
+                    <input type="number" id="incoming-port" value="8080" required placeholder="Ej: 8080">
+                </div>
+
+                <button type="submit">🚀 Probar Conexión y Enviar Paquete</button>
+            </form>
+
+            <div id="sim-result" class="sim-result">
+                <h3 id="sim-status-title" style="margin-top:0;">Resultado de la Traza:</h3>
+                <p id="sim-status-desc"></p>
+                <div id="sim-logs" class="sim-logs"></div>
+            </div>
+        </section>
+
+        <section id="evaluacion">
+            <h2>📝 Resumen y Tarea para la Casa (Evaluación)</h2>
+            <p><strong>Puntos clave a recordar:</strong> Port Forwarding abre paso directo; Port Mapping traduce puertos. Siempre se requiere IP fija interna y conciencia de seguridad.</p>
+
+            <div class="callout callout-warning">
+                <span class="callout-title">📌 Asignación Individual Práctica (Para la Casa):</span>
+                <p><strong>Escenario:</strong> Un cliente te pide configurar el acceso remoto a un sistema de cámaras (puerto interno 554 RTSP) y a su panel de administración web (puerto interno 80 HTTP) alojados en la IP interna <code>192.168.1.200</code>.</p>
+                <p><strong>Entregable requerido:</strong></p>
+                <ol>
+                    <li>Diseñar la tabla con la regla de Port Mapping recomendada evitando usar el puerto 80 hacia afuera.</li>
+                    <li>Responder en máximo 1 página: <em>¿Qué ocurre si el router se reinicia y le asigna la IP <code>192.168.1.105</code> a la grabadora de cámaras? ¿Cómo previenes esto técnica y formalmente?</em></li>
+                </ol>
+            </div>
+        </section>
+
+    </main>
+
+    <a href="#" class="btn-top" title="Volver Arriba" aria-label="Volver arriba">↑</a>
+
+    <script>
+        function probarSimulacion() {
+            const extPort = parseInt(document.getElementById('ext-port').value);
+            const intIp = document.getElementById('int-ip').value;
+            const intPort = parseInt(document.getElementById('int-port').value);
+            const protocol = document.getElementById('protocol').value;
+            const incomingPort = parseInt(document.getElementById('incoming-port').value);
+
+            const resultDiv = document.getElementById('sim-result');
+            const statusTitle = document.getElementById('sim-status-title');
+            const statusDesc = document.getElementById('sim-status-desc');
+            const logsDiv = document.getElementById('sim-logs');
+
+            resultDiv.style.display = 'block';
+
+            let logs = `[INICIO DETECCION DE PAQUETE]\n`;
+            logs += `1. Paquete recibido en IP Publica WAN (Router) a traves del puerto: ${incomingPort} [${protocol}]\n`;
+
+            if (incomingPort !== extPort) {
+                // El puerto no coincide con la regla abierta
+                statusTitle.style.color = 'var(--accent-red)';
+                statusTitle.textContent = '❌ CONEXIÓN RECHAZADA / TIMEOUT';
+                statusDesc.textContent = `El Router no tiene ninguna regla abierta para el puerto externo ${incomingPort}. El Firewall descarta el paquete (DROP).`;
+                logs += `2. Buscando en tabla NAT regla para puerto WAN ${incomingPort}...\n`;
+                logs += `3. [ERROR]: No se encontro ningun mapeo. Paquete descartado por Firewall.\n`;
+                logs += `[FIN DE TRAZA]`;
+            } else {
+                // El puerto coincide con la regla
+                statusTitle.style.color = 'var(--accent-green)';
+                statusTitle.textContent = 'CONEXIÓN EXITOSA (FORWARDED)';
+                statusDesc.textContent = `¡Éxito! El Router tradujo la petición del puerto WAN ${incomingPort} y la entregó a ${intIp}:${intPort}`;
+                
+                logs += `2. Coincidencia encontrada en Tabla NAT:\n`;
+                logs += `   -> Regla activa: External ${extPort} --> Internal ${intIp}:${intPort}\n`;
+                logs += `3. Reescribiendo cabecera de paquete (DNAT)...\n`;
+                logs += `4. Enviando paquete a traves de la interfaz LAN a ${intIp}:${intPort}\n`;
+                
+                // Validación adicional de servicios simulados
+                if (intIp === "192.168.1.50" && intPort === 80) {
+                    logs += `5. [RESPUESTA DEL SERVIDOR]: Servidor HTTP respondio 200 OK. Pagina cargada.`;
+                } else if (intIp === "192.168.1.100" && intPort === 22) {
+                    logs += `5. [RESPUESTA DEL SERVIDOR]: Handshake SSH iniciado en puerto 22. Solicitando credenciales.`;
+                } else {
+                    logs += `5. [ADVERTENCIA]: El paquete llego al equipo ${intIp}, pero el puerto ${intPort} no tiene una aplicación escuchando por defecto en este escenario simulado.`;
+                }
+                logs += `\n[FIN DE TRAZA]`;
+            }
+
+            logsDiv.textContent = logs;
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
