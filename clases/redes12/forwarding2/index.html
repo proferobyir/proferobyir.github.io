@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Redes: Firewall & Port Forwarding</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.25);
+            --secondary: #818cf8;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --accent-yellow: #fbbf24;
+            --font-code: 'Courier New', Courier, monospace;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background: linear-gradient(185deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, var(--primary-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-title {
+            font-size: clamp(1.6rem, 4vw, 2.8rem);
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: clamp(0.95rem, 2vw, 1.15rem);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #0f172a;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Theory Cards Grid */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .card-body {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-tcp { background: rgba(56, 189, 248, 0.2); color: var(--primary); }
+        .badge-udp { background: rgba(129, 140, 248, 0.2); color: var(--secondary); }
+
+        /* Diagram Boxes */
+        .diagram-container {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Simulator Styles */
+        .simulator-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 992px) {
+            .simulator-layout {
+                grid-template-columns: 340px 1fr;
+            }
+        }
+
+        .control-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-dark);
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #475569;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-green);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .btn-launch {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn-launch:active {
+            transform: translateY(0);
+        }
+
+        /* Canvas / Visualizer Area */
+        .visualizer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .network-topology {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            background: #090d16;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            min-height: 280px;
+            justify-content: space-between;
+        }
+
+        @media (min-width: 640px) {
+            .network-topology {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .node {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .node.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .node.blocked {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
+        }
+
+        .node-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .node-ip {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-top: 0.25rem;
+        }
+
+        .node-status {
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Packet Animation */
+        .packet {
+            width: 14px;
+            height: 14px;
+            background: var(--accent-yellow);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 0 10px var(--accent-yellow);
+            display: none;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Console Log Window */
+        .terminal {
+            background: #050811;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .log-entry {
+            line-height: 1.4;
+            word-break: break-all;
+        }
+
+        .log-info { color: var(--text-muted); }
+        .log-success { color: var(--accent-green); }
+        .log-error { color: var(--accent-red); }
+        .log-warn { color: var(--accent-yellow); }
+
+        /* Accordion Stepper */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .accordion-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .accordion-header {
+            padding: 1rem 1.25rem;
+            background: var(--bg-card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .accordion-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            margin-right: 0.75rem;
+        }
+
+        .accordion-content {
+            padding: 0 1.25rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-top: 0px solid transparent;
+        }
+
+        .accordion-item.active .accordion-content {
+            padding: 1.25rem;
+            max-height: 1000px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .code-block {
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            font-family: var(--font-code);
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin: 0.75rem 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="header-title">Laboratorio de Redes: Firewall & NAT</h1>
+        <p class="header-subtitle">Aprende conceptos fundamentales de seguridad de capa 3/4, reglas del Firewall de Windows y redirección de puertos (Port Forwarding / Virtual Servers) con simulación en tiempo real.</p>
+    </header>
+
+    <main>
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('teoria')">📚 Fundamentos Teóricos</button>
+            <button class="tab-btn" onclick="switchTab('simulador')">⚡ Simulador Interactivo</button>
+            <button class="tab-btn" onclick="switchTab('guia')">🛠️ Guía Paso a Paso</button>
+        </nav>
+
+        <!-- TAB 1: FUNDAMENTOS TEÓRICOS -->
+        <section id="teoria" class="tab-content active">
+            <div class="grid-cards">
+                <!-- Card 1: Firewall -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🛡️️</div>
+                        <div class="card-title">Firewall de Windows (Capas 3 y 4)</div>
+                    </div>
+                    <div class="card-body">
+                        Un Firewall inspecciona el tráfico de red según reglas de seguridad. El Firewall de Windows actúa en las capas de **Red (Capa 3)** y **Transporte (Capa 4)** del modelo OSI:
+                        <ul style="margin-left: 1.2rem; margin-top: 0.5rem;">
+                            <li><strong>Capa 3 (IP):</strong> Filtra según direcciones IP de origen y destino.</li>
+                            <li><strong>Capa 4 (Transporte):</strong> Inspecciona puertos y protocolos (TCP/UDP). Es un firewall con inspección de estado (<em>Stateful</em>).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card 2: Puertos y Protocolos -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔌</div>
+                        <div class="card-title">Puertos y Protocolos</div>
+                    </div>
+                    <div class="card-body">
+                        Los puertos son puntos finales de comunicación (0 a 65535).
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                            <span class="badge badge-tcp">FTP: 21 TCP</span>
+                            <span class="badge badge-tcp">HTTP: 80 / 8080 TCP</span>
+                            <span class="badge badge-tcp">HTTPS: 443 TCP</span>
+                            <span class="badge badge-tcp">RDP: 3389 TCP</span>
+                            <span class="badge badge-udp">DNS: 53 UDP</span>
+                        </div>
+                        <p style="margin-top: 0.5rem;"><strong>TCP:</strong> Orientado a conexión (garantiza entrega).<br><strong>UDP:</strong> Rápido sin conexión previa.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Reglas de Entrada/Salida -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⇄</div>
+                        <div class="card-title">Reglas Inbound vs Outbound</div>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Entrada (Inbound):</strong> Controla el tráfico que *se origina afuera* e intenta entrar a un servicio de tu PC. Por defecto se <strong>bloquea todo</strong> lo no solicitado.</p>
+                        <p style="margin-top: 0.5rem;"><strong>Salida (Outbound):</strong> Controla el tráfico que tu PC inicia hacia Internet. Por defecto se <strong>permite todo</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4: NAT & Hairpin NAT -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🌐</div>
+                        <div class="card-title">Port Forwarding & CGNAT</div>
+                    </div>
+                    <div class="card-body">
+                        El router mapea la <strong>IP WAN pública/simulada</strong> y un puerto externo hacia la <strong>IP LAN privada</strong> del servidor interno.
+                        <div class="diagram-container">
+                            <strong>Hairpin NAT / NAT Loopback:</strong> Permite que un cliente dentro de la LAN acceda a un servidor local usando la IP WAN del router, haciendo que el tráfico haga un "bucle" dentro del router.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SIMULADOR INTERACTIVO -->
+        <section id="simulador" class="tab-content">
+            <div class="simulator-layout">
+                <!-- Left Panel: Controls -->
+                <div class="control-panel">
+                    <h3 style="font-size: 1.1rem; color: var(--primary);">⚙️ Configuración del Ensayo</h3>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Servicio a Probar</label>
+                        <select id="sim-service" onchange="updateSimulatorUI()">
+                            <option value="http">Servidor Web Apache (Puerto 8080 -> 80 TCP)</option>
+                            <option value="ftp">Servidor FileZilla FTP (Puerto 21 TCP)</option>
+                            <option value="rdp">Escritorio Remoto RDP (Puerto 3389 TCP)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Origen de la Petición</label>
+                        <select id="sim-origin" onchange="updateSimulatorUI()">
+                            <option value="wan">Cliente WAN / Internet (IP: 10.0.0.100)</option>
+                            <option value="lan">Cliente LAN Local via Hairpin NAT (IP: 192.168.1.50)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Router: Port Forwarding / Virtual Server</label>
+                        <div class="toggle-switch">
+                            <span>Regla en Router</span>
+                            <label class="switch">
+                                <input type="checkbox" id="sim-router-nat" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Host Target: Estado del Firewall</label>
+                        <div class="toggle-switch">
+                            <span>Firewall Activado</span>
+                            <label class="switch">
+                                <input type="checkbox" id="sim-fw-status" checked onchange="updateSimulatorUI()">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Firewall: Regla de Entrada (Inbound)</label>
+                        <select id="sim-fw-rule">
+                            <option value="allow">Permitir Conexión (Puerto Abierto)</option>
+                            <option value="block">Bloquear Conexión (Explicit Block)</option>
+                            <option value="none">Sin Regla (Bloqueado por Defecto)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-launch" onclick="runSimulation()">
+                        🚀 Simular Envío de Paquete
+                    </button>
+                </div>
+
+                <!-- Right Panel: Visualizer & Logs -->
+                <div class="visualizer-card">
+                    <h3 style="font-size: 1.1rem; color: var(--text-main);">🔍 Topología y Flujo de Datos en Tiempo Real</h3>
+
+                    <div class="network-topology" id="topology">
+                        <div class="packet" id="packet"></div>
+
+                        <!-- Node 1: Origin -->
+                        <div class="node" id="node-origin">
+                            <div class="node-title" id="origin-title">Cliente WAN</div>
+                            <div class="node-ip" id="origin-ip">10.0.0.100</div>
+                            <div class="node-status">Origen</div>
+                        </div>
+
+                        <!-- Node 2: Router -->
+                        <div class="node" id="node-router">
+                            <div class="node-title">Router NAT</div>
+                            <div class="node-ip">WAN: 10.0.0.1<br>LAN: 192.168.1.1</div>
+                            <div class="node-status" id="router-status-badge">NAT / Virtual Server</div>
+                        </div>
+
+                        <!-- Node 3: Target PC -->
+                        <div class="node" id="node-target">
+                            <div class="node-title">Servidor Destino</div>
+                            <div class="node-ip" id="target-ip">192.168.1.20</div>
+                            <div class="node-status" id="fw-status-badge">Firewall Activado</div>
+                        </div>
+                    </div>
+
+                    <!-- Terminal Logs -->
+                    <div class="terminal" id="terminal-logs">
+                        <div class="log-entry log-info">[SISTEMA]: Listo para iniciar simulación. Configure los parámetros y presione "Simular Envío".</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: GUÍA PASO A PASO PARA EL LABORATORIO -->
+        <section id="guia" class="tab-content">
+            <div class="accordion">
+                <!-- Step 1 -->
+                <div class="accordion-item active">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div>
+                            <span class="accordion-number">1</span>
+                            <span>Identificar IPs y Definir la Topología</span>
+                        </div>
+                        <span>▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        Abre la consola de comandos (CMD) en el equipo que actuará como servidor e identifica su IP privada local:
+                        <div class="code-block">ipconfig</div>
+                        Anota la dirección IPv4 (Ejemplo: <code>192.168.1.20</code>) y la Puerta de enlace predeterminada (Ejemplo: <code>192.168.1.1</code>).
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div>
+                            <span class="accordion-number">2</span>
+                            <span>Configurar Reglas de Entrada en el Firewall de Windows</span>
+                        </div>
+                        <span>▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ol style="margin-left: 1.2rem;">
+                            <li>Presiona <code>Win + R</code>, escribe <code>wf.msc</code> y presiona Enter.</li>
+                            <li>Haz clic secundario en <strong>Reglas de entrada</strong> &rarr; <strong>Nueva regla...</strong></li>
+                            <li>Selecciona <strong>Puerto</strong> &rarr; Clic en <em>Siguiente</em>.</li>
+                            <li>Elige <strong>TCP</strong> e introduce el puerto local correspondiente (Ejemplo: <code>8080</code> para Apache, <code>21</code> para FTP o <code>3389</code> para RDP).</li>
+                            <li>Selecciona <strong>Permitir la conexión</strong>.</li>
+                            <li>Aplica la regla para los perfiles de red <strong>Privado</strong> y <strong>Dominio</strong>.</li>
+                            <li>Asigna un nombre descriptivo (Ejemplo: <em>"Permitir Servidor Web Apache 8080"</em>) y haz clic en <em>Finalizar</em>.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div>
+                            <span class="accordion-number">3</span>
+                            <span>Configurar Port Forwarding / Virtual Server en el Router</span>
+                        </div>
+                        <span>▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ol style="margin-left: 1.2rem;">
+                            <li>Abre el navegador e ingresa a la IP del Router (ej. <code>http://192.168.1.1</code>).</li>
+                            <li>Busca la sección llamada <strong>Forwarding</strong>, <strong>Virtual Servers</strong> o <strong>Port Forwarding</strong>.</li>
+                            <li>Añade un nuevo mapeo:
+                                <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
+                                    <li><strong>Service / Name:</strong> ApacheWeb</li>
+                                    <li><strong>External Port:</strong> 8080</li>
+                                    <li><strong>Internal IP:</strong> 192.168.1.20 (IP del servidor)</li>
+                                    <li><strong>Internal Port:</strong> 80</li>
+                                    <li><strong>Protocol:</strong> TCP</li>
+                                </ul>
+                            </li>
+                            <li>Guarda los cambios y habilita la regla.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div>
+                            <span class="accordion-number">4</span>
+                            <span>Verificación y Diagnóstico de Fallas (Troubleshooting)</span>
+                        </div>
+                        <span>▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Prueba 1:</strong> Desde otro equipo de la LAN o desde la interfaz WAN simulada, ejecuta un test de puerto vía PowerShell:</p>
+                        <div class="code-block">Test-NetConnection -ComputerName 10.0.0.1 -Port 8080</div>
+                        <p><strong>Posibles causas de falla:</strong></p>
+                        <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
+                            <li><code>TcpTestSucceeded: False</code> &rarr; El Firewall local está bloqueando el puerto o la IP de la regla de redirección en el router está mal escrita.</li>
+                            <li>Acceso denegado o Timeout &rarr; El servicio (Apache/FileZilla) no está iniciado o escuchando en la interfaz de red adecuada.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Tab Navigation Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Accordion Logic
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            item.classList.toggle('active');
+        }
+
+        // Simulator State & Logic
+        const serviceData = {
+            http: { name: 'Apache Web Server', extPort: 8080, intPort: 80, defaultIp: '192.168.1.20' },
+            ftp: { name: 'FileZilla FTP Server', extPort: 21, intPort: 21, defaultIp: '192.168.1.10' },
+            rdp: { name: 'Escritorio Remoto RDP', extPort: 3389, intPort: 3389, defaultIp: '192.168.1.30' }
+        };
+
+        function updateSimulatorUI() {
+            const serviceKey = document.getElementById('sim-service').value;
+            const originKey = document.getElementById('sim-origin').value;
+            const fwStatus = document.getElementById('sim-fw-status').checked;
+
+            const service = serviceData[serviceKey];
+            
+            // Update Node Target IP based on service
+            document.getElementById('target-ip').textContent = service.defaultIp;
+
+            // Update Origin UI
+            const originTitle = document.getElementById('origin-title');
+            const originIp = document.getElementById('origin-ip');
+            
+            if (originKey === 'wan') {
+                originTitle.textContent = 'Cliente WAN (Ext)';
+                originIp.textContent = '10.0.0.100';
+            } else {
+                originTitle.textContent = 'Cliente LAN (Local)';
+                originIp.textContent = '192.168.1.50';
+            }
+
+            // Update Badges
+            document.getElementById('fw-status-badge').textContent = fwStatus ? 'Firewall Activado' : 'Firewall Desactivado';
+            document.getElementById('fw-status-badge').style.color = fwStatus ? 'var(--primary)' : 'var(--accent-red)';
+        }
+
+        function log(msg, type = 'info') {
+            const terminal = document.getElementById('terminal-logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${msg}`;
+            terminal.appendChild(entry);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // Animation Helper
+        function animatePacket(startNode, endNode, callback) {
+            const packet = document.getElementById('packet');
+            const startRect = startNode.getBoundingClientRect();
+            const endRect = endNode.getBoundingClientRect();
+            const topologyRect = document.getElementById('topology').getBoundingClientRect();
+
+            const startX = startRect.left + startRect.width / 2 - topologyRect.left;
+            const startY = startRect.top + startRect.height / 2 - topologyRect.top;
+            const endX = endRect.left + endRect.width / 2 - topologyRect.left;
+            const endY = endRect.top + endRect.height / 2 - topologyRect.top;
+
+            packet.style.left = `${startX}px`;
+            packet.style.top = `${startY}px`;
+            packet.style.display = 'block';
+
+            let startTime = null;
+            const duration = 1000; // 1 second per segment
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                
+                const currentX = startX + (endX - startX) * progress;
+                const currentY = startY + (endY - startY) * progress;
+
+                packet.style.left = `${currentX}px`;
+                packet.style.top = `${currentY}px`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    if (callback) callback();
+                }
+            }
+
+            requestAnimationFrame(step);
+        }
+
+        function runSimulation() {
+            const serviceKey = document.getElementById('sim-service').value;
+            const originKey = document.getElementById('sim-origin').value;
+            const hasNatRule = document.getElementById('sim-router-nat').checked;
+            const fwStatus = document.getElementById('sim-fw-status').checked;
+            const fwRule = document.getElementById('sim-fw-rule').value;
+
+            const service = serviceData[serviceKey];
+            const originIp = originKey === 'wan' ? '10.0.0.100' : '192.168.1.50';
+
+            // Reset Nodes UI
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('active', 'blocked'));
+
+            log(`--- INICIANDO CONEXIÓN A ${service.name} ---`, 'info');
+            log(`[1] Cliente (${originIp}) envía paquete TCP SYN a IP WAN 10.0.0.1:${service.extPort}`, 'info');
+
+            const originNode = document.getElementById('node-origin');
+            const routerNode = document.getElementById('node-router');
+            const targetNode = document.getElementById('node-target');
+
+            originNode.classList.add('active');
+
+            // Phase 1: Origin to Router
+            animatePacket(originNode, routerNode, () => {
+                originNode.classList.remove('active');
+                routerNode.classList.add('active');
+
+                if (originKey === 'lan') {
+                    log(`[NAT Loopback / Hairpin]: Petición interna detectada hacia la IP WAN. Router procesa el bucle.`, 'warn');
+                }
+
+                // Evaluate Router NAT Rule
+                if (!hasNatRule) {
+                    log(`[ROUTER - ERROR]: No existe regla de Port Forwarding para el puerto ${service.extPort}. Paquete descartado (Connection Refused).`, 'error');
+                    routerNode.classList.remove('active');
+                    routerNode.classList.add('blocked');
+                    document.getElementById('packet').style.display = 'none';
+                    return;
+                }
+
+                log(`[ROUTER - NAT OK]: Redirigiendo puerto ext ${service.extPort} -> IP LAN ${service.defaultIp}:${service.intPort}`, 'success');
+
+                // Phase 2: Router to Target Host
+                animatePacket(routerNode, targetNode, () => {
+                    routerNode.classList.remove('active');
+                    targetNode.classList.add('active');
+
+                    log(`[HOST]: Paquete recibido en tarjeta de red (${service.defaultIp}:${service.intPort}). Evaluando Firewall de Windows...`, 'info');
+
+                    // Evaluate Firewall Status & Rules
+                    if (!fwStatus) {
+                        log(`[FIREWALL]: Desactivado. El paquete pasa libremente al servicio ${service.name}.`, 'warn');
+                        log(`[ÉXITO]: Conexión establecida con éxito en el puerto ${service.intPort}!`, 'success');
+                        return;
+                    }
+
+                    if (fwRule === 'allow') {
+                        log(`[FIREWALL - REGULACIÓN OK]: Regla Inbound PERMITIR detectada para puerto ${service.intPort} TCP.`, 'success');
+                        log(`[ÉXITO]: Conexión TCP ESTABLECIDA con ${service.name}.`, 'success');
+                    } else if (fwRule === 'block') {
+                        log(`[FIREWALL - BLOQUEO EXPLÍCITO]: Regla Inbound DENEGAR activa para puerto ${service.intPort}. Paquete rechazado (RST/ACK).`, 'error');
+                        targetNode.classList.remove('active');
+                        targetNode.classList.add('blocked');
+                        document.getElementById('packet').style.display = 'none';
+                    } else {
+                        log(`[FIREWALL - BLOQUEO POR DEFECTO]: No se encontró regla de entrada para puerto ${service.intPort}. Paquete descartado (Timeout).`, 'error');
+                        targetNode.classList.remove('active');
+                        targetNode.classList.add('blocked');
+                        document.getElementById('packet').style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Initialize UI on Load
+        window.onload = function() {
+            updateSimulatorUI();
+        };
+    </script>
+</body>
+</html>
