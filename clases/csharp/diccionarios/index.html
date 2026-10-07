@@ -186,7 +186,7 @@
         <!-- Cabecera -->
         <header>
             <h1>Guía Técnica: Dictionary y LINQ en C# 5.0</h1>
-            <p>Estructuras de almacenamiento clave y consultas declarativas orientadas a .NET Framework 4.5 / C# 5</p>
+            <p>Estructuras de almacenamiento clave y consultas declarativas orientadas al .NET Framework 4.5 / C# 5</p>
         </header>
 
         <!-- Sección 1: Dictionary -->
@@ -238,9 +238,9 @@ edades[<span class="str">"Ana"</span>] = <span class="kw">30</span>; <span class
 
         <!-- Sección 2: Clases Públicas para Ejemplos LINQ -->
         <section>
-            <h2>2. Definición del Contexto (Clases Públicas con Constructor y Entrada Dinámica)</h2>
+            <h2>2. Definición del Contexto (Clases Públicas con Constructor y Bucle Do-While Dinámico)</h2>
             <p>Para ilustrar el uso de LINQ en C# 5.0, utilizaremos clases con constructores explícitos y un método que
-                solicita los datos de forma interactiva al usuario en tiempo de ejecución:</p>
+                alimenta la lista de forma interactiva mediante un bucle <code>do-while</code>:</p>
             <pre><code><span class="kw">public class</span> <span class="tp">Producto</span>
 {
     <span class="kw">public int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
@@ -262,35 +262,34 @@ edades[<span class="str">"Ana"</span>] = <span class="kw">30</span>; <span class
 {
     <span class="kw">public</span> <span class="tp">List&lt;Producto&gt;</span> <span class="mth">ObtenerProductos</span>()
     {
+        <span class="com">// Lista dinámica inicializada vacía</span>
         <span class="tp">List&lt;Producto&gt;</span> listaProductos = <span class="kw">new</span> <span class="tp">List&lt;Producto&gt;</span>();
+        <span class="tp">string</span> respuesta;
 
-        Console.<span class="mth">WriteLine</span>(<span class="str">"¿Cuántos productos desea registrar en el inventario?"</span>);
-        <span class="tp">string</span> inputCount = Console.<span class="mth">ReadLine</span>();
-        <span class="tp">int</span> cantidad;
+        Console.<span class="mth">WriteLine</span>(<span class="str">"=== GESTIÓN DINÁMICA DE INVENTARIO (DO-WHILE) ==="</span>);
 
-        <span class="kw">if</span> (<span class="tp">int</span>.<span class="mth">TryParse</span>(inputCount, <span class="kw">out</span> cantidad))
+        <span class="kw">do</span>
         {
-            <span class="kw">for</span> (<span class="tp">int</span> i = <span class="kw">0</span>; i &lt; cantidad; i++)
-            {
-                Console.<span class="mth">WriteLine</span>(<span class="str">"\nIngrese los datos para el producto "</span> + (i + <span class="kw">1</span>) + <span class="str">":"</span>);
+            Console.<span class="mth">Write</span>(<span class="str">"\nIngrese el ID del producto: "</span>);
+            <span class="tp">int</span> id = <span class="tp">int</span>.<span class="mth">Parse</span>(Console.<span class="mth">ReadLine</span>());
 
-                Console.<span class="mth">Write</span>(<span class="str">"ID: "</span>);
-                <span class="tp">int</span> id = <span class="tp">int</span>.<span class="mth">Parse</span>(Console.<span class="mth">ReadLine</span>());
+            Console.<span class="mth">Write</span>(<span class="str">"Ingrese el Nombre del producto: "</span>);
+            <span class="tp">string</span> nombre = Console.<span class="mth">ReadLine</span>();
 
-                Console.<span class="mth">Write</span>(<span class="str">"Nombre: "</span>);
-                <span class="tp">string</span> nombre = Console.<span class="mth">ReadLine</span>();
+            Console.<span class="mth">Write</span>(<span class="str">"Ingrese el Precio del producto: "</span>);
+            <span class="tp">decimal</span> precio = <span class="tp">decimal</span>.<span class="mth">Parse</span>(Console.<span class="mth">ReadLine</span>());
 
-                Console.<span class="mth">Write</span>(<span class="str">"Precio: "</span>);
-                <span class="tp">decimal</span> precio = <span class="tp">decimal</span>.<span class="mth">Parse</span>(Console.<span class="mth">ReadLine</span>());
+            Console.<span class="mth">Write</span>(<span class="str">"Ingrese la Categoría: "</span>);
+            <span class="tp">string</span> categoria = Console.<span class="mth">ReadLine</span>();
 
-                Console.<span class="mth">Write</span>(<span class="str">"Categoría: "</span>);
-                <span class="tp">string</span> categoria = Console.<span class="mth">ReadLine</span>();
+            <span class="com">// Instanciación dinámica con constructor y adición a la lista</span>
+            <span class="tp">Producto</span> nuevoProducto = <span class="kw">new</span> <span class="tp">Producto</span>(id, nombre, precio, categoria);
+            listaProductos.<span class="mth">Add</span>(nuevoProducto);
 
-                <span class="com">// Instanciación dinámica con los datos suministrados por el usuario</span>
-                <span class="tp">Producto</span> nuevoProducto = <span class="kw">new</span> <span class="tp">Producto</span>(id, nombre, precio, categoria);
-                listaProductos.<span class="mth">Add</span>(nuevoProducto);
-            }
-        }
+            Console.<span class="mth">Write</span>(<span class="str">"¿Desea registrar otro producto? (s/n): "</span>);
+            respuesta = Console.<span class="mth">ReadLine</span>();
+
+        } <span class="kw">while</span> (respuesta != <span class="kw">null</span> && respuesta.<span class="mth">Trim</span>().<span class="mth">ToLower</span>() == <span class="str">"s"</span>);
 
         <span class="com">/* --- EJEMPLO DE VALORES HARDCODEADOS ANTERIORES (Referencia) ---
         // Producto p1 = new Producto(1, "Laptop", 850m, "Tecnología");
