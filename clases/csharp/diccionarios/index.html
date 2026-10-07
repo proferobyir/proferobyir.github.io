@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de C# 5.0: Dictionary y LINQ</title>
+    <style>
+        :root {
+            --bg-main: #0d1117;
+            --bg-card: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --code-bg: #010409;
+            --keyword: #ff7b72;
+            --type: #79c0ff;
+            --string: #a5d6ff;
+            --method: #d2a8ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        h2 {
+            color: var(--accent-yellow);
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.4rem;
+        }
+
+        h3 {
+            color: var(--type);
+            font-size: 1.05rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        p,
+        ul {
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        ul {
+            padding-left: 1.2rem;
+        }
+
+        li {
+            margin-bottom: 0.3rem;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .card {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .card h4 {
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: Consolas, "Courier New", Courier, monospace;
+            font-size: 0.85rem;
+            margin: 0.75rem 0;
+            color: var(--text-main);
+        }
+
+        /* Syntax Highlighting Simulado */
+        .kw {
+            color: var(--keyword);
+        }
+
+        .tp {
+            color: var(--type);
+        }
+
+        .str {
+            color: var(--string);
+        }
+
+        .mth {
+            color: var(--method);
+        }
+
+        .com {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Media Queries para pantallas medianas y grandes */
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .grid-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Cabecera -->
+        <header>
+            <h1>Guía Técnica: Dictionary y LINQ en C# 5.0</h1>
+            <p>Estructuras de almacenamiento clave y consultas declarativas orientadas a .NET Framework 4.5 / C# 5</p>
+        </header>
+
+        <!-- Sección 1: Dictionary -->
+        <section>
+            <h2>1. El Diccionario en C# (`Dictionary&lt;TKey, TValue&gt;`)</h2>
+            <p>Un <code>Dictionary</code> almacena pares de <strong>Clave-Valor</strong>. En C# 5.0, la clave debe ser
+                única y proporciona búsquedas altamente eficientes por índice de clave gracias a su tabla hash interna.
+            </p>
+
+            <h3>Declaración e Inicialización básica</h3>
+            <pre><code><span class="com">// Declarar e instanciar un diccionario con Clave string y Valor int</span>
+<span class="tp">Dictionary&lt;string, int&gt;</span> edades = <span class="kw">new</span> <span class="tp">Dictionary&lt;string, int&gt;</span>();
+
+<span class="com">// Agregar elementos</span>
+edades.<span class="mth">Add</span>(<span class="str">"Carlos"</span>, <span class="kw">25</span>);
+edades[<span class="str">"Ana"</span>] = <span class="kw">30</span>; <span class="com">// Forma directa de agregar o actualizar</span>
+
+<span class="com">// Verificar existencia antes de consultar para evitar excepciones</span>
+<span class="kw">if</span> (edades.<span class="mth">ContainsKey</span>(<span class="str">"Carlos"</span>))
+{
+    <span class="tp">int</span> edadCarlos = edades[<span class="str">"Carlos"</span>];
+}
+
+<span class="com">// Lectura segura con TryGetValue (Muy recomendado en C# 5)</span>
+<span class="tp">int</span> valorEdad;
+<span class="kw">if</span> (edades.<span class="mth">TryGetValue</span>(<span class="str">"Ana"</span>, <span class="kw">out</span> valorEdad))
+{
+    <span class="com">// valorEdad contiene 30</span>
+}</code></pre>
+        </section>
+
+        <!-- Sección 2: Clases Públicas para Ejemplos LINQ -->
+        <section>
+            <h2>2. Definición del Contexto (Clases Públicas)</h2>
+            <p>Para ilustrar el uso de LINQ en C# 5.0, utilizaremos las siguientes clases y métodos públicos que simulan
+                una gestión de productos:</p>
+            <pre><code><span class="kw">public class</span> <span class="tp">Producto</span>
+{
+    <span class="kw">public int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Nombre { <span class="kw">get;</span> <span class="kw">set</span>; }
+    <span class="kw">public decimal</span> Precio { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Categoria { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="kw">public class</span> <span class="tp">InventarioServicio</span>
+{
+    <span class="kw">public</span> <span class="tp">List&lt;Producto&gt;</span> <span class="mth">ObtenerProductos</span>()
+    {
+        <span class="kw">return</span> <span class="kw">new</span> <span class="tp">List&lt;Producto&gt;</span>()
+        {
+            <span class="kw">new</span> <span class="tp">Producto</span> { Id = <span class="kw">1</span>, Nombre = <span class="str">"Laptop"</span>, Precio = <span class="kw">850m</span>, Categoria = <span class="str">"Tecnología"</span> },
+            <span class="kw">new</span> <span class="tp">Producto</span> { Id = <span class="kw">2</span>, Nombre = <span class="str">"Mouse"</span>, Precio = <span class="kw">25m</span>, Categoria = <span class="str">"Tecnología"</span> },
+            <span class="kw">new</span> <span class="tp">Producto</span> { Id = <span class="kw">3</span>, Nombre = <span class="str">"Cafetera"</span>, Precio = <span class="kw">45m</span>, Categoria = <span class="str">"Hogar"</span> },
+            <span class="kw">new</span> <span class="tp">Producto</span> { Id = <span class="kw">4</span>, Nombre = <span class="str">"Teclado"</span>, Precio = <span class="kw">55m</span>, Categoria = <span class="str">"Tecnología"</span> }
+        };
+    }
+}</code></pre>
+        </section>
+
+        <!-- Sección 3: Operadores LINQ con Ejemplos -->
+        <section>
+            <h2>3. Operadores Principales de LINQ en C# 5.0</h2>
+            <p>LINQ (Language Integrated Query) permite consultar colecciones de forma declarativa usando tanto sintaxis
+                de consultas (tipo SQL) como sintaxis de métodos (expresiones lambda).</p>
+
+            <div class="grid-cards">
+                <!-- Card 1: Where -->
+                <div class="card">
+                    <h4>Where (Filtrado)</h4>
+                    <p>Filtra una secuencia basada en una condición lógica.</p>
+                    <pre><code><span class="com">// Sintaxis de Métodos</span>
+<span class="kw">var</span> techProducts = productos
+    .<span class="mth">Where</span>(p => p.Categoria == <span class="str">"Tecnología"</span>)
+    .<span class="mth">ToList</span>();</code></pre>
+                </div>
+
+                <!-- Card 2: Select -->
+                <div class="card">
+                    <h4>Select (Proyección)</h4>
+                    <p>Transforma los elementos de una colección en una nueva forma o estructura.</p>
+                    <pre><code><span class="com">// Proyectar solo los nombres</span>
+<span class="kw">var</span> nombres = productos
+    .<span class="mth">Select</span>(p => p.Nombre)
+    .<span class="mth">ToList</span>();</code></pre>
+                </div>
+
+                <!-- Card 3: OrderBy -->
+                <div class="card">
+                    <h4>OrderBy / OrderByDescending</h4>
+                    <p>Ordena los elementos de menor a mayor o viceversa.</p>
+                    <pre><code><span class="com">// Ordenar por precio ascendente</span>
+<span class="kw">var</span> ordenados = productos
+    .<span class="mth">OrderBy</span>(p => p.Precio)
+    .<span class="mth">ToList</span>();</code></pre>
+                </div>
+
+                <!-- Card 4: GroupBy -->
+                <div class="card">
+                    <h4>GroupBy (Agrupación)</h4>
+                    <p>Agrupa elementos compartiendo una clave común.</p>
+                    <pre><code><span class="com">// Agrupar por categoría</span>
+<span class="kw">var</span> grupos = productos
+    .<span class="mth">GroupBy</span>(p => p.Categoria);
+
+<span class="kw">foreach</span> (<span class="kw">var</span> grupo <span class="kw">in</span> grupos)
+{
+    <span class="com">// grupo.Key = "Tecnología", etc.</span>
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 4: Combinación Dictionary + LINQ -->
+        <section>
+            <h2>4. Combinación Avanzada: LINQ sobre un Dictionary</h2>
+            <p>En C# 5.0, un <code>Dictionary&lt;TKey, TValue&gt;</code> implementa
+                <code>IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;</code>, lo que permite aplicarle operadores
+                LINQ directamente.</p>
+            <pre><code><span class="kw">public class</span> <span class="tp">ReporteInventario</span>
+{
+    <span class="kw">public void</span> <span class="mth">ProcesarDiccionarioConLinq</span>()
+    {
+        <span class="com">// Inicializar Diccionario con ID de producto y su Stock</span>
+        <span class="tp">Dictionary&lt;int, int&gt;</span> stockProductos = <span class="kw">new</span> <span class="tp">Dictionary&lt;int, int&gt;</span>()
+        {
+            { <span class="kw">1</span>, <span class="kw">12</span> },
+            { <span class="kw">2</span>, <span class="kw">5</span> },
+            { <span class="kw">3</span>, <span class="kw">0</span> },
+            { <span class="kw">4</span>, <span class="kw">20</span> }
+        };
+
+        <span class="com">// Usar LINQ para filtrar productos con stock menor a 10 unidades</span>
+        <span class="kw">var</span> stockCritico = stockProductos
+            .<span class="mth">Where</span>(kvp => kvp.Value &lt; <span class="kw">10</span>)
+            .<span class="mth">ToDictionary</span>(kvp => kvp.Key, kvp => kvp.Value);
+
+        <span class="com">// Consultar el elemento máximo usando LINQ</span>
+        <span class="kw">var</span> mayorStock = stockProductos
+            .<span class="mth">OrderByDescending</span>(kvp => kvp.Value)
+            .<span class="mth">FirstOrDefault</span>();
+            
+        <span class="com">// mayorStock.Key contiene el ID y mayorStock.Value el stock máximo</span>
+    }
+}</code></pre>
+        </section>
+    </div>
+
+</body>
+
+</html>
