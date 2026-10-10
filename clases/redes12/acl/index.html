@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="ACL en Routers para el Control de Acceso- Profesor: Ing. Robyir Loreto" />
+    <meta property="og:description" content="Se explican sobre las listas de control de acceso de un router" />
+    <meta property="og:image" content="https://proferobyir.github.io/pictures/tux.png" />
+    <meta property="og:url" content="https://proferobyir.github.io" />
+    <meta property="og:type" content="website" />
+    <title>ACL · Electiva Redes II · Profesor: Ing.Robyir Loreto</title>
+    <style>
+        /* ============================================================
+           PALETA DE COLORES BASADA EN CISCO PACKET TRACER (HOME ROUTER)
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'SF Mono', 'Consolas', monospace;
+        }
+
+        body {
+            background: #1a2b3c;
+            /* fondo general oscuro azulado */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        /* Contenedor principal: emula el panel del router */
+        .router-panel {
+            max-width: 1300px;
+            width: 100%;
+            background: #0d1b2a;
+            /* fondo del panel */
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+            border: 1px solid #2e4a6a;
+            overflow: hidden;
+            padding: 24px 28px 32px;
+        }
+
+        /* Barra de título estilo Cisco */
+        .router-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #1f7a8c;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+
+        .router-header h1 {
+            font-size: 1.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #9ad1e0;
+            text-shadow: 0 0 6px #1f7a8c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .router-header h1 span {
+            background: #1f7a8c;
+            color: #0d1b2a;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 30px;
+            text-shadow: none;
+            letter-spacing: 0.5px;
+        }
+
+        .cisco-badge {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cisco-badge .led {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3a6b8f;
+            box-shadow: inset 0 0 5px #00000066;
+        }
+
+        .cisco-badge .led.green {
+            background: #2ecc71;
+            box-shadow: 0 0 10px #2ecc71aa, inset 0 0 4px #ffffffaa;
+        }
+
+        .cisco-badge .led.amber {
+            background: #f39c12;
+            box-shadow: 0 0 10px #f39c12aa;
+        }
+
+        .cisco-badge .led.blue {
+            background: #3498db;
+            box-shadow: 0 0 10px #3498dbaa;
+        }
+
+        /* Grid principal */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Tarjetas con estilo de panel de router */
+        .card {
+            background: #11212e;
+            border-radius: 12px;
+            border-left: 4px solid #1f7a8c;
+            padding: 18px 22px;
+            box-shadow: inset 0 0 0 1px #1e3a4e, 0 6px 12px #00000040;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover {
+            border-left-color: #3aa5b0;
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #aad4e6;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px dashed #2e5a6e;
+            padding-bottom: 8px;
+        }
+
+        .card h2 i {
+            font-style: normal;
+            font-size: 1.6rem;
+        }
+
+        .card p,
+        .card li {
+            color: #bfd9e8;
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+
+        .card ul,
+        .card ol {
+            padding-left: 22px;
+            margin: 10px 0;
+        }
+
+        .card li {
+            margin-bottom: 6px;
+        }
+
+        .code-block {
+            background: #0a141c;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'SF Mono', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #b3e4f5;
+            border: 1px solid #1f4b5c;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 12px 0;
+            box-shadow: inset 0 0 8px #00000060;
+        }
+
+        .code-block .command {
+            color: #7fd1e0;
+        }
+
+        .code-block .comment {
+            color: #5a8f9c;
+            font-style: italic;
+        }
+
+        .badge-whitelist {
+            background: #1f7a8c;
+            color: #e0f2f7;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-blacklist {
+            background: #b34a4a;
+            color: #ffe6e6;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sección de práctica (bloqueo celulares) */
+        .practice-section {
+            background: #0b1a26;
+            border-radius: 14px;
+            border: 1px solid #1f7a8c;
+            padding: 22px 26px;
+            margin-top: 12px;
+            box-shadow: 0 0 0 1px #1a3a48 inset, 0 8px 16px #00000050;
+        }
+
+        .practice-section h2 {
+            color: #9ad1e0;
+            font-size: 1.6rem;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .practice-section h2 .emoji {
+            font-size: 1.9rem;
+        }
+
+        .router-interface {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .router-interface .left {
+            flex: 1 1 300px;
+        }
+
+        .router-interface .right {
+            flex: 1 1 300px;
+            background: #0a141c;
+            border-radius: 10px;
+            padding: 16px 20px;
+            border: 1px solid #1e4a5e;
+        }
+
+        .device-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0;
+        }
+
+        .device-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #11212e;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #2e6b7c;
+            color: #c2ddea;
+            font-size: 0.95rem;
+        }
+
+        .device-list li .ip {
+            font-family: monospace;
+            color: #7fd1e0;
+            margin-left: auto;
+            background: #0a1a24;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .highlight-block {
+            background: #2a1e1e;
+            border-left-color: #b34a4a !important;
+            color: #f0c0c0;
+        }
+
+        .highlight-block .ip {
+            color: #e68a8a;
+        }
+
+        .note {
+            background: #18343f;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #b0d9e8;
+            font-size: 0.9rem;
+            border-left: 4px solid #f39c12;
+            margin-top: 16px;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #3d6b7e;
+            font-size: 0.8rem;
+            border-top: 1px solid #1f3f4e;
+            padding-top: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Responsividad */
+        @media (max-width: 900px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+
+            .router-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .router-panel {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="router-panel">
+        <!-- Encabezado estilo Cisco Packet Tracer -->
+        <div class="router-header">
+            <h1>
+                🔐 ACL · Router Cisco
+                <span>Packet Tracer</span>
+            </h1>
+            <div class="cisco-badge">
+                <div class="led green"></div>
+                <div class="led amber"></div>
+                <div class="led blue"></div>
+            </div>
+        </div>
+
+        <!-- Primera fila: concepto y tipos -->
+        <div class="grid-2col">
+            <!-- ¿Qué es una ACL? -->
+            <div class="card">
+                <h2><i>📋</i> ¿Qué es una Lista de Control de Acceso?</h2>
+                <p>Una <strong>ACL (Access Control List)</strong> es un conjunto de reglas que el router aplica sobre el
+                    tráfico que atraviesa sus interfaces. Cada regla permite o deniega paquetes según criterios como:
+                </p>
+                <ul>
+                    <li>Dirección IP de origen / destino</li>
+                    <li>Protocolo (TCP, UDP, ICMP, etc.)</li>
+                    <li>Puerto origen / destino</li>
+                    <li>Interfaz de entrada o salida</li>
+                </ul>
+                <div class="code-block">
+                    <span class="comment">! Ejemplo de ACL extendida</span><br>
+                    <span class="command">access-list 101 permit tcp 192.168.1.0 0.0.0.255 any eq 80</span><br>
+                    <span class="command">access-list 101 deny ip any any</span>
+                </div>
+                <p>Las ACL se aplican en la interfaz con <code>ip access-group</code> y se evalúan
+                    <strong>secuencialmente</strong> (de arriba hacia abajo).
+                </p>
+            </div>
+
+            <!-- Lista blanca vs lista negra -->
+            <div class="card">
+                <h2><i>⚖️</i> Lista Blanca vs. Lista Negra</h2>
+                <p><span class="badge-whitelist">WHITELIST</span> <strong>Lista blanca</strong> — Solo se permite el
+                    tráfico explícitamente autorizado. Todo lo demás se deniega por defecto.</p>
+                <div class="code-block">
+                    <span class="comment">! Lista blanca: solo permite HTTP/HTTPS</span><br>
+                    <span class="command">access-list 100 permit tcp any any eq 80</span><br>
+                    <span class="command">access-list 100 permit tcp any any eq 443</span><br>
+                    <span class="command">access-list 100 deny ip any any</span>
+                </div>
+                <p style="margin-top: 12px;"><span class="badge-blacklist">BLACKLIST</span> <strong>Lista negra</strong>
+                    — Se deniega explícitamente el tráfico no deseado. Todo lo demás se permite por defecto.</p>
+                <div class="code-block">
+                    <span class="comment">! Lista negra: bloquea solo ICMP (ping)</span><br>
+                    <span class="command">access-list 102 deny icmp any any</span><br>
+                    <span class="command">access-list 102 permit ip any any</span>
+                </div>
+                <p>🔹 <strong>Recomendación:</strong> usar listas blancas para mayor seguridad, ya que el deny implícito
+                    al final protege ante tráfico no deseado.</p>
+            </div>
+        </div>
+
+        <!-- Sección de práctica: bloqueo de celulares -->
+        <div class="practice-section">
+            <h2>
+                <span class="emoji">📱</span> Práctica: Bloquear celulares de estudiantes
+                <span style="font-size: 0.9rem; margin-left: auto; color: #5f9ead;">ACL extendida · Salida a
+                    Internet</span>
+            </h2>
+
+            <div class="router-interface">
+                <!-- Panel izquierdo: red y dispositivos -->
+                <div class="left">
+                    <p style="color: #b0d9e8; margin-bottom: 12px;"><strong>Topología:</strong> Router Cisco 4321 · LAN
+                        192.168.10.0/24 · VLAN estudiantes</p>
+                    <ul class="device-list">
+                        <li>💻 PC Profesor <span class="ip">192.168.10.10</span></li>
+                        <li>📱 Celular Estudiante 1 <span class="ip">192.168.10.101</span></li>
+                        <li>📱 Celular Estudiante 2 <span class="ip">192.168.10.102</span></li>
+                        <li>📱 Celular Estudiante 3 <span class="ip">192.168.10.103</span></li>
+                        <li>🖨️ Impresora <span class="ip">192.168.10.20</span></li>
+                    </ul>
+                    <div class="note">
+                        🎯 <strong>Objetivo:</strong> Permitir que los profesores y equipos administrativos naveguen,
+                        pero <strong>denegar todo el tráfico</strong> proveniente de los celulares de estudiantes (rango
+                        .101–.103) hacia la WAN.
+                    </div>
+                </div>
+
+                <!-- Panel derecho: ACL aplicada -->
+                <div class="right">
+                    <p style="color: #9ad1e0; font-weight: 600; margin-bottom: 12px;">🔧 Configuración en el router:</p>
+                    <div class="code-block" style="margin: 0; background: #071016;">
+                        <span class="comment">! Crear ACL extendida 110 (lista negra)</span><br>
+                        <span class="command">access-list 110 deny ip host 192.168.10.101 any</span><br>
+                        <span class="command">access-list 110 deny ip host 192.168.10.102 any</span><br>
+                        <span class="command">access-list 110 deny ip host 192.168.10.103 any</span><br>
+                        <span class="comment">! Permitir el resto del tráfico</span><br>
+                        <span class="command">access-list 110 permit ip any any</span><br><br>
+                        <span class="comment">! Aplicar a la interfaz GigabitEthernet0/1 (salida a Internet)</span><br>
+                        <span class="command">interface GigabitEthernet0/1</span><br>
+                        <span class="command"> ip access-group 110 out</span>
+                    </div>
+                    <ul class="device-list" style="margin-top: 16px;">
+                        <li class="highlight-block">📱 Celular 1 · BLOQUEADO <span class="ip">DENY</span></li>
+                        <li class="highlight-block">📱 Celular 2 · BLOQUEADO <span class="ip">DENY</span></li>
+                        <li class="highlight-block">📱 Celular 3 · BLOQUEADO <span class="ip">DENY</span></li>
+                        <li>💻 PC Profesor · PERMITIDO <span class="ip">PERMIT</span></li>
+                        <li>🖨️ Impresora · PERMITIDO <span class="ip">PERMIT</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Explicación adicional del efecto -->
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 22px;">
+                <div
+                    style="flex: 1 1 260px; background: #102b36; border-radius: 10px; padding: 16px; border-left: 4px solid #3aa5b0;">
+                    <h3 style="color: #b3e4f5; font-weight: 400; margin-bottom: 8px;">✅ Verificación</h3>
+                    <p style="color: #bfd9e8; font-size: 0.95rem;">Desde un celular estudiante, al hacer
+                        <code>ping 8.8.8.8</code> o abrir un navegador, el router descarta los paquetes. El comando
+                        <code>show access-lists</code> muestra los contadores de coincidencias.
+                    </p>
+                </div>
+                <div
+                    style="flex: 1 1 260px; background: #102b36; border-radius: 10px; padding: 16px; border-left: 4px solid #b34a4a;">
+                    <h3 style="color: #f0c0c0; font-weight: 400; margin-bottom: 8px;">⚠️ Consideraciones</h3>
+                    <p style="color: #bfd9e8; font-size: 0.95rem;">Si los celulares usan DHCP, se pueden reservar
+                        direcciones IP fijas o bloquear por dirección MAC (con ACL de capa 2 en switches). También se
+                        puede aplicar una ACL de entrada en la interfaz LAN.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie de página estilo Cisco -->
+        <div class="footer">
+            Electiva Redes II · Listas de Control de Acceso (ACL) · Router Cisco Packet Tracer · Práctica: bloqueo de
+            dispositivos estudiantiles
+        </div>
+    </div>
+</body>
+
+</html>
