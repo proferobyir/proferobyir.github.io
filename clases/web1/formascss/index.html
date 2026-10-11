@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Guía Académica Interactiva: Fundamentos y Métodos de CSS" />
+    <meta property="og:description" content="Formas para aplicar CSS en una página Web - Profesor: Ing.Robyir Loreto" />
+    <meta property="og:image" content="https://proferobyir.github.io/pictures/tux.png" />
+    <meta property="og:url" content="https://proferobyir.github.io" />
+    <title>Guía Académica Interactiva: Fundamentos y Métodos de CSS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-page: #ffffff;
+            --text-main: #111111;
+            --text-muted: #444444;
+            --card-bg: #e8eff7;
+            --border-dark-blue: #002b49;
+            --accent-blue: #1d6fa5;
+            --code-bg: #1e293b;
+            --code-text: #f8fafc;
+            --font-serif: 'Georgia', 'Times New Roman', serif;
+            --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: var(--font-serif);
+            line-height: 1.7;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header.academic-header {
+            border-bottom: 2px solid var(--border-dark-blue);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        header.academic-header .meta-tag {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--border-dark-blue);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        header.academic-header h1 {
+            font-size: 2.3rem;
+            color: var(--text-main);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        header.academic-header p.subtitle {
+            font-family: var(--font-sans);
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .academic-card {
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--border-dark-blue);
+            border-radius: 20px 0 0 20px;
+            padding: 28px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 43, 73, 0.04);
+        }
+
+        .academic-card h2 {
+            font-family: var(--font-sans);
+            font-size: 1.6rem;
+            color: var(--border-dark-blue);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 43, 73, 0.2);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .academic-card h3 {
+            font-family: var(--font-sans);
+            font-size: 1.25rem;
+            color: var(--text-main);
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p,
+        li {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 0.85rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline-box {
+            background: #ffffff;
+            border: 1px solid #c0d1e5;
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .timeline-badge {
+            font-family: var(--font-sans);
+            background: var(--border-dark-blue);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+
+        .cascade-visualizer {
+            background: #ffffff;
+            border: 1px solid #c0d1e5;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .cascade-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .cascade-layer {
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        .cascade-layer:hover {
+            transform: translateX(6px);
+        }
+
+        .layer-1 {
+            background: #d0e1f9;
+            color: #002b49;
+            border-left: 6px solid #002b49;
+        }
+
+        .layer-2 {
+            background: #b8d4f8;
+            color: #002b49;
+            border-left: 6px solid #1d6fa5;
+        }
+
+        .layer-3 {
+            background: #9ec6f5;
+            color: #002b49;
+            border-left: 6px solid #0284c7;
+        }
+
+        .tab-container {
+            background: #ffffff;
+            border: 1px solid #c0d1e5;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #dbe7f5;
+            border-bottom: 1px solid #c0d1e5;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--border-dark-blue);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            border-bottom: 3px solid var(--border-dark-blue);
+            color: var(--border-dark-blue);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .demo-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 850px) {
+            .demo-split {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .interactive-panel {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .interactive-panel label {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--border-dark-blue);
+        }
+
+        .interactive-panel input[type="text"],
+        .interactive-panel select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            font-family: monospace;
+            margin-bottom: 12px;
+        }
+
+        .interactive-panel input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .rendered-stage {
+            background: #ffffff;
+            border: 2px dashed var(--border-dark-blue);
+            border-radius: 10px;
+            padding: 2rem;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .diagram-head-body {
+            background: #1e293b;
+            color: #f8fafc;
+            border-radius: 10px;
+            padding: 1.25rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .diagram-head-body .highlight-head {
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid #38bdf8;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+
+        .diagram-head-body .highlight-body {
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid #4ade80;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+
+        .external-file-connector {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 10px;
+            background: #ffffff;
+            border: 1px solid #c0d1e5;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .file-box {
+            background: #f1f5f9;
+            border: 2px solid #002b49;
+            border-radius: 8px;
+            padding: 1rem;
+            width: 42%;
+            font-family: monospace;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-box-title {
+            font-family: var(--font-sans);
+            font-weight: bold;
+            color: #002b49;
+            margin-bottom: 8px;
+            display: block;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 4px;
+        }
+
+        .connection-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--accent-blue);
+            font-family: var(--font-sans);
+            font-font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pulse-line {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #002b49, #1d6fa5);
+            border-radius: 2px;
+            position: relative;
+            margin: 6px 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: rgba(0, 43, 73, 0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            color: var(--border-dark-blue);
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        footer.academic-footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #cbd5e1;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            color: #555555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Compare toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+            font-family: var(--font-sans);
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--border-dark-blue);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="academic-header">
+        <span class="meta-tag">Módulo Educativo Gráfico e Interactivo</span>
+        <h1>Fundamentos Arquitectónicos y Métodos de Inserción de CSS</h1>
+        <p class="subtitle">Análisis visual, histórico y de especificidad para el desarrollo web estandarizado</p>
+    </header>
+
+    <main>
+
+        <section class="academic-card">
+            <h2>1. Teoría Fundamental de CSS</h2>
+            <p><strong>CSS</strong> (<em>Cascading Style Sheets</em>) es el estándar formal que define la presentación
+                visual de documentos estructurados escritos en HTML o XML. Su propósito primario es separar de manera
+                tajante el <strong>contenido semántico</strong> de la <strong>capa de diseño gráfico</strong>.</p>
+
+            <h3>1.1 Historia y Nacimiento (1994 - 1996)</h3>
+            <div class="timeline-grid">
+                <div class="timeline-box">
+                    <span class="timeline-badge">10 de Octubre, 1994</span>
+                    <h4>Propuesta Inicial</h4>
+                    <p><strong>Håkon Wium Lie</strong> propone CSS mientras trabajaba con Tim Berners-Lee en el CERN. El
+                        objetivo era frenar el descontrol de etiquetas visuales propietarias en HTML.</p>
+                </div>
+                <div class="timeline-box">
+                    <span class="timeline-badge">17 de Diciembre, 1996</span>
+                    <h4>Recomendación Oficial W3C</h4>
+                    <p>El consorcio <strong>W3C</strong> publica la especificación oficial <strong>CSS Level 1</strong>,
+                        estableciendo las bases del diseño web moderno con selectores, fuentes y colores.</p>
+                </div>
+            </div>
+
+            <h3>1.2 El Algoritmo de la Cascada y la Especificidad</h3>
+            <p>La "C" de Cascada se refiere a cómo el navegador determina qué estilo aplicar cuando existen reglas en
+                conflicto para un mismo elemento:</p>
+
+            <div class="cascade-visualizer">
+                <p style="font-family: var(--font-sans); font-weight: bold; color: var(--border-dark-blue);">Jerarquía
+                    de Prioridad (De Mayor a Menor Importancia):</p>
+                <div class="cascade-layers">
+                    <div class="cascade-layer layer-1">
+                        <span>1. Estilos en Línea (Inline)</span>
+                        <code>style="..." (Especificidad Máxima)</code>
+                    </div>
+                    <div class="cascade-layer layer-2">
+                        <span>2. Estilos Internos y Externos</span>
+                        <code>Selectores (#ID, .Clase, Etiqueta)</code>
+                    </div>
+                    <div class="cascade-layer layer-3">
+                        <span>3. Estilos por Defecto del Navegador</span>
+                        <code>User Agent Stylesheet</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="academic-card">
+            <h2>2. Diagrama e Interacción de las 3 Formas de Agregar CSS</h2>
+            <p>Explora interactivamente cada uno de los tres métodos normalizados para aplicar hojas de estilo a un
+                documento HTML:</p>
+
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab(event, 'inline-tab')">1. Inline CSS (En
+                        Línea)</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'internal-tab')">2. Internal CSS
+                        (Interno)</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'external-tab')">3. External CSS
+                        (Externo)</button>
+                </div>
+
+                <div id="inline-tab" class="tab-content active">
+                    <h3>Método 1: Estilos en Línea (Inline)</h3>
+                    <p>Se aplican directamente en el elemento mediante el atributo <code>style="..."</code>. Modifica
+                        los controles para ver el cambio instantáneo en el elemento y en el código generado.</p>
+
+                    <div class="demo-split">
+                        <div class="interactive-panel">
+                            <label for="inline-color">Color de Texto:</label>
+                            <input type="color" id="inline-color" value="#002b49" oninput="updateInlineDemo()">
+
+                            <label for="inline-bg">Color de Fondo:</label>
+                            <input type="color" id="inline-bg" value="#ffffff" oninput="updateInlineDemo()">
+
+                            <label for="inline-padding">Relleno (Padding):</label>
+                            <select id="inline-padding" onchange="updateInlineDemo()">
+                                <option value="10px">10px (Pequeño)</option>
+                                <option value="20px" selected>20px (Mediano)</option>
+                                <option value="30px">30px (Grande)</option>
+                            </select>
+
+                            <label for="inline-radius">Borde Redondeado:</label>
+                            <select id="inline-radius" onchange="updateInlineDemo()">
+                                <option value="0px">0px (Recto)</option>
+                                <option value="10px" selected>10px (Suave)</option>
+                                <option value="25px">25px (Circular)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <div class="rendered-stage">
+                                <p id="inline-target"
+                                    style="color: #002b49; background-color: #ffffff; padding: 20px; border-radius: 10px; border: 2px solid #002b49; font-weight: bold;">
+                                    ¡Elemento Estilizado en Línea!
+                                </p>
+                            </div>
+                            <pre><code id="inline-code-output">&lt;p style="color: #002b49; background-color: #ffffff; padding: 20px; border-radius: 10px;"&gt;¡Elemento Estilizado en Línea!&lt;/p&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="internal-tab" class="tab-content">
+                    <h3>Método 2: Estilos Internos (Internal)</h3>
+                    <p>Se escriben dentro del bloque <code>&lt;head&gt;</code> usando la etiqueta
+                        <code>&lt;style&gt;</code>. Este diagrama ilustra cómo las reglas de la cabecera aplican su
+                        estilo sobre los elementos del <code>&lt;body&gt;</code>.</p>
+
+                    <div class="demo-split">
+                        <div class="diagram-head-body">
+                            <code>&lt;!DOCTYPE html&gt;</code><br>
+                            <code>&lt;html&gt;</code>
+                            <div class="highlight-head">
+                                <code>&lt;head&gt;</code><br>
+                                &nbsp;&nbsp;<code>&lt;style&gt;</code><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #38bdf8;">.tarjeta-academica</span> {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">color</span>: <span
+                                    style="color: #facc15;" id="internal-code-color">#002b49</span>;<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">border-left</span>:
+                                <span style="color: #facc15;">5px solid</span>;<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;} <br>
+                                &nbsp;&nbsp;<code>&lt;/style&gt;</code><br>
+                                <code>&lt;/head&gt;</code>
+                            </div>
+                            <div class="highlight-body">
+                                <code>&lt;body&gt;</code><br>
+                                &nbsp;&nbsp;<code>&lt;div class="<span style="color: #38bdf8;">tarjeta-academica</span>"&gt;</code><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;Contenido afectado<br>
+                                &nbsp;&nbsp;<code>&lt;/div&gt;</code><br>
+                                <code>&lt;/body&gt;</code>
+                            </div>
+                            <code>&lt;/html&gt;</code>
+                        </div>
+
+                        <div class="interactive-panel">
+                            <label>Cambiar regla de la clase <code>.tarjeta-academica</code>:</label>
+                            <select id="internal-color-select" onchange="updateInternalDemo()">
+                                <option value="#002b49">Azul Oscuro Académico</option>
+                                <option value="#059669">Verde Esmeralda</option>
+                                <option value="#dc2626">Rojo Carmesí</option>
+                            </select>
+
+                            <div class="rendered-stage" style="margin-top: 1rem;">
+                                <div id="internal-target"
+                                    style="border-left: 5px solid #002b49; color: #002b49; padding: 15px; background: #f1f5f9; text-align: left; width: 100%; border-radius: 0 8px 8px 0; font-weight: bold;">
+                                    Soy una caja estilizada mediante la regla interna de la cabecera &lt;head&gt;.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="external-tab" class="tab-content">
+                    <h3>Método 3: Estilos Externos (External)</h3>
+                    <p>Es la <strong>máxima buena práctica</strong>. El archivo HTML se conecta mediante la etiqueta
+                        <code>&lt;link&gt;</code> a un archivo <code>.css</code> totalmente independiente.</p>
+
+                    <div class="external-file-connector">
+                        <div class="file-box">
+                            <span class="file-box-title">📄 index.html</span>
+                            <code>&lt;head&gt;</code><br>
+                            &nbsp;&nbsp;<code>&lt;link rel="stylesheet"</code><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href="estilos.css"&gt;</code><br>
+                            <code>&lt;/head&gt;</code><br>
+                            <code>&lt;body&gt;</code><br>
+                            &nbsp;&nbsp;<code>&lt;h1 class="titulo"&gt;</code><br>
+                            <code>&lt;/body&gt;</code>
+                        </div>
+
+                        <div class="connection-arrow">
+                            <span>VÍNCULO HTTP</span>
+                            <div class="pulse-line"></div>
+                            <span>&lt;link&gt;</span>
+                        </div>
+
+                        <div class="file-box">
+                            <span class="file-box-title">🎨 estilos.css</span>
+                            <span style="color: #002b49; font-weight: bold;">.titulo</span> {<br>
+                            &nbsp;&nbsp;color: #002b49;<br>
+                            &nbsp;&nbsp;font-family: serif;<br>
+                            &nbsp;&nbsp;border-bottom: 2px solid;<br>
+                            }
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <p style="font-family: var(--font-sans); font-weight: bold;">Ventajas Clave de este Método:</p>
+                        <ul>
+                            <li><strong>Reutilización:</strong> Una sola hoja <code>.css</code> puede estilizar cientos
+                                de páginas HTML.</li>
+                            <li><strong>Carga Rápida:</strong> El navegador almacena en caché el archivo CSS externo.
+                            </li>
+                            <li><strong>Mantenibilidad:</strong> Cambias el diseño de todo un sitio web modificando un
+                                solo archivo.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="academic-card">
+            <h2>3. Comparativa Interactiva: Con CSS vs. Sin CSS</h2>
+            <p>Evalúa el impacto visual instantáneo de aplicar estilos CSS a un documento académico sin formato
+                utilizando el control deslizante:</p>
+
+            <div class="toggle-container">
+                <span>Sin Formato (Solo HTML)</span>
+                <label class="switch">
+                    <input type="checkbox" id="css-toggle" checked onchange="toggleCSSComparison()">
+                    <span class="slider"></span>
+                </label>
+                <span>Con Estilos CSS Aplicados</span>
+            </div>
+
+            <div id="comparison-stage"
+                style="background: #ffffff; border: 2px solid #002b49; border-left: 5px solid #002b49; border-radius: 20px 0 0 20px; padding: 24px; transition: all 0.3s ease;">
+                <h3 id="comp-title" style="color: #002b49; font-family: var(--font-sans); margin-top:0;">Artículo de
+                    Investigación Web</h3>
+                <p id="comp-text" style="color: #333333; font-family: var(--font-serif);">
+                    La separación de capas en el diseño web es un pilar fundamental para garantizar la accesibilidad, la
+                    mantenibilidad a largo plazo y la eficiencia en la transferencia de datos a través de la red.
+                </p>
+                <button id="comp-btn"
+                    style="background: #002b49; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-family: var(--font-sans); font-weight: bold; cursor: pointer;">
+                    Leer Documento
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="academic-footer">
+        <div><strong>Recurso Didáctico Académico</strong> | Creado con HTML5 & CSS3 Puro</div>
+        <div>Sin dependencias externas &bull; Fully Responsive</div>
+    </footer>
+
+    <script>
+        function switchTab(event, tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function updateInlineDemo() {
+            const color = document.getElementById('inline-color').value;
+            const bg = document.getElementById('inline-bg').value;
+            const padding = document.getElementById('inline-padding').value;
+            const radius = document.getElementById('inline-radius').value;
+
+            const target = document.getElementById('inline-target');
+            const codeOutput = document.getElementById('inline-code-output');
+
+            target.style.color = color;
+            target.style.backgroundColor = bg;
+            target.style.padding = padding;
+            target.style.borderRadius = radius;
+
+            codeOutput.textContent = `<p style="color: ${color}; background-color: ${bg}; padding: ${padding}; border-radius: ${radius};">¡Elemento Estilizado en Línea!</p>`;
+        }
+
+        function updateInternalDemo() {
+            const selectedColor = document.getElementById('internal-color-select').value;
+            const target = document.getElementById('internal-target');
+            const codeColor = document.getElementById('internal-code-color');
+
+            target.style.borderColor = selectedColor;
+            target.style.color = selectedColor;
+            codeColor.textContent = selectedColor;
+        }
+
+        function toggleCSSComparison() {
+            const isChecked = document.getElementById('css-toggle').checked;
+            const stage = document.getElementById('comparison-stage');
+            const title = document.getElementById('comp-title');
+            const text = document.getElementById('comp-text');
+            const btn = document.getElementById('comp-btn');
+
+            if (isChecked) {
+                // Apply Academic CSS Styles
+                stage.style.background = "#e8eff7";
+                stage.style.border = "none";
+                stage.style.borderLeft = "5px solid #002b49";
+                stage.style.borderRadius = "20px 0 0 20px";
+                stage.style.padding = "24px";
+
+                title.style.color = "#002b49";
+                title.style.fontFamily = "var(--font-sans)";
+
+                text.style.color = "#333333";
+                text.style.fontFamily = "var(--font-serif)";
+
+                btn.style.background = "#002b49";
+                btn.style.color = "#ffffff";
+                btn.style.border = "none";
+                btn.style.padding = "10px 18px";
+                btn.style.borderRadius = "6px";
+            } else {
+                // Strip down to Plain Browser Default HTML Look
+                stage.style.background = "transparent";
+                stage.style.border = "none";
+                stage.style.borderLeft = "none";
+                stage.style.borderRadius = "0";
+                stage.style.padding = "0";
+
+                title.style.color = "#000000";
+                title.style.fontFamily = "Times New Roman, serif";
+
+                text.style.color = "#000000";
+                text.style.fontFamily = "Times New Roman, serif";
+
+                btn.style.background = "#e9e9ed";
+                btn.style.color = "#000000";
+                btn.style.border = "1px solid #8f8f9d";
+                btn.style.padding = "2px 6px";
+                btn.style.borderRadius = "2px";
+            }
+        }
+    </script>
+</body>
+
+</html>
