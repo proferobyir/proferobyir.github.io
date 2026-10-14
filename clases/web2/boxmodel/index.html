@@ -1,773 +1,1754 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>CSS Box Model · Editor Interactivo</title>
-    <style>
-        /* ========== RESET & GLOBAL ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Box Model de CSS - Guía Didáctica con Antes/Después - Profesor: Ing.Robyir Loreto</title>
 
-        body {
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #1e1e2f;
-            color: #d4d4d4;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+<style>
+  /* ===== RESET Y BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; }
 
-        /* ========== TOOLBAR ========== */
-        .toolbar {
-            background: #252526;
-            padding: 0.6rem 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-            border-bottom: 1px solid #3c3c3c;
-            position: sticky;
-            top: 0;
-        }
+  :root {
+    --color-fondo: #f4f6fb;
+    --color-tarjeta: #ffffff;
+    --color-primario: #4a6cf7;
+    --color-primario-oscuro: #3550c9;
+    --color-acento: #ff6b6b;
+    --color-verde: #2ec4b6;
+    --color-amarillo: #ffb703;
+    --color-texto: #1f2430;
+    --color-texto-suave: #5a6475;
+    --color-borde: #e2e6f0;
+    --sombra: 0 4px 14px rgba(0,0,0,0.08);
+    --radio: 12px;
+  }
 
-        .logo-area h1 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #f0f0f0;
-            letter-spacing: -0.3px;
-        }
+  html { scroll-behavior: smooth; }
 
-        .logo-area p {
-            font-size: 0.7rem;
-            color: #b0b0b0;
-        }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.6;
+  }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+  .contenedor { width: min(1100px, 92%); margin-inline: auto; }
 
-        button {
-            background: #3c3c3c;
-            border: 1px solid #555;
-            padding: 0.45rem 1rem;
-            border-radius: 6px;
-            font-weight: 500;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #f0f0f0;
-        }
+  header.hero {
+    background: linear-gradient(135deg, var(--color-primario) 0%, #6a4af7 100%);
+    color: #fff;
+    padding: clamp(2rem, 6vw, 4rem) 0;
+    text-align: center;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+  }
 
-        button:hover {
-            background: #4a4a4a;
-            border-color: #888;
-            transform: scale(1.02);
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
-        }
+  header.hero h1 {
+    font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.5px;
+  }
 
-        /* ========== SECCIÓN EDUCATIVA ========== */
-        .box-model-lesson {
-            background: linear-gradient(135deg, #1e2a3a, #2a1e3a);
-            margin: 1rem;
-            padding: 1.5rem;
-            border-radius: 18px;
-            color: #f0f0f0;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-            border: 1px solid #3a3a4a;
-        }
+  header.hero p {
+    margin: 0 auto;
+    max-width: 620px;
+    opacity: 0.95;
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+  }
 
-        .lesson-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 14px;
-        }
+  nav.toc {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-borde);
+  }
 
-        .definition-text {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-        }
+  nav.toc ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.7rem 0;
+  }
 
-        .box-components {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin: 16px 0;
-        }
+  nav.toc a {
+    text-decoration: none;
+    color: var(--color-texto-suave);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    transition: background 0.2s, color 0.2s;
+  }
 
-        .component-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(4px);
-            padding: 14px 12px;
-            border-radius: 14px;
-            border: 1px solid #4a4a5a;
-            transition: 0.2s;
-        }
+  nav.toc a:hover, nav.toc a:focus {
+    background: var(--color-primario);
+    color: #fff;
+    outline: none;
+  }
 
-        .component-card:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-3px);
-        }
+  section { padding: clamp(1.8rem, 5vw, 3rem) 0; }
 
-        .component-card h3 {
-            font-size: 1rem;
-            margin-bottom: 6px;
-            border-left: 3px solid #f1c40f;
-            padding-left: 10px;
-            color: #ffffff;
-        }
+  section h2 {
+    font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+    margin: 0 0 1rem;
+    color: var(--color-primario-oscuro);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
 
-        .component-card p {
-            font-size: 0.78rem;
-            line-height: 1.4;
-            color: #cfcfcf;
-        }
+  section h2::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 1.6rem;
+    background: var(--color-acento);
+    border-radius: 4px;
+  }
 
-        .examplewithpic {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            align-items: center;
-            margin: 18px 0 10px 0;
-        }
+  .tarjeta {
+    background: var(--color-tarjeta);
+    border-radius: var(--radio);
+    padding: clamp(1rem, 3vw, 1.6rem);
+    box-shadow: var(--sombra);
+    border: 1px solid var(--color-borde);
+    margin-bottom: 1.2rem;
+  }
 
-        .code-example {
-            background: #1e1e2e;
-            padding: 14px;
-            border-radius: 14px;
-            font-family: 'Fira Code', 'Cascadia Code', monospace;
-            font-size: 0.8rem;
-            border: 1px solid #3a3a4a;
-            color: #e0e0e0;
-        }
+  /* ===== DIAGRAMA ===== */
+  .diagrama-box { display: grid; place-items: center; padding: 1.5rem 0; }
 
-        .code-example .prop {
-            color: #9cdcfe;
-        }
+  .caja-externa {
+    background: #ffe6b3;
+    border: 2px dashed var(--color-amarillo);
+    padding: 1.6rem;
+    border-radius: var(--radio);
+    position: relative;
+    max-width: 480px;
+    width: 100%;
+  }
+  .caja-externa::before {
+    content: "margin"; position: absolute; top: 6px; left: 10px;
+    font-size: 0.75rem; font-weight: 700; color: #b07d00;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
 
-        .code-example .value {
-            color: #ce9178;
-        }
+  .caja-borde {
+    background: #d5e0ff;
+    border: 5px solid var(--color-primario);
+    border-radius: 8px;
+    padding: 1.6rem;
+    position: relative;
+  }
+  .caja-borde::before {
+    content: "border"; position: absolute; top: 6px; left: 10px;
+    font-size: 0.75rem; font-weight: 700; color: var(--color-primario-oscuro);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
 
-        .code-example .comment {
-            color: #6a9955;
-        }
+  .caja-padding {
+    background: #c8f7f0; padding: 1.6rem; border-radius: 6px; position: relative;
+  }
+  .caja-padding::before {
+    content: "padding"; position: absolute; top: 6px; left: 10px;
+    font-size: 0.75rem; font-weight: 700; color: #0d8a7c;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
 
-        .examplewithpic img {
-            width: 100%;
-            max-width: 320px;
-            border-radius: 14px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            border: 1px solid #4a4a5a;
-        }
+  .caja-contenido {
+    background: var(--color-acento); color: #fff; padding: 1.2rem;
+    border-radius: 4px; text-align: center; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; font-size: 0.9rem;
+  }
 
-        /* ========== PLAYGROUND ========== */
-        .playground-container {
-            background: #1e1e2f;
-            padding: 0 1rem 1rem 1rem;
-        }
+  /* ===== TABLAS ===== */
+  .tabla-responsive { overflow-x: auto; }
+  table {
+    width: 100%; border-collapse: collapse; min-width: 480px; font-size: 0.92rem;
+  }
+  th, td {
+    text-align: left; padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--color-borde);
+  }
+  th {
+    background: #eef2ff; color: var(--color-primario-oscuro);
+    font-weight: 700;
+  }
+  tbody tr:hover { background: #f8f9ff; }
 
-        .playground-title {
-            padding: 1rem 0.5rem 0.5rem 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+  code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    background: #eef2ff; color: var(--color-primario-oscuro);
+    padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  }
 
-        .workspace {
-            display: flex;
-            flex-direction: row;
-            gap: 0;
-            background: #1e1e2f;
-            border-radius: 16px;
-            overflow: hidden;
-            min-height: 520px;
-            box-shadow: 0 6px 28px rgba(0, 0, 0, 0.6);
-            border: 1px solid #3c3c4c;
-        }
+  /* ===== EJERCICIOS ===== */
+  .nivel { margin-bottom: 2rem; }
 
-        .editor-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #1e1e2e;
-            overflow: hidden;
-        }
+  .nivel-titulo {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 1.05rem; font-weight: 700;
+    padding: 0.4rem 1rem; border-radius: 999px;
+    color: #fff; margin-bottom: 1rem;
+  }
+  .nivel-basico { background: var(--color-verde); }
+  .nivel-intermedio { background: var(--color-amarillo); color: #4a3400; }
+  .nivel-avanzado { background: var(--color-acento); }
 
-        .preview-panel {
-            flex: 1;
-            background: #1a1a2a;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+  .ejercicio {
+    border-left: 4px solid var(--color-primario);
+    background: #fff;
+    padding: 1rem 1.2rem;
+    border-radius: 0 var(--radio) var(--radio) 0;
+    box-shadow: var(--sombra);
+    margin-bottom: 1.5rem;
+  }
 
-        .panel-header {
-            padding: 0.65rem 1rem;
-            background: #252535;
-            font-weight: 600;
-            font-size: 0.8rem;
-            border-bottom: 1px solid #3c3c4c;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #e8e8e8;
-        }
+  .ejercicio h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: var(--color-texto);
+  }
 
-        .code-area {
-            flex: 1;
-            padding: 0.8rem;
-            overflow: auto;
-            background: #1e1e2e;
-        }
+  .enunciado {
+    color: var(--color-texto-suave);
+    font-size: 0.93rem;
+    margin-bottom: 0.9rem;
+  }
 
-        /* === EDITOR TIPO VS CODE (letras blancas) === */
-        textarea {
-            width: 100%;
-            height: 100%;
-            min-height: 400px;
-            font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            padding: 1rem;
-            border: 1px solid #3c3c4c;
-            border-radius: 12px;
-            background: #1e1e2e;
-            color: #f0f0f0;
-            resize: none;
-            outline: none;
-            transition: border 0.15s;
-            caret-color: #f0f0f0;
-            tab-size: 2;
-        }
+  /* ===== COMPARATIVA ANTES / DESPUÉS ===== */
+  .comparativa {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin: 0.8rem 0 1rem;
+  }
 
-        textarea:focus {
-            border-color: #0e7c6b;
-            box-shadow: 0 0 0 3px rgba(14, 124, 107, 0.25);
-        }
+  .comparativa .panel {
+    background: #f8f9ff;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-        textarea::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
+  .panel-titulo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
 
-        textarea::-webkit-scrollbar-track {
-            background: #1e1e2e;
-        }
+  .panel-titulo::before {
+    content: "";
+    display: inline-block;
+    width: 8px; height: 8px; border-radius: 50%;
+  }
 
-        textarea::-webkit-scrollbar-thumb {
-            background: #4a4a5a;
-            border-radius: 8px;
-        }
+  .panel-antes .panel-titulo { color: #c62828; }
+  .panel-antes .panel-titulo::before { background: #c62828; }
+  .panel-antes {
+    background: repeating-linear-gradient(
+      45deg, #fff5f5, #fff5f5 8px, #ffeaea 8px, #ffeaea 16px
+    );
+  }
 
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #6a6a7a;
-        }
+  .panel-despues .panel-titulo { color: #0d7a6c; }
+  .panel-despues .panel-titulo::before { background: #0d7a6c; }
 
-        .preview-frame {
-            flex: 1;
-            background: #1a1a2a;
-            margin: 0.8rem;
-            border-radius: 14px;
-            overflow: auto;
-            border: 1px solid #3c3c4c;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
-        }
+  .panel .etiqueta-via {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    align-self: flex-start;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            min-height: 400px;
-            border: none;
-            background: #ffffff;
-            border-radius: 12px;
-        }
+  .via-inline { background: #ffe0e0; color: #c62828; }
+  .via-interno { background: #fff3c4; color: #8a6400; }
+  .via-externo { background: #d7f5ec; color: #0d7a6c; }
 
-        .resize-handle {
-            width: 6px;
-            background: #3c3c4c;
-            cursor: col-resize;
-            transition: background 0.2s;
-        }
+  .demo-box {
+    padding: 0.6rem;
+    border: 1px dashed #cbd2e0;
+    border-radius: 8px;
+    background: #fff;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
-        .resize-handle:hover {
-            background: #0e7c6b;
-        }
+  .demo-parrafo-resaltado {
+    background: #eef2ff;
+    padding: 16px 20px;
+    border: 3px solid #4a6cf7;
+    margin: 10px 0;
+    color: #3550c9;
+    font-weight: 600;
+    border-radius: 6px;
+  }
 
-        .footer-note {
-            text-align: center;
-            font-size: 0.75rem;
-            padding: 14px;
-            background: #252535;
-            border-top: 1px solid #3c3c4c;
-            color: #b0b0b0;
-            margin-top: 1rem;
-            border-radius: 14px;
-            border: 1px solid #3a3a4a;
-        }
+  .demo-boton-resaltado {
+    background: #2ec4b6;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95rem;
+    align-self: flex-start;
+  }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .workspace {
-                flex-direction: column;
-                min-height: auto;
-            }
+  .demo-caja-centrada {
+    background: #fff3c4;
+    border: 2px solid #ffb703;
+    padding: 14px;
+    margin: 0 auto;
+    width: 220px;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #8a6400;
+  }
 
-            .resize-handle {
-                width: 100%;
-                height: 6px;
-                cursor: row-resize;
-            }
+  /* ===== CÓDIGO ===== */
+  .codigo {
+    background: #1f2430;
+    color: #e6e9f0;
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    margin-top: 0.7rem;
+    white-space: pre;
+  }
 
-            .box-components {
-                grid-template-columns: 1fr;
-            }
+  .codigo .tag { color: #ff8a80; }
+  .codigo .attr { color: #ffd180; }
+  .codigo .valor { color: #a5d6ff; }
+  .codigo .sel { color: #82d9a3; }
+  .codigo .prop { color: #c792ea; }
+  .codigo .val { color: #ffcb6b; }
+  .codigo .coment { color: #6b7a99; font-style: italic; }
 
-            .examplewithpic {
-                grid-template-columns: 1fr;
-            }
+  /* ===== DETAILS / SOLUCIÓN ===== */
+  details.solucion {
+    border: 1px dashed var(--color-borde);
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    background: #fafbff;
+    margin-top: 0.8rem;
+  }
+  details.solucion[open] { background: #fff; }
+  details.solucion summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--color-primario);
+    font-size: 0.9rem;
+    list-style: none;
+    user-select: none;
+  }
+  details.solucion summary::-webkit-details-marker { display: none; }
+  details.solucion summary::before {
+    content: "▶ ";
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-right: 0.3rem;
+  }
+  details.solucion[open] summary::before { transform: rotate(90deg); }
 
-            textarea,
-            iframe {
-                min-height: 280px;
-            }
-        }
+  /* ===== BOX-SIZING COMPARATIVA BÁSICA ===== */
+  .demo {
+    margin-top: 0.8rem;
+    padding: 0.8rem;
+    background: #f8f9ff;
+    border-radius: 8px;
+    border: 1px solid var(--color-borde);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+  }
+  .demo-caja {
+    background: #c8f7f0;
+    border: 3px solid var(--color-primario);
+    padding: 12px 20px;
+    color: var(--color-primario-oscuro);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .demo-content-box { box-sizing: content-box; width: 120px; }
+  .demo-border-box  { box-sizing: border-box; width: 120px; }
 
-        @keyframes fadeSlideUp {
-            0% {
-                opacity: 0;
-                transform: translateY(12px);
-            }
+  /* ===== GRID VÍAS ===== */
+  .grid-vias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .via {
+    background: #fff;
+    border-radius: var(--radio);
+    border: 1px solid var(--color-borde);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--sombra);
+  }
+  .via h4 {
+    margin: 0 0 0.4rem; font-size: 0.95rem;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .etiqueta {
+    font-size: 0.7rem; font-weight: 700;
+    padding: 0.15rem 0.5rem; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .etiqueta-inline   { background: #ffe0e0; color: #c62828; }
+  .etiqueta-interno  { background: #fff3c4; color: #8a6400; }
+  .etiqueta-externo  { background: #d7f5ec; color: #0d7a6c; }
+  .via p { font-size: 0.85rem; color: var(--color-texto-suave); margin: 0.5rem 0; }
 
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+  /* ============================================================
+     BOX-SIZING DETALLADO
+     ============================================================ */
 
-        .box-model-lesson,
-        .workspace {
-            animation: fadeSlideUp 0.4s ease-out;
-        }
+  /* --- Fórmulas --- */
+  .formulas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.8rem;
+  }
 
-        /* ===== LETRAS BLANCAS EN TODA LA UI ===== */
-        .toolbar,
-        .logo-area,
-        .actions,
-        button,
-        .panel-header,
-        .playground-title,
-        .footer-note,
-        .definition-text,
-        .component-card p,
-        .code-example,
-        .lesson-title span {
-            color: #f0f0f0;
-        }
+  .formula {
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    border: 2px solid;
+  }
 
-        button {
-            color: #f0f0f0 !important;
-        }
+  .formula h4 {
+    margin: 0 0 0.6rem;
+    font-size: 1.05rem;
+  }
 
-        .logo-area h1 {
-            color: #ffffff !important;
-        }
+  .formula-content {
+    background: #fff5f5;
+    border-color: #ff8a80;
+    color: #8a1a1a;
+  }
 
-        textarea::placeholder {
-            color: #8888aa;
-            opacity: 0.6;
-        }
-    </style>
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231e2a3a' rx='20'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E📦%3C/text%3E%3C/svg%3E">
+  .formula-border {
+    background: #e7faf6;
+    border-color: #2ec4b6;
+    color: #0a5d52;
+  }
+
+  .formula-linea {
+    font-size: 0.9rem;
+    margin: 0.4rem 0;
+    line-height: 1.5;
+  }
+
+  .formula-nota {
+    font-size: 0.82rem;
+    margin: 0.6rem 0 0;
+    opacity: 0.85;
+    font-style: italic;
+  }
+
+  .var-w { color: #4a6cf7; font-weight: 700; }
+  .var-p { color: #ff8a65; font-weight: 700; }
+  .var-b { color: #a259ff; font-weight: 700; }
+
+  /* --- Pasos --- */
+  .paso-titulo {
+    margin: 1.4rem 0 0.6rem;
+    font-size: 0.98rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .paso-1 {
+    background: #fff0f0;
+    color: #8a1a1a;
+    border-left: 4px solid #ff8a80;
+  }
+
+  .paso-2 {
+    background: #e7faf6;
+    color: #0a5d52;
+    border-left: 4px solid #2ec4b6;
+  }
+
+  /* --- Tabla de cálculo --- */
+  .tabla-calculo {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.6rem 0 1rem;
+    font-size: 0.88rem;
+    min-width: 380px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .tabla-calculo th {
+    background: #eef2ff;
+    color: var(--color-primario-oscuro);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tabla-calculo td.res {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-weight: 600;
+    color: #4a6cf7;
+    white-space: nowrap;
+  }
+
+  .tabla-calculo td.res-grande {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1f2430;
+    white-space: nowrap;
+  }
+
+  .fila-total { background: #fff8e1 !important; }
+  .fila-total td {
+    border-top: 2px solid #ffb703;
+    border-bottom: 2px solid #ffb703;
+  }
+
+  .fila-total-final { background: #e7faf6 !important; }
+  .fila-total-final td {
+    border-top: 3px double #2ec4b6;
+    border-bottom: 3px double #2ec4b6;
+  }
+
+  .fila-contenido { background: #f4f6fb !important; }
+
+  /* --- Alertas --- */
+  .alerta {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin: 0.8rem 0 1.4rem;
+    border-left: 4px solid;
+  }
+
+  .alerta-aviso {
+    background: #fff5f5;
+    border-color: #ff6b6b;
+    color: #8a1a1a;
+  }
+
+  .alerta-ok {
+    background: #e7faf6;
+    border-color: #2ec4b6;
+    color: #0a5d52;
+  }
+
+  /* --- Comparativa visual detallada --- */
+  .demo-comparativa {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 1.2rem 0.6rem;
+    background: #f8f9ff;
+    border-radius: 10px;
+    align-items: end;
+    overflow-x: auto;
+    min-height: 260px;
+  }
+
+  .demo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 240px;
+  }
+
+  .demo-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .demo-label-content { background: #ffe0e0; color: #c62828; }
+  .demo-label-border  { background: #d7f5ec; color: #0d7a6c; }
+
+  .caja-visual {
+    width: 200px;
+    height: 100px;
+    padding: 20px;
+    border: 5px solid;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .caja-content {
+    box-sizing: content-box;
+    background: #ff8a80;
+    border-color: #c62828;
+  }
+
+  .caja-border {
+    box-sizing: border-box;
+    background: #2ec4b6;
+    border-color: #0d7a6c;
+  }
+
+  .caja-medida {
+    background: rgba(0,0,0,0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+  }
+
+  .demo-nota {
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--color-texto-suave);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* --- Regla medidora --- */
+  .regla-wrapper {
+    margin-top: 1.2rem;
+    padding: 0.6rem 0.4rem 1rem;
+  }
+
+  .regla {
+    position: relative;
+    height: 1.4rem;
+    border-bottom: 2px solid #cbd2e0;
+    margin-bottom: 0.6rem;
+  }
+
+  .regla-marca {
+    position: absolute;
+    bottom: -1.35rem;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--color-texto-suave);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .regla-marca::before {
+    content: "";
+    position: absolute;
+    top: -0.35rem;
+    left: 50%;
+    width: 2px;
+    height: 0.5rem;
+    background: #cbd2e0;
+    transform: translateX(-50%);
+  }
+
+  .regla-barras {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-top: 1.4rem;
+  }
+
+  .regla-barra {
+    height: 1.8rem;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    padding: 0 0.8rem;
+    transition: width 0.3s ease;
+  }
+
+  .barra-content { background: linear-gradient(90deg, #ff8a80, #c62828); }
+  .barra-border  { background: linear-gradient(90deg, #2ec4b6, #0d7a6c); }
+
+  /* --- Demo interactiva --- */
+  .botones-toggle {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.6rem 0 1rem;
+  }
+
+  .btn-toggle {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 2px solid var(--color-primario);
+    background: #fff;
+    color: var(--color-primario);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+
+  .btn-toggle:hover { background: #eef2ff; }
+
+  .btn-toggle.activo {
+    background: var(--color-primario);
+    color: #fff;
+  }
+
+  .demo-interactivo {
+    padding: 1.5rem;
+    background:
+      repeating-linear-gradient(45deg, #f8f9ff, #f8f9ff 10px, #eef2ff 10px, #eef2ff 20px);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    min-height: 200px;
+    align-items: center;
+  }
+
+  .caja-toggle {
+    box-sizing: content-box;
+    width: 180px;
+    height: 100px;
+    padding: 15px;
+    border: 4px solid #4a6cf7;
+    background: #d5e0ff;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.25s;
+  }
+
+  .caja-toggle-texto {
+    font-weight: 700;
+    color: var(--color-primario-oscuro);
+    font-size: 0.9rem;
+  }
+
+  .caja-toggle-medida {
+    background: rgba(74, 108, 247, 0.15);
+    color: var(--color-primario-oscuro);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .lectura {
+    margin-top: 1rem;
+    background: #f8f9ff;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    border-left: 4px solid var(--color-primario);
+  }
+
+  .lectura p { margin: 0.3rem 0; }
+
+  .lectura span {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-weight: 700;
+    color: var(--color-primario-oscuro);
+  }
+
+  /* --- Layout demo 2 columnas --- */
+  .layout-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 2px dashed #cbd2e0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    background: #f8f9ff;
+    margin-bottom: 0.6rem;
+  }
+
+  .layout-col {
+    width: 50%;
+    padding: 12px;
+    border: 3px solid;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-sizing: content-box;
+  }
+
+  .col-content {
+    background: #ffeaea;
+    border-color: #c62828;
+    color: #8a1a1a;
+  }
+
+  .col-border {
+    box-sizing: border-box;
+    background: #d7f5ec;
+    border-color: #0d7a6c;
+    color: #0a5d52;
+  }
+
+  /* --- Tarjeta dorada --- */
+  .tarjeta-oro {
+    background: linear-gradient(135deg, #fffbf0 0%, #fff5d6 100%);
+    border: 2px solid #ffb703;
+  }
+
+  .tarjeta-oro h3 { color: #8a6400; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #1f2430; color: #b8c0d0;
+    text-align: center; padding: 1.5rem 1rem;
+    font-size: 0.85rem; margin-top: 2rem;
+  }
+
+  /* ===== MEDIA QUERIES ===== */
+  @media (max-width: 640px) {
+    nav.toc ul { gap: 0.25rem; }
+    nav.toc a { font-size: 0.78rem; padding: 0.35rem 0.6rem; }
+    .comparativa { grid-template-columns: 1fr; }
+    .ejercicio { padding: 0.9rem; }
+    .formulas { grid-template-columns: 1fr; }
+    .demo-comparativa { grid-template-columns: 1fr; }
+    .caja-visual { width: 160px; height: 80px; padding: 14px; border-width: 4px; }
+    .caja-toggle { width: 130px; height: 80px; padding: 12px; }
+    .tabla-calculo { font-size: 0.8rem; }
+    .layout-col { font-size: 0.72rem; padding: 8px; }
+  }
+</style>
 </head>
-
 <body>
 
-    <!-- ========== BARRA SUPERIOR ========== -->
-    <div class="toolbar">
-        <div class="logo-area">
-            <h1>📦 CSS Box Model · Editor Interactivo</h1>
-            <p>margin · border · padding · content — modifica y visualiza al instante</p>
+<header class="hero">
+  <div class="contenedor">
+    <h1>El Box Model de CSS</h1>
+    <p>Aprende viendo el <strong>antes</strong> y el <strong>después</strong> real de cada estilo, aplicado por las tres vías: inline, insertado y externo.</p>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Índice">
+  <div class="contenedor">
+    <ul>
+      <li><a href="#que-es">¿Qué es?</a></li>
+      <li><a href="#partes">Partes</a></li>
+      <li><a href="#box-sizing">box-sizing</a></li>
+      <li><a href="#vias">3 vías CSS</a></li>
+      <li><a href="#ejercicios">Ejercicios</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="contenedor">
+
+  <!-- ============ QUÉ ES ============ -->
+  <section id="que-es">
+    <h2>¿Qué es el Box Model?</h2>
+    <div class="tarjeta">
+      <p>
+        El <strong>Box Model</strong> (modelo de caja) es la forma en que CSS representa
+        <em>cada elemento HTML</em> como una caja rectangular. Esa caja está formada por
+        cuatro capas concéntricas que van de dentro hacia fuera:
+        <strong>contenido → padding → borde → margen</strong>.
+      </p>
+      <p>
+        Entenderlo es fundamental porque <strong>todo</strong> lo que maquetas —un botón,
+        una tarjeta, un menú— no es más que una suma de estas capas. Si no controlas el
+        box model, los anchos y alturas "no cuadran" y los layouts se rompen.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ PARTES ============ -->
+  <section id="partes">
+    <h2>Las 4 capas del Box Model</h2>
+
+    <div class="diagrama-box">
+      <div class="caja-externa">
+        <div class="caja-borde">
+          <div class="caja-padding">
+            <div class="caja-contenido">contenido</div>
+          </div>
         </div>
-        <div class="actions">
-            <button id="resetBtn">⟳ Restaurar ejemplo</button>
-            <button id="themeToggle">🌙 Oscuro</button>
-            <button id="orientationBtn">🔄 Orientación</button>
-        </div>
+      </div>
     </div>
 
-    <!-- ========== SECCIÓN EDUCATIVA ========== -->
-    <div class="box-model-lesson">
-        <div class="lesson-title">
-            <span>📚</span>
-            <span>¿Qué es el Modelo de Caja (Box Model) de CSS?</span>
+    <div class="tarjeta tabla-responsive">
+      <table>
+        <thead>
+          <tr><th>Capa</th><th>Propiedad CSS</th><th>¿Qué controla?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Contenido</strong></td><td><code>width</code>, <code>height</code></td><td>El área donde vive el texto o la imagen.</td></tr>
+          <tr><td><strong>Padding</strong></td><td><code>padding</code></td><td>Espacio interior entre el contenido y el borde.</td></tr>
+          <tr><td><strong>Borde</strong></td><td><code>border</code></td><td>Línea que rodea el padding y el contenido.</td></tr>
+          <tr><td><strong>Margen</strong></td><td><code>margin</code></td><td>Espacio exterior entre esta caja y las demás.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ BOX-SIZING DETALLADO ============ -->
+  <section id="box-sizing">
+    <h2>La propiedad clave: box-sizing (explicación a fondo)</h2>
+
+    <div class="tarjeta">
+      <p>
+        Cuando escribes <code>width: 200px</code>, la pregunta clave es:
+        <strong>¿200px de qué?</strong> La respuesta depende de <code>box-sizing</code>.
+        Hay dos valores posibles:
+      </p>
+      <ul>
+        <li>
+          <code>content-box</code> (valor por defecto): el <code>width</code> es
+          <strong>solo del contenido</strong>. El padding y el borde se
+          <em>suman por fuera</em>.
+        </li>
+        <li>
+          <code>border-box</code>: el <code>width</code> es
+          <strong>del contenido + padding + borde juntos</strong>. Todo cabe dentro.
+        </li>
+      </ul>
+      <p>
+        Parece un detalle, pero cambia por completo cómo se calculan los tamaños.
+        Vamos a verlo con números exactos.
+      </p>
+    </div>
+
+    <!-- FÓRMULAS -->
+    <div class="tarjeta">
+      <h3 style="margin-top:0">Las dos fórmulas (memorízalas)</h3>
+
+      <div class="formulas">
+        <div class="formula formula-content">
+          <h4>content-box</h4>
+          <p class="formula-linea">
+            <strong>Ancho total</strong> = <span class="var-w">width</span>
+            + <span class="var-p">padding-left</span>
+            + <span class="var-p">padding-right</span>
+            + <span class="var-b">border-left</span>
+            + <span class="var-b">border-right</span>
+          </p>
+          <p class="formula-linea">
+            <strong>Alto total</strong> = <span class="var-w">height</span>
+            + <span class="var-p">padding-top</span>
+            + <span class="var-p">padding-bottom</span>
+            + <span class="var-b">border-top</span>
+            + <span class="var-b">border-bottom</span>
+          </p>
+          <p class="formula-nota">
+            El <code>width</code> que declaras <strong>NO</strong> incluye nada más.
+          </p>
         </div>
 
-        <p class="definition-text">
-            <strong>✨ Definición:</strong> El <strong>Modelo de Caja</strong> es el concepto fundamental de CSS que
-            describe cómo se representa cada elemento HTML como una "caja" rectangular. Esta caja está compuesta por
-            <strong>cuatro capas concéntricas</strong> que, de adentro hacia afuera, son: <strong>CONTENIDO → RELLENO
-                (PADDING) →
-                BORDE (BORDER) → MARGEN (MARGIN)</strong>. La suma de todas estas capas determina el <strong>espacio
-                total</strong> que ocupa un elemento en la página.
+        <div class="formula formula-border">
+          <h4>border-box</h4>
+          <p class="formula-linea">
+            <strong>Ancho total</strong> = <span class="var-w">width</span>
+            <em>(ya incluye padding y borde)</em>
+          </p>
+          <p class="formula-linea">
+            <strong>Alto total</strong> = <span class="var-w">height</span>
+            <em>(ya incluye padding y borde)</em>
+          </p>
+          <p class="formula-nota">
+            El contenido se <strong>encoge</strong> para dejar sitio al padding y al borde.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EJEMPLO NUMÉRICO -->
+    <div class="tarjeta">
+      <h3 style="margin-top:0">Ejemplo numérico paso a paso</h3>
+      <p>
+        Aplicamos <strong>exactamente los mismos estilos</strong> a dos cajas.
+        Solo cambia <code>box-sizing</code>:
+      </p>
+
+      <div class="codigo"><span class="sel">.caja</span> {
+  <span class="prop">width</span>: <span class="val">200px</span>;
+  <span class="prop">height</span>: <span class="val">100px</span>;
+  <span class="prop">padding</span>: <span class="val">20px</span>;          <span class="coment">/* 20px por los 4 lados */</span>
+  <span class="prop">border</span>: <span class="val">5px solid</span> #4a6cf7;
+}
+
+<span class="sel">.content</span> { <span class="prop">box-sizing</span>: <span class="val">content-box</span>; }
+<span class="sel">.border</span>  { <span class="prop">box-sizing</span>: <span class="val">border-box</span>; }</div>
+
+      <h4 class="paso-titulo paso-1">🅰️ Caja con <code>content-box</code> (por defecto)</h4>
+      <div class="tabla-responsive">
+        <table class="tabla-calculo">
+          <thead>
+            <tr><th>Concepto</th><th>Cálculo</th><th>Resultado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>width</code> declarado</td><td>—</td><td class="res">200px</td></tr>
+            <tr><td>+ padding izquierda y derecha</td><td>20 + 20</td><td class="res">+40px</td></tr>
+            <tr><td>+ borde izquierdo y derecho</td><td>5 + 5</td><td class="res">+10px</td></tr>
+            <tr class="fila-total"><td><strong>Ancho total real</strong></td><td>200 + 40 + 10</td><td class="res-grande">250px</td></tr>
+            <tr><td><code>height</code> declarado</td><td>—</td><td class="res">100px</td></tr>
+            <tr><td>+ padding arriba y abajo</td><td>20 + 20</td><td class="res">+40px</td></tr>
+            <tr><td>+ borde arriba y abajo</td><td>5 + 5</td><td class="res">+10px</td></tr>
+            <tr class="fila-total"><td><strong>Alto total real</strong></td><td>100 + 40 + 10</td><td class="res-grande">150px</td></tr>
+            <tr class="fila-contenido"><td><strong>Espacio útil para el contenido</strong></td><td>200 × 100</td><td class="res-grande">200 × 100 px</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alerta alerta-aviso">
+        ⚠️ Declaraste <code>width: 200px</code> pero la caja ocupa <strong>250px</strong>.
+        Ese desfase de 50px es lo que rompe layouts cuando pones <code>width: 50%</code>
+        en dos columnas: <strong>50% + 50% + paddings + bordes &gt; 100%</strong> y la
+        segunda columna cae a la línea siguiente.
+      </div>
+
+      <h4 class="paso-titulo paso-2">🅱️ Caja con <code>border-box</code></h4>
+      <div class="tabla-responsive">
+        <table class="tabla-calculo">
+          <thead>
+            <tr><th>Concepto</th><th>Cálculo</th><th>Resultado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>width</code> declarado (¡incluye todo!)</td><td>—</td><td class="res">200px</td></tr>
+            <tr><td>− padding izquierda y derecha</td><td>20 + 20</td><td class="res">−40px</td></tr>
+            <tr><td>− borde izquierdo y derecho</td><td>5 + 5</td><td class="res">−10px</td></tr>
+            <tr class="fila-total"><td><strong>Espacio útil para el contenido</strong></td><td>200 − 40 − 10</td><td class="res-grande">150px de ancho</td></tr>
+            <tr><td><code>height</code> declarado (incluye todo)</td><td>—</td><td class="res">100px</td></tr>
+            <tr><td>− padding arriba y abajo</td><td>20 + 20</td><td class="res">−40px</td></tr>
+            <tr><td>− borde arriba y abajo</td><td>5 + 5</td><td class="res">−10px</td></tr>
+            <tr class="fila-total"><td><strong>Espacio útil para el contenido</strong></td><td>100 − 40 − 10</td><td class="res-grande">50px de alto</td></tr>
+            <tr class="fila-total-final"><td><strong>Tamaño total de la caja en la página</strong></td><td>—</td><td class="res-grande">200 × 100 px</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alerta alerta-ok">
+        ✅ Declaraste <code>width: 200px</code> y la caja ocupa <strong>exactamente 200px</strong>.
+        El contenido se adapta (queda 150×50 útil). Es predecible y es lo que casi siempre quieres.
+      </div>
+    </div>
+
+    <!-- COMPARATIVA VISUAL DETALLADA -->
+    <div class="tarjeta">
+      <h3 style="margin-top:0">Comparativa visual (mismos estilos, distinto box-sizing)</h3>
+      <p class="enunciado">
+        Ambas cajas tienen <code>width: 200px</code>, <code>height: 100px</code>,
+        <code>padding: 20px</code> y <code>border: 5px</code>. Mídelas con la regla.
+      </p>
+
+      <div class="demo-comparativa">
+        <div class="demo-item">
+          <span class="demo-label demo-label-content">content-box</span>
+          <div class="caja-visual caja-content">
+            <span class="caja-medida">250 × 150 px</span>
+          </div>
+          <p class="demo-nota">
+            Ocupa <strong>más</strong> de lo declarado.<br>
+            Contenido útil: 200 × 100.
+          </p>
+        </div>
+
+        <div class="demo-item">
+          <span class="demo-label demo-label-border">border-box</span>
+          <div class="caja-visual caja-border">
+            <span class="caja-medida">200 × 100 px</span>
+          </div>
+          <p class="demo-nota">
+            Ocupa <strong>exactamente</strong> lo declarado.<br>
+            Contenido útil: 150 × 50.
+          </p>
+        </div>
+      </div>
+
+      <div class="regla-wrapper">
+        <div class="regla">
+          <div class="regla-marca" style="left:0%">0</div>
+          <div class="regla-marca" style="left:40%">200px</div>
+          <div class="regla-marca" style="left:50%">250px</div>
+          <div class="regla-marca" style="left:100%">500px</div>
+        </div>
+        <div class="regla-barras">
+          <div class="regla-barra barra-content" style="width:50%;">content-box (250px)</div>
+          <div class="regla-barra barra-border" style="width:40%;">border-box (200px)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASO PRÁCTICO 2 COLUMNAS -->
+    <div class="tarjeta">
+      <h3 style="margin-top:0">Caso práctico: por qué border-box salva tu layout</h3>
+      <p>
+        Quieres dos columnas al 50% dentro de un contenedor, con padding y borde.
+      </p>
+
+      <h4 class="paso-titulo paso-1">🅰️ Sin border-box (content-box) → se rompe</h4>
+      <div class="layout-demo">
+        <div class="layout-col col-content">Columna A<br><small>50% + 20 + 20 + 2 + 2 = 50% + 44px</small></div>
+        <div class="layout-col col-content">Columna B<br><small>50% + 20 + 20 + 2 + 2 = 50% + 44px</small></div>
+      </div>
+      <p class="demo-nota" style="color:#c62828;">
+        Suma: <strong>(50% + 44px) × 2 = 100% + 88px</strong> → se pasa del contenedor → la
+        columna B cae a la línea siguiente.
+      </p>
+
+      <h4 class="paso-titulo paso-2">🅱️ Con border-box → funciona</h4>
+      <div class="layout-demo">
+        <div class="layout-col col-border">Columna A<br><small>50% incluye todo</small></div>
+        <div class="layout-col col-border">Columna B<br><small>50% incluye todo</small></div>
+      </div>
+      <p class="demo-nota" style="color:#0d7a6c;">
+        Suma: <strong>50% + 50% = 100%</strong> → caben perfectamente en una línea.
+      </p>
+    </div>
+
+    <!-- DEMO INTERACTIVO -->
+    <div class="tarjeta">
+      <h3 style="margin-top:0">Ejemplo interactivo: alterna el box-sizing</h3>
+      <p class="enunciado">
+        Pulsa los botones para cambiar el <code>box-sizing</code> de la caja de abajo
+        (todas tienen <code>width: 180px</code>, <code>padding: 15px</code>,
+        <code>border: 4px</code>). Mira cómo cambia su tamaño real.
+      </p>
+
+      <div class="botones-toggle">
+        <button type="button" class="btn-toggle activo" data-boxsizing="content-box">content-box</button>
+        <button type="button" class="btn-toggle" data-boxsizing="border-box">border-box</button>
+      </div>
+
+      <div class="demo-interactivo">
+        <div class="caja-toggle" id="cajaToggle">
+          <span class="caja-toggle-texto">Contenido</span>
+          <span class="caja-toggle-medida" id="cajaToggleMedida">—</span>
+        </div>
+      </div>
+
+      <div class="lectura">
+        <p><strong>box-sizing actual:</strong> <code id="lecturaBoxSizing">content-box</code></p>
+        <p><strong>Ancho real medido:</strong> <span id="lecturaAncho">—</span></p>
+        <p><strong>Espacio útil para el contenido:</strong> <span id="lecturaContenido">—</span></p>
+      </div>
+    </div>
+
+    <!-- REGLA DE ORO -->
+    <div class="tarjeta tarjeta-oro">
+      <h3 style="margin-top:0">🏆 La regla de oro</h3>
+      <p>
+        Casi todos los proyectos modernos empiezan con este <em>reset</em> global:
+      </p>
+      <div class="codigo"><span class="sel">*</span>, <span class="sel">*::before</span>, <span class="sel">*::after</span> {
+  <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
+}</div>
+      <p>
+        Así, <strong>todo</strong> lo que midas con <code>width</code> y <code>height</code>
+        incluirá padding y borde, y tu layout siempre será predecible. Es la primera línea
+        que suele escribirse en cualquier hoja de estilos seria.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 3 VÍAS ============ -->
+  <section id="vias">
+    <h2>Las 3 vías para aplicar CSS</h2>
+    <div class="tarjeta">
+      <div class="grid-vias">
+        <div class="via">
+          <h4><span class="etiqueta etiqueta-inline">Inline</span> En línea</h4>
+          <p>Se escribe en el atributo <code>style</code> del propio elemento. Solo afecta a ese elemento.</p>
+          <div class="codigo"><span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="valor">"color:red"</span><span class="tag">&gt;</span>Hola<span class="tag">&lt;/p&gt;</span></div>
+        </div>
+        <div class="via">
+          <h4><span class="etiqueta etiqueta-interno">Insertado</span> Interno</h4>
+          <p>Dentro de <code>&lt;style&gt;</code> en el <code>&lt;head&gt;</code>. Afecta a todo el documento.</p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">p</span> { <span class="prop">color</span>: <span class="val">red</span>; }
+<span class="tag">&lt;/style&gt;</span></div>
+        </div>
+        <div class="via">
+          <h4><span class="etiqueta etiqueta-externo">Externo</span></h4>
+          <p>Archivo <code>.css</code> aparte enlazado con <code>&lt;link&gt;</code>. Reutilizable en muchas páginas.</p>
+          <div class="codigo"><span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="valor">"stylesheet"</span>
+      <span class="attr">href</span>=<span class="valor">"estilos.css"</span><span class="tag">&gt;</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EJERCICIOS ============ -->
+  <section id="ejercicios">
+    <h2>Ejercicios prácticos: antes y después</h2>
+    <p style="color:var(--color-texto-suave)">
+      Cada ejercicio muestra el elemento <strong>sin estilos</strong> a la izquierda y
+      <strong>con estilos aplicados</strong> a la derecha. Pulsa <em>Ver solución</em>
+      para leer el código de las tres vías.
+    </p>
+
+    <div class="nivel">
+      <span class="nivel-titulo nivel-basico">🟢 Nivel básico</span>
+
+      <div class="ejercicio">
+        <h4>1. Párrafo con padding, borde y margen</h4>
+        <p class="enunciado">
+          Aplica a un párrafo: fondo claro, <strong>padding 16px 20px</strong>,
+          <strong>borde azul de 3px</strong>, <strong>margen vertical 10px</strong>
+          y color de texto azul.
         </p>
 
-        <div class="box-components">
-            <div class="component-card">
-                <h3>📄 CONTENIDO (Content)</h3>
-                <p>Área donde se muestra el texto o imágenes. Sus dimensiones se definen con <strong>width</strong> y
-                    <strong>height</strong>.
-                </p>
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (sin estilos)</span>
+            <div class="demo-box">
+              <p style="margin:0">Este es un párrafo normal, sin caja visible. El texto pega contra los bordes del contenedor y no hay separación.</p>
             </div>
-            <div class="component-card">
-                <h3>📏 RELLENO (Padding)</h3>
-                <p>Espacio <strong>interno</strong> entre el contenido y el borde. Aumenta el área interior sin afectar
-                    el exterior.</p>
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (con estilos)</span>
+            <span class="etiqueta-via via-inline">Aplicado con CSS</span>
+            <div class="demo-box">
+              <p class="demo-parrafo-resaltado">Este es un párrafo normal, sin caja visible. El texto pega contra los bordes del contenedor y no hay separación.</p>
             </div>
-            <div class="component-card">
-                <h3>🖼️ BORDE (Border)</h3>
-                <p>Línea que rodea el padding y el contenido. Puede tener grosor, estilo (sólido, punteado) y color.</p>
-            </div>
-            <div class="component-card">
-                <h3>⬜ MARGEN (Margin)</h3>
-                <p>Espacio <strong>externo</strong> que separa esta caja de otros elementos. Es transparente y no forma
-                    parte del tamaño visible.</p>
-            </div>
+          </div>
         </div>
 
-        <div class="examplewithpic">
-            <div class="code-example">
-                <code>
-        .mi-caja { <br>
-        &nbsp;&nbsp;<span class="prop">width</span>: <span class="value">200px</span>; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* Contenido */</span><br>
-        &nbsp;&nbsp;<span class="prop">padding</span>: <span class="value">20px</span>; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* Relleno interno */</span><br>
-        &nbsp;&nbsp;<span class="prop">border</span>: <span class="value">5px solid #333</span>; &nbsp;<span class="comment">/* Borde */</span><br>
-        &nbsp;&nbsp;<span class="prop">margin</span>: <span class="value">15px</span>; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* Margen externo */</span><br>
-        }
-      </code>
-                <p style="margin-top: 10px; font-size: 0.75rem; opacity: 0.9; color: #c0c0c0;">
-                    💡 El ancho TOTAL real sería: 200px (content) + 40px (padding izq+der) + 10px (border izq+der) =
-                    250px <br>
-                    (sin contar margin, que es espacio externo)
-                </p>
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+
+          <p><strong>① Inline</strong> — el estilo va en el propio elemento:</p>
+          <div class="codigo"><span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="valor">"background:#eef2ff;
+   padding:16px 20px;
+   border:3px solid #4a6cf7;
+   margin:10px 0;
+   color:#3550c9;
+   border-radius:6px;"</span><span class="tag">&gt;</span>
+  Este es un párrafo normal...
+<span class="tag">&lt;/p&gt;</span></div>
+
+          <p><strong>② Insertado</strong> — en el <code>&lt;head&gt;</code> con <code>&lt;style&gt;</code>:</p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.resaltado</span> {
+    <span class="prop">background</span>: <span class="val">#eef2ff</span>;
+    <span class="prop">padding</span>: <span class="val">16px 20px</span>;
+    <span class="prop">border</span>: <span class="val">3px solid #4a6cf7</span>;
+    <span class="prop">margin</span>: <span class="val">10px 0</span>;
+    <span class="prop">color</span>: <span class="val">#3550c9</span>;
+    <span class="prop">border-radius</span>: <span class="val">6px</span>;
+  }
+<span class="tag">&lt;/style&gt;</span>
+
+<span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="valor">"resaltado"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span></div>
+
+          <p><strong>③ Externo</strong> — en <code>estilos.css</code>:</p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.resaltado</span> {
+  <span class="prop">background</span>: <span class="val">#eef2ff</span>;
+  <span class="prop">padding</span>: <span class="val">16px 20px</span>;
+  <span class="prop">border</span>: <span class="val">3px solid #4a6cf7</span>;
+  <span class="prop">margin</span>: <span class="val">10px 0</span>;
+  <span class="prop">color</span>: <span class="val">#3550c9</span>;
+  <span class="prop">border-radius</span>: <span class="val">6px</span>;
+}</div>
+          <div class="codigo"><span class="coment">&lt;!-- En el HTML --&gt;</span>
+<span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="valor">"stylesheet"</span> <span class="attr">href</span>=<span class="valor">"estilos.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="valor">"resaltado"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/p&gt;</span></div>
+        </details>
+      </div>
+
+      <div class="ejercicio">
+        <h4>2. Botón con área de clic cómoda</h4>
+        <p class="enunciado">
+          Convierte un botón HTML por defecto en un botón con <strong>padding 12px 24px</strong>,
+          fondo verde, texto blanco, borde redondeado y sin borde.
+        </p>
+
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (sin estilos)</span>
+            <div class="demo-box">
+              <button style="align-self:flex-start">Enviar</button>
             </div>
-            <div>
-                <img src="../../../pictures/boxmodelpic.jpg" alt="Diagrama del Box Model"
-                    style="width:100%; max-width:350px; box-shadow:0 4px 12px rgba(0,0,0,0.3);"
-                    onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22350%22 height=%22200%22%3E%3Crect fill=%22%232a2a3a%22 width=%22350%22 height=%22200%22/%3E%3Ctext x=%2225%22 y=%22120%22 fill=%22%23f0f0f0%22 font-family=%22sans-serif%22 font-size=%2232%22%3E📦 Box Model%3C/text%3E%3C/svg%3E'">
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (con estilos)</span>
+            <span class="etiqueta-via via-externo">Aplicado con CSS</span>
+            <div class="demo-box">
+              <button class="demo-boton-resaltado">Enviar</button>
             </div>
+          </div>
         </div>
+
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+
+          <p><strong>① Inline</strong></p>
+          <div class="codigo"><span class="tag">&lt;button</span> <span class="attr">style</span>=<span class="valor">"background:#2ec4b6;
+   color:white;
+   padding:12px 24px;
+   border:none;
+   border-radius:8px;
+   cursor:pointer;
+   font-weight:700;"</span><span class="tag">&gt;</span>
+  Enviar
+<span class="tag">&lt;/button&gt;</span></div>
+
+          <p><strong>② Insertado</strong></p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.boton</span> {
+    <span class="prop">background</span>: <span class="val">#2ec4b6</span>;
+    <span class="prop">color</span>: <span class="val">white</span>;
+    <span class="prop">padding</span>: <span class="val">12px 24px</span>;
+    <span class="prop">border</span>: <span class="val">none</span>;
+    <span class="prop">border-radius</span>: <span class="val">8px</span>;
+    <span class="prop">cursor</span>: <span class="val">pointer</span>;
+    <span class="prop">font-weight</span>: <span class="val">700</span>;
+  }
+<span class="tag">&lt;/style&gt;</span>
+
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="valor">"boton"</span><span class="tag">&gt;</span>Enviar<span class="tag">&lt;/button&gt;</span></div>
+
+          <p><strong>③ Externo</strong></p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.boton</span> {
+  <span class="prop">background</span>: <span class="val">#2ec4b6</span>;
+  <span class="prop">color</span>: <span class="val">white</span>;
+  <span class="prop">padding</span>: <span class="val">12px 24px</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+  <span class="prop">font-weight</span>: <span class="val">700</span>;
+}</div>
+          <div class="codigo"><span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="valor">"stylesheet"</span> <span class="attr">href</span>=<span class="valor">"estilos.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="valor">"boton"</span><span class="tag">&gt;</span>Enviar<span class="tag">&lt;/button&gt;</span></div>
+        </details>
+      </div>
     </div>
 
-    <!-- ========== PLAYGROUND ========== -->
-    <div class="playground-container">
-        <div class="playground-title">
-            <span>🎮</span>
-            <span>Experimenta modificando los valores — la vista previa se actualiza automáticamente</span>
+    <div class="nivel">
+      <span class="nivel-titulo nivel-intermedio">🟡 Nivel intermedio</span>
+
+      <div class="ejercicio">
+        <h4>3. Centrar una caja con <code>margin: 0 auto</code></h4>
+        <p class="enunciado">
+          Toma un <code>&lt;div&gt;</code> de ancho fijo y <strong>céntralo horizontalmente</strong>
+          en la página usando <code>margin: 0 auto</code> y dale padding + borde.
+        </p>
+
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (sin estilos)</span>
+            <div class="demo-box">
+              <div style="background:#eee;padding:8px;border-radius:6px;">Caja sin centrar, ocupa el ancho disponible.</div>
+            </div>
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (con estilos)</span>
+            <span class="etiqueta-via via-interno">Aplicado con CSS</span>
+            <div class="demo-box">
+              <div class="demo-caja-centrada">Caja centrada con width fijo y margin auto.</div>
+            </div>
+          </div>
         </div>
 
-        <div class="workspace" id="workspace">
-            <div class="editor-panel" id="editorPanel">
-                <div class="panel-header">
-                    <span>✏️ EDITOR · HTML + CSS</span>
-                    <span style="font-size:11px; opacity:0.7">— escribe y observa los cambios</span>
-                </div>
-                <div class="code-area">
-                    <textarea id="htmlCode" spellcheck="false" aria-label="Editor de código"></textarea>
-                </div>
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+
+          <p><strong>① Inline</strong></p>
+          <div class="codigo"><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"background:#fff3c4;
+   border:2px solid #ffb703;
+   padding:14px;
+   width:220px;
+   margin:0 auto;
+   text-align:center;
+   border-radius:8px;"</span><span class="tag">&gt;</span>
+  Caja centrada
+<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>② Insertado</strong></p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.centrada</span> {
+    <span class="prop">background</span>: <span class="val">#fff3c4</span>;
+    <span class="prop">border</span>: <span class="val">2px solid #ffb703</span>;
+    <span class="prop">padding</span>: <span class="val">14px</span>;
+    <span class="prop">width</span>: <span class="val">220px</span>;
+    <span class="prop">margin</span>: <span class="val">0 auto</span>;
+    <span class="prop">text-align</span>: <span class="val">center</span>;
+    <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  }
+<span class="tag">&lt;/style&gt;</span>
+
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="valor">"centrada"</span><span class="tag">&gt;</span>Caja centrada<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>③ Externo</strong></p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.centrada</span> {
+  <span class="prop">background</span>: <span class="val">#fff3c4</span>;
+  <span class="prop">border</span>: <span class="val">2px solid #ffb703</span>;
+  <span class="prop">padding</span>: <span class="val">14px</span>;
+  <span class="prop">width</span>: <span class="val">220px</span>;
+  <span class="prop">margin</span>: <span class="val">0 auto</span>;
+  <span class="prop">text-align</span>: <span class="val">center</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+}</div>
+          <div class="codigo"><span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="valor">"stylesheet"</span> <span class="attr">href</span>=<span class="valor">"estilos.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="valor">"centrada"</span><span class="tag">&gt;</span>Caja centrada<span class="tag">&lt;/div&gt;</span></div>
+        </details>
+      </div>
+
+      <div class="ejercicio">
+        <h4>4. Arreglar layout que se desborda con <code>box-sizing</code></h4>
+        <p class="enunciado">
+          Dos columnas con <code>width: 50%</code>, padding y borde. Sin
+          <code>box-sizing</code>, la segunda columna salta de línea. Observa el antes/después.
+        </p>
+
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (content-box)</span>
+            <div class="demo-box" style="display:block;">
+              <div style="display:flex;flex-wrap:wrap;">
+                <div style="box-sizing:content-box;width:50%;padding:10px;border:2px solid #c62828;background:#ffeaea;font-size:0.8rem;text-align:center;">Col A</div>
+                <div style="box-sizing:content-box;width:50%;padding:10px;border:2px solid #c62828;background:#ffeaea;font-size:0.8rem;text-align:center;">Col B</div>
+              </div>
             </div>
-            <div class="resize-handle" id="dragHandle"></div>
-            <div class="preview-panel" id="previewPanel">
-                <div class="panel-header">
-                    <span>🖥️ VISTA PREVIA</span>
-                    <span style="font-size:11px;">actualización en tiempo real</span>
-                </div>
-                <div class="preview-frame">
-                    <iframe id="liveFrame" title="Resultado del Box Model"
-                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
-                </div>
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (border-box)</span>
+            <span class="etiqueta-via via-externo">Aplicado con CSS</span>
+            <div class="demo-box" style="display:block;">
+              <div style="display:flex;flex-wrap:wrap;">
+                <div style="box-sizing:border-box;width:50%;padding:10px;border:2px solid #0d7a6c;background:#d7f5ec;font-size:0.8rem;text-align:center;">Col A</div>
+                <div style="box-sizing:border-box;width:50%;padding:10px;border:2px solid #0d7a6c;background:#d7f5ec;font-size:0.8rem;text-align:center;">Col B</div>
+              </div>
             </div>
+          </div>
         </div>
 
-        <div class="footer-note">
-            💡 Modifica padding, margin, border, width, background-color — la vista previa se actualiza al instante.
-        </div>
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+          <p>La clave es <code>box-sizing: border-box;</code> para que <code>width: 50%</code> incluya padding y borde.</p>
+
+          <p><strong>① Inline</strong></p>
+          <div class="codigo"><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"box-sizing:border-box;width:50%;
+   padding:10px;border:2px solid #4a6cf7;float:left;"</span><span class="tag">&gt;</span>
+  Col A
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"box-sizing:border-box;width:50%;
+   padding:10px;border:2px solid #4a6cf7;float:left;"</span><span class="tag">&gt;</span>
+  Col B
+<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>② Insertado</strong></p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.col</span> {
+    <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
+    <span class="prop">width</span>: <span class="val">50%</span>;
+    <span class="prop">padding</span>: <span class="val">10px</span>;
+    <span class="prop">border</span>: <span class="val">2px solid #4a6cf7</span>;
+    <span class="prop">float</span>: <span class="val">left</span>;
+  }
+<span class="tag">&lt;/style&gt;</span>
+
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="valor">"col"</span><span class="tag">&gt;</span>Col A<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="valor">"col"</span><span class="tag">&gt;</span>Col B<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>③ Externo</strong></p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.col</span> {
+  <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
+  <span class="prop">width</span>: <span class="val">50%</span>;
+  <span class="prop">padding</span>: <span class="val">10px</span>;
+  <span class="prop">border</span>: <span class="val">2px solid #4a6cf7</span>;
+  <span class="prop">float</span>: <span class="val">left</span>;
+}</div>
+        </details>
+      </div>
     </div>
 
-    <script>
-        // ========== CÓDIGO BASE DEMO (con estilos predefinidos para interactuar) ==========
-        const DEFAULT_CODE = `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Box Model · Práctica</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    <div class="nivel">
+      <span class="nivel-titulo nivel-avanzado">🔴 Nivel avanzado</span>
+
+      <div class="ejercicio">
+        <h4>5. Margen negativo para superponer tarjetas</h4>
+        <p class="enunciado">
+          Crea una tarjeta y haz que se superponga <strong>hacia arriba</strong>
+          sobre la anterior usando <code>margin-top: -30px</code>. Observa cómo el
+          margen negativo "tira" del elemento hacia arriba.
+        </p>
+
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (margen normal)</span>
+            <div class="demo-box" style="display:block;gap:0;">
+              <div style="background:#e2e6f0;padding:14px;border-radius:8px;text-align:center;font-size:0.8rem;">Tarjeta 1</div>
+              <div style="background:#cbd2e0;padding:14px;border-radius:8px;text-align:center;font-size:0.8rem;margin-top:8px;">Tarjeta 2</div>
+            </div>
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (margin-top negativo)</span>
+            <span class="etiqueta-via via-inline">Aplicado con CSS</span>
+            <div class="demo-box" style="display:block;gap:0;">
+              <div style="background:#e2e6f0;padding:14px;border-radius:8px;text-align:center;font-size:0.8rem;">Tarjeta 1</div>
+              <div style="background:#ff6b6b;color:#fff;padding:14px;border-radius:8px;text-align:center;font-size:0.8rem;margin-top:-16px;position:relative;box-shadow:0 6px 12px rgba(0,0,0,0.15);">Tarjeta 2 (superpuesta)</div>
+            </div>
+          </div>
+        </div>
+
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+
+          <p><strong>① Inline</strong></p>
+          <div class="codigo"><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"background:#e2e6f0;padding:14px;border-radius:8px;"</span><span class="tag">&gt;</span>
+  Tarjeta 1
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"background:#ff6b6b;color:#fff;
+   padding:14px;border-radius:8px;
+   margin-top:-16px;position:relative;
+   box-shadow:0 6px 12px rgba(0,0,0,0.15);"</span><span class="tag">&gt;</span>
+  Tarjeta 2 (superpuesta)
+<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>② Insertado</strong></p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.tarjeta-superpuesta</span> {
+    <span class="prop">background</span>: <span class="val">#ff6b6b</span>;
+    <span class="prop">color</span>: <span class="val">#fff</span>;
+    <span class="prop">padding</span>: <span class="val">14px</span>;
+    <span class="prop">border-radius</span>: <span class="val">8px</span>;
+    <span class="prop">margin-top</span>: <span class="val">-16px</span>;
+    <span class="prop">position</span>: <span class="val">relative</span>;
+    <span class="prop">box-shadow</span>: <span class="val">0 6px 12px rgba(0,0,0,0.15)</span>;
+  }
+<span class="tag">&lt;/style&gt;</span></div>
+
+          <p><strong>③ Externo</strong></p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.tarjeta-superpuesta</span> {
+  <span class="prop">background</span>: <span class="val">#ff6b6b</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;
+  <span class="prop">padding</span>: <span class="val">14px</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">margin-top</span>: <span class="val">-16px</span>;
+  <span class="prop">position</span>: <span class="val">relative</span>;
+  <span class="prop">box-shadow</span>: <span class="val">0 6px 12px rgba(0,0,0,0.15)</span>;
+}</div>
+          <p><em>Nota:</em> <code>position: relative</code> hace que la tarjeta se dibuje por encima de la anterior en el eje Z.</p>
+        </details>
+      </div>
+
+      <div class="ejercicio">
+        <h4>6. Contenedor con <code>padding</code> en porcentaje vs píxeles</h4>
+        <p class="enunciado">
+          Crea un contenedor con <code>padding: 5%</code> y observa cómo el padding
+          <strong>siempre se calcula sobre el ancho</strong>, incluso el padding vertical.
+        </p>
+
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (sin padding)</span>
+            <div class="demo-box" style="display:block;">
+              <div style="background:#d5e0ff;border:2px solid #4a6cf7;border-radius:8px;">
+                <div style="background:#fff;padding:6px;font-size:0.8rem;text-align:center;">Contenido pegado a los bordes</div>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (padding: 5%)</span>
+            <span class="etiqueta-via via-externo">Aplicado con CSS</span>
+            <div class="demo-box" style="display:block;">
+              <div style="background:#d5e0ff;border:2px solid #4a6cf7;border-radius:8px;padding:5%;">
+                <div style="background:#fff;padding:6px;font-size:0.8rem;text-align:center;">Contenido con aire alrededor (padding proporcional)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+
+          <p><strong>① Inline</strong></p>
+          <div class="codigo"><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"background:#d5e0ff;
+   border:2px solid #4a6cf7;
+   border-radius:8px;
+   padding:5%;"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"background:#fff;padding:6px;"</span><span class="tag">&gt;</span>Contenido<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>② Insertado</strong></p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.caja-pct</span> {
+    <span class="prop">background</span>: <span class="val">#d5e0ff</span>;
+    <span class="prop">border</span>: <span class="val">2px solid #4a6cf7</span>;
+    <span class="prop">border-radius</span>: <span class="val">8px</span>;
+    <span class="prop">padding</span>: <span class="val">5%</span>;
+  }
+<span class="tag">&lt;/style&gt;</span></div>
+
+          <p><strong>③ Externo</strong></p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.caja-pct</span> {
+  <span class="prop">background</span>: <span class="val">#d5e0ff</span>;
+  <span class="prop">border</span>: <span class="val">2px solid #4a6cf7</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">padding</span>: <span class="val">5%</span>;
+}</div>
+        </details>
+      </div>
+
+      <div class="ejercicio">
+        <h4>7. Colapsado de márgenes (margin collapse)</h4>
+        <p class="enunciado">
+          Dos párrafos con <code>margin: 20px 0</code>. Observa que el espacio
+          <strong>no es 40px</strong>, sino 20px: los márgenes verticales colapsan.
+          Aprende a evitarlo con <code>padding</code> o <code>overflow: hidden</code>.
+        </p>
+
+        <div class="comparativa">
+          <div class="panel panel-antes">
+            <span class="panel-titulo">Antes (margin colapsa)</span>
+            <div class="demo-box" style="display:block;background:#fff;">
+              <p style="background:#ffe0e0;margin:20px 0;padding:8px;font-size:0.8rem;text-align:center;">Párrafo 1 (margin 20px)</p>
+              <p style="background:#ffe0e0;margin:20px 0;padding:8px;font-size:0.8rem;text-align:center;">Párrafo 2 (margin 20px)</p>
+              <p style="font-size:0.72rem;color:#c62828;text-align:center;margin:0;">⬍ Separación real: 20px (no 40px)</p>
+            </div>
+          </div>
+          <div class="panel panel-despues">
+            <span class="panel-titulo">Después (evitando colapso)</span>
+            <span class="etiqueta-via via-interno">Aplicado con CSS</span>
+            <div class="demo-box" style="display:block;background:#fff;">
+              <div style="overflow:hidden;">
+                <p style="background:#d7f5ec;margin:20px 0;padding:8px;font-size:0.8rem;text-align:center;">Párrafo 1</p>
+              </div>
+              <div style="overflow:hidden;">
+                <p style="background:#d7f5ec;margin:20px 0;padding:8px;font-size:0.8rem;text-align:center;">Párrafo 2</p>
+              </div>
+              <p style="font-size:0.72rem;color:#0d7a6c;text-align:center;margin:0;">⬍ Separación real: 40px</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="solucion">
+          <summary>Ver solución (las 3 vías)</summary>
+
+          <p><strong>① Inline</strong> — envolver cada párrafo en un div con <code>overflow:hidden</code>:</p>
+          <div class="codigo"><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"overflow:hidden;"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="valor">"margin:20px 0;"</span><span class="tag">&gt;</span>Párrafo 1<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="valor">"overflow:hidden;"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="valor">"margin:20px 0;"</span><span class="tag">&gt;</span>Párrafo 2<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/div&gt;</span></div>
+
+          <p><strong>② Insertado</strong></p>
+          <div class="codigo"><span class="tag">&lt;style&gt;</span>
+  <span class="sel">.contenedor-margen</span> {
+    <span class="prop">overflow</span>: <span class="val">hidden</span>; <span class="coment">/* crea un BFC */</span>
+  }
+  <span class="sel">.contenedor-margen p</span> {
+    <span class="prop">margin</span>: <span class="val">20px 0</span>;
+  }
+<span class="tag">&lt;/style&gt;</span></div>
+
+          <p><strong>③ Externo</strong></p>
+          <div class="codigo"><span class="coment">/* estilos.css */</span>
+<span class="sel">.contenedor-margen</span> {
+  <span class="prop">overflow</span>: <span class="val">hidden</span>;
+}
+<span class="sel">.contenedor-margen p</span> {
+  <span class="prop">margin</span>: <span class="val">20px 0</span>;
+}</div>
+          <p><em>Alternativa:</em> usar solo <code>padding</code> en lugar de <code>margin</code>, o aplicar <code>padding</code> al contenedor padre.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Guía didáctica del <strong>Box Model</strong> · Ejemplos con antes/después · CSS inline, insertado y externo</p>
+</footer>
+
+<script>
+  (function () {
+    const caja = document.getElementById('cajaToggle');
+    const lecturaBoxSizing = document.getElementById('lecturaBoxSizing');
+    const lecturaAncho = document.getElementById('lecturaAncho');
+    const lecturaContenido = document.getElementById('lecturaContenido');
+    const cajaToggleMedida = document.getElementById('cajaToggleMedida');
+    const botones = document.querySelectorAll('.btn-toggle');
+
+    const WIDTH = 180;
+    const HEIGHT = 100;
+    const PADDING = 15;
+    const BORDER = 4;
+
+    function actualizar(valor) {
+      caja.style.boxSizing = valor;
+
+      let anchoReal, altoReal, anchoContenido, altoContenido;
+
+      if (valor === 'content-box') {
+        anchoContenido = WIDTH;
+        altoContenido = HEIGHT;
+        anchoReal = WIDTH + PADDING * 2 + BORDER * 2;
+        altoReal = HEIGHT + PADDING * 2 + BORDER * 2;
+      } else {
+        anchoReal = WIDTH;
+        altoReal = HEIGHT;
+        anchoContenido = WIDTH - PADDING * 2 - BORDER * 2;
+        altoContenido = HEIGHT - PADDING * 2 - BORDER * 2;
+      }
+
+      lecturaBoxSizing.textContent = valor;
+      lecturaAncho.textContent = anchoReal + ' × ' + altoReal + ' px';
+      lecturaContenido.textContent = anchoContenido + ' × ' + altoContenido + ' px';
+      cajaToggleMedida.textContent = anchoReal + ' × ' + altoReal + ' px';
+
+      botones.forEach(b => {
+        b.classList.toggle('activo', b.dataset.boxsizing === valor);
+      });
     }
-    body {
-      font-family: system-ui, 'Segoe UI', monospace;
-      background: linear-gradient(145deg, #f0f2f5, #dce1e8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 2rem;
-      margin: 0;
-    }
-    .playground {
-      max-width: 900px;
-      width: 100%;
-      background: rgba(255,255,255,0.5);
-      border-radius: 32px;
-      padding: 2rem;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      color: #0f172a;
-      letter-spacing: -0.3px;
-    }
-    .demo-card {
-      background-color: #ffe6b3;
-      width: 280px;
-      border: 8px solid #2b9348;
-      padding: 32px;
-      margin: 40px auto;
-      border-radius: 24px;
-      transition: all 0.2s ease;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-      font-family: inherit;
-    }
-    .demo-card p {
-      font-size: 1rem;
-      line-height: 1.4;
-      color: #1e293b;
-      font-weight: 500;
-    }
-    .label-box {
-      background: #2b9348;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 60px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-    .inspector {
-      background: #f1f5f9;
-      padding: 16px;
-      border-radius: 28px;
-      margin-top: 28px;
-      font-size: 0.8rem;
-      text-align: center;
-      font-family: monospace;
-      border: 1px dashed #64748b;
-    }
-    .highlight {
-      background: #facc15;
-      padding: 2px 5px;
-      border-radius: 12px;
-      font-weight: bold;
-    }
-    .flex-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    button {
-      background: white;
-      border: 1px solid #2b9348;
-      padding: 6px 12px;
-      border-radius: 40px;
-      cursor: pointer;
-      transition: 0.1s;
-      font-weight: 600;
-    }
-    button:hover {
-      background: #2b9348;
-      color: white;
-      transform: scale(1.02);
-    }
-    @media (max-width: 500px) {
-      .demo-card { width: 220px; padding: 20px; margin: 24px auto; }
-    }
-  </style>
-</head>
-<body>
-<div class="playground">
-  <h2>📐 El Modelo de Caja (Box Model)</h2>
-  <div class="demo-card" id="cajaDemo">
-    <span class="label-box">CONTENIDO</span>
-    <p><strong>✨ Content ✨</strong><br> Este es el área de contenido. <br> Su <span class="highlight">width</span> y <span class="highlight">height</span> definen el espacio interior.</p>
-    <p>🔹 <strong>Padding</strong> → espacio interno<br>
-    🔹 <strong>Border</strong> → borde sólido verde<br>
-    🔹 <strong>Margin</strong> → separación externa</p>
-  </div>
-  <div class="inspector">
-    💡 <strong>Información del Box Model:</strong><br>
-    🟩 content + 🟦 padding + 🟢 border + ⬜ margin = espacio total.<br>
-    ¡Modifica los valores en el editor de la izquierda!
-  </div>
-  <div class="flex-buttons">
-    <button onclick="alert('Edita los estilos en el panel izquierdo → Cambia padding, margin, border, width')">🧪 Experimentar</button>
-  </div>
-</div>
+
+    botones.forEach(b => {
+      b.addEventListener('click', () => actualizar(b.dataset.boxsizing));
+    });
+
+    actualizar('content-box');
+  })();
+</script>
+
 </body>
-</html>`;
-
-        // ========== REFERENCIAS DOM ==========
-        const htmlEditor = document.getElementById('htmlCode');
-        const liveFrame = document.getElementById('liveFrame');
-        const resetBtn = document.getElementById('resetBtn');
-        const themeToggle = document.getElementById('themeToggle');
-        const orientationBtn = document.getElementById('orientationBtn');
-        const workspace = document.getElementById('workspace');
-        const dragHandle = document.getElementById('dragHandle');
-        const editorPanel = document.getElementById('editorPanel');
-        const previewPanel = document.getElementById('previewPanel');
-
-        let dragActive = false;
-        let startX = 0, startY = 0;
-        let startWidth = 0, startHeight = 0;
-
-        // ========== ACTUALIZAR VISTA PREVIA ==========
-        function updatePreview() {
-            const code = htmlEditor.value;
-            const doc = liveFrame.contentDocument || liveFrame.contentWindow.document;
-            doc.open();
-            doc.write(code);
-            doc.close();
-        }
-
-        // ========== RESTAURAR EJEMPLO ==========
-        function resetToExample() {
-            htmlEditor.value = DEFAULT_CODE;
-            updatePreview();
-        }
-
-        // ========== TEMA OSCURO ==========
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            themeToggle.innerHTML = isDark ? '☀️ Claro' : '🌙 Oscuro';
-            localStorage.setItem('boxmodel-theme', isDark ? 'dark' : 'light');
-        }
-
-        // ========== CAMBIAR ORIENTACIÓN ==========
-        function toggleOrientation() {
-            const currentDirection = window.getComputedStyle(workspace).flexDirection;
-            if (currentDirection === 'row') {
-                workspace.style.flexDirection = 'column';
-                dragHandle.style.cursor = 'row-resize';
-                dragHandle.style.width = '100%';
-                dragHandle.style.height = '6px';
-            } else {
-                workspace.style.flexDirection = 'row';
-                dragHandle.style.cursor = 'col-resize';
-                dragHandle.style.width = '6px';
-                dragHandle.style.height = 'auto';
-            }
-        }
-
-        // ========== REDIMENSIONAMIENTO ==========
-        function initDrag() {
-            dragHandle.addEventListener('mousedown', (e) => {
-                dragActive = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                const isRow = window.getComputedStyle(workspace).flexDirection === 'row';
-                if (isRow) {
-                    startWidth = editorPanel.offsetWidth;
-                } else {
-                    startHeight = editorPanel.offsetHeight;
-                }
-                document.body.style.userSelect = 'none';
-                e.preventDefault();
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!dragActive) return;
-                const isRow = window.getComputedStyle(workspace).flexDirection === 'row';
-                const containerRect = workspace.getBoundingClientRect();
-
-                if (isRow) {
-                    let newWidth = startWidth + (e.clientX - startX);
-                    newWidth = Math.min(containerRect.width - 200, Math.max(200, newWidth));
-                    editorPanel.style.flex = `0 0 ${newWidth}px`;
-                    previewPanel.style.flex = `1 1 auto`;
-                } else {
-                    let newHeight = startHeight + (e.clientY - startY);
-                    newHeight = Math.min(containerRect.height - 200, Math.max(200, newHeight));
-                    editorPanel.style.flex = `0 0 ${newHeight}px`;
-                    previewPanel.style.flex = `1 1 auto`;
-                }
-            });
-
-            window.addEventListener('mouseup', () => {
-                dragActive = false;
-                document.body.style.userSelect = '';
-            });
-        }
-
-        // ========== CARGAR TEMA GUARDADO ==========
-        function loadThemePreference() {
-            const savedTheme = localStorage.getItem('boxmodel-theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark');
-                themeToggle.innerHTML = '☀️ Claro';
-            }
-        }
-
-        // ========== INICIALIZAR ==========
-        function init() {
-            // Cargar el código base en el editor
-            htmlEditor.value = DEFAULT_CODE;
-            loadThemePreference();
-            updatePreview();
-            initDrag();
-
-            // Event listeners
-            resetBtn.addEventListener('click', resetToExample);
-            themeToggle.addEventListener('click', toggleTheme);
-            orientationBtn.addEventListener('click', toggleOrientation);
-
-            // Actualización automática al escribir
-            htmlEditor.addEventListener('input', updatePreview);
-        }
-
-        init();
-    </script>
-</body>
-
 </html>
