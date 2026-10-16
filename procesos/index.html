@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Contable para Desarrolladores: Sistemas de Facturación y Ventas</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #e2e8f0;
+            --highlight-bg: #eff6ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        p {
+            font-size: 0.95rem;
+        }
+
+        ul {
+            padding-left: 20px;
+            font-size: 0.95rem;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .example-box {
+            background-color: var(--highlight-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .example-box strong {
+            color: var(--primary-color);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Manual Contable para Desarrolladores</h1>
+        <p>Guía de procesos, lógica de negocio y validaciones financieras para construir sistemas de ventas y facturación profesionales desde cero.</p>
+    </header>
+
+    <div class="container">
+
+        <!-- MÓDULO 1 -->
+        <section class="full-width">
+            <h2>1. Introducción a la Lógica Contable en Software</h2>
+            <p>Como programadores estamos acostumbrados a validar tipos de datos (strings, integers, booleans), pero en un software contable la regla de oro es la <strong>consistencia matemática y legal</strong>. Cada número que se escribe en un formulario de ventas impacta inventarios, reportes de impuestos y estados financieros de una empresa.</p>
+        </section>
+
+        <!-- MÓDULO 2 -->
+        <section>
+            <h2>2. Datos Fiscales y del Cliente (Cabecera)</h2>
+            <p>Todo proceso de venta formal inicia registrando <em>quién</em> compra. Este módulo corresponde a la cabecera del documento (Factura, Prefactura o Cotización).</p>
+            <ul>
+                <li><strong>NIT / Cédula / RIF:</strong> Identificador fiscal único ante el ente tributario del país.</li>
+                <li><strong>Nombre o Razón Social:</strong> Nombre legal de la persona natural o jurídica.</li>
+                <li><strong>Dirección y Contactos:</strong> Necesarios para la validez del documento físico/digital y trazabilidad.</li>
+            </ul>
+            <div class="example-box">
+                <strong>Ejemplo de programación:</strong> Al capturar el NIT, el sistema idealmente realiza un autocompletado consultando una base de datos o API de clientes recurrentes para evitar errores de digitación en la razón social.
+            </div>
+        </section>
+
+        <!-- MÓDULO 3 -->
+        <section>
+            <h2>3. Detalle de Productos y Servicios (El Núcleo)</h2>
+            <p>Es la sección en forma de tabla donde se agregan los ítems que el cliente está adquiriendo[span_0](start_span)[span_0](end_span). Contablemente, cada fila calcula sus propios valores independientes.</p>
+            <ul>
+                <li><strong>Cantidad:</strong> Número de unidades del producto.</li>
+                <li><strong>Precio Final Unitario:</strong> Costo por cada unidad con impuestos incluidos o excluidos (dependiendo de la normativa local).</li>
+                <li><strong>Descuento (% o valor fijo):</strong> Rebaja aplicada directamente al ítem.</li>
+                <li><strong>Base Imponible:</strong> Subtotal del ítem antes de calcular impuestos.</li>
+                <li><strong>IVA / Impuestos:</strong> Porcentaje tributario aplicado sobre la base imponible[span_1](start_span)[span_1](end_span).</li>
+            </ul>
+            <div class="example-box">
+                <strong>Ejemplo Práctico:</strong> 
+                Si vendes 2 neumáticos a $185.000 c/u[span_2](start_span)[span_2](end_span):<br>
+                • Base Imponible parcial = $310.924,37<br>
+                • IVA (19%) = $59.075,63<br>
+                • <strong>Total de Línea = $370.000,00</strong>[span_3](start_span)[span_3](end_span)
+            </div>
+        </section>
+
+        <!-- MÓDULO 4 -->
+        <section>
+            <h2>4. Totales Generales y Resumen Financiero</h2>
+            <p>Es el espacio donde se consolidan los valores calculados de todas las filas de productos para mostrar el monto final que el cliente debe pagar.</p>
+            <ul>
+                <li><strong>Suma de Descuentos:</strong> Acumulado total de rebajas aplicadas en la transacción.</li>
+                <li><strong>Base Total:</strong> Suma de todas las bases imponibles de los productos.</li>
+                <li><strong>IVA Total:</strong> Suma de todos los impuestos calculados.</li>
+                <li><strong>Total Final:</strong> El monto definitivo a cobrar. Fórmula: $\text{Base Total} - \text{Descuentos} + \text{IVA Total}$.</li>
+            </ul>
+            <div class="example-box">
+                <strong>Ejemplo Práctico:</strong> 
+                $\$310.924,37 \text{ (Base)} + \$59.075,63 \text{ (IVA)} = \mathbf{\$370.000,00 \text{ (Total Final)}}$[span_4](start_span)[span_4](end_span).
+            </div>
+        </section>
+
+        <!-- MÓDULO 5 -->
+        <section class="full-width">
+            <h2>5. Formas de Pago y Cuadre de Caja (El Cierre Contable)</h2>
+            <p>Este es uno de los módulos más críticos para evitar pérdidas de dinero en una empresa. Una venta no puede cerrarse contablemente si los valores monetarios ingresados no coinciden de forma exacta con el total de la factura.</p>
+            <ul>
+                <li><strong>Modalidad Simple:</strong> Todo se paga mediante un único método (ej. 100% efectivo o 100% tarjeta).</li>
+                <li><strong>Modalidad Mixta:</strong> El cliente divide el pago en varios medios (ej. una parte en efectivo y otra por transferencia o billetera digital como Nequi)[span_5](start_span)[span_5](end_span).</li>
+                <li><strong>Validación de Saldo por Cubrir:</strong> El sistema calcula en tiempo real la diferencia entre el <em>Total de la Prefactura</em> y la <em>Suma de los Medios de Pago</em> ingresados. La regla contable exige que esta diferencia sea exactamente <strong>$0,00</strong> para permitir guardar y facturar.</li>
+            </ul>
+            <div class="example-box">
+                <strong>Ejemplo Práctico de Validación (Alerta de descuadre):</strong><br>
+                • Total a pagar: <strong>$370.000,00</strong>[span_6](start_span)[span_6](end_span)<br>
+                • Pago 1 (Efectivo): $156.500,00[span_7](start_span)[span_7](end_span)<br>
+                • Pago 2 (Nequi): $213.503,00[span_8](start_span)[span_8](end_span)<br>
+                • Suma de pagos ingresados: $370.003,00[span_9](start_span)[span_9](end_span)<br>
+                • <strong>Saldo por cubrir: -$3,00</strong> (Hay un excedente de 3 pesos o unidades monetarias)[span_10](start_span)[span_10](end_span).<br>
+                <em>Acción del Sistema:</em> El botón de "Guardar / Facturar" debe permanecer deshabilitado o arrojar una alerta de error hasta que el cajero ajuste los montos y el saldo quede en $0,00.
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>Manual técnico desarrollado para aprendizaje en GitHub Pages • Lógica de Sistemas de Facturación</p>
+    </footer>
+
+</body>
+</html>
