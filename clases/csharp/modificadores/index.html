@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encapsulamiento y Modificadores de Acceso en C# 5 (.NET 4.5)</title>
+    <style>
+        /* ==========================================
+           VARIABLES Y TEMA OSCURO TIPO IDE (VS CODE / VISUAL STUDIO)
+           ========================================== */
+        :root {
+            --bg-dark: #1e1e2e;
+            --bg-card: #252538;
+            --bg-sidebar: #181825;
+            --bg-code: #11111b;
+            --accent-blue: #007acc;
+            --accent-cyan: #4ec9b0;
+            --accent-green: #6a9955;
+            --accent-purple: #c586c0;
+            --accent-yellow: #dcdcaa;
+            --accent-orange: #ce9178;
+            --accent-red: #f44747;
+            --text-main: #d4d4d4;
+            --text-muted: #9cdcfe;
+            --border-color: #33334d;
+            --radius: 10px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Reset y estilos base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* Encabezado */
+        header {
+            background: linear-gradient(135deg, #007acc, #1e1e2e);
+            color: #ffffff;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.92;
+        }
+
+        .badge-net {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Secciones principales */
+        section {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            color: var(--accent-cyan);
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            margin: 1.4rem 0 0.8rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #cccccc;
+        }
+
+        /* Grid de Modificadores */
+        .modifiers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .modifier-card {
+            background-color: var(--bg-sidebar);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border-left: 5px solid var(--accent-blue);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modifier-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .modifier-card.public {
+            border-left-color: #4CAF50;
+        }
+
+        .modifier-card.private {
+            border-left-color: #f44747;
+        }
+
+        .modifier-card.protected {
+            border-left-color: #FF9800;
+        }
+
+        .modifier-card.internal {
+            border-left-color: #2196F3;
+        }
+
+        .modifier-card.protected-internal {
+            border-left-color: #9C27B0;
+        }
+
+        .modifier-title {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-scope {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            background-color: var(--border-color);
+            color: #fff;
+            font-family: sans-serif;
+        }
+
+        /* Tabla Matriz */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            background-color: var(--bg-sidebar);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #1a1a28;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        td.code-font {
+            font-family: 'Consolas', monospace;
+            font-weight: bold;
+        }
+
+        .status-yes {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .status-no {
+            color: #f44747;
+            font-weight: bold;
+        }
+
+        /* Interactive Widgets (Simulador y Árbol de Decisión) */
+        .interactive-box {
+            background-color: var(--bg-sidebar);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        select,
+        button {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        button {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #005999;
+        }
+
+        .result-box {
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .result-box.allowed {
+            background-color: rgba(76, 175, 80, 0.15);
+            border: 1px solid #4CAF50;
+            color: #81c784;
+        }
+
+        .result-box.denied {
+            background-color: rgba(244, 71, 71, 0.15);
+            border: 1px solid #f44747;
+            color: #e57373;
+        }
+
+        .result-box.recommendation {
+            background-color: rgba(78, 201, 176, 0.15);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* Árbol de Decisión */
+        .decision-step {
+            margin-bottom: 1.2rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-option {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+        .btn-option:hover,
+        .btn-option.selected {
+            background-color: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        /* Bloques de Código */
+        .code-container {
+            background-color: var(--bg-code);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin: 1.5rem 0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .code-header {
+            background-color: #181825;
+            padding: 0.6rem 1.2rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        pre {
+            padding: 1.2rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        /* Highlight de Sintaxis */
+        .kw {
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        /* Keywords */
+        .cls {
+            color: var(--accent-cyan);
+        }
+
+        /* Classes/Types */
+        .fn {
+            color: var(--accent-yellow);
+        }
+
+        /* Functions */
+        .str {
+            color: var(--accent-orange);
+        }
+
+        /* Strings */
+        .cm {
+            color: var(--accent-green);
+            font-style: italic;
+        }
+
+        /* Comments */
+        .num {
+            color: #b5cea8;
+        }
+
+        /* Numbers */
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.7rem;
+            }
+
+            section {
+                padding: 1.2rem;
+            }
+
+            th,
+            td {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                font-size: 0.82rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Encabezado Principal -->
+    <header>
+        <h1>Encapsulamiento y Modificadores de Acceso en C# 5</h1>
+        <p>Guía Técnica Completa para Visual Studio 2012 y .NET Framework 4.5</p>
+        <span class="badge-net">C# v5.0 | .NET 4.5</span>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. ENCABEZADO Y TEORÍA GENERAL -->
+        <section id="teoria">
+            <h2>1. Encapsulamiento y Fundamentos Arquitectónicos</h2>
+
+            <p>
+                El <strong>Encapsulamiento</strong> es uno de los pilares esenciales de la Programación Orientada a
+                Objetos (POO). Consiste en ocultar los detalles de implementación interna de un objeto y exponer
+                únicamente una interfaz pública limpia y segura para interactuar con él.
+            </p>
+
+            <h3>¿Por qué existen los Modificadores de Acceso y qué problemas resuelven?</h3>
+            <p>
+                Sin restricciones de acceso, los sistemas de software sufren rápidamente de degradación arquitectónica.
+                Los modificadores de acceso resuelven cuatro problemas críticos en el código:
+            </p>
+
+            <ul style="margin-left: 1.5rem; color: #cccccc; margin-bottom: 1.5rem;">
+                <li style="margin-bottom: 0.8rem;">
+                    <strong>1. Inconsistencia y Corrupción de Datos:</strong> Si el código externo puede modificar
+                    variables como `_saldo` o `_estado` directamente, se pueden asignar valores inválidos (como saldos
+                    negativos) ignorando las validaciones de negocio.
+                </li>
+                <li style="margin-bottom: 0.8rem;">
+                    <strong>2. Alto Acoplamiento (Efecto Dominó):</strong> Cuando los clientes de una clase dependen de
+                    sus campos internos, cambiar una estructura de datos rompe la compilación en múltiples archivos de
+                    la solución.
+                </li>
+                <li style="margin-bottom: 0.8rem;">
+                    <strong>3. Imposibilidad de Refactorización:</strong> Si todo es accesible públicamente, no es
+                    posible optimizar ni reestructurar el algoritmo interno de una clase sin temor a causar fallos
+                    colaterales imprevistos.
+                </li>
+                <li style="margin-bottom: 0.8rem;">
+                    <strong>4. Exposición de Fallos de Seguridad e Infraestructura:</strong> Exponer métodos auxiliares
+                    internos de cifrado o comandos directos a base de datos permite que usuarios o módulos no
+                    autorizados manipulen el flujo operativo.
+                </li>
+            </ul>
+
+            <h3>Sentido y Propósito en el Diseño de Software</h3>
+            <p>
+                Los modificadores de acceso establecen <strong>contratos de uso claros (API Boundaries)</strong>.
+                Permiten definir con precisión la frontera entre lo que el cliente de la clase <em>necesita
+                    utilizar</em> y lo que la clase <em>maneja internamente</em> para proteger sus invariantes de
+                estado.
+            </p>
+        </section>
+
+        <!-- 2. DETALLE DE LOS 5 MODIFICADORES DE ACCESO EN C# 5 -->
+        <section id="modificadores">
+            <h2>2. Los 5 Modificadores de Acceso en C# 5</h2>
+            <p>En C# versión 5.0 existen cinco niveles de accesibilidad para miembros y tipos:</p>
+
+            <div class="modifiers-grid">
+
+                <div class="modifier-card public">
+                    <div class="modifier-title">
+                        <span style="color: #4CAF50;">public</span>
+                        <span class="badge-scope">Sin restricciones</span>
+                    </div>
+                    <p>El elemento es visible desde cualquier lugar: dentro de la misma clase, en clases derivadas y
+                        desde cualquier ensamblado externo (`.dll`/`.exe`) que haga referencia al proyecto.</p>
+                </div>
+
+                <div class="modifier-card private">
+                    <div class="modifier-title">
+                        <span style="color: #f44747;">private</span>
+                        <span class="badge-scope">Máxima restricción</span>
+                    </div>
+                    <p>Acceso restringido exclusivamente al cuerpo de la clase o estructura donde fue declarado. Es la
+                        accesibilidad por defecto para variables y métodos en C#.</p>
+                </div>
+
+                <div class="modifier-card protected">
+                    <div class="modifier-title">
+                        <span style="color: #FF9800;">protected</span>
+                        <span class="badge-scope">Herencia</span>
+                    </div>
+                    <p>El miembro es accesible dentro de la clase contenedora y por cualquier clase que herede de ella,
+                        incluso si la clase derivada se encuentra en otro ensamblado.</p>
+                </div>
+
+                <div class="modifier-card internal">
+                    <div class="modifier-title">
+                        <span style="color: #2196F3;">internal</span>
+                        <span class="badge-scope">Mismo Ensamblado</span>
+                    </div>
+                    <p>El miembro o tipo es accesible desde cualquier punto dentro del mismo archivo ejecutable o
+                        biblioteca de clases (`.dll`), pero es invisible para proyectos externos.</p>
+                </div>
+
+                <div class="modifier-card protected-internal">
+                    <div class="modifier-title">
+                        <span style="color: #9C27B0;">protected internal</span>
+                        <span class="badge-scope">Ensamblado Ó Herencia</span>
+                    </div>
+                    <p>Acceso permitido a clases dentro del mismo ensamblado <strong>O</strong> a clases derivadas
+                        situadas en ensamblados externos (unión lógica OR de protected e internal).</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. MATRIZ DE VISIBILIDAD Y SIMULADOR INTERACTIVO -->
+        <section id="matriz-simulador">
+            <h2>3. Matriz de Visibilidad y Simulador Interactivo</h2>
+            <p>Resumen de visibilidad de los modificadores de acceso según el contexto de la llamada:</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Modificador</th>
+                            <th>Misma Clase</th>
+                            <th>Clase Derivada (Mismo Ensamblado)</th>
+                            <th>Otra Clase (Mismo Ensamblado)</th>
+                            <th>Clase Derivada (Otro Ensamblado)</th>
+                            <th>Otra Clase (Otro Ensamblado)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="code-font" style="color: #4CAF50;">public</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                        </tr>
+                        <tr>
+                            <td class="code-font" style="color: #f44747;">private</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-no">NO</td>
+                            <td class="status-no">NO</td>
+                            <td class="status-no">NO</td>
+                            <td class="status-no">NO</td>
+                        </tr>
+                        <tr>
+                            <td class="code-font" style="color: #FF9800;">protected</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-no">NO</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-no">NO</td>
+                        </tr>
+                        <tr>
+                            <td class="code-font" style="color: #2196F3;">internal</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-no">NO</td>
+                            <td class="status-no">NO</td>
+                        </tr>
+                        <tr>
+                            <td class="code-font" style="color: #9C27B0;">protected internal</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-yes">SI</td>
+                            <td class="status-no">NO</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 2rem;">Simulador Interactivo de Alcance (JS Vanilla)</h3>
+            <p>Selecciona la combinación de modificador y contexto para simular la verificación del compilador de Visual
+                Studio 2012:</p>
+
+            <div class="interactive-box">
+                <div class="controls-grid">
+                    <div class="form-group">
+                        <label for="sim-modifier">Modificador de Acceso:</label>
+                        <select id="sim-modifier">
+                            <option value="public">public</option>
+                            <option value="private">private</option>
+                            <option value="protected">protected</option>
+                            <option value="internal">internal</option>
+                            <option value="protected-internal">protected internal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sim-context">Contexto desde donde se accede:</label>
+                        <select id="sim-context">
+                            <option value="same-class">Misma Clase</option>
+                            <option value="derived-same">Clase Derivada (Mismo Ensamblado)</option>
+                            <option value="non-derived-same">Otra Clase (Mismo Ensamblado)</option>
+                            <option value="derived-other">Clase Derivada (Otro Ensamblado)</option>
+                            <option value="non-derived-other">Otra Clase (Otro Ensamblado)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="sim-result" class="result-box allowed">
+                    <span id="sim-icon" style="font-size: 1.5rem;">✔</span>
+                    <span id="sim-text">Acceso PERMITIDO: El miembro es plenamente accesible en este contexto.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. GUÍA PRÁCTICA Y ÁRBOL DE DECISIÓN -->
+        <section id="guia-practica">
+            <h2>4. Guía Práctica y Árbol de Decisión Interactivo</h2>
+
+            <h3>Situaciones de Cuándo Usar Cada Modificador</h3>
+            <ul style="margin-left: 1.5rem; color: #cccccc; margin-bottom: 1.5rem;">
+                <li style="margin-bottom: 0.6rem;"><strong>private:</strong> Campos de estado (`_saldo`), métodos helper
+                    de validación y constructores en patrones Singleton.</li>
+                <li style="margin-bottom: 0.6rem;"><strong>public:</strong> Propiedades expuestas de una clase, métodos
+                    de la API principal e interfaces de servicio.</li>
+                <li style="margin-bottom: 0.6rem;"><strong>protected:</strong> Métodos base de cálculo que las subclases
+                    deben personalizar o sobreescribir mediante `protected virtual`.</li>
+                <li style="margin-bottom: 0.6rem;"><strong>internal:</strong> Clases de conexión a BD, drivers o
+                    algoritmos de cifrado dentro de una biblioteca `.dll` para que no se expongan fuera de la
+                    biblioteca.</li>
+                <li style="margin-bottom: 0.6rem;"><strong>protected internal:</strong> Puntos de extensión en
+                    frameworks donde los componentes del propio ensamblado o clases hijas externas necesiten colaborar.
+                </li>
+            </ul>
+
+            <h3>Árbol de Decisión Interactivo (JS Vanilla)</h3>
+            <p>Responde a estas preguntas simples para obtener la recomendación exacta del modificador idóneo:</p>
+
+            <div class="interactive-box">
+                <div class="decision-step">
+                    <label>1. ¿El miembro debe ser accesible fuera del proyecto/ensamblado (.dll/.exe) actual?</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn-option" onclick="selectQ1('yes')">Sí, fuera del
+                            proyecto</button>
+                        <button type="button" class="btn-option" onclick="selectQ1('no')">No, solo dentro de este
+                            proyecto</button>
+                    </div>
+                </div>
+
+                <div id="step-q2-ext" class="decision-step" style="display: none;">
+                    <label>2. ¿Deseas que cualquier clase externa acceda, o únicamente clases que hereden de
+                        ella?</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn-option" onclick="selectQ2Ext('any')">Cualquiera (Acceso
+                            Total)</button>
+                        <button type="button" class="btn-option" onclick="selectQ2Ext('inheritance')">Solo Clases
+                            Derivadas</button>
+                        <button type="button" class="btn-option" onclick="selectQ2Ext('both')">Mismo Proyecto O Clases
+                            Derivadas</button>
+                    </div>
+                </div>
+
+                <div id="step-q2-int" class="decision-step" style="display: none;">
+                    <label>2. ¿Quién dentro del proyecto debe poder acceder a este miembro?</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn-option" onclick="selectQ2Int('class')">Únicamente la propia
+                            Clase</button>
+                        <button type="button" class="btn-option" onclick="selectQ2Int('derived')">La Clase y sus Hijas
+                            (Herencia)</button>
+                        <button type="button" class="btn-option" onclick="selectQ2Int('all')">Cualquier Clase del
+                            Proyecto</button>
+                    </div>
+                </div>
+
+                <div id="tree-result" class="result-box recommendation" style="display: none; margin-top: 1rem;">
+                    <strong id="tree-title" style="font-size: 1.2rem;">Recomendación: public</strong>
+                    <span id="tree-desc" style="margin-top: 0.4rem;">Explicación detallada de la elección.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 3 EJEMPLOS PRÁCTICOS EN C# 5 -->
+        <section id="ejemplos">
+            <h2>5. 3 Ejemplos Prácticos Completos en C# 5 (.NET 4.5)</h2>
+            <p>Ejemplos de código completos listos para Visual Studio 2012, ampliamente comentados línea por línea.</p>
+
+            <!-- EJEMPLO 1 -->
+            <h3>Ejemplo 1: Modelo de Dominio (Entidad Bancaria con Invariantes)</h3>
+            <p>Muestra el uso de campos `private` para listas internas (`List<Transaccion>`) y saldos, validación
+                    privada y getters/setters protegidos.</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>CuentaBancaria.cs (C# 5 - VS2012 / .NET 4.5)</span>
+                    <span>Ejemplo 1</span>
+                </div>
+                <pre><code><span class="kw">using</span> System;
+<span class="kw">using</span> System.Collections.Generic;
+
+<span class="kw">namespace</span> <span class="cls">DominioBancario</span>
+{
+    <span class="cm">// Clase pública que representa una transacción indivisible e inmutable</span>
+    <span class="kw">public class</span> <span class="cls">Transaccion</span>
+    {
+        <span class="cm">// Propiedades públicas con set privado para garantizar inmutabilidad desde fuera</span>
+        <span class="kw">public</span> <span class="cls">DateTime</span> Fecha { <span class="kw">get</span>; <span class="kw">private set</span>; }
+        <span class="kw">public decimal</span> Monto { <span class="kw">get</span>; <span class="kw">private set</span>; }
+        <span class="kw">public string</span> Tipo { <span class="kw">get</span>; <span class="kw">private set</span>; }
+
+        <span class="cm">// Constructor público para crear transacciones válidas</span>
+        <span class="kw">public</span> <span class="fn">Transaccion</span>(<span class="kw">string</span> tipo, <span class="kw">decimal</span> monto)
+        {
+            <span class="kw">this</span>.Fecha = <span class="cls">DateTime</span>.Now; <span class="cm">// Asigna la fecha del sistema en tiempo real</span>
+            <span class="kw">this</span>.Tipo = tipo;          <span class="cm">// Registra el tipo (DEPOSITO / RETIRO)</span>
+            <span class="kw">this</span>.Monto = monto;        <span class="cm">// Asigna la cantidad numérica</span>
+        }
+    }
+
+    <span class="cm">// Entidad del Dominio: Representa la cuenta bancaria protegida</span>
+    <span class="kw">public class</span> <span class="cls">CuentaBancaria</span>
+    {
+        <span class="cm">// CAMPO PRIVADO: Evita que código externo modifique el saldo directamente</span>
+        <span class="kw">private decimal</span> _saldo;
+
+        <span class="cm">// CAMPO PRIVADO READONLY: Protege la lista contra reemplazos o vaciado no autorizado</span>
+        <span class="kw">private readonly</span> <span class="cls">List</span>&lt;<span class="cls">Transaccion</span>&gt; _historial;
+
+        <span class="cm">// PROPIEDAD PÚBLICA DE SOLO LECTURA: El número de cuenta no debe cambiar tras ser creado</span>
+        <span class="kw">public string</span> NumeroCuenta { <span class="kw">get</span>; <span class="kw">private set</span>; }
+
+        <span class="cm">// PROPIEDAD PÚBLICA: Titular de la cuenta</span>
+        <span class="kw">public string</span> Titular { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        <span class="cm">// PROPIEDAD PÚBLICA DE CONSULTA DE SALDO: Expone el saldo sin dar acceso directo a '_saldo'</span>
+        <span class="kw">public decimal</span> Saldo
+        {
+            <span class="kw">get</span> { <span class="kw">return this</span>._saldo; }
+        }
+
+        <span class="cm">// PROPIEDAD PÚBLICA DE HISTORIAL: Retorna colección de solo lectura para evitar .Clear() o .Add() externo</span>
+        <span class="kw">public</span> <span class="cls">IEnumerable</span>&lt;<span class="cls">Transaccion</span>&gt; Historial
+        {
+            <span class="kw">get</span> { <span class="kw">return this</span>._historial.<span class="fn">AsReadOnly</span>(); }
+        }
+
+        <span class="cm">// CONSTRUCTOR PÚBLICO: Inicializa la cuenta con estado válido</span>
+        <span class="kw">public</span> <span class="fn">CuentaBancaria</span>(<span class="kw">string</span> numeroCuenta, <span class="kw">string</span> titular, <span class="kw">decimal</span> depositoInicial)
+        {
+            <span class="kw">this</span>.NumeroCuenta = numeroCuenta;                             <span class="cm">// Asigna el identificador único</span>
+            <span class="kw">this</span>.Titular = titular;                                       <span class="cm">// Asigna el nombre del titular</span>
+            <span class="kw">this</span>._historial = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="cls">Transaccion</span>&gt;();                   <span class="cm">// Instancia la lista privada</span>
+            <span class="kw">this</span>._saldo = <span class="num">0</span>;                                              <span class="cm">// Inicializa el saldo base</span>
+
+            <span class="kw">if</span> (depositoInicial &gt; <span class="num">0</span>)
+            {
+                <span class="kw">this</span>.<span class="fn">Depositar</span>(depositoInicial);                          <span class="cm">// Aplica el primer depósito validado</span>
+            }
+        }
+
+        <span class="cm">// MÉTODO PÚBLICO: Punto de entrada controlado para depósitos</span>
+        <span class="kw">public void</span> <span class="fn">Depositar</span>(<span class="kw">decimal</span> monto)
+        {
+            <span class="kw">if</span> (!<span class="fn">ValidarMontoPositivo</span>(monto))                            <span class="cm">// Invoca validación privada</span>
+            {
+                <span class="kw">throw new</span> <span class="cls">ArgumentException</span>(<span class="str">"El monto a depositar debe ser mayor a cero."</span>);
+            }
+
+            <span class="kw">this</span>._saldo += monto;                                         <span class="cm">// Incrementa el saldo de forma segura</span>
+            <span class="kw">this</span>._historial.<span class="fn">Add</span>(<span class="kw">new</span> <span class="cls">Transaccion</span>(<span class="str">"DEPOSITO"</span>, monto));      <span class="cm">// Añade el movimiento a la bitácora</span>
+        }
+
+        <span class="cm">// MÉTODO PÚBLICO: Punto de entrada controlado para retiros</span>
+        <span class="kw">public bool</span> <span class="fn">Retirar</span>(<span class="kw">decimal</span> monto)
+        {
+            <span class="kw">if</span> (!<span class="fn">ValidarMontoPositivo</span>(monto))                            <span class="cm">// Verifica que sea positivo</span>
+            {
+                <span class="kw">return false</span>;
+            }
+
+            <span class="kw">if</span> (<span class="kw">this</span>._saldo &lt; monto)                                      <span class="cm">// Regla de negocio: Sin sobregiros</span>
+            {
+                <span class="kw">return false</span>;                                             <span class="cm">// Rechaza la transacción</span>
+            }
+
+            <span class="kw">this</span>._saldo -= monto;                                         <span class="cm">// Aplica el descuento</span>
+            <span class="kw">this</span>._historial.<span class="fn">Add</span>(<span class="kw">new</span> <span class="cls">Transaccion</span>(<span class="str">"RETIRO"</span>, monto));        <span class="cm">// Registra el retiro</span>
+            <span class="kw">return true</span>;                                                  <span class="cm">// Retiro completado</span>
+        }
+
+        <span class="cm">// MÉTODO PRIVADO: Helper de validación inaccesible desde el exterior</span>
+        <span class="kw">private bool</span> <span class="fn">ValidarMontoPositivo</span>(<span class="kw">decimal</span> monto)
+        {
+            <span class="kw">return</span> monto &gt; <span class="num">0</span>;                                             <span class="cm">// Retorna verdadero solo si es positivo</span>
+        }
+    }
+}</code></pre>
+            </div>
+
+            <!-- EJEMPLO 2 -->
+            <h3>Ejemplo 2: Herencia y Cálculo de Nómina (`protected` y `protected virtual`)</h3>
+            <p>Demuestra el uso de `protected` para que clases hijas redefinan cálculos y compartan variables base sin
+                exponerlas fuera de la jerarquía.</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>SistemaNomina.cs (C# 5 - VS2012 / .NET 4.5)</span>
+                    <span>Ejemplo 2</span>
+                </div>
+                <pre><code><span class="kw">using</span> System;
+
+<span class="kw">namespace</span> <span class="cls">SistemaNomina</span>
+{
+    <span class="cm">// Clase Base que define la estructura común de un Empleado</span>
+    <span class="kw">public class</span> <span class="cls">Empleado</span>
+    {
+        <span class="cm">// Propiedad pública visible</span>
+        <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        <span class="cm">// CAMPO PROTECTED: Accesible solo en Empleado y sus clases hijas (Gerente, Director)</span>
+        <span class="kw">protected decimal</span> SalarioBase;
+
+        <span class="cm">// CAMPO PROTECTED INTERNAL: Accesible en este proyecto O en clases derivadas de otros proyectos</span>
+        <span class="kw">protected internal string</span> ClaveRegistroAuditoria;
+
+        <span class="cm">// Constructor público de la clase base</span>
+        <span class="kw">public</span> <span class="fn">Empleado</span>(<span class="kw">string</span> nombre, <span class="kw">decimal</span> salarioBase, <span class="kw">string</span> id)
+        {
+            <span class="kw">this</span>.Nombre = nombre;                                         <span class="cm">// Inicializa el nombre público</span>
+            <span class="kw">this</span>.SalarioBase = salarioBase;                               <span class="cm">// Inicializa el salario protegido</span>
+            <span class="kw">this</span>.ClaveRegistroAuditoria = <span class="str">"NOM-"</span> + id + <span class="str">"-"</span> + <span class="cls">DateTime</span>.Now.Year; <span class="cm">// Clave de auditoría</span>
+        }
+
+        <span class="cm">// MÉTODO PROTECTED VIRTUAL: Permite que clases hijas modifiquen el cálculo del sueldo neto</span>
+        <span class="kw">protected virtual decimal</span> <span class="fn">CalcularSueldoNeto</span>()
+        {
+            <span class="kw">return this</span>.SalarioBase * <span class="num">0.84m</span>;                              <span class="cm">// Aplica 16% de retención legal</span>
+        }
+
+        <span class="cm">// MÉTODO PÚBLICO: Genera el recibo imprimiendo los resultados</span>
+        <span class="kw">public void</span> <span class="fn">GenerarReciboPago</span>()
+        {
+            <span class="cm">// Llama internamente al método protegido (que puede ser el sobreescrito por el hijo)</span>
+            <span class="kw">decimal</span> sueldoFinal = <span class="kw">this</span>.<span class="fn">CalcularSueldoNeto</span>();
+            
+            <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"--- RECIBO DE PAGO ---"</span>);
+            <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Empleado: "</span> + <span class="kw">this</span>.Nombre);
+            <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Sueldo Neto a Cobrar: $"</span> + sueldoFinal);
+        }
+    }
+
+    <span class="cm">// Clase Derivada que representa a un Gerente</span>
+    <span class="kw">public class</span> <span class="cls">Gerente</span> : <span class="cls">Empleado</span>
+    {
+        <span class="cm">// Propiedad pública propia del Gerente</span>
+        <span class="kw">public decimal</span> BonoLiderazgo { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        <span class="cm">// Constructor del Gerente invocado con base(...)</span>
+        <span class="kw">public</span> <span class="fn">Gerente</span>(<span class="kw">string</span> nombre, <span class="kw">decimal</span> salarioBase, <span class="kw">string</span> id, <span class="kw">decimal</span> bono)
+            : <span class="kw">base</span>(nombre, salarioBase, id)                               <span class="cm">// Delega al constructor de Empleado</span>
+        {
+            <span class="kw">this</span>.BonoLiderazgo = bono;                                    <span class="cm">// Asigna el bono</span>
+        }
+
+        <span class="cm">// SOBREESCRITURA PROTEGIDA: Modifica el cálculo incluyendo el bono</span>
+        <span class="kw">protected override decimal</span> <span class="fn">CalcularSueldoNeto</span>()
+        {
+            <span class="cm">// Acceso directo al campo 'SalarioBase' por ser heredado con accesibilidad 'protected'</span>
+            <span class="kw">decimal</span> totalBruto = <span class="kw">this</span>.SalarioBase + <span class="kw">this</span>.BonoLiderazgo;
+            
+            <span class="kw">return</span> totalBruto * <span class="num">0.84m</span>;                                    <span class="cm">// Aplica deducciones sobre el total acumulado</span>
+        }
+
+        <span class="cm">// Método público propio para mostrar la ficha de auditoría</span>
+        <span class="kw">public void</span> <span class="fn">MostrarFichaAuditoria</span>()
+        {
+            <span class="cm">// Acceso a 'ClaveRegistroAuditoria' por ser protected internal en el mismo ensamblado</span>
+            <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Registro de Auditoría: "</span> + <span class="kw">this</span>.ClaveRegistroAuditoria);
+        }
+    }
+}</code></pre>
+            </div>
+
+            <!-- EJEMPLO 3 -->
+            <h3>Ejemplo 3: Arquitectura en Capas / Componente DLL (`internal` y Patrón Fachada)</h3>
+            <p>Muestra cómo ocultar clases auxiliares de base de datos o cifrado dentro de un ejecutable/DLL con
+                `internal` y exponer una API pública limpia.</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>ComponenteAccesoDatos.cs (C# 5 - VS2012 / .NET 4.5)</span>
+                    <span>Ejemplo 3</span>
+                </div>
+                <pre><code><span class="kw">using</span> System;
+<span class="kw">using</span> System.Text;
+
+<span class="kw">namespace</span> <span class="cls">ComponenteAccesoDatos</span>
+{
+    <span class="cm">// CLASE INTERNAL: Inaccesible fuera de este ensamblado (.dll).</span>
+    <span class="cm">// Oculta completamente el motor de cifrado e infraestructura técnica a los clientes.</span>
+    <span class="kw">internal class</span> <span class="cls">MotorSeguridadInterno</span>
+    {
+        <span class="cm">// Método internal de cifrado criptográfico auxiliar</span>
+        <span class="kw">internal string</span> <span class="fn">CifrarCadenaConexion</span>(<span class="kw">string</span> cadenaBruta)
+        {
+            <span class="kw">byte</span>[] bytes = <span class="cls">Encoding</span>.UTF8.<span class="fn">GetBytes</span>(cadenaBruta);           <span class="cm">// Convierte el texto plano a bytes</span>
+            <span class="kw">return</span> <span class="cls">Convert</span>.<span class="fn">ToBase64String</span>(bytes);                       <span class="cm">// Retorna la cadena codificada</span>
+        }
+
+        <span class="cm">// Método internal para validación de conectividad física</span>
+        <span class="kw">internal bool</span> <span class="fn">ValidarPingServidor</span>(<span class="kw">string</span> servidor)
+        {
+            <span class="kw">return</span> !<span class="kw">string</span>.<span class="fn">IsNullOrWhiteSpace</span>(servidor);                 <span class="cm">// Comprueba si el nombre del servidor es válido</span>
+        }
+    }
+
+    <span class="cm">// CLASE PÚBLICA (FACHADA): Única interfaz visible para proyectos externos</span>
+    <span class="kw">public class</span> <span class="cls">ConectorBaseDatos</span>
+    {
+        <span class="cm">// CAMPO PRIVADO: Mantiene referencia al motor interno</span>
+        <span class="kw">private</span> <span class="cls">MotorSeguridadInterno</span> _motorSeguridad;
+
+        <span class="cm">// PROPIEDAD PÚBLICA: Servidor destino</span>
+        <span class="kw">public string</span> Servidor { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        <span class="cm">// CONSTRUCTOR PÚBLICO</span>
+        <span class="kw">public</span> <span class="fn">ConectorBaseDatos</span>(<span class="kw">string</span> servidor)
+        {
+            <span class="kw">this</span>.Servidor = servidor;                                    <span class="cm">// Asigna el servidor</span>
+            <span class="kw">this</span>._motorSeguridad = <span class="kw">new</span> <span class="cls">MotorSeguridadInterno</span>();            <span class="cm">// Instancia internamente la clase internal</span>
+        }
+
+        <span class="cm">// MÉTODO PÚBLICO: Punto de entrada principal para abrir conexiones</span>
+        <span class="kw">public bool</span> <span class="fn">Conectar</span>(<span class="kw">string</span> usuario, <span class="kw">string</span> password)
+        {
+            <span class="cm">// Llama a 'ValidarPingServidor' de la clase internal de forma transparente</span>
+            <span class="kw">if</span> (!<span class="kw">this</span>._motorSeguridad.<span class="fn">ValidarPingServidor</span>(<span class="kw">this</span>.Servidor))
+            {
+                <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Error: El servidor especificado no responde."</span>);
+                <span class="kw">return false</span>;
+            }
+
+            <span class="cm">// Construye la cadena sin cifrar</span>
+            <span class="kw">string</span> cadenaRaw = <span class="str">"Server="</span> + <span class="kw">this</span>.Servidor + <span class="str">";User="</span> + usuario + <span class="str">";Pwd="</span> + password;
+
+            <span class="cm">// Utiliza el motor internal para cifrar la cadena de conexión</span>
+            <span class="kw">string</span> cadenaCifrada = <span class="kw">this</span>._motorSeguridad.<span class="fn">CifrarCadenaConexion</span>(cadenaRaw);
+
+            <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Conexión establecida exitosamente."</span>);
+            <span class="cls">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Hash de conexión seguro: "</span> + cadenaCifrada);
+            <span class="kw">return true</span>;
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JAVASCRIPT VANILLA INTERACTIVO (SIMULADOR Y ÁRBOL DE DECISIÓN) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ==========================================
+            // 1. LÓGICA DEL SIMULADOR DE ALCANCE
+            // ==========================================
+            var simModifier = document.getElementById('sim-modifier');
+            var simContext = document.getElementById('sim-context');
+            var simResult = document.getElementById('sim-result');
+            var simIcon = document.getElementById('sim-icon');
+            var simText = document.getElementById('sim-text');
+
+            var rules = {
+                'public': {
+                    'same-class': true,
+                    'derived-same': true,
+                    'non-derived-same': true,
+                    'derived-other': true,
+                    'non-derived-other': true
+                },
+                'private': {
+                    'same-class': true,
+                    'derived-same': false,
+                    'non-derived-same': false,
+                    'derived-other': false,
+                    'non-derived-other': false
+                },
+                'protected': {
+                    'same-class': true,
+                    'derived-same': true,
+                    'non-derived-same': false,
+                    'derived-other': true,
+                    'non-derived-other': false
+                },
+                'internal': {
+                    'same-class': true,
+                    'derived-same': true,
+                    'non-derived-same': true,
+                    'derived-other': false,
+                    'non-derived-other': false
+                },
+                'protected-internal': {
+                    'same-class': true,
+                    'derived-same': true,
+                    'non-derived-same': true,
+                    'derived-other': true,
+                    'non-derived-other': false
+                }
+            };
+
+            function updateSim() {
+                var mod = simModifier.value;
+                var ctx = simContext.value;
+                var isAllowed = rules[mod] && rules[mod][ctx];
+
+                if (isAllowed) {
+                    simResult.className = 'result-box allowed';
+                    simIcon.textContent = '✔';
+                    simText.textContent = 'Acceso PERMITIDO: El miembro de tipo "' + mod + '" ES accesible en este contexto. Compila sin errores en Visual Studio 2012.';
+                } else {
+                    simResult.className = 'result-box denied';
+                    simIcon.textContent = '✖';
+                    simText.textContent = 'Acceso DENEGADO (Error de compilación CS0122): El miembro de tipo "' + mod + '" NO es accesible desde este contexto.';
+                }
+            }
+
+            simModifier.addEventListener('change', updateSim);
+            simContext.addEventListener('change', updateSim);
+            updateSim();
+        });
+
+        // ==========================================
+        // 2. LÓGICA DEL ÁRBOL DE DECISIÓN INTERACTIVO
+        // ==========================================
+        var q1Answer = null;
+
+        function selectQ1(ans) {
+            q1Answer = ans;
+            document.getElementById('step-q2-ext').style.display = (ans === 'yes') ? 'block' : 'none';
+            document.getElementById('step-q2-int').style.display = (ans === 'no') ? 'block' : 'none';
+            document.getElementById('tree-result').style.display = 'none';
+        }
+
+        function selectQ2Ext(ans) {
+            var title = '';
+            var desc = '';
+
+            if (ans === 'any') {
+                title = 'Modificador Recomendado: public';
+                desc = 'Ideal para métodos, propiedades e interfaces que forman parte del contrato público (API) accesible desde cualquier aplicación externa.';
+            } else if (ans === 'inheritance') {
+                title = 'Modificador Recomendado: protected';
+                desc = 'Permite que clases derivadas en ensamblados externos sobreescriban o utilicen la lógica sin exponerla al público general.';
+            } else if (ans === 'both') {
+                title = 'Modificador Recomendado: protected internal';
+                desc = 'Otorga acceso a todas las clases dentro de este mismo ensamblado Y a clases derivadas ubicadas en ensamblados externos.';
+            }
+
+            showTreeResult(title, desc);
+        }
+
+        function selectQ2Int(ans) {
+            var title = '';
+            var desc = '';
+
+            if (ans === 'class') {
+                title = 'Modificador Recomendado: private';
+                desc = 'Garantiza el máximo nivel de encapsulamiento. Ideal para campos de estado, listas internas y metodos helper de validación.';
+            } else if (ans === 'derived') {
+                title = 'Modificador Recomendado: protected';
+                desc = 'Permite compartir miembros exclusivamente con las clases hijas en la jerarquía de herencia dentro del proyecto.';
+            } else if (ans === 'all') {
+                title = 'Modificador Recomendado: internal';
+                desc = 'Permite que cualquier clase del mismo proyecto/ensamblado consuma la clase o miembro, manteniéndolo oculto para proyectos externos.';
+            }
+
+            showTreeResult(title, desc);
+        }
+
+        function showTreeResult(title, desc) {
+            var resultBox = document.getElementById('tree-result');
+            document.getElementById('tree-title').textContent = title;
+            document.getElementById('tree-desc').textContent = desc;
+            resultBox.style.display = 'flex';
+        }
+    </script>
+</body>
+
+</html>
