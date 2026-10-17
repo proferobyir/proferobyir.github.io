@@ -1,755 +1,439 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-[#1e1e1e]">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VS Code Mobile - Editor de Código Web</title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- JSZip para compilar y descargar el código en formato ZIP -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Mobile - Editor Web para Estudiantes sin computadora en casa</title>
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.css">
+    <!-- JSZip para exportar proyecto -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-    <!-- CodeMirror CSS & JS para el editor mobile -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
-
     <style>
-        /* Estilos personalizados del entorno CodeMirror simulación VS Code */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Barra superior estilo VS Code */
+        header {
+            background-color: #2d2d2d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #3c3c3c;
+            font-size: 13px;
+        }
+
+        .file-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            background-color: #2d2d2d;
+            color: #858585;
+            padding: 6px 12px;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border-color: #3c3c3c;
+            border-bottom: 1px solid #1e1e1e;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #1177bb;
+        }
+
+        button.secondary {
+            background-color: #3c3c3c;
+        }
+
+        button.secondary:hover {
+            background-color: #505050;
+        }
+
+        /* Contenedor principal */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .editor-pane {
+            flex: 1;
+            display: none;
+            position: relative;
+        }
+
+        .editor-pane.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CodeMirror sizing */
         .CodeMirror {
-            height: 100% !important;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            flex: 1;
+            height: auto !important;
+            font-family: "Consolas", "Courier New", monospace;
             font-size: 14px;
             background-color: #1e1e1e !important;
             color: #d4d4d4 !important;
         }
 
         .CodeMirror-gutters {
-            background-color: #181818 !important;
-            border-right: 1px solid #2b2b2b !important;
-        }
-
-        .CodeMirror-linenumber {
+            background-color: #1e1e1e !important;
+            border-right: 1px solid #333 !important;
             color: #858585 !important;
         }
 
-        .CodeMirror-cursor {
-            border-left: 2px solid #007acc !important;
+        /* Vista Previa */
+        #preview-pane {
+            background-color: #ffffff;
         }
 
-        .CodeMirror-selected {
-            background-color: #264f78 !important;
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
         }
 
-        /* Personalización del scroll en móviles */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #424242;
-            border-radius: 3px;
-        }
-
-        /* Ocultar barra de scroll para accesos directos táctiles */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Botones táctiles de símbolos de código */
-        .symbol-btn {
-            background-color: #333333;
-            color: #e1e1e1;
-            border: 1px solid #444444;
+        /* Consola móvil integrada */
+        .console-box {
+            height: 100px;
+            background-color: #181818;
+            border-top: 1px solid #3c3c3c;
+            display: flex;
+            flex-direction: column;
             font-family: monospace;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 6px 12px;
-            border-radius: 4px;
-            min-width: 36px;
-            text-align: center;
-            transition: background 0.1s, transform 0.1s;
-            user-select: none;
+            font-size: 12px;
         }
 
-        .symbol-btn:active {
-            background-color: #007acc;
-            color: #ffffff;
-            transform: scale(0.95);
+        .console-header {
+            background-color: #252526;
+            padding: 4px 8px;
+            font-weight: bold;
+            color: #bbbbbb;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .console-logs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 8px;
+            color: #4ec9b0;
+        }
+
+        .console-error {
+            color: #f44747;
+        }
+
+        /* Teclado de atajos rápidos para celulares */
+        .mobile-toolbar {
+            background-color: #2d2d2d;
+            display: flex;
+            gap: 4px;
+            padding: 6px;
+            overflow-x: auto;
+            border-top: 1px solid #3c3c3c;
+        }
+
+        .mobile-toolbar button {
+            background: #333;
+            color: #ccc;
+            padding: 4px 8px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 3px;
+            min-width: 32px;
+        }
+
+        .mobile-toolbar button:active {
+            background: #0e639c;
+            color: white;
         }
     </style>
 </head>
 
-<body class="h-full flex flex-col text-gray-200 overflow-hidden select-none">
+<body>
 
-    <!-- Header Estilo VS Code -->
-    <header class="bg-[#323233] h-12 flex items-center justify-between px-3 border-b border-[#252526] shrink-0">
-        <div class="flex items-center space-x-2 overflow-hidden">
-            <i class="fa-brands fa-visual-studio text-blue-500 text-xl shrink-0"></i>
-            <div class="truncate">
-                <span class="font-semibold text-xs sm:text-sm text-gray-100">VS Code Mobile</span>
-                <span class="text-[10px] sm:text-xs text-gray-400 block -mt-1 truncate">Editor Web Interactivo</span>
-            </div>
+    <header>
+        <div class="file-tabs">
+            <div class="tab active" onclick="switchTab('html')">index.html</div>
+            <div class="tab" onclick="switchTab('css')">styles.css</div>
+            <div class="tab" onclick="switchTab('js')">script.js</div>
+            <div class="tab" onclick="switchTab('preview')">👁️ Vista Previa</div>
         </div>
-
-        <!-- Botones de Acción Superiores -->
-        <div class="flex items-center space-x-1 sm:space-x-2">
-            <!-- Botón Ejecutar / Probar -->
-            <button id="runBtn" onclick="switchToPreview()"
-                class="bg-[#0e639c] hover:bg-[#1177bb] active:scale-95 text-white px-3 py-1.5 rounded flex items-center space-x-1 text-xs font-medium transition duration-150 shadow">
-                <i class="fa-solid fa-play text-[10px]"></i>
-                <span>Ejecutar</span>
-            </button>
-
-            <!-- Botón Cargar Ejemplo Base -->
-            <button onclick="resetToTemplate()" title="Restaurar plantilla inicial con enlaces ancla"
-                class="bg-[#2d2d2d] hover:bg-[#3d3d3d] active:scale-95 text-gray-200 px-2.5 py-1.5 rounded flex items-center space-x-1 text-xs border border-[#454545] transition">
-                <i class="fa-solid fa-rotate-left text-amber-400"></i>
-                <span class="hidden sm:inline">Ejemplo</span>
-            </button>
-
-            <!-- Botón Descargar ZIP -->
-            <button onclick="downloadZip()" title="Descargar archivos ZIP para entregar"
-                class="bg-[#2d2d2d] hover:bg-[#3d3d3d] active:scale-95 text-gray-200 px-2.5 py-1.5 rounded flex items-center space-x-1 text-xs border border-[#454545] transition">
-                <i class="fa-solid fa-file-arrow-down text-emerald-400"></i>
-                <span class="hidden sm:inline">Entregar ZIP</span>
-            </button>
-
-            <!-- Menú Opciones Extra -->
-            <button onclick="toggleModal('infoModal')"
-                class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#3c3c3c]">
-                <i class="fa-solid fa-circle-info text-sm"></i>
-            </button>
+        <div class="actions">
+            <button class="secondary" onclick="resetTemplate()">Restaurar</button>
+            <button onclick="exportZip()">📦 Exportar ZIP</button>
         </div>
     </header>
 
-    <!-- Pestañas de Archivos Navegables -->
-    <nav class="bg-[#252526] flex items-center overflow-x-auto no-scrollbar border-b border-[#1e1e1e] shrink-0">
-        <!-- Tab HTML -->
-        <button id="tab-html" onclick="switchTab('html')"
-            class="tab-btn active flex items-center space-x-1.5 px-4 py-2.5 text-xs font-mono border-r border-[#1e1e1e] bg-[#1e1e1e] text-amber-400 border-t-2 border-t-[#007acc] shrink-0">
-            <i class="fa-brands fa-html5 text-orange-500"></i>
-            <span>index.html</span>
-        </button>
-
-        <!-- Tab CSS -->
-        <button id="tab-css" onclick="switchTab('css')"
-            class="tab-btn flex items-center space-x-1.5 px-4 py-2.5 text-xs font-mono border-r border-[#1e1e1e] bg-[#2d2d2d] text-gray-400 shrink-0">
-            <i class="fa-brands fa-css3-alt text-blue-400"></i>
-            <span>styles.css</span>
-        </button>
-
-        <!-- Tab JS -->
-        <button id="tab-js" onclick="switchTab('js')"
-            class="tab-btn flex items-center space-x-1.5 px-4 py-2.5 text-xs font-mono border-r border-[#1e1e1e] bg-[#2d2d2d] text-gray-400 shrink-0">
-            <i class="fa-brands fa-js text-yellow-400"></i>
-            <span>script.js</span>
-        </button>
-
-        <!-- Tab Vista Previa -->
-        <button id="tab-preview" onclick="switchTab('preview')"
-            class="tab-btn flex items-center space-x-1.5 px-4 py-2.5 text-xs font-mono bg-[#2d2d2d] text-gray-400 shrink-0">
-            <i class="fa-solid fa-eye text-emerald-400"></i>
-            <span>Vista Previa</span>
-        </button>
-    </nav>
-
-    <!-- Área Principal de Edición / Vista Previa -->
-    <main class="flex-1 relative overflow-hidden bg-[#1e1e1e]">
-
-        <!-- Contenedores para CodeMirror (HTML, CSS, JS) -->
-        <div id="editor-html-container" class="w-full h-full"></div>
-        <div id="editor-css-container" class="w-full h-full hidden"></div>
-        <div id="editor-js-container" class="w-full h-full hidden"></div>
-
-        <!-- Panel de Vista Previa (iFrame + Consola Móvil) -->
-        <div id="preview-container" class="w-full h-full hidden flex-col bg-white">
-            <!-- iFrame para renderizado del código -->
-            <iframe id="previewFrame" class="w-full flex-1 border-none bg-white"></iframe>
-
-            <!-- Consola de Depuración Integrada -->
-            <div id="consoleContainer"
-                class="h-36 bg-[#181818] border-t-2 border-[#007acc] flex flex-col font-mono text-xs">
-                <!-- Banner/Encabezado Consola -->
-                <div class="bg-[#252526] px-3 py-1.5 flex justify-between items-center border-b border-[#333333]">
-                    <div class="flex items-center space-x-2 text-gray-300 font-semibold text-[11px]">
-                        <i class="fa-solid fa-terminal text-blue-400"></i>
-                        <span>CONSOLA DE SALIDA</span>
-                        <span id="logCount"
-                            class="bg-gray-700 text-gray-300 text-[10px] px-1.5 py-0.5 rounded-full">0</span>
-                    </div>
-                    <button onclick="clearConsole()"
-                        class="text-gray-400 hover:text-white text-xs px-2 py-0.5 bg-[#333] hover:bg-[#444] rounded">
-                        <i class="fa-solid fa-trash-can mr-1"></i>Limpiar
-                    </button>
+    <div class="main-container">
+        <!-- Pestaña HTML -->
+        <div id="pane-html" class="editor-pane active">
+            <textarea id="code-html"></textarea>
+        </div>
+        <!-- Pestaña CSS -->
+        <div id="pane-css" class="editor-pane">
+            <textarea id="code-css"></textarea>
+        </div>
+        <!-- Pestaña JS -->
+        <div id="pane-js" class="editor-pane">
+            <textarea id="code-js"></textarea>
+        </div>
+        <!-- Pestaña Vista Previa -->
+        <div id="pane-preview" class="editor-pane" style="flex-direction: column;">
+            <iframe id="preview-frame"></iframe>
+            <div class="console-box">
+                <div class="console-header">
+                    <span>Consola de Depuración</span>
+                    <button class="secondary" style="padding: 1px 6px; font-size:10px;"
+                        onclick="clearConsole()">Limpiar</button>
                 </div>
-
-                <!-- Logs salida -->
-                <div id="consoleLogs" class="flex-1 p-2 overflow-y-auto space-y-1 text-gray-300 select-text">
-                    <div class="text-gray-500 italic text-[11px]">[Consola lista para mostrar outputs e inconsistencias
-                        de código...]</div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Barra Móvil de Atajos y Símbolos de Programación -->
-    <section id="keyboardToolbar" class="bg-[#252526] border-t border-[#333333] px-1 py-1.5 shrink-0">
-        <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar px-1">
-            <button onclick="insertSymbol('<')" class="symbol-btn">&lt;</button>
-            <button onclick="insertSymbol('>')" class="symbol-btn">&gt;</button>
-            <button onclick="insertSymbol('/')" class="symbol-btn">/</button>
-            <button onclick="insertSymbol('=')" class="symbol-btn">=</button>
-            <button onclick="insertSymbol('&quot;')" class="symbol-btn">"</button>
-            <button onclick="insertSymbol('{')" class="symbol-btn">{</button>
-            <button onclick="insertSymbol('}')" class="symbol-btn">}</button>
-            <button onclick="insertSymbol(';')" class="symbol-btn">;</button>
-            <button onclick="insertSymbol('#')" class="symbol-btn">#</button>
-            <button onclick="insertSymbol('(')" class="symbol-btn">(</button>
-            <button onclick="insertSymbol(')')" class="symbol-btn">)</button>
-            <button onclick="insertSymbol(':')" class="symbol-btn">:</button>
-            <button onclick="insertSymbol('.')" class="symbol-btn">.</button>
-            <button onclick="insertSymbol('\'')" class="symbol-btn">'</button>
-            <button onclick="insertSymbol('!')" class="symbol-btn">!</button>
-            <button onclick="insertSymbol('Tab')"
-                class="symbol-btn text-[10px] font-bold uppercase bg-[#0e639c]/40 text-blue-300 border-blue-500/40">Tab</button>
-        </div>
-    </section>
-
-    <!-- Barra de Estado Inferior -->
-    <footer
-        class="bg-[#007acc] text-white text-[11px] px-3 py-0.5 flex justify-between items-center shrink-0 font-sans">
-        <div class="flex items-center space-x-3">
-            <span class="flex items-center"><i class="fa-solid fa-code-branch mr-1 text-[10px]"></i> main</span>
-            <span id="lineColStatus">Lín 1, Col 1</span>
-        </div>
-        <div class="flex items-center space-x-3">
-            <span id="fileTypeStatus">HTML</span>
-            <span>UTF-8</span>
-        </div>
-    </footer>
-
-    <!-- Modal Informativo / Instrucciones -->
-    <div id="infoModal"
-        class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-[#252526] border border-[#454545] rounded-lg max-w-md w-full p-5 text-gray-200 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-[#3b3b3b] pb-2">
-                <h3 class="font-bold text-base text-white flex items-center">
-                    <i class="fa-brands fa-visual-studio text-blue-400 mr-2"></i> Editor Web Móvil
-                </h3>
-                <button onclick="toggleModal('infoModal')" class="text-gray-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <div class="text-xs space-y-2 text-gray-300 leading-relaxed">
-                <p>⚓ <strong>Enlaces Ancla Soportados:</strong> Puedes usar <code>&lt;a href="#seccion"&gt;</code> para
-                    navegar entre secciones dentro del mismo documento de forma fluida.</p>
-                <p>🎨 <strong>Estilos y JavaScript:</strong> El contenido de <code>styles.css</code> y
-                    <code>script.js</code> se vincula de forma automática al ejecutar el proyecto.
-                </p>
-                <p>📱 <strong>Teclado Táctil:</strong> Usa los símbolos situados en la barra inferior para agilizar la
-                    escritura de caracteres como <code>#</code>, <code>&lt;&gt;</code>, <code>{}</code> o
-                    <code>;</code>.
-                </p>
-                <p>📦 <strong>Entrega de Tareas:</strong> Haz clic en <strong>"Entregar ZIP"</strong> para generar el
-                    paquete con los archivos independientes <code>index.html</code>, <code>styles.css</code> y
-                    <code>script.js</code> vinculados.
-                </p>
-            </div>
-            <div class="pt-2">
-                <button onclick="toggleModal('infoModal')"
-                    class="w-full bg-[#007acc] hover:bg-[#1177bb] text-white font-medium py-2 rounded text-xs transition">
-                    Entendido, empezar a programar
-                </button>
+                <div id="console-logs" class="console-logs"></div>
             </div>
         </div>
     </div>
 
-    <!-- Lógica JavaScript Principal -->
+    <!-- Barra de símbolos rápidos para teclado móvil -->
+    <div class="mobile-toolbar">
+        <button onclick="insertAtCursor('<')">&lt;</button>
+        <button onclick="insertAtCursor('>')">&gt;</button>
+        <button onclick="insertAtCursor('/')">/</button>
+        <button onclick="insertAtCursor('=')">=</button>
+        <button onclick="insertAtCursor('&quot;')">&quot;</button>
+        <button onclick="insertAtCursor('#')">#</button>
+        <button onclick="insertAtCursor('{')">{</button>
+        <button onclick="insertAtCursor('}')">}</button>
+        <button onclick="insertAtCursor(';')">;</button>
+        <button onclick="insertAtCursor(':')">:</button>
+        <button onclick="insertAtCursor('-')">-</button>
+        <button onclick="triggerHint()">💡 Sugerencia</button>
+    </div>
+
+    <!-- CodeMirror JS y dependencias -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/xml-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.js"></script>
+
     <script>
-        // Variables para almacenar las instancias de CodeMirror
-        let editorHTML, editorCSS, editorJS;
-        let currentTab = 'html';
-
-        // Código base plantilla con soporte para enlaces ancla, estilos y JS
-        const initialCode = {
-            html: `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tarea de Desarrollo Web</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-  <!-- Navegación con Enlaces Ancla -->
-   
-
-  
-
-  <script src="script.js"><\/script>
-</body>
-</html>`,
-            css: `/* Estilos CSS del Proyecto */
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background-color: #0f172a;
-  color: #f8fafc;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar {
-  position: sticky;
-  top: 0;
-  background: #1e293b;
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 5px;
-  border-bottom: 2px solid #38bdf8;
-  z-index: 100;
-}
-
-.navbar a {
-  color: #38bdf8;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.container {
-  padding: 15px;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.card {
-  background-color: #1e293b;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 25px;
-  border: 1px solid #334155;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-h1, h2 {
-  color: #38bdf8;
-  margin-top: 0;
-}
-
-p {
-  line-height: 1.5;
-  color: #94a3b8;
-}
-
-button {
-  background-color: #0284c7;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: transform 0.1s;
-}
-
-button:active {
-  transform: scale(0.96);
-  background-color: #0369a1;
-}
-
-.top-link {
-  display: inline-block;
-  margin-top: 10px;
-  color: #f43f5e;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 0.85rem;
-}`,
-            js: `// Script interactivo en JavaScript
-document.addEventListener('DOMContentLoaded', () => {
-  let count = 0;
-  const btn = document.getElementById('btnContar');
-  const counterSpan = document.getElementById('counter');
-
-  console.log("Sistema cargado. Listo para interactuar.");
-
-  if (btn) {
-    btn.addEventListener('click', () => {
-      count++;
-      counterSpan.textContent = count;
-      console.log(\`Contador actualizado: \${count}\`);
-    });
-  }
-});`
+        // Inicializar editores CodeMirror con autocompletado habilitado
+        const editors = {
+            html: CodeMirror.fromTextArea(document.getElementById('code-html'), {
+                mode: 'htmlmixed', theme: 'dracula', lineNumbers: true, autoCloseTags: true, autoCloseBrackets: true
+            }),
+            css: CodeMirror.fromTextArea(document.getElementById('code-css'), {
+                mode: 'css', theme: 'dracula', lineNumbers: true, autoCloseBrackets: true
+            }),
+            js: CodeMirror.fromTextArea(document.getElementById('code-js'), {
+                mode: 'javascript', theme: 'dracula', lineNumbers: true, autoCloseBrackets: true
+            })
         };
 
-        // Inicializar CodeMirror al cargar la página
-        window.addEventListener('DOMContentLoaded', () => {
-            // Editor HTML
-            editorHTML = CodeMirror(document.getElementById('editor-html-container'), {
-                value: initialCode.html,
-                mode: 'htmlmixed',
-                theme: 'material-darker',
-                lineNumbers: true,
-                autoCloseTags: true,
-                autoCloseBrackets: true,
-                lineWrapping: true
-            });
+        // Plantilla base inicial limpia
+        const defaultTemplates = {
+            html: `<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mi Tarea</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n</head>\n<body>\n    <h1>¡Hola Mundo desde el Celular!</h1>\n    <p><a href=\"#seccion2\">Ir a la sección 2</a></p>\n    \n    <div id=\"seccion2\" style=\"margin-top: 200px;\">\n        <h2>Sección Destino del Enlace Ancla</h2>\n        <button onclick=\"saludar()\">Probar JS</button>\n    </div>\n\n    <script src=\"script.js\"><\/script>\n</body>\n</html>`,
+            css: `body {\n    font-family: Arial, sans-serif;\n    padding: 20px;\n    background-color: #f4f4f4;\n}\nh1 {\n    color: #0066cc;\n}`,
+            js: `function saludar() {\n    console.log(\"¡JavaScript funcionando perfectamente!\");\n    alert(\"¡Hola desde la tarea del celular!\");\n}`
+        };
 
-            // Editor CSS
-            editorCSS = CodeMirror(document.getElementById('editor-css-container'), {
-                value: initialCode.css,
-                mode: 'css',
-                theme: 'material-darker',
-                lineNumbers: true,
-                autoCloseBrackets: true,
-                lineWrapping: true
-            });
+        // Cargar desde localStorage o usar plantilla por defecto
+        function loadContent() {
+            editors.html.setValue(localStorage.getItem('vs_html') || defaultTemplates.html);
+            editors.css.setValue(localStorage.getItem('vs_css') || defaultTemplates.css);
+            editors.js.setValue(localStorage.getItem('vs_js') || defaultTemplates.js);
+        }
 
-            // Editor JS
-            editorJS = CodeMirror(document.getElementById('editor-js-container'), {
-                value: initialCode.js,
-                mode: 'javascript',
-                theme: 'material-darker',
-                lineNumbers: true,
-                autoCloseBrackets: true,
-                lineWrapping: true
-            });
-
-            // Actualizar número de líneas y columnas en la barra de estado
-            [editorHTML, editorCSS, editorJS].forEach((editor) => {
-                editor.on('cursorActivity', updateCursorStatus);
-            });
-
-            // Refrescar tamaño al cambiar ventana
-            window.addEventListener('resize', () => {
-                getActiveEditor()?.refresh();
+        // Guardar automáticamente cambios en localStorage
+        Object.keys(editors).forEach(key => {
+            editors[key].on('change', () => {
+                localStorage.setItem('vs_' + key, editors[key].getValue());
+                if (document.getElementById('pane-preview').classList.contains('active')) {
+                    updatePreview();
+                }
             });
         });
 
-        // Cambiar entre pestañas del editor y vista previa
-        function switchTab(tab) {
-            currentTab = tab;
+        loadContent();
 
-            // Ocultar todos los contenedores de los editores y preview
-            document.getElementById('editor-html-container').classList.add('hidden');
-            document.getElementById('editor-css-container').classList.add('hidden');
-            document.getElementById('editor-js-container').classList.add('hidden');
-            document.getElementById('preview-container').classList.add('hidden');
-            document.getElementById('keyboardToolbar').classList.remove('hidden');
+        // Cambio de pestañas
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.editor-pane').forEach(p => p.classList.remove('active'));
 
-            // Restablecer estilos de las pestañas
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-[#1e1e1e]', 'text-amber-400', 'text-blue-400', 'text-yellow-400', 'text-emerald-400', 'border-t-2', 'border-t-[#007acc]');
-                btn.classList.add('bg-[#2d2d2d]', 'text-gray-400');
-            });
-
-            const activeTabBtn = document.getElementById(`tab-${tab}`);
-            activeTabBtn.classList.remove('bg-[#2d2d2d]', 'text-gray-400');
-            activeTabBtn.classList.add('bg-[#1e1e1e]', 'border-t-2', 'border-t-[#007acc]');
-
-            // Mostrar contenedor según la pestaña seleccionada
-            if (tab === 'html') {
-                document.getElementById('editor-html-container').classList.remove('hidden');
-                activeTabBtn.classList.add('text-amber-400');
-                document.getElementById('fileTypeStatus').textContent = 'HTML';
-                setTimeout(() => editorHTML.refresh(), 10);
-            } else if (tab === 'css') {
-                document.getElementById('editor-css-container').classList.remove('hidden');
-                activeTabBtn.classList.add('text-blue-400');
-                document.getElementById('fileTypeStatus').textContent = 'CSS';
-                setTimeout(() => editorCSS.refresh(), 10);
-            } else if (tab === 'js') {
-                document.getElementById('editor-js-container').classList.remove('hidden');
-                activeTabBtn.classList.add('text-yellow-400');
-                document.getElementById('fileTypeStatus').textContent = 'JavaScript';
-                setTimeout(() => editorJS.refresh(), 10);
-            } else if (tab === 'preview') {
-                document.getElementById('preview-container').classList.remove('hidden');
-                document.getElementById('preview-container').classList.add('flex');
-                document.getElementById('keyboardToolbar').classList.add('hidden');
-                activeTabBtn.classList.add('text-emerald-400');
-                document.getElementById('fileTypeStatus').textContent = 'Preview';
-                renderPreview();
-            }
-
-            updateCursorStatus();
-        }
-
-        // Cambiar directamente a la vista previa al pulsar "Ejecutar"
-        function switchToPreview() {
-            switchTab('preview');
-        }
-
-        // Restaurar el código plantilla
-        function resetToTemplate() {
-            if (confirm("¿Deseas restaurar la plantilla inicial con el código de ejemplo? Tu trabajo actual será sobrescrito.")) {
-                editorHTML.setValue(initialCode.html);
-                editorCSS.setValue(initialCode.css);
-                editorJS.setValue(initialCode.js);
-                switchTab('html');
+            if (tabName === 'preview') {
+                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.getElementById('pane-preview').classList.add('active');
+                updatePreview();
+            } else {
+                const tabs = { html: 0, css: 1, js: 2 };
+                document.querySelectorAll('.tab')[tabs[tabName]].classList.add('active');
+                document.getElementById('pane-' + tabName).classList.add('active');
+                editors[tabName].refresh();
             }
         }
 
-        // Obtener la instancia del editor CodeMirror activo
-        function getActiveEditor() {
-            if (currentTab === 'html') return editorHTML;
-            if (currentTab === 'css') return editorCSS;
-            if (currentTab === 'js') return editorJS;
-            return null;
+        // Renderizar vista previa integrada con enlaces ancla suaves y captura de consola
+        function updatePreview() {
+            const html = editors.html.getValue();
+            const css = editors.css.getValue();
+            const js = editors.js.getValue();
+
+            const combinedContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${html.replace(/<link[^>]*rel=["']stylesheet["'][^>]*>/gi, '')}
+                    <script>
+                        // Redirigir console.log a la interfaz principal del celular
+                        const originalLog = console.log;
+                        const originalError = console.error;
+                        console.log = function(...args) {
+                            originalLog.apply(console, args);
+                            window.parent.postMessage({type: 'log', message: args.join(' ')}, '*');
+                        };
+                        console.error = function(...args) {
+                            originalError.apply(console, args);
+                            window.parent.postMessage({type: 'error', message: args.join(' ')}, '*');
+                        };
+                        window.onerror = function(msg, url, line) {
+                            window.parent.postMessage({type: 'error', message: 'Error: ' + msg + ' (Línea ' + line + ')'}, '*');
+                        };
+                    <\/script>
+                    <script>${js}<\/script>
+                    <script>
+                        // Interceptar enlaces ancla para scroll suave dentro del iframe
+                        document.addEventListener('click', function(e) {
+                            const target = e.target.closest('a');
+                            if (target && target.getAttribute('href') && target.getAttribute('href').startsWith('#')) {
+                                e.preventDefault();
+                                const id = target.getAttribute('href').substring(1);
+                                const el = document.getElementById(id);
+                                if (el) {
+                                    el.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }
+                        });
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            const frame = document.getElementById('preview-frame');
+            frame.srcdoc = combinedContent;
         }
 
-        // Inserción rápida de caracteres especiales desde la barra táctil inferior
-        function insertSymbol(symbol) {
-            const editor = getActiveEditor();
-            if (!editor) return;
+        // Escuchar mensajes de consola del iframe
+        window.addEventListener('message', function (e) {
+            if (e.data && e.data.type) {
+                const logsBox = document.getElementById('console-logs');
+                const div = document.createElement('div');
+                div.textContent = `> ${e.data.message}`;
+                if (e.data.type === 'error') div.className = 'console-error';
+                logsBox.appendChild(div);
+                logsBox.scrollTop = logsBox.scrollHeight;
+            }
+        });
 
+        function clearConsole() {
+            document.getElementById('console-logs').innerHTML = '';
+        }
+
+        // Inserción rápida de símbolos desde la barra móvil
+        function insertAtCursor(symbol) {
+            const activeTab = document.querySelector('.editor-pane.active');
+            if (!activeTab || activeTab.id === 'pane-preview') return;
+            const type = activeTab.id.replace('pane-', '');
+            const editor = editors[type];
             const doc = editor.getDoc();
             const cursor = doc.getCursor();
-
-            if (symbol === 'Tab') {
-                editor.execCommand('insertSoftTab');
-            } else {
-                doc.replaceRange(symbol, cursor);
-            }
+            doc.replaceRange(symbol, cursor);
             editor.focus();
         }
 
-        // Actualizar indicador de línea y columna
-        function updateCursorStatus() {
-            const editor = getActiveEditor();
-            if (!editor) {
-                document.getElementById('lineColStatus').textContent = 'Lín 0, Col 0';
-                return;
+        function triggerHint() {
+            const activeTab = document.querySelector('.editor-pane.active');
+            if (activeTab && activeTab.id !== 'pane-preview') {
+                const type = activeTab.id.replace('pane-', '');
+                editors[type].showHint({ completeSingle: false });
             }
-            const cursor = editor.getCursor();
-            document.getElementById('lineColStatus').textContent = `Lín ${cursor.line + 1}, Col ${cursor.ch + 1}`;
         }
 
-        // Renderizar HTML, CSS dinámico, JS y manejo de Enlaces Ancla en iFrame mediante srcdoc
-        function renderPreview() {
-            const htmlCode = editorHTML.getValue();
-            const cssCode = editorCSS.getValue();
-            const jsCode = editorJS.getValue();
-
-            // Script para captura de consola y soporte fluido de enlaces ancla (<a href="#id">)
-            const injectedSupportScript = `
-        <script>
-          (function() {
-            // Captura e intercepción de consola
-            function sendToParentConsole(type, args) {
-              try {
-                const message = Array.from(args).map(arg => {
-                  if (typeof arg === 'object') return JSON.stringify(arg);
-                  return String(arg);
-                }).join(' ');
-                window.parent.postMessage({ type: 'CONSOLE_LOG', logType: type, text: message }, '*');
-              } catch(e) {}
+        function resetTemplate() {
+            if (confirm("¿Estás seguro de restablecer el código por defecto?")) {
+                localStorage.clear();
+                loadContent();
+                alert("Plantilla restaurada.");
             }
-
-            const originalLog = console.log;
-            const originalError = console.error;
-            const originalWarn = console.warn;
-            const originalInfo = console.info;
-
-            console.log = function(...args) { sendToParentConsole('log', args); originalLog.apply(console, args); };
-            console.error = function(...args) { sendToParentConsole('error', args); originalError.apply(console, args); };
-            console.warn = function(...args) { sendToParentConsole('warn', args); originalWarn.apply(console, args); };
-            console.info = function(...args) { sendToParentConsole('info', args); originalInfo.apply(console, args); };
-
-            window.onerror = function(msg, url, line) {
-              sendToParentConsole('error', ['Error (Línea ' + line + '): ' + msg]);
-              return false;
-            };
-
-            // Manejador suave y seguro para enlaces ancla (#id) dentro del iframe
-            document.addEventListener('click', function(e) {
-              const anchor = e.target.closest('a');
-              if (anchor) {
-                const href = anchor.getAttribute('href');
-                if (href && href.startsWith('#')) {
-                  e.preventDefault();
-                  const targetId = href.substring(1);
-                  if (targetId === '' || targetId === 'top') {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  } else {
-                    const targetEl = document.getElementById(targetId);
-                    if (targetEl) {
-                      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }
-                }
-              }
-            });
-          })();
-        <\/script>
-      `;
-
-            // Limpiar etiquetas externas previas <link rel="stylesheet"> y <script src="script.js"> para evitar duplicados al previsualizar
-            let cleanedHTML = htmlCode
-                .replace(/<link[^>]*href=["']styles\.css["'][^>]*>/gi, '')
-                .replace(/<script[^>]*src=["']script\.js["'][^>]*>\s*<\/script>/gi, '');
-
-            // Inyección de base, script de soporte y estilos CSS
-            const headInjection = `<base href="#"><style>${cssCode}</style>${injectedSupportScript}`;
-
-            if (cleanedHTML.includes('<head>')) {
-                cleanedHTML = cleanedHTML.replace('<head>', `<head>${headInjection}`);
-            } else if (cleanedHTML.includes('<html>')) {
-                cleanedHTML = cleanedHTML.replace('<html>', `<html><head>${headInjection}</head>`);
-            } else {
-                cleanedHTML = `<head>${headInjection}</head>` + cleanedHTML;
-            }
-
-            // Inyección de script.js con bloque try/catch
-            const scriptInjection = `
-        <script>
-          try {
-            ${jsCode}
-          } catch(err) {
-            console.error("Error de ejecución JavaScript: " + err.message);
-          }
-        <\/script>
-      `;
-
-            if (cleanedHTML.includes('</body>')) {
-                cleanedHTML = cleanedHTML.replace('</body>', `${scriptInjection}</body>`);
-            } else {
-                cleanedHTML += scriptInjection;
-            }
-
-            // Usar atributo srcdoc para renderizado perfecto de enlaces ancla y estilos en iframe móvil
-            const iframe = document.getElementById('previewFrame');
-            iframe.srcdoc = cleanedHTML;
         }
 
-        // Listener para recibir los logs capturados desde el iframe
-        window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'CONSOLE_LOG') {
-                appendConsoleLog(event.data.logType, event.data.text);
-            }
-        });
-
-        let logCounter = 0;
-        // Mostrar logs en el panel inferior de la consola
-        function appendConsoleLog(type, text) {
-            const consoleLogs = document.getElementById('consoleLogs');
-
-            // Limpiar texto por defecto en el primer log
-            if (logCounter === 0) {
-                consoleLogs.innerHTML = '';
-            }
-
-            logCounter++;
-            document.getElementById('logCount').textContent = logCounter;
-
-            const logEntry = document.createElement('div');
-            logEntry.className = 'flex items-start space-x-2 border-b border-[#262626] pb-1 text-[12px] font-mono leading-tight';
-
-            let icon = '<i class="fa-solid fa-angle-right text-blue-400 mt-0.5"></i>';
-            let textColor = 'text-gray-200';
-
-            if (type === 'error') {
-                icon = '<i class="fa-solid fa-circle-xmark text-red-400 mt-0.5"></i>';
-                textColor = 'text-red-300';
-            } else if (type === 'warn') {
-                icon = '<i class="fa-solid fa-triangle-exclamation text-yellow-400 mt-0.5"></i>';
-                textColor = 'text-yellow-300';
-            } else if (type === 'info') {
-                icon = '<i class="fa-solid fa-circle-info text-sky-400 mt-0.5"></i>';
-                textColor = 'text-sky-200';
-            }
-
-            logEntry.innerHTML = `${icon}<span class="${textColor} break-all">${escapeHtml(text)}</span>`;
-            consoleLogs.appendChild(logEntry);
-            consoleLogs.scrollTop = consoleLogs.scrollHeight;
-        }
-
-        function clearConsole() {
-            const consoleLogs = document.getElementById('consoleLogs');
-            consoleLogs.innerHTML = '<div class="text-gray-500 italic text-[11px]">[Consola limpia...]</div>';
-            logCounter = 0;
-            document.getElementById('logCount').textContent = '0';
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        // Descarga de archivos del estudiante en ZIP comprimido con JSZip
-        function downloadZip() {
+        // Exportar ZIP en formato UTF-8 estricto
+        function exportZip() {
             const zip = new JSZip();
+            zip.file("index.html", editors.html.getValue(), { binary: false });
+            zip.file("styles.css", editors.css.getValue(), { binary: false });
+            zip.file("script.js", editors.js.getValue(), { binary: false });
 
-            let htmlContent = editorHTML.getValue();
-            const cssContent = editorCSS.getValue();
-            const jsContent = editorJS.getValue();
-
-            // Asegurar que index.html contiene el enlace a styles.css y script.js al exportar
-            if (!htmlContent.includes('styles.css')) {
-                if (htmlContent.includes('</head>')) {
-                    htmlContent = htmlContent.replace('</head>', '  <link rel="stylesheet" href="styles.css">\n</head>');
-                }
-            }
-
-            if (!htmlContent.includes('script.js')) {
-                if (htmlContent.includes('</body>')) {
-                    htmlContent = htmlContent.replace('</body>', '  <script src="script.js"><\/script>\n</body>');
-                }
-            }
-
-            // Agregar los 3 archivos individuales requeridos
-            zip.file("index.html", htmlContent);
-            zip.file("styles.css", cssContent);
-            zip.file("script.js", jsContent);
-
-            // Generar y activar la descarga en el navegador del móvil
-            zip.generateAsync({ type: "blob" })
-                .then(function (content) {
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(content);
-                    a.download = "tarea-desarrollo-web.zip";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                });
-        }
-
-        // Control modal de información
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.classList.toggle('hidden');
+            zip.generateAsync({ type: "blob", compression: "DEFLATE", mimeType: "application/zip;charset=utf-8" }).then(function (content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "mi_tarea_vscode.zip";
+                link.click();
+            });
         }
     </script>
 </body>
