@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VS Code Mobile - Editor Web para Estudiantes sin computadora en casa</title>
+    <title>VS Code Mobile - Editor Web para Estudiantes</title>
     <!-- CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
@@ -37,6 +37,8 @@
             padding: 8px 12px;
             border-bottom: 1px solid #3c3c3c;
             font-size: 13px;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .file-tabs {
@@ -64,14 +66,15 @@
 
         .actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         button {
             background-color: #0e639c;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
@@ -88,6 +91,15 @@
 
         button.secondary:hover {
             background-color: #505050;
+        }
+
+        button.whatsapp {
+            background-color: #25d366;
+            color: #000;
+        }
+
+        button.whatsapp:hover {
+            background-color: #20ba5a;
         }
 
         /* Contenedor principal */
@@ -207,7 +219,8 @@
         </div>
         <div class="actions">
             <button class="secondary" onclick="resetTemplate()">Restaurar</button>
-            <button onclick="exportZip()">📦 Exportar ZIP</button>
+            <button class="whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
+            <button onclick="exportZip()">📦 ZIP</button>
         </div>
     </header>
 
@@ -419,6 +432,21 @@
                 loadContent();
                 alert("Plantilla restaurada.");
             }
+        }
+
+        // Compartir el código directamente por WhatsApp
+        function shareWhatsApp() {
+            const htmlCode = editors.html.getValue();
+            const cssCode = editors.css.getValue();
+            const jsCode = editors.js.getValue();
+
+            const mensaje = `📂 *Mi Tarea de Programación*\n\n` +
+                `--- INDEX.HTML ---\n\`\`\`html\n${htmlCode}\n\`\`\`\n\n` +
+                `--- STYLES.CSS ---\n\`\`\`css\n${cssCode}\n\`\`\`\n\n` +
+                `--- SCRIPT.JS ---\n\`\`\`javascript\n${jsCode}\n\`\`\`\n`;
+
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
         }
 
         // Exportar ZIP en formato UTF-8 estricto
