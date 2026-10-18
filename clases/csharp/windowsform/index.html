@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Windows Forms C# 5 — Fuente de estudio completa | Prof. Ing. Robyir Loreto" />
+    <meta property="og:description"
+        content="Fuente de estudio de Windows Forms con C# 5 y Visual Studio 2012: controles, eventos, validación, ListBox, navegación entre formularios, CRUD en memoria y proyecto integrador. Incluye modificadores de acceso, static, Parse/TryParse y LINQ." />
+    <meta property="og:image" content="https://proferobyir.github.io/pictures/guiaWF.jpg" />
+    <meta property="og:url" content="https://proferobyir.github.io" />
+    <title>Windows Forms C# 5 — Fuente de estudio completa</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #111111;
+            --muted: #555555;
+            --line: #111111;
+            --soft: #f4f4f4;
+            --code-bg: #f0f0f0;
+            --tip: #eaf4ea;
+            --warn: #fbeaea;
+            --info: #eaf0fa;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--fg);
+            background: var(--bg);
+        }
+
+        a {
+            color: #000;
+            text-decoration: underline;
+        }
+
+        header.top {
+            border-bottom: 2px solid var(--line);
+            padding: 18px 16px;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        header.top h1 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: .2px;
+        }
+
+        header.top p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 13.5px;
+        }
+
+        .layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav.side {
+            width: 280px;
+            flex: 0 0 280px;
+            border-right: 1px solid var(--line);
+            padding: 14px 10px 40px;
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+            height: 100vh;
+            overflow-y: auto;
+            background: #fff;
+        }
+
+        nav.side h2 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin: 12px 8px 6px;
+        }
+
+        nav.side a {
+            display: block;
+            padding: 6px 8px;
+            font-size: 14.5px;
+            text-decoration: none;
+            color: #111;
+            border-left: 3px solid transparent;
+        }
+
+        nav.side a:hover {
+            background: var(--soft);
+            border-left-color: #000;
+        }
+
+        main {
+            flex: 1;
+            min-width: 0;
+            padding: 22px 26px 80px;
+        }
+
+        section.clase {
+            border: 1px solid var(--line);
+            margin: 0 0 26px;
+            padding: 0;
+        }
+
+        section.clase>h2 {
+            margin: 0;
+            padding: 10px 14px;
+            background: #111;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        section.clase>h3 {
+            margin: 20px 14px 6px;
+            font-size: 16px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 4px;
+        }
+
+        section.clase p,
+        section.clase ul,
+        section.clase ol,
+        section.clase table,
+        section.clase pre,
+        section.clase .box {
+            margin-left: 14px;
+            margin-right: 14px;
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            overflow-x: auto;
+            font-family: "Courier New", monospace;
+            font-size: 13.5px;
+            line-height: 1.45;
+            white-space: pre;
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            font-size: 0.92em;
+            background: var(--code-bg);
+            padding: 1px 4px;
+            border: 1px solid #ccc;
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 14px;
+            font-size: 14.5px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line);
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--soft);
+        }
+
+        .box {
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            margin: 10px 14px;
+            font-size: 15px;
+        }
+
+        .box.tip {
+            background: var(--tip);
+        }
+
+        .box.warn {
+            background: var(--warn);
+        }
+
+        .box.info {
+            background: var(--info);
+        }
+
+        .box strong {
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+
+        ul.tight,
+        ol.tight {
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+
+        .kbd {
+            font-family: monospace;
+            background: #eee;
+            border: 1px solid #999;
+            border-bottom-width: 2px;
+            padding: 0 4px;
+            font-size: 12.5px;
+        }
+
+        footer {
+            border-top: 2px solid var(--line);
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        @media (max-width:820px) {
+            .layout {
+                display: block;
+            }
+
+            nav.side {
+                position: relative;
+                width: auto;
+                flex: none;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+            }
+
+            main {
+                padding: 16px 12px 60px;
+            }
+
+            body {
+                font-size: 16px;
+            }
+
+            pre {
+                font-size: 12.5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="top">
+        <h1>Windows Forms con C# 5 — Fuente de estudio completa</h1>
+        <p>Ordenada según el plan de 10 clases y 4 evaluaciones · Visual Studio 2012 · Cada método y parámetro explicado
+            · Sin dependencias externas</p>
+    </header>
+
+    <div class="layout">
+
+        <nav class="side">
+            <h2>Fundamentos</h2>
+            <a href="#acceso">Modificadores de acceso</a>
+            <a href="#static">static</a>
+            <a href="#parse-linq">Parse, TryParse y LINQ</a>
+            <h2>Clases</h2>
+            <a href="#c1">1. Introducción a Windows Forms</a>
+            <a href="#c2">2. Controles básicos</a>
+            <a href="#c3">3. Eventos</a>
+            <a href="#c4">4. Validación de datos</a>
+            <a href="#c5">5. Controles de selección</a>
+            <a href="#c6">6. ListBox, ListView y colecciones</a>
+            <a href="#c7">7. Navegación entre formularios</a>
+            <a href="#c8">8. Menús y organización</a>
+            <a href="#c9">9. CRUD en memoria</a>
+            <a href="#c10">10. Proyecto integrador</a>
+            <h2>Evaluaciones</h2>
+            <a href="#e1">Evaluación 1</a>
+            <a href="#e2">Evaluación 2</a>
+            <a href="#e3">Evaluación 3</a>
+            <a href="#e4">Evaluación 4</a>
+            <h2>Extras</h2>
+            <a href="#errores">Errores comunes</a>
+            <a href="#atajos">Atajos de VS 2012</a>
+        </nav>
+
+        <main>
+
+            <!-- ================= FUNDAMENTOS: MODIFICADORES DE ACCESO ================= -->
+            <section class="clase" id="acceso">
+                <h2>Fundamento 1 — Modificadores de acceso</h2>
+
+                <h3>¿Qué es un modificador de acceso?</h3>
+                <p>Un modificador de acceso es una palabra que se escribe antes de una clase, un método o una propiedad
+                    para indicar <strong>quién puede verlo y usarlo</strong>. En C# hay cuatro principales:
+                    <code>public</code>, <code>private</code>, <code>protected</code> e <code>internal</code> (y
+                    <code>protected internal</code> como combinación).
+                </p>
+                <p>Sirven para <strong>encapsular</strong>: mostrar solo lo necesario y ocultar los detalles internos.
+                    Así el código es más seguro y más fácil de mantener.</p>
+
+                <h3><code>public</code> — visible para todos</h3>
+                <pre><code>public class Estudiante
+{
+    public string Nombre { get; set; }
+    public void Saludar() { Console.WriteLine("Hola"); }
+}</code></pre>
+                <ul class="tight">
+                    <li>Cualquier código, en cualquier proyecto, puede usar la clase, la propiedad o el método.</li>
+                    <li>Se usa para lo que forma parte de la <strong>interfaz pública</strong> de tu clase: lo que otros
+                        necesitan para usarla.</li>
+                </ul>
+
+                <h3><code>private</code> — visible solo dentro de la clase</h3>
+                <pre><code>public class Estudiante
+{
+    private int edad;              // solo accesible dentro de Estudiante
+    private void Calcular() { }    // solo se llama desde dentro de Estudiante
+
+    public void SetEdad(int e)
+    {
+        edad = e;                  // sí puede acceder porque está dentro
+    }
+}</code></pre>
+                <ul class="tight">
+                    <li>Solo el código <strong>dentro de la misma clase</strong> puede acceder.</li>
+                    <li>Es el modificador <strong>por defecto</strong> para miembros de una clase (si no escribes nada,
+                        es <code>private</code>).</li>
+                    <li>Se usa para <strong>ocultar detalles internos</strong> y obligar a usar métodos públicos
+                        (encapsulamiento).</li>
+                </ul>
+
+                <h3><code>protected</code> — visible en la clase y en sus clases derivadas</h3>
+                <pre><code>public class Persona
+{
+    protected string nombre;       // accesible en Persona y en Estudiante
+}
+
+public class Estudiante : Persona
+{
+    public void Mostrar()
+    {
+        Console.WriteLine(nombre); // sí puede: Estudiante hereda de Persona
+    }
+}</code></pre>
+                <ul class="tight">
+                    <li>Solo la clase y las clases que <strong>heredan</strong> de ella pueden acceder.</li>
+                    <li>Se usa cuando quieres que las subclases puedan usar un miembro, pero no el resto del mundo.</li>
+                </ul>
+
+                <h3><code>internal</code> — visible dentro del mismo proyecto (ensamblado)</h3>
+                <pre><code>internal class Helper
+{
+    internal void Ayudar() { }
+}</code></pre>
+                <ul class="tight">
+                    <li>Cualquier clase <strong>dentro del mismo proyecto</strong> (mismo ensamblado) puede usarla.</li>
+                    <li>Fuera del proyecto, no se ve.</li>
+                    <li>Es útil para clases auxiliares que no deben exponerse fuera.</li>
+                </ul>
+
+                <h3><code>protected internal</code> — unión de ambos</h3>
+                <p>Visible desde el mismo ensamblado <strong>o</strong> desde clases derivadas (aunque estén en otro
+                    ensamblado).</p>
+
+                <h3>Tabla comparativa</h3>
+                <table>
+                    <tr>
+                        <th>Modificador</th>
+                        <th>Misma clase</th>
+                        <th>Clases derivadas</th>
+                        <th>Mismo proyecto</th>
+                        <th>Otros proyectos</th>
+                    </tr>
+                    <tr>
+                        <td><code>public</code></td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td><code>private</code></td>
+                        <td>✅</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td><code>protected</code></td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td><code>internal</code></td>
+                        <td>✅</td>
+                        <td>❌</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                    <tr>
+                        <td><code>protected internal</code></td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>❌</td>
+                    </tr>
+                </table>
+
+                <h3>Por qué en Windows Forms los manejadores son <code>private</code></h3>
+                <pre><code>private void btnMostrar_Click(object sender, EventArgs e)
+{
+    // ...
+}</code></pre>
+                <ul class="tight">
+                    <li><code>private</code> porque <strong>solo el formulario necesita llamar a ese método</strong> (lo
+                        llama el evento del botón).</li>
+                    <li>No tiene sentido que otro formulario llame a <code>btnMostrar_Click</code> directamente.</li>
+                    <li>Si fuera <code>public</code>, expondrías un detalle interno innecesariamente.</li>
+                </ul>
+
+                <div class="box tip"><strong>Regla práctica:</strong> empieza con todo <code>private</code> y sube a
+                    <code>public</code> solo lo que realmente necesites exponer. Eso es encapsulamiento.
+                </div>
+            </section>
+
+            <!-- ================= FUNDAMENTOS: STATIC ================= -->
+            <section class="clase" id="static">
+                <h2>Fundamento 2 — <code>static</code></h2>
+
+                <h3>¿Qué es <code>static</code>?</h3>
+                <p><code>static</code> <strong>no es un modificador de acceso</strong>. Es un modificador que indica que
+                    el miembro <strong>pertenece a la clase, no a una instancia</strong>. Es decir, no necesitas crear
+                    un objeto para usarlo.</p>
+
+                <h3><code>static</code> en campos y propiedades</h3>
+                <pre><code>public class Datos
+{
+    public static List&lt;Estudiante&gt; Estudiantes = new List&lt;Estudiante&gt;();
+}</code></pre>
+                <ul class="tight">
+                    <li><code>Datos.Estudiantes</code> se usa directamente, sin <code>new Datos()</code>.</li>
+                    <li>La lista es <strong>única y compartida</strong> por todos los formularios.</li>
+                    <li>Si fuera <code>public List&lt;Estudiante&gt; Estudiantes</code> (sin <code>static</code>), cada
+                        <code>new Datos()</code> tendría su propia lista, y los formularios no compartirían datos.
+                    </li>
+                </ul>
+
+                <h3><code>static</code> en métodos</h3>
+                <pre><code>public static class Utilidades
+{
+    public static int Sumar(int a, int b)
+    {
+        return a + b;
+    }
+}
+
+// Se llama así:
+int r = Utilidades.Sumar(2, 3);</code></pre>
+                <ul class="tight">
+                    <li>No se puede usar <code>this</code> dentro de un método <code>static</code> (no hay instancia).
+                    </li>
+                    <li>Una clase <code>static</code> <strong>no se puede instanciar</strong>
+                        (<code>new Utilidades()</code> da error).</li>
+                    <li>Todos sus miembros deben ser <code>static</code>.</li>
+                </ul>
+
+                <h3><code>static</code> vs instancia: ejemplo comparativo</h3>
+                <pre><code>public class Contador
+{
+    public static int Total = 0;   // compartido por todos
+    public int Individual = 0;     // cada objeto tiene el suyo
+
+    public void Incrementar()
+    {
+        Total++;
+        Individual++;
+    }
+}
+
+// Uso:
+Contador a = new Contador();
+Contador b = new Contador();
+a.Incrementar();
+b.Incrementar();
+
+Console.WriteLine(Contador.Total);     // 2  (compartido)
+Console.WriteLine(a.Individual);       // 1  (solo de a)
+Console.WriteLine(b.Individual);       // 1  (solo de b)</code></pre>
+                <ul class="tight">
+                    <li><code>Total</code> es <code>static</code>: hay una sola copia para toda la clase. Se accede como
+                        <code>Contador.Total</code>.
+                    </li>
+                    <li><code>Individual</code> no es <code>static</code>: cada objeto tiene su propia copia.</li>
+                </ul>
+
+                <h3>Por qué <code>Datos</code> es <code>public static</code> en el CRUD</h3>
+                <pre><code>public static class Datos
+{
+    public static List&lt;Estudiante&gt; Estudiantes = new List&lt;Estudiante&gt;();
+}</code></pre>
+                <ul class="tight">
+                    <li><code>public</code>: todos los formularios del proyecto pueden verla.</li>
+                    <li><code>static</code>: la lista es única y compartida; no hay que crear un objeto
+                        <code>Datos</code> para usarla.
+                    </li>
+                </ul>
+
+                <h3>Combinación de modificadores</h3>
+                <p>Los modificadores se combinan. Ejemplos:</p>
+                <pre><code>public static class Datos { }          // clase pública y estática
+private static int contador;          // campo privado y estático
+public static void Sumar() { }        // método público y estático
+protected static string nombre;       // campo protegido y estático</code></pre>
+
+                <h3>Resumen</h3>
+                <ul class="tight">
+                    <li><strong><code>public</code></strong>: todos lo ven.</li>
+                    <li><strong><code>private</code></strong>: solo la clase.</li>
+                    <li><strong><code>protected</code></strong>: la clase y sus hijas.</li>
+                    <li><strong><code>internal</code></strong>: el mismo proyecto.</li>
+                    <li><strong><code>static</code></strong>: pertenece a la clase, no a un objeto. No es un modificador
+                        de acceso, sino de <strong>pertenencia</strong>.</li>
+                </ul>
+
+                <div class="box info"><strong>Para recordar:</strong> <code>static</code> responde a la pregunta "¿esto
+                    pertenece a la clase o a cada objeto?". Los modificadores de acceso responden a "¿quién puede
+                    verlo?". Son dos ejes distintos y se combinan.</div>
+            </section>
+
+            <!-- ================= FUNDAMENTOS: PARSE, TRYPARSE Y LINQ ================= -->
+            <section class="clase" id="parse-linq">
+                <h2>Fundamento 3 — Parse, TryParse y LINQ</h2>
+
+                <h3>Parse</h3>
+                <p><code>int.Parse(texto)</code> convierte un texto a entero. Si el texto no es un número válido,
+                    <strong>lanza una excepción</strong> (<code>FormatException</code>). Si el texto es
+                    <code>null</code>, lanza <code>ArgumentNullException</code>. Si el texto está vacío
+                    (<code>""</code>), lanza <code>FormatException</code>.
+                </p>
+                <pre><code>int a = int.Parse("123");   // OK, a = 123
+int b = int.Parse("abc");   // FormatException
+int c = int.Parse("");      // FormatException
+int d = int.Parse(null);    // ArgumentNullException</code></pre>
+                <p>Por eso, cuando uses <code>Parse</code>, <strong>valida antes</strong> que el texto no esté vacío y
+                    que sea numérico (con <code>TryParse</code> o con <code>try/catch</code>).</p>
+
+                <h3>TryParse (no es LINQ)</h3>
+                <p><code>int.TryParse(texto, out numero)</code> <strong>intenta</strong> convertir el texto a entero
+                    <strong>sin lanzar excepción</strong>. Devuelve <code>true</code> si pudo convertir y
+                    <code>false</code> si no. El resultado se guarda en la variable que se pasa con <code>out</code>.
+                </p>
+                <pre><code>int n;
+bool ok = int.TryParse("123", out n);   // ok = true,  n = 123
+bool ok2 = int.TryParse("abc", out n);  // ok2 = false, n = 0
+bool ok3 = int.TryParse("", out n);     // ok3 = false, n = 0
+bool ok4 = int.TryParse(null, out n);   // ok4 = false, n = 0</code></pre>
+                <p>Es la forma más segura de convertir datos escritos por el usuario, porque no rompe el programa ante
+                    entradas inválidas.</p>
+
+                <div class="box info">
+                    <strong>Aclaración:</strong> <code>TryParse</code> <strong>no es LINQ</strong>. Es un método propio
+                    de los tipos numéricos (<code>int</code>, <code>double</code>, <code>DateTime</code>, etc.) para
+                    convertir texto a número de forma segura. Vive en la estructura <code>int</code>, dentro de
+                    <code>System</code>. No tiene nada que ver con consultas sobre colecciones.
+                </div>
+
+                <h3>LINQ (otra cosa completamente distinta)</h3>
+                <p>LINQ (Language Integrated Query) es un conjunto de métodos para <strong>consultar, filtrar, ordenar y
+                        proyectar colecciones</strong>. Vive en <code>System.Linq</code> y trabaja sobre
+                    <code>IEnumerable&lt;T&gt;</code> (listas, arreglos, etc.).
+                </p>
+                <pre><code>using System.Linq;   // necesario para usar LINQ
+
+List&lt;string&gt; materias = new List&lt;string&gt;
+{
+    "Programación I", "Bases de Datos", "Redes I"
+};
+
+// Sintaxis de consulta (parecida a SQL)
+var consulta = from m in materias
+               where m.Contains("Programación")
+               select m;
+
+// Sintaxis de método (con lambdas)
+var consulta2 = materias.Where(m =&gt; m.Contains("Programación"));
+
+foreach (string item in consulta)
+{
+    Console.WriteLine(item); // Programación I
+}</code></pre>
+                <p>Métodos típicos de LINQ:</p>
+                <ul class="tight">
+                    <li><code>Where</code>: filtra elementos según una condición.</li>
+                    <li><code>Select</code>: transforma cada elemento (proyección).</li>
+                    <li><code>OrderBy</code> / <code>OrderByDescending</code>: ordena.</li>
+                    <li><code>First</code> / <code>FirstOrDefault</code>: toma el primero.</li>
+                    <li><code>Any</code> / <code>All</code>: comprueba si alguno o todos cumplen una condición.</li>
+                    <li><code>Count</code>: cuenta elementos que cumplen una condición.</li>
+                    <li><code>Sum</code>, <code>Average</code>, <code>Max</code>, <code>Min</code>: agregaciones.</li>
+                </ul>
+
+                <h3>Diferencia clave entre TryParse y LINQ</h3>
+                <table>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th><code>TryParse</code></th>
+                        <th>LINQ</th>
+                    </tr>
+                    <tr>
+                        <td>¿Qué es?</td>
+                        <td>Método de conversión segura de texto a número</td>
+                        <td>Conjunto de métodos para consultar colecciones</td>
+                    </tr>
+                    <tr>
+                        <td>¿Dónde vive?</td>
+                        <td>En <code>int</code>, <code>double</code>, <code>DateTime</code>... (<code>System</code>)
+                        </td>
+                        <td>En <code>System.Linq</code></td>
+                    </tr>
+                    <tr>
+                        <td>¿Sobre qué trabaja?</td>
+                        <td>Un texto (<code>string</code>)</td>
+                        <td>Colecciones (<code>IEnumerable&lt;T&gt;</code>)</td>
+                    </tr>
+                    <tr>
+                        <td>¿Qué devuelve?</td>
+                        <td><code>bool</code> (éxito o no) y el valor por <code>out</code></td>
+                        <td>Una colección filtrada o un valor (según el método)</td>
+                    </tr>
+                    <tr>
+                        <td>¿Lanza excepción?</td>
+                        <td>No (devuelve <code>false</code>)</td>
+                        <td>Depende del método (ej. <code>First</code> lanza si no hay elementos)</td>
+                    </tr>
+                    <tr>
+                        <td>¿Se usa con <code>using System.Linq;</code>?</td>
+                        <td>No</td>
+                        <td>Sí</td>
+                    </tr>
+                </table>
+
+                <div class="box tip"><strong>Para recordar:</strong> si tu código convierte un texto a número, piensa en
+                    <code>Parse</code> / <code>TryParse</code>. Si tu código filtra, ordena o transforma una lista,
+                    piensa en LINQ. Son herramientas distintas para problemas distintos.
+                </div>
+            </section>
+
+            <!-- ================= CLASE 1 ================= -->
+            <section class="clase" id="c1">
+                <h2>Clase 1 — Introducción a Windows Forms</h2>
+
+                <h3>¿Qué es Windows Forms?</h3>
+                <p>Windows Forms (WinForms) es una tecnología de .NET para crear aplicaciones de escritorio con interfaz
+                    gráfica. En Visual Studio 2012 se trabaja con el <strong>diseñador visual</strong>: arrastras
+                    controles (botones, cajas de texto, etiquetas) sobre un formulario y luego programas sus eventos en
+                    C#.</p>
+                <p>Un formulario (<code>Form</code>) es una ventana. Cada control es un objeto con propiedades (lo que
+                    se ve) y eventos (lo que hace). El código que escribes responde a esos eventos.</p>
+
+                <h3>Crear el primer proyecto</h3>
+                <ol class="tight">
+                    <li>Abre Visual Studio 2012.</li>
+                    <li><span class="kbd">Archivo</span> → <span class="kbd">Nuevo</span> → <span
+                            class="kbd">Proyecto</span>.</li>
+                    <li>Elige <strong>Visual C#</strong> → <strong>Windows</strong> → <strong>Aplicación de Windows
+                            Forms</strong>.</li>
+                    <li>Escribe un nombre (ej. <code>MiPrimeraApp</code>) y pulsa <strong>Aceptar</strong>.</li>
+                </ol>
+                <p>Se abrirá <code>Form1.cs [Diseño]</code>. En el <strong>Cuadro de herramientas</strong> (View →
+                    Toolbox) están todos los controles.</p>
+
+                <h3>La ventana Propiedades</h3>
+                <p>Al seleccionar un control, la ventana <strong>Propiedades</strong> (F4) muestra sus atributos. Cada
+                    propiedad es un valor que puedes cambiar en el diseñador y que también puedes leer o modificar desde
+                    código.</p>
+                <table>
+                    <tr>
+                        <th>Propiedad</th>
+                        <th>Qué significa</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                    <tr>
+                        <td><code>Name</code></td>
+                        <td>Nombre interno del control. Es el identificador que usarás en el código para referirte a él.
+                            No se muestra al usuario.</td>
+                        <td><code>btnMostrar</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>Text</code></td>
+                        <td>Texto visible al usuario (lo que aparece en el botón, etiqueta o caja).</td>
+                        <td>"Mostrar"</td>
+                    </tr>
+                    <tr>
+                        <td><code>Size</code></td>
+                        <td>Ancho y alto en píxeles (Width × Height).</td>
+                        <td>100, 30</td>
+                    </tr>
+                    <tr>
+                        <td><code>Location</code></td>
+                        <td>Posición del control dentro del formulario, en coordenadas (X, Y). X es la distancia desde
+                            el borde izquierdo; Y desde el borde superior.</td>
+                        <td>20, 40</td>
+                    </tr>
+                    <tr>
+                        <td><code>Enabled</code></td>
+                        <td>Si el control está activo (<code>true</code>) o deshabilitado/gris (<code>false</code>). Un
+                            control deshabilitado no recibe clics ni teclas.</td>
+                        <td>true / false</td>
+                    </tr>
+                    <tr>
+                        <td><code>Visible</code></td>
+                        <td>Si el control se muestra (<code>true</code>) o se oculta (<code>false</code>).</td>
+                        <td>true / false</td>
+                    </tr>
+                    <tr>
+                        <td><code>Font</code></td>
+                        <td>Tipo de letra, tamaño y estilo del texto.</td>
+                        <td>Segoe UI, 12pt, Negrita</td>
+                    </tr>
+                    <tr>
+                        <td><code>BackColor</code></td>
+                        <td>Color de fondo del control.</td>
+                        <td>White, Control, etc.</td>
+                    </tr>
+                    <tr>
+                        <td><code>ForeColor</code></td>
+                        <td>Color del texto.</td>
+                        <td>Black, Red, etc.</td>
+                    </tr>
+                </table>
+
+                <div class="box tip"><strong>Convención de nombres:</strong> usa prefijos según el tipo:
+                    <code>txt</code> (TextBox), <code>btn</code> (Button), <code>lbl</code> (Label), <code>cbo</code>
+                    (ComboBox), <code>chk</code> (CheckBox), <code>rdo</code> (RadioButton), <code>lst</code> (ListBox),
+                    <code>lv</code> (ListView), <code>num</code> (NumericUpDown), <code>grp</code> (GroupBox),
+                    <code>menu</code> (MenuStrip). Esto facilita leer el código y evita confusiones cuando hay varios
+                    controles del mismo tipo.
+                </div>
+
+                <h3>Estructura de un formulario en código</h3>
+                <pre><code>using System;                    // trae tipos básicos (string, int, Exception...)
+using System.Windows.Forms;      // trae Form, Button, MessageBox, etc.
+
+namespace MiPrimeraApp           // espacio de nombres del proyecto
+{
+    public partial class Form1 : Form   // Form1 hereda de Form (es una ventana)
+    {
+        public Form1()
+        {
+            InitializeComponent(); // método generado por el diseñador:
+                                   // crea y coloca todos los controles que arrastraste
+        }
+
+        private void btnMostrar_Click(object sender, EventArgs e)
+        {
+            // sender: el objeto que disparó el evento (aquí, el botón btnMostrar)
+            // e: objeto con información adicional del evento (para Click no trae datos extra)
+            MessageBox.Show("¡Hola desde Windows Forms!");
+        }
+    }
+}</code></pre>
+                <p>Explicación de cada parte:</p>
+                <ul class="tight">
+                    <li><code>using System;</code> permite usar tipos como <code>string</code>, <code>int</code>,
+                        <code>Exception</code> sin escribir <code>System.string</code>.
+                    </li>
+                    <li><code>using System.Windows.Forms;</code> permite usar <code>Form</code>, <code>Button</code>,
+                        <code>MessageBox</code>, etc.
+                    </li>
+                    <li><code>namespace MiPrimeraApp</code> agrupa las clases del proyecto bajo un nombre para evitar
+                        choques con otros proyectos.</li>
+                    <li><code>public partial class Form1 : Form</code> declara una clase llamada <code>Form1</code> que
+                        <strong>hereda</strong> de <code>Form</code>, es decir, es una ventana. <code>partial</code>
+                        significa que la clase está repartida en dos archivos: el que tú editas (<code>Form1.cs</code>)
+                        y el que genera el diseñador (<code>Form1.Designer.cs</code>).
+                    </li>
+                    <li><code>public Form1()</code> es el <strong>constructor</strong>: se ejecuta una sola vez al crear
+                        el formulario. <code>InitializeComponent()</code> crea los controles definidos en el diseñador.
+                    </li>
+                    <li><code>private void btnMostrar_Click(...)</code>: <code>private</code> porque solo el formulario
+                        lo necesita (ver <a href="#acceso">modificadores de acceso</a>); <code>void</code> porque no
+                        devuelve valor; recibe <code>sender</code> y <code>e</code> (ver Clase 3).</li>
+                </ul>
+
+                <h3>Ejecutar la aplicación</h3>
+                <p>Pulsa <span class="kbd">F5</span> (depurar) o <span class="kbd">Ctrl+F5</span> (ejecutar sin
+                    depurar). Se abrirá la ventana. Para detener, cierra la ventana o pulsa el cuadrado rojo de VS.</p>
+
+                <div class="box warn"><strong>Cuidado:</strong> no escribas código dentro del método
+                    <code>InitializeComponent()</code>. Ese método lo genera el diseñador y se sobrescribe si mueves
+                    controles. Si lo modificas a mano, tus cambios se perderán.
+                </div>
+            </section>
+
+            <!-- ================= CLASE 2 ================= -->
+            <section class="clase" id="c2">
+                <h2>Clase 2 — Controles básicos</h2>
+
+                <h3>Label, TextBox, Button y MessageBox</h3>
+                <table>
+                    <tr>
+                        <th>Control</th>
+                        <th>Para qué sirve</th>
+                        <th>Propiedades clave</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Label</strong></td>
+                        <td>Mostrar texto fijo (títulos, instrucciones, resultados). El usuario no lo puede editar.</td>
+                        <td><code>Text</code>, <code>Font</code>, <code>ForeColor</code>, <code>AutoSize</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>TextBox</strong></td>
+                        <td>Entrada de texto por el usuario.</td>
+                        <td><code>Text</code>, <code>MaxLength</code>, <code>PasswordChar</code>, <code>ReadOnly</code>,
+                            <code>Multiline</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Button</strong></td>
+                        <td>Ejecutar una acción al hacer clic.</td>
+                        <td><code>Text</code>, <code>Enabled</code>, <code>DialogResult</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MessageBox</strong></td>
+                        <td>Mostrar mensajes modales (ventana que bloquea hasta que el usuario responde). No se
+                            arrastra: se invoca desde código.</td>
+                        <td>Se usa con <code>MessageBox.Show(...)</code></td>
+                    </tr>
+                </table>
+
+                <h3>Leer y escribir en controles</h3>
+                <p>Cada control tiene una propiedad <code>Text</code> que contiene lo que muestra. Para leer lo que
+                    escribió el usuario, accedes a <code>txtNombre.Text</code>. Para escribir, le asignas un valor.</p>
+                <pre><code>// Leer lo que escribió el usuario
+string nombre = txtNombre.Text;
+
+// Escribir en un Label
+lblResultado.Text = "Hola " + nombre;
+
+// Limpiar una caja de texto
+txtNombre.Clear();   // equivale a txtNombre.Text = "";
+
+// Asignar foco (colocar el cursor en esa caja)
+txtNombre.Focus();
+
+// Seleccionar todo el texto de la caja
+txtNombre.SelectAll();</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>txtNombre.Text</code> devuelve un <code>string</code> con el contenido actual.</li>
+                    <li><code>lblResultado.Text = ...</code> cambia el texto visible del Label.</li>
+                    <li><code>Clear()</code> es un método del TextBox que borra su contenido.</li>
+                    <li><code>Focus()</code> es un método que hace que el control reciba el teclado.</li>
+                </ul>
+
+                <h3>MessageBox.Show: todos sus parámetros</h3>
+                <p><code>MessageBox.Show</code> es un método estático (se llama desde la clase, no desde un objeto) que
+                    muestra un cuadro de diálogo y <strong>devuelve</strong> un valor <code>DialogResult</code>
+                    indicando qué botón pulsó el usuario.</p>
+                <pre><code>// Forma más simple: solo el mensaje
+MessageBox.Show("Operación realizada");
+
+// Con título de la ventana
+MessageBox.Show("Datos guardados", "Confirmación");
+
+// Con ícono y botones, guardando el resultado
+DialogResult r = MessageBox.Show(
+    "¿Desea salir?",          // texto del mensaje
+    "Pregunta",               // título de la ventana
+    MessageBoxButtons.YesNo,  // botones que aparecen
+    MessageBoxIcon.Question); // ícono que aparece
+
+if (r == DialogResult.Yes)
+{
+    Application.Exit();
+}</code></pre>
+                <p>Parámetros de <code>MessageBox.Show</code>:</p>
+                <table>
+                    <tr>
+                        <th>Parámetro</th>
+                        <th>Tipo</th>
+                        <th>Qué significa</th>
+                    </tr>
+                    <tr>
+                        <td>texto</td>
+                        <td><code>string</code></td>
+                        <td>Mensaje que se muestra al usuario.</td>
+                    </tr>
+                    <tr>
+                        <td>título (caption)</td>
+                        <td><code>string</code></td>
+                        <td>Texto de la barra de título de la ventana.</td>
+                    </tr>
+                    <tr>
+                        <td>botones</td>
+                        <td><code>MessageBoxButtons</code></td>
+                        <td>Qué botones aparecen: <code>OK</code>, <code>OKCancel</code>, <code>YesNo</code>,
+                            <code>YesNoCancel</code>, <code>AbortRetryIgnore</code>, <code>RetryCancel</code>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ícono</td>
+                        <td><code>MessageBoxIcon</code></td>
+                        <td>Ícono decorativo: <code>Information</code>, <code>Warning</code>, <code>Error</code>,
+                            <code>Question</code>, <code>None</code>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>botón por defecto</td>
+                        <td><code>MessageBoxDefaultButton</code></td>
+                        <td>Cuál botón está preseleccionado (opcional).</td>
+                    </tr>
+                </table>
+                <p>El valor devuelto es un <code>DialogResult</code>: <code>Yes</code>, <code>No</code>,
+                    <code>OK</code>, <code>Cancel</code>, <code>Abort</code>, <code>Retry</code>, <code>Ignore</code>,
+                    <code>None</code>. Se compara con <code>if (r == DialogResult.Yes)</code>.
+                </p>
+
+                <h3>Ejemplo completo: saludo</h3>
+                <p>Formulario con <code>txtNombre</code>, <code>btnMostrar</code> y <code>lblSaludo</code>.</p>
+                <pre><code>private void btnMostrar_Click(object sender, EventArgs e)
+{
+    // string.IsNullOrEmpty devuelve true si el texto es null o ""
+    if (string.IsNullOrEmpty(txtNombre.Text))
+    {
+        MessageBox.Show("Escriba un nombre", "Aviso",
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return; // sale del método: no sigue ejecutando
+    }
+    lblSaludo.Text = "Hola, " + txtNombre.Text;
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>sender</code> es el objeto que disparó el evento (el botón). No lo usamos aquí, pero es
+                        obligatorio en la firma.</li>
+                    <li><code>EventArgs e</code> contiene datos del evento. Para <code>Click</code> no trae información
+                        extra, pero debe estar.</li>
+                    <li><code>return;</code> corta la ejecución del método: si el nombre está vacío, no llega a la línea
+                        que asigna el saludo.</li>
+                </ul>
+
+                <div class="box tip"><strong>Tip:</strong> usa <code>string.IsNullOrEmpty</code> en lugar de
+                    <code>txt.Text == ""</code>. Es más seguro porque también detecta el valor <code>null</code> (cuando
+                    la propiedad nunca fue asignada).
+                </div>
+            </section>
+
+            <!-- ================= CLASE 3 ================= -->
+            <section class="clase" id="c3">
+                <h2>Clase 3 — Eventos</h2>
+
+                <h3>¿Qué es un evento?</h3>
+                <p>Un evento es una acción que ocurre en el programa (clic, tecla, cambio de texto, carga del
+                    formulario). Tú escribes un <strong>manejador de eventos</strong> (un método) que se ejecuta cuando
+                    ocurre. Visual Studio conecta el evento del control con tu método.</p>
+
+                <h3>Cómo crear un manejador</h3>
+                <ol class="tight">
+                    <li>Selecciona el control en el diseñador.</li>
+                    <li>En la ventana Propiedades, pulsa el ícono del <strong>rayo</strong> (Eventos).</li>
+                    <li>Doble clic en el evento (ej. <code>Click</code>) y VS crea el método con la firma correcta.</li>
+                </ol>
+
+                <h3>Firma del manejador y sus parámetros</h3>
+                <pre><code>private void btnAceptar_Click(object sender, EventArgs e)
+{
+    // sender: el objeto que disparó el evento.
+    //         Si varios botones comparten el mismo manejador,
+    //         puedes distinguirlos con: if (sender == btnAceptar) ...
+    // e: objeto EventArgs con información adicional.
+    //    Para Click no trae datos; para KeyPress trae la tecla;
+    //    para MouseClick trae coordenadas del mouse.
+}</code></pre>
+                <p>Explicación de cada parámetro:</p>
+                <ul class="tight">
+                    <li><strong><code>sender</code></strong> (tipo <code>object</code>): referencia al control que
+                        generó el evento. Como es <code>object</code>, si necesitas usarlo debes convertirlo:
+                        <code>Button b = (Button)sender;</code>.
+                    </li>
+                    <li><strong><code>e</code></strong> (tipo <code>EventArgs</code> o una subclase): contiene datos del
+                        evento. Por ejemplo, en <code>KeyPress</code> es <code>KeyPressEventArgs</code> y trae
+                        <code>e.KeyChar</code> (la tecla presionada) y <code>e.Handled</code> (para bloquear la tecla).
+                    </li>
+                </ul>
+
+                <h3>Eventos más usados</h3>
+                <table>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Cuándo se dispara</th>
+                        <th>Control típico</th>
+                        <th>Datos en <code>e</code></th>
+                    </tr>
+                    <tr>
+                        <td><code>Click</code></td>
+                        <td>Al hacer clic con el mouse</td>
+                        <td>Button, Label</td>
+                        <td>Ninguno relevante</td>
+                    </tr>
+                    <tr>
+                        <td><code>TextChanged</code></td>
+                        <td>Cada vez que cambia el texto</td>
+                        <td>TextBox</td>
+                        <td>Ninguno relevante</td>
+                    </tr>
+                    <tr>
+                        <td><code>KeyPress</code></td>
+                        <td>Al presionar una tecla que genera un carácter</td>
+                        <td>TextBox</td>
+                        <td><code>e.KeyChar</code>, <code>e.Handled</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>KeyDown</code></td>
+                        <td>Al presionar cualquier tecla (incluye flechas, F1, etc.)</td>
+                        <td>TextBox, Form</td>
+                        <td><code>e.KeyCode</code>, <code>e.Handled</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>Load</code></td>
+                        <td>Al cargar el formulario, antes de mostrarse</td>
+                        <td>Form</td>
+                        <td>Ninguno relevante</td>
+                    </tr>
+                    <tr>
+                        <td><code>FormClosing</code></td>
+                        <td>Antes de cerrar el formulario</td>
+                        <td>Form</td>
+                        <td><code>e.Cancel</code> (para cancelar el cierre)</td>
+                    </tr>
+                    <tr>
+                        <td><code>SelectedIndexChanged</code></td>
+                        <td>Al cambiar la selección</td>
+                        <td>ComboBox, ListBox</td>
+                        <td>Ninguno relevante</td>
+                    </tr>
+                </table>
+
+                <h3>Ejemplo: TextChanged y KeyPress</h3>
+                <pre><code>// Mostrar en un Label lo que se escribe en tiempo real
+private void txtNombre_TextChanged(object sender, EventArgs e)
+{
+    lblVista.Text = txtNombre.Text;
+}
+
+// Permitir solo dígitos en un TextBox
+private void txtEdad_KeyPress(object sender, KeyPressEventArgs e)
+{
+    // e.KeyChar es el carácter de la tecla presionada.
+    // char.IsDigit devuelve true si es 0-9.
+    // (char)8 es el código ASCII de Backspace (borrar).
+    if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)8)
+    {
+        e.Handled = true; // bloquea la tecla: no se escribe
+    }
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>e.KeyChar</code> es un <code>char</code> con la tecla presionada.</li>
+                    <li><code>char.IsDigit(e.KeyChar)</code> devuelve <code>true</code> si es un dígito del 0 al 9.</li>
+                    <li><code>(char)8</code> es el código ASCII de Backspace; lo permitimos para que el usuario pueda
+                        borrar.</li>
+                    <li><code>e.Handled = true</code> indica que el evento ya fue manejado y que el carácter no debe
+                        escribirse en el TextBox.</li>
+                </ul>
+
+                <h3>Evento Load del formulario</h3>
+                <pre><code>private void Form1_Load(object sender, EventArgs e)
+{
+    // Se ejecuta al abrir el formulario, antes de que sea visible.
+    // Ideal para inicializar valores, llenar ComboBox, etc.
+    cboTurno.Items.Add("Mañana");
+    cboTurno.Items.Add("Tarde");
+    cboTurno.SelectedIndex = 0; // selecciona el primer elemento
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>Items.Add("...")</code> agrega un elemento a la colección del ComboBox.</li>
+                    <li><code>SelectedIndex = 0</code> selecciona el primer elemento (los índices empiezan en 0).
+                        <code>-1</code> significa "ninguno seleccionado".
+                    </li>
+                </ul>
+
+                <h3>Compartir un manejador entre varios controles</h3>
+                <pre><code>private void BotonCompartido_Click(object sender, EventArgs e)
+{
+    // Convertimos sender a Button para acceder a sus propiedades
+    Button b = (Button)sender;
+    MessageBox.Show("Pulsaste: " + b.Text);
+}</code></pre>
+                <p>Para que varios botones usen este manejador, en el diseñador seleccionas cada botón, vas a Eventos →
+                    Click y eliges el mismo método. Así <code>sender</code> te dice cuál fue.</p>
+
+                <div class="box warn"><strong>Cuidado:</strong> si dentro de <code>TextChanged</code> modificas el mismo
+                    TextBox, puedes provocar un bucle infinito (el evento se dispara otra vez). Modifica otro control,
+                    no el que dispara el evento.</div>
+            </section>
+
+            <!-- ================= CLASE 4 ================= -->
+            <section class="clase" id="c4">
+                <h2>Clase 4 — Validación de datos</h2>
+
+                <h3>¿Por qué validar?</h3>
+                <p>El usuario puede dejar campos vacíos, escribir letras donde van números o seleccionar opciones
+                    inválidas. Validar evita errores en tiempo de ejecución y datos inconsistentes.</p>
+
+                <h3>Validación con MessageBox (la más simple)</h3>
+                <pre><code>private void btnGuardar_Click(object sender, EventArgs e)
+{
+    // 1) Validar campo vacío
+    if (string.IsNullOrEmpty(txtNombre.Text))
+    {
+        MessageBox.Show("El nombre es obligatorio");
+        txtNombre.Focus(); // coloca el cursor en el campo
+        return;            // sale del método: no sigue validando
+    }
+
+    // 2) Validar que sea número con TryParse
+    int edad;
+    if (!int.TryParse(txtEdad.Text, out edad))
+    {
+        MessageBox.Show("La edad debe ser un número");
+        txtEdad.Focus();
+        return;
+    }
+
+    // 3) Validar rango
+    if (edad &lt; 1 || edad &gt; 120)
+    {
+        MessageBox.Show("La edad debe estar entre 1 y 120");
+        return;
+    }
+
+    MessageBox.Show("Datos válidos");
+}</code></pre>
+                <p>Explicación de <code>int.TryParse</code>:</p>
+                <ul class="tight">
+                    <li><strong>Primer parámetro</strong> (<code>txtEdad.Text</code>): el texto que se quiere convertir
+                        a entero.</li>
+                    <li><strong>Segundo parámetro</strong> (<code>out edad</code>): variable donde se guarda el
+                        resultado si la conversión tiene éxito. La palabra <code>out</code> indica que el método asigna
+                        ese valor.</li>
+                    <li><strong>Valor devuelto</strong>: <code>true</code> si pudo convertir, <code>false</code> si no.
+                        Por eso usamos <code>if (!int.TryParse(...))</code>: si <em>no</em> pudo convertir, mostramos
+                        error.</li>
+                    <li>Si la conversión falla, <code>edad</code> queda en 0, pero no lanzamos excepción.</li>
+                </ul>
+
+                <div class="box info">
+
+                    <code>TryParse</code> es un método propio de los tipos numéricos (<code>int</code>,
+                    <code>double</code>, <code>DateTime</code>, etc.) para convertir texto a número de forma segura,
+                    <strong>sin lanzar excepción</strong>. Vive en la estructura <code>int</code>, dentro de
+                    <code>System</code>. No tiene nada que ver con consultas.<br><br>
+                    <strong>LINQ</strong>, en cambio, es un conjunto de métodos para consultar, filtrar, ordenar y
+                    proyectar colecciones (<code>Where</code>, <code>Select</code>, <code>OrderBy</code>,
+                    <code>from ... in ...</code>). Vive en <code>System.Linq</code> y trabaja sobre
+                    <code>IEnumerable&lt;T&gt;</code>. Lo verás en la sección <a href="#parse-linq">Parse, TryParse y
+                        LINQ</a>.
+                </div>
+
+                <h3>Validación con ErrorProvider</h3>
+                <p><code>ErrorProvider</code> muestra un ícono rojo junto al control inválido. Se arrastra desde el
+                    Cuadro de herramientas.</p>
+                <pre><code>private void btnValidar_Click(object sender, EventArgs e)
+{
+    errorProvider1.Clear(); // quita todos los errores previos
+    bool ok = true;
+
+    if (string.IsNullOrEmpty(txtNombre.Text))
+    {
+        // SetError(control, mensaje): muestra el ícono junto al control
+        errorProvider1.SetError(txtNombre, "Campo obligatorio");
+        ok = false;
+    }
+
+    if (!ok)
+    {
+        MessageBox.Show("Corrija los campos marcados");
+    }
+}</code></pre>
+                <p>Explicación de <code>SetError</code>:</p>
+                <ul class="tight">
+                    <li><strong>Primer parámetro</strong>: el control al que se le asocia el error.</li>
+                    <li><strong>Segundo parámetro</strong>: el mensaje que aparece al pasar el mouse sobre el ícono. Si
+                        pasas <code>""</code>, se quita el error.</li>
+                </ul>
+                <p><code>errorProvider1.Clear()</code> recorre todos los controles y borra los errores asociados. Úsalo
+                    al inicio de cada validación.</p>
+
+                <h3>Validación con KeyPress (entrada controlada)</h3>
+                <pre><code>// Solo números en txtTelefono
+private void txtTelefono_KeyPress(object sender, KeyPressEventArgs e)
+{
+    // Si no es dígito y no es Backspace, bloqueamos
+    if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)8)
+        e.Handled = true;
+}</code></pre>
+
+                <h3>Convertir datos: Parse, TryParse y Convert</h3>
+                <p>Para convertir texto a número hay varias formas. Aquí usamos <code>Parse</code> y
+                    <code>TryParse</code>, que son los que viste en clase.
+                </p>
+                <table>
+                    <tr>
+                        <th>Método</th>
+                        <th>Qué hace</th>
+                        <th>Qué devuelve</th>
+                        <th>Si falla</th>
+                    </tr>
+                    <tr>
+                        <td><code>int.Parse(s)</code></td>
+                        <td>Convierte texto a entero</td>
+                        <td><code>int</code></td>
+                        <td>Lanza <code>FormatException</code> (o <code>ArgumentNullException</code> si <code>s</code>
+                            es <code>null</code>)</td>
+                    </tr>
+                    <tr>
+                        <td><code>int.TryParse(s, out n)</code></td>
+                        <td>Intenta convertir</td>
+                        <td><code>bool</code> (éxito o no)</td>
+                        <td>Devuelve <code>false</code>, no lanza</td>
+                    </tr>
+                    <tr>
+                        <td><code>double.Parse(s)</code></td>
+                        <td>Convierte a decimal</td>
+                        <td><code>double</code></td>
+                        <td>Lanza <code>FormatException</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>Convert.ToInt32(s)</code></td>
+                        <td>Convierte con manejo de <code>null</code> y <code>""</code></td>
+                        <td><code>int</code></td>
+                        <td><code>null</code> o <code>""</code> → devuelve <code>0</code>; texto no numérico → lanza
+                            excepción</td>
+                    </tr>
+                </table>
+
+                <div class="box tip"><strong>Recomendación:</strong> para datos escritos por el usuario usa siempre
+                    <code>TryParse</code>. Es más seguro que <code>Parse</code> porque no rompe el programa si el
+                    usuario escribe mal. Si usas <code>Parse</code>, valida antes el vacío y envuélvelo en
+                    <code>try/catch</code>.
+                </div>
+
+                <h3>Usar Parse con validación previa (sin Convert)</h3>
+                <p>Si en clase viste <code>Parse</code>, esta es la forma segura de usarlo: validar vacío y tipo antes
+                    de convertir.</p>
+                <pre><code>private void btnConvertir_Click(object sender, EventArgs e)
+{
+    // 1) Validar vacío
+    if (string.IsNullOrEmpty(txtAnio.Text))
+    {
+        MessageBox.Show("El año es obligatorio");
+        return;
+    }
+
+    // 2) Validar que sea número (TryParse solo para comprobar)
+    int anio;
+    if (!int.TryParse(txtAnio.Text, out anio))
+    {
+        MessageBox.Show("El año debe ser un número");
+        return;
+    }
+
+    // 3) Ahora sí, usar el valor
+    lblResultado.Text = "Año registrado: " + anio;
+}</code></pre>
+                <p>Alternativa con <code>Parse</code> dentro de <code>try/catch</code> (si no quieres usar
+                    <code>TryParse</code>):
+                </p>
+                <pre><code>private void btnConvertir_Click(object sender, EventArgs e)
+{
+    if (string.IsNullOrEmpty(txtAnio.Text))
+    {
+        MessageBox.Show("El año es obligatorio");
+        return;
+    }
+
+    try
+    {
+        int anio = int.Parse(txtAnio.Text);
+        lblResultado.Text = "Año registrado: " + anio;
+    }
+    catch (FormatException)
+    {
+        MessageBox.Show("El año debe ser un número válido");
+    }
+}</code></pre>
+            </section>
+
+            <!-- ================= CLASE 5 ================= -->
+            <section class="clase" id="c5">
+                <h2>Clase 5 — Controles de selección</h2>
+
+                <h3>CheckBox</h3>
+                <p>Permite marcar o desmarcar una opción. Se puede marcar varias a la vez.</p>
+                <pre><code>// Checked: true si está marcado, false si no
+if (chkTerminos.Checked)
+{
+    MessageBox.Show("Términos aceptados");
+}
+
+// Text: el texto visible del CheckBox
+string opcion = chkTerminos.Text;
+
+// Marcar/desmarcar por código
+chkTerminos.Checked = true;
+
+// CheckState: estado con tres valores (Checked, Unchecked, Indeterminate)
+// Útil si el CheckBox tiene ThreeState = true
+if (chkTerminos.CheckState == CheckState.Checked) { /* ... */ }</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>Checked</code>: propiedad booleana con el estado de marcado.</li>
+                    <li><code>CheckState</code>: propiedad de tipo <code>CheckState</code> con tres valores posibles.
+                        Solo tiene sentido si <code>ThreeState = true</code>.</li>
+                    <li><code>Text</code>: lo que se ve al lado de la casilla.</li>
+                </ul>
+
+                <h3>RadioButton</h3>
+                <p>Permite elegir <strong>una sola opción</strong> dentro de un grupo. Los RadioButton que están dentro
+                    del mismo contenedor (Form, GroupBox o Panel) son mutuamente excluyentes.</p>
+                <pre><code>if (rdoManana.Checked)
+    MessageBox.Show("Turno mañana");
+else if (rdoTarde.Checked)
+    MessageBox.Show("Turno tarde");
+else
+    MessageBox.Show("Seleccione un turno");</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>Checked</code> indica si ese RadioButton está seleccionado. Como solo uno puede estarlo
+                        por grupo, con revisar los dos cubres todas las posibilidades.</li>
+                    <li>Si ninguno está marcado, ambos <code>Checked</code> son <code>false</code>; por eso el
+                        <code>else</code>.
+                    </li>
+                </ul>
+
+                <div class="box tip"><strong>Tip:</strong> si tienes dos grupos de RadioButton en el mismo formulario,
+                    colócalos en <code>GroupBox</code> distintos. Si no, se comportarán como un solo grupo y seleccionar
+                    uno desmarcará el del otro grupo.</div>
+
+                <h3>ComboBox</h3>
+                <p>Lista desplegable. Puede ser de solo selección (<code>DropDownList</code>) o permitir escribir
+                    (<code>DropDown</code>).</p>
+                <pre><code>// Agregar elementos por código
+cboTaller.Items.Add("Programación");
+cboTaller.Items.Add("Bases de Datos");
+cboTaller.Items.Add("Redes");
+
+// Seleccionar el primero
+cboTaller.SelectedIndex = 0;
+
+// Leer la selección
+if (cboTaller.SelectedIndex == -1)
+    MessageBox.Show("Seleccione un taller");
+else
+    MessageBox.Show("Elegiste: " + cboTaller.SelectedItem.ToString());
+
+// Limpiar
+cboTaller.Items.Clear();</code></pre>
+                <p>Explicación de propiedades:</p>
+                <ul class="tight">
+                    <li><code>Items</code>: colección de elementos. <code>Add</code> agrega, <code>Clear</code> borra
+                        todos.</li>
+                    <li><code>SelectedIndex</code>: índice del elemento seleccionado. <code>0</code> es el primero,
+                        <code>-1</code> significa "ninguno".
+                    </li>
+                    <li><code>SelectedItem</code>: el objeto seleccionado (puede ser un <code>string</code> o un
+                        objeto).</li>
+                    <li><code>Text</code>: el texto que se muestra en la parte visible del ComboBox.</li>
+                    <li><code>DropDownStyle</code>: <code>DropDownList</code> (solo elegir de la lista) o
+                        <code>DropDown</code> (permite escribir).
+                    </li>
+                </ul>
+
+                <h3>Ejemplo integrador: inscripción</h3>
+                <pre><code>private void btnInscribir_Click(object sender, EventArgs e)
+{
+    if (string.IsNullOrEmpty(txtNombre.Text))
+    { MessageBox.Show("Escriba su nombre"); return; }
+
+    if (cboTaller.SelectedIndex == -1)
+    { MessageBox.Show("Seleccione un taller"); return; }
+
+    // Operador ternario: condición ? valorSiTrue : valorSiFalse
+    string turno = rdoManana.Checked ? "Mañana" :
+                   rdoTarde.Checked  ? "Tarde"  : "";
+
+    if (turno == "")
+    { MessageBox.Show("Seleccione un turno"); return; }
+
+    if (!chkTerminos.Checked)
+    { MessageBox.Show("Debe aceptar los términos"); return; }
+
+    lblResumen.Text = "Inscrito: " + txtNombre.Text +
+                      " — Taller: " + cboTaller.SelectedItem +
+                      " — Turno: " + turno;
+}</code></pre>
+                <p>Explicación del ternario:</p>
+                <ul class="tight">
+                    <li><code>condición ? valorA : valorB</code>: si la condición es <code>true</code>, devuelve
+                        <code>valorA</code>; si es <code>false</code>, <code>valorB</code>.
+                    </li>
+                    <li>Aquí se lee: "si <code>rdoManana.Checked</code> es true, turno = 'Mañana'; si no, si
+                        <code>rdoTarde.Checked</code> es true, turno = 'Tarde'; si no, turno = ''".
+                    </li>
+                </ul>
+            </section>
+
+            <!-- ================= CLASE 6 ================= -->
+            <section class="clase" id="c6">
+                <h2>Clase 6 — ListBox, ListView y colecciones</h2>
+
+                <h3>ListBox</h3>
+                <p>Lista de elementos visibles. Ideal para mostrar registros simples.</p>
+                <pre><code>// Agregar
+lstEstudiantes.Items.Add("María Pérez");
+lstEstudiantes.Items.Add("Juan Gómez");
+
+// Seleccionar el primero
+lstEstudiantes.SelectedIndex = 0;
+
+// Leer el seleccionado
+if (lstEstudiantes.SelectedIndex != -1)
+{
+    string seleccionado = lstEstudiantes.SelectedItem.ToString();
+    MessageBox.Show(seleccionado);
+}
+
+// Eliminar el seleccionado
+if (lstEstudiantes.SelectedIndex != -1)
+    lstEstudiantes.Items.RemoveAt(lstEstudiantes.SelectedIndex);
+
+// Limpiar todo
+lstEstudiantes.Items.Clear();</code></pre>
+                <p>Explicación de miembros:</p>
+                <ul class="tight">
+                    <li><code>Items</code>: colección de elementos del ListBox. Tiene métodos <code>Add</code>,
+                        <code>Remove</code>, <code>RemoveAt</code>, <code>Clear</code>.
+                    </li>
+                    <li><code>SelectedIndex</code>: índice del elemento seleccionado, <code>-1</code> si ninguno.</li>
+                    <li><code>SelectedItem</code>: el objeto seleccionado. Como <code>Items</code> guarda
+                        <code>object</code>, si guardaste un objeto propio debes convertirlo:
+                        <code>(Libro)lstLibros.SelectedItem</code>.
+                    </li>
+                    <li><code>SelectedItems</code>: colección con todos los seleccionados (útil si
+                        <code>SelectionMode = MultiExtended</code>).
+                    </li>
+                </ul>
+
+                <h3>ListView</h3>
+                <p>Muestra datos en columnas (modo <code>Details</code>). Útil para varios campos por registro.</p>
+                <pre><code>// Configurar columnas en Form_Load
+private void Form1_Load(object sender, EventArgs e)
+{
+    lvEstudiantes.View = View.Details;       // modo columnas
+    lvEstudiantes.Columns.Add("Nombre", 150); // texto y ancho en píxeles
+    lvEstudiantes.Columns.Add("Carrera", 120);
+    lvEstudiantes.Columns.Add("Edad", 60);
+}
+
+// Agregar una fila
+ListViewItem fila = new ListViewItem("María Pérez"); // primera columna
+fila.SubItems.Add("Informática");                    // segunda columna
+fila.SubItems.Add("18");                             // tercera columna
+lvEstudiantes.Items.Add(fila);
+
+// Leer seleccionado
+if (lvEstudiantes.SelectedItems.Count &gt; 0)
+{
+    string nombre = lvEstudiantes.SelectedItems[0].Text;
+    string carrera = lvEstudiantes.SelectedItems[0].SubItems[1].Text;
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>View = View.Details</code>: modo de visualización con columnas. Otros modos:
+                        <code>LargeIcon</code>, <code>SmallIcon</code>, <code>List</code>, <code>Tile</code>.
+                    </li>
+                    <li><code>Columns.Add(texto, ancho)</code>: agrega una columna. El primer parámetro es el
+                        encabezado; el segundo, el ancho en píxeles.</li>
+                    <li><code>ListViewItem</code>: representa una fila. El constructor recibe el texto de la primera
+                        columna.</li>
+                    <li><code>SubItems.Add</code>: agrega el valor de las columnas siguientes.</li>
+                    <li><code>SelectedItems[0]</code>: el primer elemento seleccionado. <code>.Text</code> es la primera
+                        columna; <code>.SubItems[1]</code> es la segunda; <code>.SubItems[2]</code>, la tercera.</li>
+                </ul>
+
+                <h3>Colecciones en memoria</h3>
+                <pre><code>// Lista simple de textos
+List&lt;string&gt; nombres = new List&lt;string&gt;();
+nombres.Add("María");    // agrega al final
+nombres.Add("Juan");
+nombres.Remove("Juan");  // elimina por valor
+int total = nombres.Count; // cantidad de elementos
+
+// Lista de objetos (recomendado)
+public class Estudiante
+{
+    // Propiedades autoimplementadas: get y set públicos
+    public string Nombre { get; set; }
+    public string Carrera { get; set; }
+    public int Edad { get; set; }
+}
+
+List&lt;Estudiante&gt; estudiantes = new List&lt;Estudiante&gt;();
+estudiantes.Add(new Estudiante
+{
+    Nombre = "María",
+    Carrera = "Informática",
+    Edad = 18
+});
+
+// Recorrer con foreach
+foreach (Estudiante est in estudiantes)
+{
+    Console.WriteLine(est.Nombre);
+}
+
+// Acceder por índice
+Estudiante primero = estudiantes[0];
+int cantidad = estudiantes.Count;</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>List&lt;T&gt;</code> es una colección genérica: <code>T</code> es el tipo de elementos.
+                        <code>List&lt;string&gt;</code> guarda textos; <code>List&lt;Estudiante&gt;</code>, objetos.
+                    </li>
+                    <li><code>Add</code>: agrega al final. <code>Remove</code>: elimina por valor (el primero que
+                        coincida). <code>RemoveAt</code>: elimina por índice. <code>Clear</code>: vacía toda la lista.
+                    </li>
+                    <li><code>Count</code>: cantidad de elementos (propiedad, no método).</li>
+                    <li><code>[0]</code>: acceso por índice (empieza en 0).</li>
+                    <li><code>{ get; set; }</code>: propiedades autoimplementadas. <code>get</code> devuelve el valor;
+                        <code>set</code> lo asigna.
+                    </li>
+                </ul>
+
+                <div class="box tip"><strong>Consejo:</strong> cuando uses objetos en un ListBox o ListView, sobrescribe
+                    <code>ToString()</code> en la clase para que se muestre algo legible en lugar del nombre de la
+                    clase.
+                </div>
+                <pre><code>public override string ToString()
+{
+    // Se llama automáticamente cuando el ListBox necesita mostrar el objeto
+    return Nombre + " — " + Carrera + " (" + Edad + ")";
+}</code></pre>
+            </section>
+
+            <!-- ================= CLASE 7 ================= -->
+            <section class="clase" id="c7">
+                <h2>Clase 7 — Navegación entre formularios</h2>
+
+                <h3>Crear un segundo formulario</h3>
+                <p><span class="kbd">Proyecto</span> → <span class="kbd">Agregar Windows Form</span>. Se llamará
+                    <code>Form2</code> (o el nombre que elijas).
+                </p>
+
+                <h3>Abrir Form2 desde Form1</h3>
+                <pre><code>private void btnAbrir_Click(object sender, EventArgs e)
+{
+    Form2 f2 = new Form2(); // crea una instancia nueva del formulario
+    f2.Show();              // abre sin bloquear Form1 (no modal)
+    // f2.ShowDialog();     // abre como modal: bloquea Form1 hasta cerrar Form2
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>new Form2()</code>: crea una instancia nueva. Cada vez que lo llamas, obtienes un
+                        formulario distinto con su propio estado.</li>
+                    <li><code>Show()</code>: muestra el formulario y devuelve el control inmediatamente. El usuario
+                        puede interactuar con ambos formularios.</li>
+                    <li><code>ShowDialog()</code>: muestra el formulario como modal. El código que sigue no se ejecuta
+                        hasta que se cierre. Devuelve un <code>DialogResult</code>.</li>
+                </ul>
+
+                <h3>Pasar datos de Form1 a Form2</h3>
+                <pre><code>// En Form2, declarar un campo público
+public string NombreRecibido;
+
+// En Form1, antes de mostrar
+Form2 f2 = new Form2();
+f2.NombreRecibido = txtNombre.Text; // asigna antes de Show
+f2.Show();
+
+// En Form2_Load, usar el dato
+private void Form2_Load(object sender, EventArgs e)
+{
+    lblSaludo.Text = "Hola " + NombreRecibido;
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li>El campo <code>public string NombreRecibido</code> es visible desde fuera de la clase. Form1
+                        puede asignarlo antes de mostrar el formulario.</li>
+                    <li>Se asigna <strong>antes</strong> de <code>Show()</code> para que cuando se dispare el evento
+                        <code>Load</code> de Form2, el dato ya esté disponible.
+                    </li>
+                </ul>
+
+                <h3>Recibir datos de vuelta (Form2 → Form1)</h3>
+                <pre><code>// En Form2
+public string Resultado;
+
+private void btnAceptar_Click(object sender, EventArgs e)
+{
+    Resultado = txtDato.Text;
+    this.DialogResult = DialogResult.OK; // indica que se aceptó
+    this.Close();                          // cierra Form2
+}
+
+// En Form1
+private void btnPedir_Click(object sender, EventArgs e)
+{
+    Form2 f2 = new Form2();
+    // ShowDialog devuelve el DialogResult que se asignó al cerrar
+    if (f2.ShowDialog() == DialogResult.OK)
+    {
+        lblRecibido.Text = f2.Resultado;
+    }
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>this</code> se refiere al formulario actual (Form2).</li>
+                    <li><code>DialogResult = DialogResult.OK</code> indica que el usuario aceptó. Al cerrar con la X, el
+                        resultado sería <code>Cancel</code>.</li>
+                    <li><code>ShowDialog()</code> devuelve el <code>DialogResult</code> del formulario. Comparamos con
+                        <code>DialogResult.OK</code> para saber si el usuario aceptó.
+                    </li>
+                </ul>
+
+                <h3>Compartir datos entre varios formularios</h3>
+                <p>La forma más simple es una clase estática que guarde la lista compartida (ver <a
+                        href="#static">static</a>).</p>
+                <pre><code>public static class Datos
+{
+    // static: pertenece a la clase, no a una instancia.
+    // Todos los formularios ven la MISMA lista.
+    public static List&lt;Estudiante&gt; Estudiantes = new List&lt;Estudiante&gt;();
+}</code></pre>
+                <p>Cualquier formulario puede usar <code>Datos.Estudiantes</code> sin necesidad de pasarla. La lista se
+                    crea una sola vez y persiste mientras la aplicación esté abierta.</p>
+
+                <div class="box warn"><strong>Cuidado:</strong> no uses <code>new Form1()</code> dentro de Form2 para
+                    volver al menú. Eso crea otra instancia y pierdes los datos. Usa <code>this.Close()</code> o
+                    <code>this.Hide()</code> y vuelve a mostrar la instancia existente.
+                </div>
+            </section>
+
+            <!-- ================= CLASE 8 ================= -->
+            <section class="clase" id="c8">
+                <h2>Clase 8 — Menús y organización de la interfaz</h2>
+
+                <h3>MenuStrip</h3>
+                <p>Arrastra un <code>MenuStrip</code> al formulario. Aparece una barra superior. Escribe los ítems
+                    directamente en el diseñador.</p>
+                <pre><code>// Manejar clic en un ítem del menú
+private void registrarToolStripMenuItem_Click(object sender, EventArgs e)
+{
+    // El nombre del método lo genera VS: nombreDelItem + _Click
+    Form2 f2 = new Form2();
+    f2.Show();
+}
+
+private void salirToolStripMenuItem_Click(object sender, EventArgs e)
+{
+    Application.Exit(); // cierra toda la aplicación
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>Application.Exit()</code>: cierra todos los formularios y termina el proceso.</li>
+                    <li>Cada ítem del menú tiene su propio manejador <code>Click</code>, con la misma firma
+                        <code>(object sender, EventArgs e)</code>.
+                    </li>
+                </ul>
+
+                <h3>Estructura típica de menú</h3>
+                <pre><code>Archivo
+  ├─ Salir
+Estudiantes
+  ├─ Registrar
+  └─ Ver lista
+Ayuda
+  └─ Acerca de</code></pre>
+                <p>Para crear submenús: en el diseñador del menú, escribe el ítem padre y luego usa la flecha derecha
+                    para agregar hijos.</p>
+
+                <h3>ToolStrip</h3>
+                <p>Barra de herramientas con botones (iconos o texto). Útil para accesos rápidos.</p>
+                <pre><code>private void toolStripButton1_Click(object sender, EventArgs e)
+{
+    MessageBox.Show("Botón de la barra");
+}</code></pre>
+                <p>El manejador es igual al de un Button: recibe <code>sender</code> y <code>e</code>.</p>
+
+                <h3>Organización visual</h3>
+                <ul class="tight">
+                    <li><strong>GroupBox:</strong> agrupa controles relacionados con un título. Útil para separar grupos
+                        de RadioButton.</li>
+                    <li><strong>Panel:</strong> contenedor sin título; útil para agrupar y mover bloques de controles.
+                    </li>
+                    <li><strong>TabControl:</strong> pestañas para separar secciones (cada pestaña es un
+                        <code>TabPage</code>).
+                    </li>
+                    <li><strong>StatusStrip:</strong> barra inferior para mensajes de estado (por ejemplo, "Listo" o el
+                        total de registros).</li>
+                </ul>
+
+                <div class="box tip"><strong>Buena práctica:</strong> usa <code>Anchor</code> y <code>Dock</code> para
+                    que los controles se adapten al redimensionar la ventana. <code>Anchor = Top, Left, Right</code>
+                    hace que el control se estire horizontalmente; <code>Dock = Fill</code> ocupa todo el espacio
+                    disponible.</div>
+
+                <h3>Ejemplo de menú completo</h3>
+                <pre><code>private void verListaToolStripMenuItem_Click(object sender, EventArgs e)
+{
+    Form3 f3 = new Form3();
+    f3.Show();
+}
+
+private void acercaDeToolStripMenuItem_Click(object sender, EventArgs e)
+{
+    // \n dentro del string produce un salto de línea
+    MessageBox.Show("Sistema de Estudiantes v1.0\nAutor: Tu Nombre",
+        "Acerca de", MessageBoxButtons.OK, MessageBoxIcon.Information);
+}</code></pre>
+            </section>
+
+            <!-- ================= CLASE 9 ================= -->
+            <section class="clase" id="c9">
+                <h2>Clase 9 — CRUD en memoria</h2>
+
+                <h3>¿Qué es CRUD?</h3>
+                <p>Create (crear), Read (leer/listar), Update (actualizar/editar), Delete (eliminar). Es la base de
+                    cualquier sistema de gestión.</p>
+
+                <h3>Modelo de datos</h3>
+                <pre><code>public class Libro
+{
+    // Propiedades autoimplementadas
+    public string Titulo { get; set; }
+    public string Autor { get; set; }
+    public int Anio { get; set; }
+
+    // ToString se llama automáticamente al mostrar el objeto en un ListBox
+    public override string ToString()
+    {
+        return Titulo + " — " + Autor + " (" + Anio + ")";
+    }
+}
+
+public static class Datos
+{
+    // Lista compartida por todos los formularios.
+    // static: una sola copia para toda la aplicación (ver Fundamentos).
+    public static List&lt;Libro&gt; Libros = new List&lt;Libro&gt;();
+}</code></pre>
+
+                <h3>Crear (C)</h3>
+                <pre><code>private void btnAgregar_Click(object sender, EventArgs e)
+{
+    // Validar vacío
+    if (string.IsNullOrEmpty(txtTitulo.Text))
+    { MessageBox.Show("Título obligatorio"); return; }
+
+    // Validar año: vacío + número con TryParse
+    if (string.IsNullOrEmpty(txtAnio.Text))
+    { MessageBox.Show("El año es obligatorio"); return; }
+
+    int anio;
+    if (!int.TryParse(txtAnio.Text, out anio))
+    { MessageBox.Show("Año inválido"); return; }
+
+    // Crear objeto con inicializador
+    Libro nuevo = new Libro
+    {
+        Titulo = txtTitulo.Text,
+        Autor = txtAutor.Text,
+        Anio = anio
+    };
+
+    Datos.Libros.Add(nuevo); // agregar a la lista compartida
+    CargarLista();           // refrescar el ListBox
+    LimpiarCampos();         // limpiar los TextBox
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li>El <strong>inicializador de objeto</strong> <code>new Libro { ... }</code> crea el objeto y
+                        asigna sus propiedades en una sola expresión.</li>
+                    <li><code>Datos.Libros.Add(nuevo)</code> agrega el objeto al final de la lista compartida (porque
+                        <code>Libros</code> es <code>static</code>).
+                    </li>
+                    <li><code>CargarLista()</code> y <code>LimpiarCampos()</code> son métodos auxiliares que veremos
+                        abajo.</li>
+                    <li>Si prefieres usar <code>Parse</code> en lugar de <code>TryParse</code>, envuélvelo en
+                        <code>try/catch (FormatException)</code> y valida el vacío antes.
+                    </li>
+                </ul>
+
+                <h3>Leer / listar (R)</h3>
+                <pre><code>private void CargarLista()
+{
+    lstLibros.Items.Clear();           // borra lo que había
+    foreach (Libro l in Datos.Libros)  // recorre la lista
+    {
+        lstLibros.Items.Add(l);        // agrega cada objeto al ListBox
+    }
+}
+
+private void Form1_Load(object sender, EventArgs e)
+{
+    CargarLista(); // carga al abrir el formulario
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>Items.Clear()</code> vacía el ListBox para no duplicar elementos al recargar.</li>
+                    <li><code>foreach (Libro l in Datos.Libros)</code> recorre cada elemento de la lista. <code>l</code>
+                        es de tipo <code>Libro</code>.</li>
+                    <li><code>Items.Add(l)</code> agrega el objeto. El ListBox llama automáticamente a
+                        <code>ToString()</code> para mostrarlo.
+                    </li>
+                </ul>
+
+                <h3>Actualizar (U)</h3>
+                <pre><code>private void btnEditar_Click(object sender, EventArgs e)
+{
+    if (lstLibros.SelectedIndex == -1)
+    { MessageBox.Show("Seleccione un libro"); return; }
+
+    // Validar el año antes de convertir
+    if (string.IsNullOrEmpty(txtAnio.Text))
+    { MessageBox.Show("El año es obligatorio"); return; }
+
+    int anio;
+    if (!int.TryParse(txtAnio.Text, out anio))
+    { MessageBox.Show("Año inválido"); return; }
+
+    // Convertir SelectedItem (object) a Libro
+    Libro seleccionado = (Libro)lstLibros.SelectedItem;
+    seleccionado.Titulo = txtTitulo.Text;
+    seleccionado.Autor = txtAutor.Text;
+    seleccionado.Anio = anio;
+
+    CargarLista(); // refrescar para ver los cambios
+}
+
+// Al seleccionar en la lista, cargar los datos en los TextBox
+private void lstLibros_SelectedIndexChanged(object sender, EventArgs e)
+{
+    if (lstLibros.SelectedIndex == -1) return;
+    Libro l = (Libro)lstLibros.SelectedItem;
+    txtTitulo.Text = l.Titulo;
+    txtAutor.Text = l.Autor;
+    txtAnio.Text = l.Anio.ToString(); // ToString convierte int a string
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>(Libro)lstLibros.SelectedItem</code>: conversión explícita (<em>cast</em>) de
+                        <code>object</code> a <code>Libro</code>. Necesaria porque <code>SelectedItem</code> devuelve
+                        <code>object</code>.
+                    </li>
+                    <li><code>l.Anio.ToString()</code>: convierte un entero a texto para asignarlo a
+                        <code>txtAnio.Text</code>.
+                    </li>
+                    <li>Al modificar las propiedades del objeto seleccionado, cambias el objeto real de la lista (no una
+                        copia), porque los objetos son referencias.</li>
+                </ul>
+
+                <h3>Eliminar (D)</h3>
+                <pre><code>private void btnEliminar_Click(object sender, EventArgs e)
+{
+    if (lstLibros.SelectedIndex == -1)
+    { MessageBox.Show("Seleccione un libro"); return; }
+
+    DialogResult r = MessageBox.Show(
+        "¿Eliminar este libro?", "Confirmar",
+        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+    if (r == DialogResult.Yes)
+    {
+        Datos.Libros.RemoveAt(lstLibros.SelectedIndex);
+        CargarLista();
+    }
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>RemoveAt(indice)</code>: elimina el elemento en esa posición. El índice del ListBox
+                        coincide con el de la lista porque ambos se cargan en el mismo orden.</li>
+                    <li>Se pide confirmación con <code>MessageBox</code> antes de eliminar para evitar borrados
+                        accidentales.</li>
+                </ul>
+
+                <h3>Método auxiliar LimpiarCampos</h3>
+                <pre><code>private void LimpiarCampos()
+{
+    txtTitulo.Clear();
+    txtAutor.Clear();
+    txtAnio.Clear();
+    txtTitulo.Focus(); // deja el cursor listo para el siguiente registro
+}</code></pre>
+
+                <div class="box tip"><strong>Patrón útil:</strong> centraliza la recarga de la lista en un método
+                    <code>CargarLista()</code> y llámalo después de cada operación CRUD. Así evitas repetir código y
+                    errores.
+                </div>
+
+                <div class="box warn"><strong>Cuidado:</strong> cuando uses objetos en un ListBox, recuerda hacer el
+                    <em>cast</em>: <code>(Libro)lstLibros.SelectedItem</code>. Si guardaste solo strings, no es
+                    necesario.
+                </div>
+            </section>
+
+            <!-- ================= CLASE 10 ================= -->
+            <section class="clase" id="c10">
+                <h2>Clase 10 — Proyecto integrador</h2>
+
+                <h3>Qué se espera</h3>
+                <p>Una aplicación de escritorio con al menos 2 formularios, CRUD completo en memoria, 5 o más tipos de
+                    controles, validación, menú o barra de herramientas, manejo de errores y código legible.</p>
+
+                <h3>Estructura recomendada del proyecto</h3>
+                <pre><code>MiProyecto/
+├─ Program.cs          // punto de entrada (lo genera VS): Application.Run(new Form1())
+├─ FormMenu.cs         // formulario principal con MenuStrip
+├─ FormRegistro.cs     // alta y edición
+├─ FormLista.cs        // listado
+├─ Entidad.cs          // clase del modelo (Libro, Producto...)
+└─ Datos.cs            // lista estática compartida</code></pre>
+
+                <h3>Checklist antes de entregar</h3>
+                <ul class="tight">
+                    <li>El proyecto compila sin errores.</li>
+                    <li>Se puede navegar entre todos los formularios.</li>
+                    <li>Agregar, listar, editar y eliminar funcionan.</li>
+                    <li>Los campos obligatorios se validan con MessageBox.</li>
+                    <li>Se usan al menos 5 tipos de controles.</li>
+                    <li>El código tiene nombres claros (<code>btnAgregar</code>, no <code>button1</code>).</li>
+                    <li>Los métodos están comentados brevemente.</li>
+                    <li>Se muestra el código único asignado en el título del formulario principal.</li>
+                </ul>
+
+                <h3>Manejo de errores básico con try/catch</h3>
+                <pre><code>private void btnConvertir_Click(object sender, EventArgs e)
+{
+    try
+    {
+        // Código que puede fallar
+        int n = int.Parse(txtNumero.Text);
+        lblResultado.Text = "Doble: " + (n * 2);
+    }
+    catch (FormatException)
+    {
+        // Se ejecuta si Parse no pudo convertir (texto no numérico)
+        MessageBox.Show("Debe escribir un número válido");
+    }
+    catch (Exception ex)
+    {
+        // Se ejecuta ante cualquier otra excepción.
+        // ex.Message contiene la descripción del error.
+        MessageBox.Show("Error inesperado: " + ex.Message);
+    }
+    finally
+    {
+        // (Opcional) Se ejecuta siempre, haya error o no
+        // Ideal para liberar recursos
+    }
+}</code></pre>
+                <p>Explicación:</p>
+                <ul class="tight">
+                    <li><code>try</code>: bloque con el código que puede lanzar una excepción.</li>
+                    <li><code>catch (TipoException)</code>: bloque que se ejecuta si ocurre ese tipo de excepción. Se
+                        pueden poner varios <code>catch</code>, del más específico al más general.</li>
+                    <li><code>FormatException</code>: se lanza cuando <code>Parse</code> recibe texto que no es un
+                        número.</li>
+                    <li><code>Exception ex</code>: captura cualquier excepción. <code>ex.Message</code> es la
+                        descripción; <code>ex.StackTrace</code> muestra dónde ocurrió.</li>
+                    <li><code>finally</code>: se ejecuta siempre, haya o no error. Útil para cerrar archivos o
+                        conexiones.</li>
+                </ul>
+
+                <div class="box tip"><strong>Para la defensa oral:</strong> ten claro por qué elegiste cada control,
+                    dónde guardas los datos, cómo eliminas un registro y dónde usaste validación. Esas son las preguntas
+                    típicas.</div>
+            </section>
+
+            <!-- ================= EVALUACIONES ================= -->
+            <section class="clase" id="e1">
+                <h2>Evaluación 1 — Registro rápido (15%)</h2>
+                <p><strong>Qué se evalúa:</strong> controles básicos, propiedades y eventos. Formulario con dos TextBox,
+                    un Button y un MessageBox. Validar campos vacíos.</p>
+                <h3>Cómo prepararse</h3>
+                <ul class="tight">
+                    <li>Repasa la Clase 2 (Label, TextBox, Button, MessageBox).</li>
+                    <li>Practica leer <code>txt.Text</code> y escribir en <code>lbl.Text</code>.</li>
+                    <li>Practica validar vacío con <code>string.IsNullOrEmpty</code>.</li>
+                    <li>Practica convertir números con <code>int.TryParse</code> (variante A).</li>
+                    <li>Usa los nombres de controles indicados en tu variante.</li>
+                    <li>Muestra en pantalla tu código único asignado.</li>
+                </ul>
+                <div class="box tip">El mensaje debe incluir el dato obligatorio de tu variante (ej. RX-104). Si no
+                    aparece, no se califica.</div>
+            </section>
+
+            <section class="clase" id="e2">
+                <h2>Evaluación 2 — Inscripción (20%)</h2>
+                <p><strong>Qué se evalúa:</strong> ComboBox, RadioButton, CheckBox y validación completa.</p>
+                <h3>Cómo prepararse</h3>
+                <ul class="tight">
+                    <li>Repasa la Clase 5 (selección) y la Clase 4 (validación).</li>
+                    <li>Practica llenar un ComboBox por código en <code>Form_Load</code>.</li>
+                    <li>Practica leer <code>SelectedIndex</code> y <code>SelectedItem</code>.</li>
+                    <li>Practica agrupar RadioButton en un GroupBox.</li>
+                    <li>Valida que se haya seleccionado algo antes de continuar.</li>
+                    <li>Muestra el resumen en un Label o MessageBox según tu variante.</li>
+                </ul>
+                <div class="box warn">No olvides validar que el ComboBox no esté en <code>SelectedIndex == -1</code>.
+                </div>
+            </section>
+
+            <section class="clase" id="e3">
+                <h2>Evaluación 3 — Gestor con navegación (25%)</h2>
+                <p><strong>Qué se evalúa:</strong> navegación entre formularios, MenuStrip, ListBox/ListView y listas en
+                    memoria.</p>
+                <h3>Cómo prepararse</h3>
+                <ul class="tight">
+                    <li>Repasa las Clases 6, 7 y 8.</li>
+                    <li>Practica abrir un formulario con <code>new Form2().Show()</code>.</li>
+                    <li>Practica una clase estática <code>Datos</code> con una <code>List&lt;T&gt;</code>.</li>
+                    <li>Practica agregar elementos a un ListBox desde esa lista.</li>
+                    <li>Practica MenuStrip con opciones Archivo/Salir y de tu entidad.</li>
+                    <li>Valida los campos antes de agregar.</li>
+                </ul>
+                <div class="box tip">Separa la lógica en un método <code>CargarLista()</code> que recorra la lista y
+                    llene el ListBox. Llámalo al cargar el formulario y después de agregar.</div>
+            </section>
+
+            <section class="clase" id="e4">
+                <h2>Evaluación 4 — Proyecto integrador (40%)</h2>
+                <p><strong>Qué se evalúa:</strong> integración de todo con CRUD completo en memoria, 5+ controles,
+                    validación, menú, manejo de errores y presentación oral.</p>
+                <h3>Cómo prepararse</h3>
+                <ul class="tight">
+                    <li>Repasa todas las clases, en especial 9 (CRUD) y 10 (integración).</li>
+                    <li>Define tu entidad según tu variante (Libro, Medicamento, Película o Vehículo).</li>
+                    <li>Crea la clase de la entidad con propiedades y <code>ToString()</code>.</li>
+                    <li>Crea la clase estática <code>Datos</code> con la lista.</li>
+                    <li>Implementa agregar, listar, editar y eliminar.</li>
+                    <li>Agrega validación y al menos un <code>try/catch</code>.</li>
+                    <li>Incluye un MenuStrip o ToolStrip.</li>
+                    <li>Muestra tu código único en el título del formulario principal.</li>
+                    <li>Prepara una explicación de 5–8 minutos.</li>
+                </ul>
+                <div class="box warn">En la defensa oral se te preguntará cómo eliminas un registro, dónde usaste
+                    try/catch y qué control usaste para un campo específico. Si no puedes explicar tu propio código, la
+                    nota se anula.</div>
+            </section>
+
+            <!-- ================= EXTRAS ================= -->
+            <section class="clase" id="errores">
+                <h2>Errores comunes y cómo resolverlos</h2>
+                <table>
+                    <tr>
+                        <th>Error</th>
+                        <th>Causa probable</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td>"No se ha declarado el nombre..."</td>
+                        <td>Control renombrado en el diseñador pero el código usa el nombre viejo</td>
+                        <td>Verifica el <code>Name</code> del control en Propiedades y actualiza el código</td>
+                    </tr>
+                    <tr>
+                        <td>NullReferenceException</td>
+                        <td>Usar un control u objeto que no fue inicializado (está en <code>null</code>)</td>
+                        <td>Revisa que el control exista y que la lista no sea null</td>
+                    </tr>
+                    <tr>
+                        <td>FormatException</td>
+                        <td>Convertir texto vacío o no numérico con <code>Parse</code></td>
+                        <td>Valida el vacío antes y usa <code>TryParse</code> o <code>try/catch</code></td>
+                    </tr>
+                    <tr>
+                        <td>Bucle infinito en TextChanged</td>
+                        <td>Modificas el mismo TextBox dentro de su propio evento</td>
+                        <td>Modifica otro control o usa una bandera</td>
+                    </tr>
+                    <tr>
+                        <td>Se pierden los datos al volver al menú</td>
+                        <td>Creaste una nueva instancia del formulario con <code>new Form1()</code></td>
+                        <td>Usa una clase estática <code>Datos</code> o <code>Show/Hide</code></td>
+                    </tr>
+                    <tr>
+                        <td>Los RadioButton se desmarcan entre sí</td>
+                        <td>Están en el mismo contenedor (Form, Panel)</td>
+                        <td>Colócalos en GroupBox distintos</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidOperationException al modificar la lista mientras la recorres</td>
+                        <td>Eliminas dentro de un <code>foreach</code></td>
+                        <td>Usa un <code>for</code> inverso o recarga la lista después</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidCastException</td>
+                        <td>Haces un cast a un tipo incorrecto (ej. <code>(Libro)lst.SelectedItem</code> cuando
+                            guardaste strings)</td>
+                        <td>Verifica qué tipo de objeto guardaste en la colección</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section class="clase" id="atajos">
+                <h2>Atajos útiles de Visual Studio 2012</h2>
+                <table>
+                    <tr>
+                        <th>Atajo</th>
+                        <th>Acción</th>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">F5</span></td>
+                        <td>Depurar (ejecutar con depurador)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">Ctrl+F5</span></td>
+                        <td>Ejecutar sin depurar</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">F4</span></td>
+                        <td>Abrir ventana Propiedades</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">F7</span></td>
+                        <td>Ir al código del formulario</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">Shift+F7</span></td>
+                        <td>Ir al diseñador del formulario</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">Ctrl+Alt+X</span></td>
+                        <td>Abrir Cuadro de herramientas</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">Ctrl+K, Ctrl+D</span></td>
+                        <td>Formatear el código</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">F9</span></td>
+                        <td>Poner/quitar punto de interrupción</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">F10</span></td>
+                        <td>Paso a paso por encima (no entra en métodos)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="kbd">F11</span></td>
+                        <td>Paso a paso hacia dentro (entra en métodos)</td>
+                    </tr>
+                </table>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        Fuente de estudio — Windows Forms C# 5 · Visual Studio 2012 · Uso educativo · Profesor: Ing.Robyir Loreto
+    </footer>
+
+</body>
+
+</html>
