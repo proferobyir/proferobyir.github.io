@@ -1,10 +1,8 @@
 let editor;
 
-// Configuración de Monaco Editor
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min' } });
 
 require(['vs/editor/editor.main'], function () {
-    // Código inicial estructurado bajo estándares de C# 5 / VS 2012
     const codigoInicial =
         `using System;
 using System.Collections.Generic;
@@ -18,17 +16,14 @@ namespace InstitutoIutepi
         {
             Console.WriteLine("=== Simulador C# 5.0 - Visual Studio 2012 ===");
             
-            // Ejemplo de Colecciones C# 5
             List<string> materias = new List<string> { "Programación I", "Bases de Datos", "Redes I" };
             
-            // Consulta LINQ
             var consulta = from m in materias
                            where m.Contains("Programación")
                            select m;
 
             foreach (var item in consulta)
             {
-                // En C# 5 usamos String.Format o concatenación tradicional
                 Console.WriteLine(String.Format("Materia encontrada: {0}", item));
             }
 
@@ -43,11 +38,18 @@ namespace InstitutoIutepi
         theme: 'vs-dark',
         automaticLayout: true,
         fontSize: 14,
+        readOnly: false,
+        domReadOnly: false,
         minimap: { enabled: false }
     });
+
+    // Fuerza a Monaco a recalcular su tamaño al cargar
+    setTimeout(() => {
+        editor.layout();
+    }, 300);
 });
 
-// Evento para compilar y ejecutar forzando C# 5
+// Evento para compilar
 document.getElementById('run-btn').addEventListener('click', async () => {
     const outputConsole = document.getElementById('console-output');
     outputConsole.textContent = "Compilando con mcs (C# 5.0 / .NET 4.5)... por favor espere...";
@@ -69,7 +71,6 @@ document.getElementById('run-btn').addEventListener('click', async () => {
                         content: codigoUsuario
                     }
                 ],
-                // Forzamos al compilador a estricto C# 5
                 compiler_options: "-langversion:5"
             })
         });
