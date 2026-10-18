@@ -303,14 +303,39 @@
     }
 }</code></pre>
 
-            <p>Como complemento, un ejemplo mínimo con variables de tipo <code>String</code> e <code>int</code> para
-                reforzar la lectura de datos por consola:</p>
+            <p>Existen varias maneras de mostrar el contenido de una variable por consola. A continuación se comparan
+                las más usadas en Java moderno:</p>
 
             <pre><code><span class="kw">String</span> nombre = <span class="str">"María"</span>;
 <span class="kw">int</span> edad = <span class="num">25</span>;
+<span class="kw">double</span> promedio = <span class="num">18.75</span>;
 
+<span class="cmt">// 1. Concatenación con + (la más básica)</span>
 System.out.println(<span class="str">"Nombre: "</span> + nombre);
-System.out.println(<span class="str">"Edad: "</span> + edad);</code></pre>
+System.out.println(<span class="str">"Edad: "</span> + edad);
+
+<span class="cmt">// 2. printf con especificadores de formato (%s, %d, %.2f, %n)</span>
+System.out.printf(<span class="str">"Nombre: %s | Edad: %d | Promedio: %.2f%n"</span>, nombre, edad, promedio);
+
+<span class="cmt">// 3. String.format (construye el texto y lo imprime)</span>
+System.out.println(String.format(<span class="str">"Edad: %d años"</span>, edad));
+
+<span class="cmt">// 4. Interpolación con formatted() (Java 15+)</span>
+System.out.println(<span class="str">"Nombre: %s"</span>.formatted(nombre));
+
+<span class="cmt">// 5. Text Block + formatted() para salidas multilínea (Java 15+)</span>
+System.out.println(<span class="str">"""
+        Estudiante: %s
+        Edad: %d
+        Promedio: %.2f
+        """</span>.formatted(nombre, edad, promedio));</code></pre>
+
+            <div class="pedagogical-note">
+                <strong>Nota para el estudiante:</strong> <code>%s</code> se usa para cadenas, <code>%d</code> para
+                enteros, <code>%.2f</code> para decimales con dos cifras y <code>%n</code> para salto de línea. La
+                interpolación con <code>formatted()</code> y los <em>Text Blocks</em> (<code>"""</code>) son
+                características de Java 15 en adelante, totalmente compatibles con Java 21.
+            </div>
         </article>
     </section>
 
@@ -429,6 +454,51 @@ System.out.println(<span class="str">"Edad: "</span> + edad);</code></pre>
     <!-- UNIDAD IV -->
     <section id="u4" class="unit">
         <h2>Unidad IV: Conexión a Bases de Datos (JDBC) y Frameworks (Spring Boot)</h2>
+
+        <article class="topic">
+            <h3>4.0. Requisito previo: Obtención de dependencias en entornos con proxy</h3>
+            <p>Las anotaciones como <code>@RestController</code> o <code>@GetMapping</code> no se descargan
+                individualmente; forman parte del artefacto <code>spring-boot-starter-web</code>, que Maven o Gradle
+                deben resolver desde un repositorio remoto. En redes corporativas con proxy restrictivo, es necesario
+                configurar el acceso para que la descarga no falle.</p>
+
+            <div class="pedagogical-note">
+                <strong>Estrategia Docente:</strong> Indicar al estudiante que consulte con el administrador de red los
+                datos exactos del proxy (host, puerto, credenciales) antes de modificar los archivos de configuración.
+                Un error en estos datos provoca fallos silenciosos de conexión.
+            </div>
+
+            <p><strong>Para Maven:</strong> Editar o crear el archivo <code>~/.m2/settings.xml</code> (en Windows:
+                <code>C:\Users\TuUsuario\.m2\settings.xml</code>) y agregar el bloque de proxy:</p>
+
+            <pre><code><span class="kw">&lt;settings&gt;</span>
+  <span class="kw">&lt;proxies&gt;</span>
+    <span class="kw">&lt;proxy&gt;</span>
+      <span class="kw">&lt;id&gt;</span>proxy-corporativo<span class="kw">&lt;/id&gt;</span>
+      <span class="kw">&lt;active&gt;</span>true<span class="kw">&lt;/active&gt;</span>
+      <span class="kw">&lt;protocol&gt;</span>http<span class="kw">&lt;/protocol&gt;</span>
+      <span class="kw">&lt;host&gt;</span>proxy.tu-empresa.com<span class="kw">&lt;/host&gt;</span>
+      <span class="kw">&lt;port&gt;</span>8080<span class="kw">&lt;/port&gt;</span>
+      <span class="kw">&lt;username&gt;</span>tu-usuario<span class="kw">&lt;/username&gt;</span>
+      <span class="kw">&lt;password&gt;</span>tu-contraseña<span class="kw">&lt;/password&gt;</span>
+      <span class="kw">&lt;nonProxyHosts&gt;</span>localhost|127.0.0.1<span class="kw">&lt;/nonProxyHosts&gt;</span>
+    <span class="kw">&lt;/proxy&gt;</span>
+  <span class="kw">&lt;/proxies&gt;</span>
+<span class="kw">&lt;/settings&gt;</span></code></pre>
+
+            <p><strong>Para Gradle:</strong> Agregar las propiedades del sistema en el archivo
+                <code>gradle.properties</code>:</p>
+
+            <pre><code>systemProp.http.proxyHost=proxy.tu-empresa.com
+systemProp.http.proxyPort=8080
+systemProp.http.proxyUser=tu-usuario
+systemProp.http.proxyPassword=tu-contraseña
+
+systemProp.https.proxyHost=proxy.tu-empresa.com
+systemProp.https.proxyPort=8080
+systemProp.https.proxyUser=tu-usuario
+systemProp.https.proxyPassword=tu-contraseña</code></pre>
+        </article>
 
         <article class="topic">
             <h3>4.1. Conexión Básica mediante JDBC y PreparedStatement</h3>
