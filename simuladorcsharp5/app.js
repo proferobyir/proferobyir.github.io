@@ -32,6 +32,7 @@ namespace InstitutoIutepi
     }
 }`;
 
+    // Inicialización de Monaco Editor
     editor = monaco.editor.create(document.getElementById('editor-container'), {
         value: codigoInicial,
         language: 'csharp',
@@ -43,13 +44,22 @@ namespace InstitutoIutepi
         minimap: { enabled: false }
     });
 
-    // Fuerza a Monaco a recalcular su tamaño al cargar
+    // Fuerza el cálculo de dimensiones al cargar la página
     setTimeout(() => {
-        editor.layout();
+        if (editor) {
+            editor.layout();
+        }
     }, 300);
 });
 
-// Evento para compilar
+// Evento de redimensionamiento de ventana (útil para teléfonos y cambio de orientación)
+window.addEventListener('resize', () => {
+    if (editor) {
+        editor.layout();
+    }
+});
+
+// Evento para compilar y ejecutar código
 document.getElementById('run-btn').addEventListener('click', async () => {
     const outputConsole = document.getElementById('console-output');
     outputConsole.textContent = "Compilando con mcs (C# 5.0 / .NET 4.5)... por favor espere...";
