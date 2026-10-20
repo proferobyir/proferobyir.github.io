@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Práctica: HashMap y Scanner en Java (Para estudiantes de C#)</title>
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS RESET & VARIABLES - MOBILE FIRST BASE */
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #eff6ff;
+            --accent-csharp: #9333ea;
+            --accent-java: #f97316;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #0f172a;
+            --code-text: #f8fafc;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 1rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* CONTAINER & LAYOUT */
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* HEADER SECTION */
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 2rem 1.25rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .badge-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            padding: 0.35rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .badge-container i {
+            color: #60a5fa;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* CARDS GENERAL */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+        }
+
+        /* C# BRIDGING BANNER */
+        .csharp-bridge {
+            background: linear-gradient(100deg, #f3e8ff 0%, #eff6ff 100%);
+            border: 1px solid #d8b4fe;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .csharp-bridge-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: #6b21a8;
+            font-size: 1rem;
+        }
+
+        .csharp-bridge p {
+            font-size: 0.9rem;
+            color: #4c1d95;
+            line-height: 1.5;
+        }
+
+        /* COMPARISON TABLE (RESPONSIVE) */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+            min-width: 480px;
+            /* Previene compresión destructiva en móviles */
+        }
+
+        th {
+            background-color: #f1f5f9;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            ;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tag-csharp {
+            color: var(--accent-csharp);
+            background: #faf5ff;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            border: 1px solid #f3e8ff;
+        }
+
+        .tag-java {
+            color: var(--accent-java);
+            background: #fff7ed;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            border: 1px solid #ffedd5;
+        }
+
+        /* CODE BLOCK SECTION */
+        .code-container {
+            position: relative;
+            background-color: var(--code-bg);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-top: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #e2e8f0;
+            padding: 0.35rem 0.7rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .copy-btn.copied {
+            background: #16a34a;
+            color: white;
+        }
+
+        pre {
+            padding: 1.25rem 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.825rem;
+            color: var(--code-text);
+            line-height: 1.6;
+        }
+
+        /* CODE HIGHLIGHTING SIMULATION */
+        .kw {
+            color: #f472b6;
+            font-weight: 500;
+        }
+
+        /* KeyWords */
+        .cls {
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        /* Classes */
+        .str {
+            color: #4ade80;
+        }
+
+        /* Strings */
+        .com {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Comments */
+        .num {
+            color: #fbbf24;
+        }
+
+        /* Numbers */
+        .fn {
+            color: #a78bfa;
+        }
+
+        /* Functions */
+
+        /* STEPS LIST */
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 700;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.95rem;
+            border: 2px solid #dbeafe;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+
+        .step-content p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.825rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        /* DESKTOP & TABLET RESPONSIVE SCALING (@media min-width) */
+        @media (min-width: 640px) {
+            body {
+                padding: 2rem;
+            }
+
+            .wrapper {
+                gap: 2rem;
+            }
+
+            header {
+                padding: 3rem 2rem;
+            }
+
+            header h1 {
+                font-size: 2.1rem;
+            }
+
+            header p {
+                font-size: 1.05rem;
+            }
+
+            .card {
+                padding: 2rem;
+            }
+
+            .card-title {
+                font-size: 1.35rem;
+            }
+
+            .csharp-bridge {
+                padding: 1.5rem;
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .csharp-bridge-header {
+                font-size: 1.1rem;
+                min-width: 200px;
+            }
+
+            table {
+                font-size: 0.925rem;
+            }
+
+            pre {
+                font-size: 0.9rem;
+                padding: 1.5rem;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.05rem;
+            }
+
+            .step-content h3 {
+                font-size: 1.1rem;
+            }
+
+            .step-content p {
+                font-size: 0.925rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <!-- HEADER SECTION -->
+        <header>
+            <div class="badge-container">
+                <i class="fa-brands fa-java"></i>
+                <span>Java + C# Bridge Series</span>
+            </div>
+            <h1>Map y Scanner en Java Moderno</h1>
+            <p>Guía rápida para desarrolladores y estudiantes con experiencia previa en C#</p>
+        </header>
+
+        <!-- C# COMPARISON BANNER -->
+        <div class="csharp-bridge">
+            <div class="csharp-bridge-header">
+                <i class="fa-solid fa-code-compare"></i>
+                <span>De C# a Java:</span>
+            </div>
+            <p>
+                En Java no instanciamos <code>Dictionary</code> como en C#. En su lugar, usamos la interfaz
+                <strong><code>Map&lt;K,V&gt;</code></strong> implementada habitualmente con la clase
+                <strong><code>HashMap&lt;&gt;</code></strong>.
+            </p>
+        </div>
+
+        <!-- MAIN EXPLANATION CARD -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>¿Por qué NO usar Dictionary en Java?</span>
+            </div>
+            <p style="font-size: 0.925rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Aunque en C# <code>Dictionary&lt;TKey, TValue&gt;</code> es el estándar diario, en Java la clase
+                <code>Dictionary</code> es <strong>obsoleta (Java 1.0)</strong> y abstracta.
+            </p>
+
+            <!-- EQUIVALENCE TABLE -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>En C#</th>
+                            <th>En Java Moderno</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Estructura de Datos</td>
+                            <td><span class="tag-csharp">Dictionary&lt;K, V&gt;</span></td>
+                            <td><span class="tag-java">Map&lt;K, V&gt; = new HashMap&lt;&gt;();</span></td>
+                        </tr>
+                        <tr>
+                            <td>Agregar Elemento</td>
+                            <td><span class="tag-csharp">dic.Add(clave, valor);</span></td>
+                            <td><span class="tag-java">map.put(clave, valor);</span></td>
+                        </tr>
+                        <tr>
+                            <td>Obtener Elemento</td>
+                            <td><span class="tag-csharp">var u = dic[clave];</span></td>
+                            <td><span class="tag-java">Usuario u = map.get(clave);</span></td>
+                        </tr>
+                        <tr>
+                            <td>Lectura Consola</td>
+                            <td><span class="tag-csharp">Console.ReadLine();</span></td>
+                            <td><span class="tag-java">scanner.nextLine();</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CODE EXAMPLE SECTION -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fa-solid fa-code"></i>
+                <span>Código Completo Corregido</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+                A continuación tienes la forma estándar y limpia para estructurar un <code>Map</code> y leer desde la
+                consola en Java:
+            </p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Main.java</span>
+                    <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+                        <i class="fa-regular fa-copy"></i>
+                        <span id="copyText">Copiar</span>
+                    </button>
+                </div>
+                <pre><code id="javaCode"><span class="kw">import</span> java.util.<span class="cls">HashMap</span>;
+<span class="kw">import</span> java.util.<span class="cls">Map</span>;
+<span class="kw">import</span> java.util.<span class="cls">Scanner</span>;
+
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cls">String</span>[] args) {
+        <span class="com">// 1. Declarar e inicializar el Map (Equivalente al Dictionary de C#)</span>
+        <span class="cls">Map</span>&lt;<span class="cls">String</span>, <span class="cls">Usuario</span>&gt; dicUsers = <span class="kw">new</span> <span class="cls">HashMap</span>&lt;&gt;();
+
+        <span class="com">// 2. Instanciar objetos</span>
+        <span class="cls">Usuario</span> u = <span class="kw">new</span> <span class="cls">Usuario</span>(<span class="str">"Robyir Loreto"</span>, <span class="str">"15248304"</span>, <span class="num">45</span>);
+        <span class="cls">Usuario</span> u1 = <span class="kw">new</span> <span class="cls">Usuario</span>(<span class="str">"Wladimir Loreto"</span>, <span class="str">"36011671"</span>, <span class="num">13</span>);
+
+        <span class="com">// 3. Insertar datos con .put() (Similar a .Add() en C#)</span>
+        dicUsers.<span class="fn">put</span>(<span class="str">"15248304"</span>, u);
+        dicUsers.<span class="fn">put</span>(<span class="str">"36011671"</span>, u1);
+
+        <span class="com">// 4. Preparar lectura por consola (Similar a Console.ReadLine())</span>
+        <span class="cls">Scanner</span> scanner = <span class="kw">new</span> <span class="cls">Scanner</span>(<span class="cls">System</span>.in);
+
+        <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Ingrese la cédula a buscar:"</span>);
+        <span class="cls">String</span> code = scanner.<span class="fn">nextLine</span>();
+
+        <span class="com">// 5. Buscar valor mediante .get() (Similar a dic[key])</span>
+        <span class="cls">Usuario</span> estudiante = dicUsers.<span class="fn">get</span>(code);
+
+        <span class="com">// 6. Validar resultado</span>
+        <span class="kw">if</span> (estudiante != <span class="kw">null</span>) {
+            <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"¡Estudiante encontrado!: "</span> + estudiante);
+        } <span class="kw">else</span> {
+            <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"No existe estudiante registrado con la cédula: "</span> + code);
+        }
+
+        scanner.<span class="fn">close</span>();
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- STEP BY STEP EXPLANATION -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Paso a Paso Explicado</span>
+            </div>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Uso de la Interfaz Map y Diamante</h3>
+                        <p>
+                            Se recomienda tipar la variable como la interfaz <code>Map&lt;K,V&gt;</code> y crear la
+                            instancia con <code>HashMap&lt;&gt;</code>. El operador diamante <code>&lt;&gt;</code> evita
+                            repetir tipos en el constructor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Inserción con el método .put()</h3>
+                        <p>
+                            En lugar de usar <code>.Add()</code>, Java utiliza <code>.put(clave, valor)</code>. Si la
+                            clave ya existía en el mapa, el valor anterior será reemplazado automáticamente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Lectura con Scanner (Evita System.in.read)</h3>
+                        <p>
+                            <code>System.in.read()</code> solo lee un solo byte ASCII. Para leer líneas completas de
+                            texto ingresadas por el usuario, utilizamos la clase <code>Scanner</code> y su método
+                            <code>scanner.nextLine()</code>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Búsqueda Directa con .get()</h3>
+                        <p>
+                            En Java no usamos corchetes <code>dic[key]</code> para leer. Usamos
+                            <code>dicUsers.get(code)</code>. Si la clave no está presente en el mapa, nos devolverá un
+                            valor <code>null</code>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>Guía interactiva para estudiantes de programación &bull; Java & C# Equivalences</p>
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT FOR COPY TO CLIPBOARD -->
+    <script>
+        function copyCode() {
+            // Raw text version without HTML tags for clipboard
+            const rawCode = `import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        // 1. Declarar e inicializar el Map (Equivalente al Dictionary de C#)
+        Map<String, Usuario> dicUsers = new HashMap<>();
+
+        // 2. Instanciar objetos
+        Usuario u = new Usuario("Robyir Loreto", "15248304", 45);
+        Usuario u1 = new Usuario("Wladimir Loreto", "36011671", 13);
+
+        // 3. Insertar datos con .put() (Similar a .Add() en C#)
+        dicUsers.put("15248304", u);
+        dicUsers.put("36011671", u1);
+
+        // 4. Preparar lectura por consola (Similar a Console.ReadLine())
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese la cédula a buscar:");
+        String code = scanner.nextLine();
+
+        // 5. Buscar valor mediante .get() (Similar a dic[key])
+        Usuario estudiante = dicUsers.get(code);
+
+        // 6. Validar resultado
+        if (estudiante != null) {
+            System.out.println("¡Estudiante encontrado!: " + estudiante);
+        } else {
+            System.out.println("No existe estudiante registrado con la cédula: " + code);
+        }
+
+        scanner.close();
+    }
+}`;
+
+            // Fallback strategy for iframe compatibility
+            const textarea = document.createElement('textarea');
+            textarea.value = rawCode;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                showCopyFeedback();
+            } catch (err) {
+                console.error('Error al copiar el código:', err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showCopyFeedback() {
+            const btn = document.getElementById('copyBtn');
+            const text = document.getElementById('copyText');
+
+            btn.classList.add('copied');
+            text.textContent = '¡Copiado!';
+
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                text.textContent = 'Copiar';
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>
