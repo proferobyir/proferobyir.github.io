@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="WPF y XAML C# 5 — Fuente de estudio completa | Prof. Ing. Robyir Loreto" />
+    <meta property="og:description"
+        content="Fuente de estudio de WPF y XAML con C# 5 y Visual Studio 2012: contenedores de diseño, Data Binding, MVVM básico, estilos, navegación entre ventanas y conexión con bases de datos MySQL. Incluye modificadores de acceso, LINQ y buenas prácticas." />
+    <meta property="og:image" content="https://proferobyir.github.io/pictures/guiaWPF.jpg" />
+    <meta property="og:url" content="https://proferobyir.github.io" />
+    <title>Curso Interactivo: XAML, WPF y MySQL con C#</title>
+    <style>
+        /* === VARIABLES & RESET === */
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #090d16;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 1.5rem;
+        }
+
+        /* === LAYOUT GRID === */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* === FLEXBOX SIDEBAR === */
+        .sidebar {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: fit-content;
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .sidebar h2 {
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+        }
+
+        /* === MAIN CONTENT AREA === */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .header-card h1 {
+            color: var(--accent-blue);
+            font-size: 1.8rem;
+        }
+
+        /* === DEFINITIONS BOX (FLEX) === */
+        .def-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .def-box {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-purple);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .def-box h3 {
+            color: var(--accent-purple);
+            font-size: 1rem;
+        }
+
+        .def-box p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        /* === LESSON CARDS (GRID & FLEX) === */
+        .lesson-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            scroll-margin-top: 1.5rem;
+        }
+
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .lesson-title {
+            font-size: 1.3rem;
+            color: var(--accent-green);
+        }
+
+        .badge {
+            background-color: rgba(192, 132, 252, 0.15);
+            color: var(--accent-purple);
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* === CODE DISPLAY & DUAL PANELS === */
+        .code-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .code-block {
+            background-color: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
+
+        /* Syntax Highlighting Simulado */
+        .xml-tag {
+            color: #f43f5e;
+        }
+
+        .xml-attr {
+            color: #38bdf8;
+        }
+
+        .xml-str {
+            color: #facc15;
+        }
+
+        .cs-kw {
+            color: #c084fc;
+        }
+
+        .cs-type {
+            color: #4ade80;
+        }
+
+        .cs-cm {
+            color: #64748b;
+        }
+
+        .explanation {
+            background-color: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--accent-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 900px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <!-- SIDEBAR NAVEGACIÓN -->
+        <aside class="sidebar">
+            <h2>Módulos del Curso</h2>
+            <ul class="nav-links">
+                <li><a href="#lec1" class="active">1. Introducción a XAML</a></li>
+                <li><a href="#lec2">2. Contenedores de Layout</a></li>
+                <li><a href="#lec3">3. Data Binding en C#</a></li>
+                <li><a href="#lec4">4. Integración MySQL + WPF</a></li>
+            </ul>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <!-- HEADER CON DEFINICIONES -->
+            <header class="header-card">
+                <h1>Desarrollo de Interfaces XAML / WPF con MySQL</h1>
+                <p>Material de soporte para el laboratorio en Visual Studio 2012 (.NET Framework 4.5).</p>
+
+                <div class="def-container">
+                    <div class="def-box">
+                        <h3>¿Qué es XAML?</h3>
+                        <p><strong>Extensible Application Markup Language:</strong> Lenguaje de marcado basado en XML
+                            para diseñar e inicializar interfaces de usuario de forma declarativa, separando el diseño
+                            estético de la lógica de C#.</p>
+                    </div>
+                    <div class="def-box">
+                        <h3>¿Qué es WPF?</h3>
+                        <p><strong>Windows Presentation Foundation:</strong> Framework gráfico basado en DirectX para
+                            Windows que permite crear interfaces modernas con gráficos vectoriales, soporte XAML y
+                            arquitectura avanzada.</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- LECCIÓN 1 -->
+            <section id="lec1" class="lesson-card">
+                <div class="lesson-header">
+                    <h2 class="lesson-title">Lección 1: Fundamentos de XAML</h2>
+                    <span class="badge">Nivel Principiante</span>
+                </div>
+                <p class="explanation">
+                    XAML define elementos gráficos de forma declarativa mediante XML. Cada etiqueta representa una
+                    instancia de una clase .NET.
+                </p>
+                <div class="code-grid">
+                    <div class="code-block">
+                        <div class="code-header"><span>MainWindow.xaml</span><span>XAML</span></div>
+                        <pre><code>&lt;<span class="xml-tag">Window</span> <span class="xml-attr">x:Class</span>=<span class="xml-str">"AppWpf.MainWindow"</span>
+        <span class="xml-attr">xmlns</span>=<span class="xml-str">"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</span>
+        <span class="xml-attr">xmlns:x</span>=<span class="xml-str">"http://schemas.microsoft.com/winfx/2006/xaml"</span>
+        <span class="xml-attr">Title</span>=<span class="xml-str">"Mi Primera Interfaz"</span> <span class="xml-attr">Height</span>=<span class="xml-str">250</span> <span class="xml-attr">Width</span>=<span class="xml-str">400</span>&gt;
+    &lt;<span class="xml-tag">Grid</span> <span class="xml-attr">Background</span>=<span class="xml-str">"#1E1E1E"</span>&gt;
+        &lt;<span class="xml-tag">Button</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"btnGuardar"</span> 
+                <span class="xml-attr">Content</span>=<span class="xml-str">"Aceptar"</span> 
+                <span class="xml-attr">Width</span>=<span class="xml-str">"120"</span> <span class="xml-attr">Height</span>=<span class="xml-str">"35"</span>
+                <span class="xml-attr">Background</span>=<span class="xml-str">"#007ACC"</span> <span class="xml-attr">Foreground</span>=<span class="xml-str">"White"</span>
+                <span class="xml-attr">Click</span>=<span class="xml-str">"btnGuardar_Click"</span>/&gt;
+    &lt;/<span class="xml-tag">Grid</span>&gt;
+&lt;/<span class="xml-tag">Window</span>&gt;</code></pre>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>MainWindow.xaml.cs</span><span>C# Code-Behind</span></div>
+                        <pre><code><span class="cs-kw">using</span> System.Windows;
+
+<span class="cs-kw">namespace</span> AppWpf
+{
+    <span class="cs-kw">public partial class</span> <span class="cs-type">MainWindow</span> : <span class="cs-type">Window</span>
+    {
+        <span class="cs-kw">public</span> MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        <span class="cs-kw">private void</span> btnGuardar_Click(<span class="cs-type">object</span> sender, <span class="cs-type">RoutedEventArgs</span> e)
+        {
+            <span class="cs-type">MessageBox</span>.Show(<span class="xml-str">"¡Hola desde XAML en WPF!"</span>);
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LECCIÓN 2 -->
+            <section id="lec2" class="lesson-card">
+                <div class="lesson-header">
+                    <h2 class="lesson-title">Lección 2: Contenedores de Layout (Grid y StackPanel)</h2>
+                    <span class="badge">Nivel Intermedio</span>
+                </div>
+                <p class="explanation">
+                    A diferencia de Windows Forms, WPF no usa coordenadas fijas. Se emplean paneles adaptativos como
+                    <code>Grid</code> (filas y columnas) y <code>StackPanel</code> (apilamiento).
+                </p>
+                <div class="code-grid">
+                    <div class="code-block">
+                        <div class="code-header"><span>FormularioLayout.xaml</span><span>XAML Layout</span></div>
+                        <pre><code>&lt;<span class="xml-tag">Grid</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"15"</span>&gt;
+    &lt;<span class="xml-tag">Grid.RowDefinitions</span>&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"*"</span>/&gt;
+    &lt;/<span class="xml-tag">Grid.RowDefinitions</span>&gt;
+
+    &lt;!-- Fila 0: Título --&gt;
+    &lt;<span class="xml-tag">TextBlock</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"0"</span> <span class="xml-attr">Text</span>=<span class="xml-str">"Registro de Usuario"</span> 
+               <span class="xml-attr">FontSize</span>=<span class="xml-str">"18"</span> <span class="xml-attr">FontWeight</span>=<span class="xml-str">"Bold"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>/&gt;
+
+    &lt;!-- Fila 1: Campos apilados --&gt;
+    &lt;<span class="xml-tag">StackPanel</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"1"</span> <span class="xml-attr">Orientation</span>=<span class="xml-str">"Vertical"</span>&gt;
+        &lt;<span class="xml-tag">Label</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Nombre:"</span>/&gt;
+        &lt;<span class="xml-tag">TextBox</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"txtNombre"</span> <span class="xml-attr">Padding</span>=<span class="xml-str">"5"</span>/&gt;
+    &lt;/<span class="xml-tag">StackPanel</span>&gt;
+&lt;/<span class="xml-tag">Grid</span>&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LECCIÓN 3 -->
+            <section id="lec3" class="lesson-card">
+                <div class="lesson-header">
+                    <h2 class="lesson-title">Lección 3: Data Binding (Enlace de Datos)</h2>
+                    <span class="badge">Nivel Avanzado</span>
+                </div>
+                <p class="explanation">
+                    Data Binding conecta la vista XAML con objetos de C# sin manipular directamente los controles por
+                    código imperativo.
+                </p>
+                <div class="code-grid">
+                    <div class="code-block">
+                        <div class="code-header"><span>BindingView.xaml</span><span>XAML</span></div>
+                        <pre><code>&lt;<span class="xml-tag">StackPanel</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"20"</span>&gt;
+    &lt;<span class="xml-tag">TextBox</span> <span class="xml-attr">Text</span>=<span class="xml-str">"{Binding Nombre, UpdateSourceTrigger=PropertyChanged}"</span> 
+             <span class="xml-attr">Padding</span>=<span class="xml-str">"5"</span>/&gt;
+    
+    &lt;<span class="xml-tag">TextBlock</span> <span class="xml-attr">Text</span>=<span class="xml-str">"{Binding Nombre, StringFormat='Texto escrito: {0}'}"</span> 
+               <span class="xml-attr">Margin</span>=<span class="xml-str">"0,10,0,0"</span> <span class="xml-attr">Foreground</span>=<span class="xml-str">"LightGreen"</span>/&gt;
+&lt;/<span class="xml-tag">StackPanel</span>&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LECCIÓN 4 -->
+            <section id="lec4" class="lesson-card">
+                <div class="lesson-header">
+                    <h2 class="lesson-title">Lección 4: Conexión MySQL + DataGrid en XAML</h2>
+                    <span class="badge">Avanzano / Base de Datos</span>
+                </div>
+                <p class="explanation">
+                    Carga de datos desde una base de datos MySQL hacia un control <code>DataGrid</code> de WPF usando
+                    <code>MySqlData</code> en C#.
+                </p>
+                <div class="code-grid">
+                    <div class="code-block">
+                        <div class="code-header"><span>ConsultaView.xaml</span><span>XAML</span></div>
+                        <pre><code>&lt;<span class="xml-tag">Grid</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"10"</span>&gt;
+    &lt;<span class="xml-tag">Grid.RowDefinitions</span>&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"*"</span>/&gt;
+    &lt;/<span class="xml-tag">Grid.RowDefinitions</span>&gt;
+
+    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Cargar Usuarios MySQL"</span> <span class="xml-attr">Click</span>=<span class="xml-str">"btnCargar_Click"</span> 
+            <span class="xml-attr">Padding</span>=<span class="xml-str">"8"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>/&gt;
+
+    &lt;<span class="xml-tag">DataGrid</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"1"</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"dgUsuarios"</span> 
+              <span class="xml-attr">AutoGenerateColumns</span>=<span class="xml-str">"True"</span> 
+              <span class="xml-attr">Background</span>=<span class="xml-str">"#252526"</span>/&gt;
+&lt;/<span class="xml-tag">Grid</span>&gt;</code></pre>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>ConsultaView.xaml.cs</span><span>C# + MySQL</span></div>
+                        <pre><code><span class="cs-kw">using</span> System.Data;
+<span class="cs-kw">using</span> System.Windows;
+<span class="cs-kw">using</span> MySql.Data.MySqlClient;
+
+<span class="cs-kw">namespace</span> AppWpf
+{
+    <span class="cs-kw">public partial class</span> <span class="cs-type">ConsultaView</span> : <span class="cs-type">Window</span>
+    {
+        <span class="cs-kw">private string</span> cadenaConexion = 
+            <span class="xml-str">"Server=localhost;Database=instituto;Uid=root;Pwd=1234;"</span>;
+
+        <span class="cs-kw">public</span> ConsultaView()
+        {
+            InitializeComponent();
+        }
+
+        <span class="cs-kw">private void</span> btnCargar_Click(<span class="cs-type">object</span> sender, <span class="cs-type">RoutedEventArgs</span> e)
+        {
+            <span class="cs-kw">using</span> (<span class="cs-type">MySqlConnection</span> conn = <span class="cs-kw">new</span> <span class="cs-type">MySqlConnection</span>(cadenaConexion))
+            {
+                <span class="cs-kw">try</span>
+                {
+                    conn.Open();
+                    <span class="cs-type">string</span> query = <span class="xml-str">"SELECT id, nombre, email FROM usuarios"</span>;
+                    <span class="cs-type">MySqlDataAdapter</span> adapter = <span class="cs-kw">new</span> <span class="cs-type">MySqlDataAdapter</span>(query, conn);
+                    <span class="cs-type">DataTable</span> dt = <span class="cs-kw">new</span> <span class="cs-type">DataTable</span>();
+                    adapter.Fill(dt);
+
+                    dgUsuarios.ItemsSource = dt.DefaultView;
+                }
+                <span class="cs-kw">catch</span> (<span class="cs-type">System.Exception</span> ex)
+                {
+                    <span class="cs-type">MessageBox</span>.Show(<span class="xml-str">"Error: "</span> + ex.Message);
+                }
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>
