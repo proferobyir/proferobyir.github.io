@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base de Datos Web · Electiva III · Guía única de estudio</title>
+<style>
+  :root{
+    --php-purple:#777BB4;
+    --php-purple-dark:#4F5B93;
+    --php-purple-darker:#2F344E;
+    --php-bg:#F5F5F7;
+    --php-card:#FFFFFF;
+    --php-text:#1F2233;
+    --php-muted:#5A5E78;
+    --php-code-bg:#1E2030;
+    --php-code-text:#E6E6F0;
+    --php-accent:#8B8FCB;
+    --mysql-blue:#00758F;
+    --api-green:#3FB950;
+    --js-yellow:#E6A817;
+    --radius:14px;
+    --shadow:0 6px 24px rgba(47,52,78,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--php-bg);color:var(--php-text);line-height:1.65;
+  }
+
+  /* ===== Navbar ===== */
+  header.navbar{
+    position:sticky;top:0;z-index:100;
+    background:linear-gradient(90deg,var(--php-purple-darker),var(--php-purple-dark) 60%,var(--php-purple));
+    box-shadow:var(--shadow);
+  }
+  .nav-inner{
+    max-width:1180px;margin:0 auto;
+    display:flex;align-items:center;gap:16px;
+    padding:12px 20px;flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    color:#fff;font-weight:700;font-size:1.1rem;
+    text-decoration:none;white-space:nowrap;
+  }
+  .brand .logo{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--php-purple);
+    display:grid;place-items:center;
+    font-size:.75rem;font-weight:800;color:#fff;
+    border:2px solid rgba(255,255,255,.55);
+    font-family:Georgia,serif;
+  }
+  nav.menu{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto;}
+  nav.menu a{
+    color:#EAEAF5;text-decoration:none;
+    font-size:.8rem;font-weight:600;
+    padding:6px 10px;border-radius:999px;
+    transition:background .2s,color .2s;white-space:nowrap;
+  }
+  nav.menu a:hover,nav.menu a:focus{
+    background:rgba(255,255,255,.18);color:#fff;outline:none;
+  }
+
+  /* ===== Layout ===== */
+  main{max-width:1180px;margin:0 auto;padding:28px 20px 80px;}
+
+  .hero{
+    background:linear-gradient(135deg,var(--php-purple-darker),var(--php-purple));
+    color:#fff;border-radius:var(--radius);
+    padding:38px 30px;margin-bottom:34px;
+    box-shadow:var(--shadow);
+  }
+  .hero h1{font-size:clamp(1.5rem,4vw,2.3rem);margin-bottom:10px;}
+  .hero p{max-width:75ch;color:#E9E9F6;font-size:1.02rem;}
+  .hero .tips{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;}
+  .hero .tips span{
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.25);
+    padding:6px 14px;border-radius:999px;font-size:.78rem;font-weight:600;
+  }
+  .hero .meta{
+    margin-top:20px;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;
+  }
+  .hero .meta div{
+    background:rgba(0,0,0,.15);border-radius:10px;
+    padding:10px 14px;font-size:.8rem;
+  }
+  .hero .meta div strong{display:block;color:#fff;font-size:.92rem;}
+
+  section.topic{
+    background:var(--php-card);border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:30px clamp(18px,4vw,34px);
+    margin-bottom:32px;scroll-margin-top:90px;
+    border-left:6px solid var(--php-purple);
+  }
+  section.topic > h2{
+    font-size:clamp(1.22rem,3vw,1.55rem);
+    color:var(--php-purple-dark);margin-bottom:6px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .badge{
+    background:var(--php-purple);color:#fff;
+    font-size:.68rem;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:999px;text-transform:uppercase;
+  }
+  .badge.mysql{background:var(--mysql-blue);}
+  .badge.api{background:var(--api-green);}
+  .badge.js{background:var(--js-yellow);color:#1F2233;}
+  section.topic > h2 + p.lead{
+    color:var(--php-muted);margin-bottom:18px;font-size:.96rem;
+  }
+  h3.sub{font-size:1.03rem;color:var(--php-purple-dark);margin:24px 0 8px;padding-top:6px;}
+  h3.sub::before{content:"▸";color:var(--php-purple);margin-right:8px;}
+  p{margin-bottom:12px;}
+  ul.steps{margin:10px 0 16px 22px;}
+  ul.steps li{margin-bottom:8px;}
+  ul.steps li strong{color:var(--php-purple-dark);}
+  ol.list{margin:10px 0 16px 24px;}
+  ol.list li{margin-bottom:8px;}
+
+  .tip{
+    background:#F0F0FA;border-left:4px solid var(--php-accent);
+    padding:12px 16px;border-radius:0 10px 10px 0;
+    margin:16px 0;font-size:.92rem;
+  }
+  .tip strong{color:var(--php-purple-dark);}
+  .warn{
+    background:#FFF6E6;border-left:4px solid var(--js-yellow);
+    padding:12px 16px;border-radius:0 10px 10px 0;
+    margin:16px 0;font-size:.92rem;
+  }
+  .warn strong{color:#8a5a00;}
+
+  /* ===== SVG container ===== */
+  .svg-figure{
+    background:#FAFAFE;border:1px solid #E4E4EE;
+    border-radius:12px;padding:16px;margin:18px 0;
+    text-align:center;overflow-x:auto;
+  }
+  .svg-figure svg{max-width:100%;height:auto;}
+  .svg-figure figcaption{
+    font-size:.82rem;color:var(--php-muted);
+    margin-top:10px;font-style:italic;
+  }
+
+  /* ===== Código ===== */
+  .code-wrap{
+    position:relative;margin:16px 0 22px;
+    border-radius:12px;overflow:hidden;
+    border:1px solid #2C2F45;background:var(--php-code-bg);
+  }
+  .code-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:10px;background:#262A3E;
+    padding:8px 14px;font-size:.78rem;
+    color:#B9BCD9;font-weight:600;letter-spacing:.03em;
+  }
+  .code-head .dots{display:flex;gap:6px;}
+  .code-head .dots span{width:10px;height:10px;border-radius:50%;background:#5A5E78;}
+  .code-head .dots span:nth-child(1){background:#ff6b6b;}
+  .code-head .dots span:nth-child(2){background:#ffd93d;}
+  .code-head .dots span:nth-child(3){background:#6bcf7f;}
+  button.copy-btn{
+    background:var(--php-purple);color:#fff;border:none;
+    font-size:.75rem;font-weight:700;padding:6px 12px;border-radius:8px;
+    cursor:pointer;transition:background .2s,transform .1s;
+    font-family:inherit;letter-spacing:.02em;
+  }
+  button.copy-btn:hover{background:var(--php-accent);}
+  button.copy-btn:active{transform:scale(.96);}
+  button.copy-btn.copied{background:var(--api-green);}
+  pre{
+    margin:0;padding:16px 18px;overflow-x:auto;
+    font-family:'Fira Code','Cascadia Code',Consolas,Monaco,monospace;
+    font-size:.85rem;line-height:1.6;color:var(--php-code-text);tab-size:4;
+  }
+  pre code{font-family:inherit;white-space:pre;}
+  .cmt{color:#7E86A8;font-style:italic;}
+  .str{color:#A5D6A7;}
+  .kw{color:#C3A6FF;font-weight:600;}
+  .fn{color:#82B1FF;}
+  .var{color:#FFD180;}
+  .sqlkw{color:#82B1FF;font-weight:600;}
+  .tag{color:#7FD1FF;}
+
+  /* ===== Tabla ===== */
+  .table-wrap{overflow-x:auto;margin:18px 0;}
+  table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:520px;}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid #E4E4EE;vertical-align:top;}
+  th{
+    background:var(--php-purple-darker);color:#fff;
+    font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  }
+  tbody tr:nth-child(even){background:#FAFAFE;}
+  td code{
+    background:#F0F0FA;color:var(--php-purple-dark);
+    padding:2px 7px;border-radius:6px;
+    font-size:.82rem;font-family:Consolas,monospace;
+  }
+
+  /* ===== Cards ===== */
+  .grid-cards{
+    display:grid;gap:14px;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:18px 0;
+  }
+  .grid-cards .card{
+    background:#FAFAFE;border:1px solid #E4E4EE;
+    border-radius:12px;padding:14px 16px;font-size:.9rem;
+  }
+  .grid-cards .card h5{color:var(--php-purple-dark);font-size:.92rem;margin-bottom:6px;}
+
+  footer{text-align:center;color:var(--php-muted);font-size:.85rem;padding:30px 20px 50px;}
+  footer strong{color:var(--php-purple-dark);}
+
+  a.top-link{
+    position:fixed;right:20px;bottom:20px;z-index:90;
+    width:46px;height:46px;border-radius:50%;
+    background:var(--php-purple);color:#fff;
+    display:grid;place-items:center;text-decoration:none;font-size:1.2rem;
+    box-shadow:0 4px 16px rgba(119,123,180,.5);
+    transition:background .2s,transform .2s;
+  }
+  a.top-link:hover{background:var(--php-purple-dark);transform:translateY(-3px);}
+
+  @media (max-width:760px){
+    .nav-inner{padding:10px 14px;gap:10px;}
+    .brand{font-size:1rem;}
+    nav.menu{margin-left:0;width:100%;justify-content:flex-start;}
+    nav.menu a{font-size:.74rem;padding:5px 8px;}
+    section.topic{padding:22px 16px;}
+    pre{font-size:.76rem;padding:12px;}
+    .hero{padding:26px 18px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none!important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAVBAR ===================== -->
+<header class="navbar">
+  <div class="nav-inner">
+    <a class="brand" href="#inicio">
+      <span class="logo">BD</span>
+      <span>BD Web · Electiva III</span>
+    </a>
+    <nav class="menu" aria-label="Temas del curso">
+      <a href="#intro-bd">Bases de Datos</a>
+      <a href="#relacional">Modelo Relacional</a>
+      <a href="#normalizacion">Normalización</a>
+      <a href="#sql-basico">SQL Básico</a>
+      <a href="#sql-avanzado">SQL Avanzado</a>
+      <a href="#api">APIs REST</a>
+      <a href="#conexion">Conexión PHP-MySQL</a>
+      <a href="#crud">CRUD</a>
+      <a href="#formularios">Formularios</a>
+      <a href="#sesiones">Sesiones</a>
+      <a href="#mvc">MVC</a>
+      <a href="#proyecto">Proyecto Final</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+
+  <!-- ===================== HERO ===================== -->
+  <div class="hero">
+    <h1>Base de Datos Web · Guía única de estudio 🐘🛢️</h1>
+    <p>
+      Guía completa basada en el <strong>sinóptico de Electiva III (Base de Datos Web)</strong>.
+      Desarrolla todos los saberes: fundamentos teóricos de BD, modelo relacional y normalización,
+      SQL básico y avanzado, APIs REST, integración con PHP y JavaScript, CRUD, formularios,
+      sesiones, MVC y proyecto final. Cada tema incluye explicación, diagramas SVG, ejemplos
+      prácticos y código comentado con opción a copiar.
+    </p>
+    <div class="tips">
+      <span>✅ Sin dependencias externas</span>
+      <span>📱 Responsive</span>
+      <span>📋 Copia código con un clic</span>
+      <span>🎨 Colores oficiales de PHP</span>
+      <span>🧭 Orden didáctico del sinóptico</span>
+      <span>🖼️ Diagramas SVG</span>
+    </div>
+    <div class="meta">
+      <div><strong>Unidad Curricular</strong>Electiva III · Base de Datos Web</div>
+      <div><strong>Código</strong>AES522 · Prelación ASE412</div>
+      <div><strong>Semestre</strong>Quinto · 48 horas · 2 UC</div>
+      <div><strong>Competencia</strong>Diseñar, desarrollar y administrar aplicaciones web con BD</div>
+    </div>
+  </div>
+
+  <!-- ===================== TEMA 1: INTRO BD ===================== -->
+  <section class="topic" id="intro-bd">
+    <h2><span class="badge">Tema 1</span> Introducción a las Bases de Datos</h2>
+    <p class="lead">Importancia en aplicaciones web, tipos de BD y su rol en el backend.</p>
+
+    <p>
+      Una <strong>base de datos (BD)</strong> es un conjunto organizado de información
+      que se puede almacenar, consultar y modificar de forma eficiente. En una aplicación
+      web, la BD es el <em>corazón</em> del backend: guarda usuarios, productos, pedidos,
+      sesiones, etc.
+    </p>
+
+    <h3 class="sub">¿Por qué es importante en aplicaciones web?</h3>
+    <ul class="steps">
+      <li><strong>Persistencia:</strong> los datos sobreviven al cierre del navegador o del servidor.</li>
+      <li><strong>Organización:</strong> permite consultar grandes volúmenes sin recorrer archivos.</li>
+      <li><strong>Integridad:</strong> reglas que evitan datos duplicados o inconsistentes.</li>
+      <li><strong>Concurrencia:</strong> muchos usuarios acceden a la vez sin corromper datos.</li>
+      <li><strong>Seguridad:</strong> control de acceso por usuarios y roles.</li>
+    </ul>
+
+    <h3 class="sub">Relacionales vs. NoSQL</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Aspecto</th><th>Relacionales (SQL)</th><th>NoSQL</th></tr></thead>
+        <tbody>
+          <tr><td>Estructura</td><td>Tablas con filas y columnas</td><td>Documentos, clave-valor, grafos, columnas</td></tr>
+          <tr><td>Lenguaje</td><td>SQL</td><td>APIs propias / JSON</td></tr>
+          <tr><td>Esquema</td><td>Rígido (definido antes)</td><td>Flexible</td></tr>
+          <tr><td>Integridad</td><td>Fuerte (FK, transacciones)</td><td>Eventual (según motor)</td></tr>
+          <tr><td>Ejemplos</td><td>MySQL, PostgreSQL, SQL Server</td><td>MongoDB, Redis, Cassandra</td></tr>
+          <tr><td>Uso típico</td><td>Datos estructurados y relaciones</td><td>Datos semiestructurados y escalado horizontal</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">Arquitectura de un sistema web</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Arquitectura de un sistema web: frontend, backend y base de datos">
+        <defs>
+          <marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F5B93"/>
+          </marker>
+        </defs>
+        <!-- Frontend -->
+        <rect x="20" y="80" width="180" height="100" rx="14" fill="#777BB4"/>
+        <text x="110" y="118" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="15" font-weight="700">FRONTEND</text>
+        <text x="110" y="140" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="12">HTML · CSS · JS</text>
+        <text x="110" y="158" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="12">Navegador del usuario</text>
+
+        <!-- Backend -->
+        <rect x="270" y="80" width="180" height="100" rx="14" fill="#4F5B93"/>
+        <text x="360" y="118" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="15" font-weight="700">BACKEND</text>
+        <text x="360" y="140" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="12">PHP · Lógica</text>
+        <text x="360" y="158" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="12">Validación · Sesiones</text>
+
+        <!-- Base de datos -->
+        <rect x="520" y="80" width="180" height="100" rx="14" fill="#2F344E"/>
+        <text x="610" y="118" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="15" font-weight="700">BASE DE DATOS</text>
+        <text x="610" y="140" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="12">MySQL</text>
+        <text x="610" y="158" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="12">Datos persistentes</text>
+
+        <!-- Flechas -->
+        <line x1="200" y1="118" x2="270" y2="118" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowA)"/>
+        <line x1="270" y1="150" x2="200" y2="150" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowA)"/>
+        <text x="235" y="108" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="600">HTTP</text>
+        <text x="235" y="172" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="600">HTML/JSON</text>
+
+        <line x1="450" y1="118" x2="520" y2="118" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowA)"/>
+        <line x1="520" y1="150" x2="450" y2="150" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowA)"/>
+        <text x="485" y="108" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="600">SQL</text>
+        <text x="485" y="172" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="600">datos</text>
+      </svg>
+      <figcaption>Figura 1. Flujo de una petición: el frontend envía peticiones HTTP, el backend procesa y consulta la BD mediante SQL.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ===================== TEMA 2: MODELO RELACIONAL ===================== -->
+  <section class="topic" id="relacional">
+    <h2><span class="badge mysql">Tema 2</span> Modelo Relacional y Claves</h2>
+    <p class="lead">Diseñar tablas, relaciones y claves correctamente desde el inicio.</p>
+
+    <div class="grid-cards">
+      <div class="card"><h5>Tabla (relación)</h5>Conjunto de filas (registros) con las mismas columnas (atributos).</div>
+      <div class="card"><h5>Clave primaria (PK)</h5>Columna que identifica de forma única cada fila.</div>
+      <div class="card"><h5>Clave foránea (FK)</h5>Columna que referencia la PK de otra tabla.</div>
+      <div class="card"><h5>Índice</h5>Estructura que acelera búsquedas sobre una o varias columnas.</div>
+      <div class="card"><h5>Relación 1:N</h5>Un registro se relaciona con muchos de otra tabla.</div>
+      <div class="card"><h5>Relación N:M</h5>Muchos con muchos; requiere una tabla intermedia.</div>
+    </div>
+
+    <h3 class="sub">Diagrama entidad-relación del ejemplo</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama entidad-relación de usuarios, categorías, productos y etiquetas">
+        <defs>
+          <marker id="arrowER" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F5B93"/>
+          </marker>
+        </defs>
+
+        <!-- Categorías -->
+        <rect x="40" y="30" width="200" height="120" rx="10" fill="#fff" stroke="#777BB4" stroke-width="2"/>
+        <rect x="40" y="30" width="200" height="30" rx="10" fill="#777BB4"/>
+        <rect x="40" y="50" width="200" height="10" fill="#777BB4"/>
+        <text x="140" y="50" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">categorias</text>
+        <text x="52" y="82" fill="#1F2233" font-family="Consolas,monospace" font-size="11">🔑 id (PK)</text>
+        <text x="52" y="102" fill="#1F2233" font-family="Consolas,monospace" font-size="11">nombre</text>
+        <text x="52" y="122" fill="#1F2233" font-family="Consolas,monospace" font-size="11">descripcion</text>
+
+        <!-- Productos -->
+        <rect x="270" y="30" width="220" height="150" rx="10" fill="#fff" stroke="#777BB4" stroke-width="2"/>
+        <rect x="270" y="30" width="220" height="30" rx="10" fill="#777BB4"/>
+        <rect x="270" y="50" width="220" height="10" fill="#777BB4"/>
+        <text x="380" y="50" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">productos</text>
+        <text x="282" y="82" fill="#1F2233" font-family="Consolas,monospace" font-size="11">🔑 id (PK)</text>
+        <text x="282" y="102" fill="#1F2233" font-family="Consolas,monospace" font-size="11">nombre</text>
+        <text x="282" y="122" fill="#1F2233" font-family="Consolas,monospace" font-size="11">precio</text>
+        <text x="282" y="142" fill="#1F2233" font-family="Consolas,monospace" font-size="11">stock</text>
+        <text x="282" y="162" fill="#00758F" font-family="Consolas,monospace" font-size="11">🔗 categoria_id (FK)</text>
+
+        <!-- Etiquetas -->
+        <rect x="520" y="30" width="170" height="120" rx="10" fill="#fff" stroke="#777BB4" stroke-width="2"/>
+        <rect x="520" y="30" width="170" height="30" rx="10" fill="#777BB4"/>
+        <rect x="520" y="50" width="170" height="10" fill="#777BB4"/>
+        <text x="605" y="50" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">etiquetas</text>
+        <text x="532" y="82" fill="#1F2233" font-family="Consolas,monospace" font-size="11">🔑 id (PK)</text>
+        <text x="532" y="102" fill="#1F2233" font-family="Consolas,monospace" font-size="11">nombre</text>
+
+        <!-- Tabla intermedia -->
+        <rect x="380" y="250" width="200" height="100" rx="10" fill="#fff" stroke="#00758F" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="480" y="274" text-anchor="middle" fill="#00758F" font-family="Segoe UI,Arial" font-size="12" font-weight="700">producto_etiqueta</text>
+        <text x="392" y="298" fill="#00758F" font-family="Consolas,monospace" font-size="10">🔗 producto_id (FK)</text>
+        <text x="392" y="318" fill="#00758F" font-family="Consolas,monospace" font-size="10">🔗 etiqueta_id (FK)</text>
+        <text x="392" y="338" fill="#5A5E78" font-family="Consolas,monospace" font-size="10">PK compuesta</text>
+
+        <!-- Relación 1:N -->
+        <line x1="240" y1="90" x2="270" y2="90" stroke="#4F5B93" stroke-width="2" marker-end="url(#arrowER)"/>
+        <text x="255" y="82" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">1:N</text>
+
+        <!-- Relación N:M vía intermedia -->
+        <line x1="380" y1="180" x2="420" y2="250" stroke="#00758F" stroke-width="2" marker-end="url(#arrowER)"/>
+        <line x1="580" y1="150" x2="530" y2="250" stroke="#00758F" stroke-width="2" marker-end="url(#arrowER)"/>
+
+        <!-- Usuarios -->
+        <rect x="40" y="250" width="200" height="120" rx="10" fill="#fff" stroke="#777BB4" stroke-width="2"/>
+        <rect x="40" y="250" width="200" height="30" rx="10" fill="#777BB4"/>
+        <rect x="40" y="270" width="200" height="10" fill="#777BB4"/>
+        <text x="140" y="270" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">usuarios</text>
+        <text x="52" y="302" fill="#1F2233" font-family="Consolas,monospace" font-size="11">🔑 id (PK)</text>
+        <text x="52" y="322" fill="#1F2233" font-family="Consolas,monospace" font-size="11">nombre</text>
+        <text x="52" y="342" fill="#1F2233" font-family="Consolas,monospace" font-size="11">email (UNIQUE)</text>
+        <text x="52" y="362" fill="#1F2233" font-family="Consolas,monospace" font-size="11">password</text>
+      </svg>
+      <figcaption>Figura 2. Modelo entidad-relación del ejemplo: <em>categorias 1:N productos</em>, y <em>productos N:M etiquetas</em> mediante <code>producto_etiqueta</code>.</figcaption>
+    </figure>
+
+    <h3 class="sub">Crear la base de datos y las tablas en MySQL</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>schema.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- Crear la base de datos</span>
+<span class="sqlkw">CREATE DATABASE</span> tienda_web
+  <span class="sqlkw">CHARACTER SET</span> utf8mb4
+  <span class="sqlkw">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="sqlkw">USE</span> tienda_web;
+
+<span class="cmt">-- Tabla de usuarios: PK autoincremental</span>
+<span class="sqlkw">CREATE TABLE</span> usuarios (
+  id        <span class="sqlkw">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre    <span class="sqlkw">VARCHAR</span>(100) <span class="sqlkw">NOT NULL</span>,
+  email     <span class="sqlkw">VARCHAR</span>(150) <span class="sqlkw">NOT NULL UNIQUE</span>,
+  password  <span class="sqlkw">VARCHAR</span>(255) <span class="sqlkw">NOT NULL</span>,
+  creado_en <span class="sqlkw">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cmt">-- Tabla de categorías</span>
+<span class="sqlkw">CREATE TABLE</span> categorias (
+  id     <span class="sqlkw">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre <span class="sqlkw">VARCHAR</span>(80) <span class="sqlkw">NOT NULL UNIQUE</span>
+);
+
+<span class="cmt">-- Tabla de productos con FK a categorías (relación 1:N)</span>
+<span class="sqlkw">CREATE TABLE</span> productos (
+  id            <span class="sqlkw">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre        <span class="sqlkw">VARCHAR</span>(120) <span class="sqlkw">NOT NULL</span>,
+  precio        <span class="sqlkw">DECIMAL</span>(10,2) <span class="sqlkw">NOT NULL</span>,
+  stock         <span class="sqlkw">INT NOT NULL DEFAULT</span> 0,
+  categoria_id  <span class="sqlkw">INT</span>,
+  <span class="sqlkw">FOREIGN KEY</span> (categoria_id) <span class="sqlkw">REFERENCES</span> categorias(id)
+    <span class="sqlkw">ON DELETE SET NULL</span>
+    <span class="sqlkw">ON UPDATE CASCADE</span>
+);
+
+<span class="cmt">-- Tabla de etiquetas</span>
+<span class="sqlkw">CREATE TABLE</span> etiquetas (
+  id     <span class="sqlkw">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre <span class="sqlkw">VARCHAR</span>(50) <span class="sqlkw">NOT NULL UNIQUE</span>
+);
+
+<span class="cmt">-- Tabla intermedia para relación N:M (producto - etiqueta)</span>
+<span class="sqlkw">CREATE TABLE</span> producto_etiqueta (
+  producto_id <span class="sqlkw">INT NOT NULL</span>,
+  etiqueta_id <span class="sqlkw">INT NOT NULL</span>,
+  <span class="sqlkw">PRIMARY KEY</span> (producto_id, etiqueta_id),
+  <span class="sqlkw">FOREIGN KEY</span> (producto_id) <span class="sqlkw">REFERENCES</span> productos(id) <span class="sqlkw">ON DELETE CASCADE</span>,
+  <span class="sqlkw">FOREIGN KEY</span> (etiqueta_id) <span class="sqlkw">REFERENCES</span> etiquetas(id) <span class="sqlkw">ON DELETE CASCADE</span>
+);</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Buenas prácticas:</strong> usa <code>utf8mb4</code> para soportar emojis y
+      caracteres especiales; nombra tablas en plural y columnas en singular;
+      define siempre PK y FK explícitas.
+    </div>
+
+    <h3 class="sub">Crear la BD con PhpMyAdmin</h3>
+    <ol class="list">
+      <li>Abre <code>http://localhost/phpmyadmin</code> en tu servidor local.</li>
+      <li>Pestaña <strong>Bases de datos</strong> → nombre <code>tienda_web</code> → Crear.</li>
+      <li>Pestaña <strong>SQL</strong> → pega el script anterior → Ejecutar.</li>
+      <li>Verifica que aparezcan las tablas en el panel izquierdo.</li>
+    </ol>
+  </section>
+
+  <!-- ===================== TEMA 3: NORMALIZACIÓN ===================== -->
+  <section class="topic" id="normalizacion">
+    <h2><span class="badge mysql">Tema 3</span> Normalización de Bases de Datos</h2>
+    <p class="lead">Aplicar las formas normales para evitar redundancia y anomalías.</p>
+
+    <p>
+      La <strong>normalización</strong> es un proceso de organización de las tablas
+      para reducir la redundancia y evitar anomalías de inserción, actualización y borrado.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Forma</th><th>Regla</th><th>Ejemplo de violación</th></tr></thead>
+        <tbody>
+          <tr><td>1FN</td><td>Valores atómicos, sin listas en una columna.</td><td><code>telefonos = "555-123, 555-456"</code></td></tr>
+          <tr><td>2FN</td><td>Sin dependencias parciales respecto a la PK compuesta.</td><td>En <code>(pedido_id, producto_id)</code>, guardar <code>nombre_producto</code> que solo depende de <code>producto_id</code>.</td></tr>
+          <tr><td>3FN</td><td>Sin dependencias transitivas (columnas que dependen de otras no clave).</td><td>Guardar <code>ciudad</code> y <code>codigo_postal</code> en <code>clientes</code> cuando <code>ciudad</code> depende del CP.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">Comparación visual: antes y después</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparación entre tabla plana y modelo normalizado">
+        <!-- Antes -->
+        <rect x="20" y="20" width="320" height="290" rx="12" fill="#FFF6E6" stroke="#E6A817" stroke-width="2"/>
+        <text x="180" y="48" text-anchor="middle" fill="#8a5a00" font-family="Segoe UI,Arial" font-size="14" font-weight="700">❌ Sin normalizar</text>
+
+        <rect x="40" y="70" width="280" height="24" fill="#E6A817"/>
+        <text x="50" y="87" fill="#fff" font-family="Consolas,monospace" font-size="10">id | cliente | productos | ciudad</text>
+        <rect x="40" y="94" width="280" height="22" fill="#fff" stroke="#E6A817"/>
+        <text x="50" y="109" fill="#1F2233" font-family="Consolas,monospace" font-size="9">1 | Ana | pan, leche | Caracas</text>
+        <rect x="40" y="116" width="280" height="22" fill="#fff" stroke="#E6A817"/>
+        <text x="50" y="131" fill="#1F2233" font-family="Consolas,monospace" font-size="9">2 | Ana | café | Caracas</text>
+        <rect x="40" y="138" width="280" height="22" fill="#fff" stroke="#E6A817"/>
+        <text x="50" y="153" fill="#1F2233" font-family="Consolas,monospace" font-size="9">3 | Luis | pan | Valencia</text>
+        <rect x="40" y="160" width="280" height="22" fill="#fff" stroke="#E6A817"/>
+        <text x="50" y="175" fill="#1F2233" font-family="Consolas,monospace" font-size="9">4 | Ana | pan, leche | Caracas</text>
+
+        <text x="40" y="210" fill="#8a5a00" font-family="Segoe UI,Arial" font-size="11">• "productos" guarda listas (viola 1FN)</text>
+        <text x="40" y="230" fill="#8a5a00" font-family="Segoe UI,Arial" font-size="11">• "ciudad" depende del cliente (3FN)</text>
+        <text x="40" y="250" fill="#8a5a00" font-family="Segoe UI,Arial" font-size="11">• Datos duplicados de Ana</text>
+        <text x="40" y="270" fill="#8a5a00" font-family="Segoe UI,Arial" font-size="11">• Difícil actualizar sin errores</text>
+
+        <!-- Flecha -->
+        <line x1="355" y1="165" x2="380" y2="165" stroke="#4F5B93" stroke-width="3"/>
+        <polygon points="380,160 392,165 380,170" fill="#4F5B93"/>
+
+        <!-- Después -->
+        <rect x="400" y="20" width="300" height="290" rx="12" fill="#F0F0FA" stroke="#777BB4" stroke-width="2"/>
+        <text x="550" y="48" text-anchor="middle" fill="#2F344E" font-family="Segoe UI,Arial" font-size="14" font-weight="700">✅ Normalizado (3FN)</text>
+
+        <!-- clientes -->
+        <rect x="420" y="68" width="120" height="60" rx="6" fill="#fff" stroke="#777BB4"/>
+        <text x="480" y="84" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="700">clientes</text>
+        <text x="428" y="100" fill="#1F2233" font-family="Consolas,monospace" font-size="9">🔑 id</text>
+        <text x="428" y="115" fill="#1F2233" font-family="Consolas,monospace" font-size="9">nombre</text>
+
+        <!-- pedidos -->
+        <rect x="560" y="68" width="120" height="60" rx="6" fill="#fff" stroke="#777BB4"/>
+        <text x="620" y="84" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="700">pedidos</text>
+        <text x="568" y="100" fill="#1F2233" font-family="Consolas,monospace" font-size="9">🔑 id</text>
+        <text x="568" y="115" fill="#00758F" font-family="Consolas,monospace" font-size="9">🔗 cliente_id</text>
+
+        <!-- productos -->
+        <rect x="420" y="160" width="120" height="60" rx="6" fill="#fff" stroke="#777BB4"/>
+        <text x="480" y="176" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="11" font-weight="700">productos</text>
+        <text x="428" y="192" fill="#1F2233" font-family="Consolas,monospace" font-size="9">🔑 id</text>
+        <text x="428" y="207" fill="#1F2233" font-family="Consolas,monospace" font-size="9">nombre</text>
+
+        <!-- detalle -->
+        <rect x="560" y="160" width="120" height="60" rx="6" fill="#fff" stroke="#00758F" stroke-dasharray="4,2"/>
+        <text x="620" y="176" text-anchor="middle" fill="#00758F" font-family="Segoe UI,Arial" font-size="10" font-weight="700">pedido_detalle</text>
+        <text x="568" y="192" fill="#00758F" font-family="Consolas,monospace" font-size="9">🔗 pedido_id</text>
+        <text x="568" y="207" fill="#00758F" font-family="Consolas,monospace" font-size="9">🔗 producto_id</text>
+
+        <!-- líneas -->
+        <line x1="540" y1="98" x2="560" y2="98" stroke="#4F5B93" stroke-width="1.5"/>
+        <line x1="540" y1="190" x2="560" y2="190" stroke="#00758F" stroke-width="1.5"/>
+
+        <text x="420" y="255" fill="#2F344E" font-family="Segoe UI,Arial" font-size="11">• Cada tabla cumple 1FN, 2FN y 3FN</text>
+        <text x="420" y="275" fill="#2F344E" font-family="Segoe UI,Arial" font-size="11">• Sin redundancia de datos de clientes</text>
+        <text x="420" y="295" fill="#2F344E" font-family="Segoe UI,Arial" font-size="11">• Actualizaciones seguras y consistentes</text>
+      </svg>
+      <figcaption>Figura 3. Transformación de una tabla plana con redundancia a un modelo normalizado en 3FN.</figcaption>
+    </figure>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>normalizacion.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- ✅ Solución normalizada (3FN)</span>
+<span class="sqlkw">CREATE TABLE</span> clientes (
+  id     <span class="sqlkw">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre <span class="sqlkw">VARCHAR</span>(100) <span class="sqlkw">NOT NULL</span>,
+  email  <span class="sqlkw">VARCHAR</span>(150) <span class="sqlkw">NOT NULL UNIQUE</span>
+);
+
+<span class="sqlkw">CREATE TABLE</span> pedidos (
+  id         <span class="sqlkw">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  cliente_id <span class="sqlkw">INT NOT NULL</span>,
+  fecha      <span class="sqlkw">DATETIME DEFAULT CURRENT_TIMESTAMP</span>,
+  <span class="sqlkw">FOREIGN KEY</span> (cliente_id) <span class="sqlkw">REFERENCES</span> clientes(id)
+);
+
+<span class="sqlkw">CREATE TABLE</span> pedido_detalle (
+  pedido_id   <span class="sqlkw">INT NOT NULL</span>,
+  producto_id <span class="sqlkw">INT NOT NULL</span>,
+  cantidad    <span class="sqlkw">INT NOT NULL</span>,
+  <span class="sqlkw">PRIMARY KEY</span> (pedido_id, producto_id),
+  <span class="sqlkw">FOREIGN KEY</span> (pedido_id) <span class="sqlkw">REFERENCES</span> pedidos(id),
+  <span class="sqlkw">FOREIGN KEY</span> (producto_id) <span class="sqlkw">REFERENCES</span> productos(id)
+);</code></pre>
+    </div>
+
+    <div class="warn">
+      <strong>Ojo:</strong> la normalización excesiva puede requerir muchas uniones (JOIN).
+      En la práctica se busca el equilibrio. Para esta unidad, aplica al menos hasta 3FN.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 4: SQL BÁSICO ===================== -->
+  <section class="topic" id="sql-basico">
+    <h2><span class="badge mysql">Tema 4</span> Lenguaje SQL · Consultas Básicas</h2>
+    <p class="lead">CRUD sobre tablas: INSERT, SELECT, UPDATE y DELETE.</p>
+
+    <h3 class="sub">Insertar datos (INSERT)</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>insert.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- Insertar una categoría</span>
+<span class="sqlkw">INSERT INTO</span> categorias (nombre)
+<span class="sqlkw">VALUES</span> (<span class="str">'Bebidas'</span>);
+
+<span class="cmt">-- Insertar un usuario</span>
+<span class="sqlkw">INSERT INTO</span> usuarios (nombre, email, password)
+<span class="sqlkw">VALUES</span> (<span class="str">'Ana Pérez'</span>, <span class="str">'ana@correo.com'</span>, <span class="str">'hash_seguro'</span>);
+
+<span class="cmt">-- Insertar un producto con FK</span>
+<span class="sqlkw">INSERT INTO</span> productos (nombre, precio, stock, categoria_id)
+<span class="sqlkw">VALUES</span> (<span class="str">'Café molido 500g'</span>, <span class="str">4.50</span>, <span class="str">30</span>, <span class="str">1</span>);</code></pre>
+    </div>
+
+    <h3 class="sub">Consultar datos (SELECT)</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>select.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- Todos los registros y columnas</span>
+<span class="sqlkw">SELECT</span> * <span class="sqlkw">FROM</span> productos;
+
+<span class="cmt">-- Columnas específicas</span>
+<span class="sqlkw">SELECT</span> nombre, precio <span class="sqlkw">FROM</span> productos;
+
+<span class="cmt">-- Filtrar con WHERE</span>
+<span class="sqlkw">SELECT</span> * <span class="sqlkw">FROM</span> productos
+<span class="sqlkw">WHERE</span> precio &gt; <span class="str">3</span>
+  <span class="sqlkw">AND</span> stock &gt; <span class="str">0</span>;
+
+<span class="cmt">-- Ordenar resultados</span>
+<span class="sqlkw">SELECT</span> nombre, precio <span class="sqlkw">FROM</span> productos
+<span class="sqlkw">ORDER BY</span> precio <span class="sqlkw">DESC</span>;
+
+<span class="cmt">-- Limitar resultados</span>
+<span class="sqlkw">SELECT</span> nombre, precio <span class="sqlkw">FROM</span> productos
+<span class="sqlkw">ORDER BY</span> precio <span class="sqlkw">DESC</span>
+<span class="sqlkw">LIMIT</span> 5;</code></pre>
+    </div>
+
+    <h3 class="sub">Actualizar (UPDATE) y eliminar (DELETE)</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>update_delete.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- ⚠️ Actualizar SIEMPRE con WHERE para no modificar toda la tabla</span>
+<span class="sqlkw">UPDATE</span> productos
+<span class="sqlkw">SET</span> precio = <span class="str">4.75</span>, stock = stock - <span class="str">5</span>
+<span class="sqlkw">WHERE</span> id = <span class="str">1</span>;
+
+<span class="cmt">-- Eliminar un registro específico</span>
+<span class="sqlkw">DELETE FROM</span> productos
+<span class="sqlkw">WHERE</span> id = <span class="str">99</span>;
+
+<span class="cmt">-- Eliminar solo si cumple condición de stock</span>
+<span class="sqlkw">DELETE FROM</span> productos
+<span class="sqlkw">WHERE</span> stock = <span class="str">0</span>;</code></pre>
+    </div>
+
+    <div class="warn">
+      <strong>¡Cuidado!</strong> Un <code>UPDATE</code> o <code>DELETE</code> sin
+      <code>WHERE</code> afecta a <em>toda la tabla</em>. Verifica con un
+      <code>SELECT</code> el mismo <code>WHERE</code> antes de ejecutar.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 5: SQL AVANZADO ===================== -->
+  <section class="topic" id="sql-avanzado">
+    <h2><span class="badge mysql">Tema 5</span> SQL Avanzado · JOINs, Agregados y Subconsultas</h2>
+    <p class="lead">Combinar tablas y generar reportes con GROUP BY, HAVING y funciones de agregación.</p>
+
+    <h3 class="sub">Tipos de JOIN</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagramas de Venn para INNER, LEFT, RIGHT y FULL JOIN">
+        <!-- INNER -->
+        <g transform="translate(30,40)">
+          <circle cx="40" cy="60" r="42" fill="none" stroke="#777BB4" stroke-width="2"/>
+          <circle cx="88" cy="60" r="42" fill="none" stroke="#777BB4" stroke-width="2"/>
+          <path d="M64,30 a42,42 0 0,1 0,60 a42,42 0 0,1 0,-60" fill="#777BB4" opacity="0.55"/>
+          <text x="64" y="160" text-anchor="middle" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#2F344E">INNER JOIN</text>
+        </g>
+        <!-- LEFT -->
+        <g transform="translate(190,40)">
+          <circle cx="40" cy="60" r="42" fill="none" stroke="#777BB4" stroke-width="2"/>
+          <circle cx="88" cy="60" r="42" fill="none" stroke="#777BB4" stroke-width="2"/>
+          <circle cx="40" cy="60" r="42" fill="#777BB4" opacity="0.55"/>
+          <text x="64" y="160" text-anchor="middle" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#2F344E">LEFT JOIN</text>
+        </g>
+        <!-- RIGHT -->
+        <g transform="translate(350,40)">
+          <circle cx="40" cy="60" r="42" fill="none" stroke="#777BB4" stroke-width="2"/>
+          <circle cx="88" cy="60" r="42" fill="none" stroke="#777BB4" stroke-width="2"/>
+          <circle cx="88" cy="60" r="42" fill="#777BB4" opacity="0.55"/>
+          <text x="64" y="160" text-anchor="middle" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#2F344E">RIGHT JOIN</text>
+        </g>
+        <!-- FULL -->
+        <g transform="translate(510,40)">
+          <circle cx="40" cy="60" r="42" fill="#777BB4" opacity="0.55" stroke="#777BB4" stroke-width="2"/>
+          <circle cx="88" cy="60" r="42" fill="#777BB4" opacity="0.55" stroke="#777BB4" stroke-width="2"/>
+          <text x="64" y="160" text-anchor="middle" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#2F344E">FULL JOIN</text>
+        </g>
+      </svg>
+      <figcaption>Figura 4. Zonas cubiertas por cada tipo de JOIN. MySQL no soporta FULL JOIN de forma nativa; se simula con <code>UNION</code>.</figcaption>
+    </figure>
+
+    <h3 class="sub">Ejemplos de JOIN</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>joins.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- INNER JOIN: solo productos con categoría válida</span>
+<span class="sqlkw">SELECT</span> p.nombre <span class="sqlkw">AS</span> producto,
+       c.nombre <span class="sqlkw">AS</span> categoria,
+       p.precio
+<span class="sqlkw">FROM</span> productos p
+<span class="sqlkw">INNER JOIN</span> categorias c <span class="sqlkw">ON</span> p.categoria_id = c.id;
+
+<span class="cmt">-- LEFT JOIN: todos los productos, tengan o no categoría</span>
+<span class="sqlkw">SELECT</span> p.nombre, c.nombre <span class="sqlkw">AS</span> categoria
+<span class="sqlkw">FROM</span> productos p
+<span class="sqlkw">LEFT JOIN</span> categorias c <span class="sqlkw">ON</span> p.categoria_id = c.id;
+
+<span class="cmt">-- JOIN de tres tablas: productos + categorías + etiquetas</span>
+<span class="sqlkw">SELECT</span> p.nombre, c.nombre <span class="sqlkw">AS</span> categoria, e.nombre <span class="sqlkw">AS</span> etiqueta
+<span class="sqlkw">FROM</span> productos p
+<span class="sqlkw">INNER JOIN</span> categorias c <span class="sqlkw">ON</span> p.categoria_id = c.id
+<span class="sqlkw">INNER JOIN</span> producto_etiqueta pe <span class="sqlkw">ON</span> pe.producto_id = p.id
+<span class="sqlkw">INNER JOIN</span> etiquetas e <span class="sqlkw">ON</span> e.id = pe.etiqueta_id;</code></pre>
+    </div>
+
+    <h3 class="sub">Funciones de agregación y GROUP BY</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>agregados.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- Contar productos</span>
+<span class="sqlkw">SELECT COUNT</span>(*) <span class="sqlkw">AS</span> total_productos <span class="sqlkw">FROM</span> productos;
+
+<span class="cmt">-- Precio promedio y máximo</span>
+<span class="sqlkw">SELECT</span> <span class="sqlkw">AVG</span>(precio) <span class="sqlkw">AS</span> promedio,
+       <span class="sqlkw">MAX</span>(precio) <span class="sqlkw">AS</span> maximo,
+       <span class="sqlkw">MIN</span>(precio) <span class="sqlkw">AS</span> minimo
+<span class="sqlkw">FROM</span> productos;
+
+<span class="cmt">-- Agrupar por categoría</span>
+<span class="sqlkw">SELECT</span> c.nombre <span class="sqlkw">AS</span> categoria,
+       <span class="sqlkw">COUNT</span>(p.id) <span class="sqlkw">AS</span> cantidad,
+       <span class="sqlkw">SUM</span>(p.stock) <span class="sqlkw">AS</span> stock_total
+<span class="sqlkw">FROM</span> categorias c
+<span class="sqlkw">LEFT JOIN</span> productos p <span class="sqlkw">ON</span> p.categoria_id = c.id
+<span class="sqlkw">GROUP BY</span> c.id, c.nombre
+<span class="sqlkw">ORDER BY</span> cantidad <span class="sqlkw">DESC</span>;
+
+<span class="cmt">-- HAVING filtra DESPUÉS de agrupar</span>
+<span class="sqlkw">SELECT</span> categoria_id, <span class="sqlkw">COUNT</span>(*) <span class="sqlkw">AS</span> total
+<span class="sqlkw">FROM</span> productos
+<span class="sqlkw">GROUP BY</span> categoria_id
+<span class="sqlkw">HAVING</span> total &gt; <span class="str">3</span>;</code></pre>
+    </div>
+
+    <h3 class="sub">Subconsultas</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>subconsultas.sql</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">-- Productos con precio mayor al promedio</span>
+<span class="sqlkw">SELECT</span> nombre, precio
+<span class="sqlkw">FROM</span> productos
+<span class="sqlkw">WHERE</span> precio &gt; (
+  <span class="sqlkw">SELECT</span> <span class="sqlkw">AVG</span>(precio) <span class="sqlkw">FROM</span> productos
+);
+
+<span class="cmt">-- Usuarios que han hecho pedidos (EXISTS)</span>
+<span class="sqlkw">SELECT</span> u.nombre
+<span class="sqlkw">FROM</span> usuarios u
+<span class="sqlkw">WHERE EXISTS</span> (
+  <span class="sqlkw">SELECT</span> 1 <span class="sqlkw">FROM</span> pedidos p <span class="sqlkw">WHERE</span> p.cliente_id = u.id
+);</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Recuerda:</strong> <code>WHERE</code> filtra filas <em>antes</em> de agrupar;
+      <code>HAVING</code> filtra <em>después</em> de agrupar. No confundas ambos.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 6: APIs REST ===================== -->
+  <section class="topic" id="api">
+    <h2><span class="badge api">Tema 6</span> Concepto de API · REST y JSON</h2>
+    <p class="lead">Qué es una API, tipos, endpoints, métodos HTTP y cómo consumirlas.</p>
+
+    <p>
+      Una <strong>API (Application Programming Interface)</strong> es un conjunto de reglas
+      que permite que dos sistemas se comuniquen. Una <strong>API REST</strong> expone
+      <em>recursos</em> a través de <em>endpoints</em> (URLs) y usa los <strong>métodos HTTP</strong>
+      para indicar la acción.
+    </p>
+
+    <h3 class="sub">Métodos HTTP y su uso en un CRUD</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Método</th><th>Acción</th><th>Ejemplo endpoint</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET</code></td><td>Leer (Read)</td><td><code>GET /api/productos</code></td></tr>
+          <tr><td><code>POST</code></td><td>Crear (Create)</td><td><code>POST /api/productos</code></td></tr>
+          <tr><td><code>PUT</code> / <code>PATCH</code></td><td>Actualizar (Update)</td><td><code>PUT /api/productos/5</code></td></tr>
+          <tr><td><code>DELETE</code></td><td>Eliminar (Delete)</td><td><code>DELETE /api/productos/5</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">Flujo de una petición a una API REST</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flujo de una petición REST: cliente envía request, servidor procesa y responde JSON">
+        <defs>
+          <marker id="arrowAPI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#3FB950"/>
+          </marker>
+        </defs>
+
+        <!-- Cliente -->
+        <rect x="20" y="60" width="180" height="100" rx="12" fill="#777BB4"/>
+        <text x="110" y="100" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">CLIENTE</text>
+        <text x="110" y="122" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="11">JS · fetch()</text>
+        <text x="110" y="140" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="11">o PHP · cURL</text>
+
+        <!-- Servidor API -->
+        <rect x="270" y="60" width="180" height="100" rx="12" fill="#3FB950"/>
+        <text x="360" y="100" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">API REST</text>
+        <text x="360" y="122" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="11">/api/productos</text>
+        <text x="360" y="140" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="11">GET · POST · PUT</text>
+
+        <!-- BD -->
+        <rect x="520" y="60" width="180" height="100" rx="12" fill="#2F344E"/>
+        <text x="610" y="100" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">BASE DE DATOS</text>
+        <text x="610" y="122" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="11">MySQL</text>
+        <text x="610" y="140" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="11">Datos persistentes</text>
+
+        <!-- Flechas request -->
+        <line x1="200" y1="90" x2="270" y2="90" stroke="#3FB950" stroke-width="2.5" marker-end="url(#arrowAPI)"/>
+        <text x="235" y="82" text-anchor="middle" fill="#3FB950" font-family="Segoe UI,Arial" font-size="10" font-weight="700">REQUEST</text>
+        <text x="235" y="104" text-anchor="middle" fill="#3FB950" font-family="Segoe UI,Arial" font-size="9">GET /api</text>
+
+        <!-- response JSON -->
+        <line x1="270" y1="130" x2="200" y2="130" stroke="#777BB4" stroke-width="2.5" marker-end="url(#arrowAPI)"/>
+        <text x="235" y="150" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">JSON</text>
+
+        <!-- API <-> BD -->
+        <line x1="450" y1="90" x2="520" y2="90" stroke="#3FB950" stroke-width="2.5" marker-end="url(#arrowAPI)"/>
+        <line x1="520" y1="130" x2="450" y2="130" stroke="#3FB950" stroke-width="2.5" marker-end="url(#arrowAPI)"/>
+        <text x="485" y="82" text-anchor="middle" fill="#3FB950" font-family="Segoe UI,Arial" font-size="10" font-weight="700">SQL</text>
+        <text x="485" y="150" text-anchor="middle" fill="#3FB950" font-family="Segoe UI,Arial" font-size="10" font-weight="700">datos</text>
+
+        <!-- Códigos de estado -->
+        <text x="360" y="200" text-anchor="middle" fill="#5A5E78" font-family="Segoe UI,Arial" font-size="11">200 OK · 201 Created · 400 Bad Request · 404 Not Found · 500 Server Error</text>
+      </svg>
+      <figcaption>Figura 5. Flujo de una API REST: el cliente envía un request, la API consulta la BD y devuelve JSON con un código de estado HTTP.</figcaption>
+    </figure>
+
+    <h3 class="sub">Consumir una API desde JavaScript (fetch)</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>fetch.js</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">// GET: obtener lista de productos desde una API</span>
+<span class="kw">async function</span> <span class="fn">cargarProductos</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> resp = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.ejemplo.com/productos'</span>);
+
+    <span class="cmt">// fetch NO lanza error en 404/500: hay que revisar resp.ok</span>
+    <span class="kw">if</span> (!resp.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'HTTP '</span> + resp.status);
+
+    <span class="kw">const</span> datos = <span class="kw">await</span> resp.<span class="fn">json</span>();   <span class="cmt">// convierte respuesta a objeto JS</span>
+    console.<span class="fn">log</span>(datos);
+    datos.<span class="fn">forEach</span>(p =&gt; console.<span class="fn">log</span>(p.nombre, p.precio));
+  } <span class="kw">catch</span> (err) {
+    console.<span class="fn">error</span>(<span class="str">'Error al consumir API:'</span>, err.message);
+  }
+}
+
+<span class="cmt">// POST: enviar datos (crear un producto)</span>
+<span class="kw">async function</span> <span class="fn">crearProducto</span>(nuevo) {
+  <span class="kw">const</span> resp = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.ejemplo.com/productos'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: JSON.<span class="fn">stringify</span>(nuevo),
+  });
+  <span class="kw">return</span> resp.<span class="fn">json</span>();
+}
+
+<span class="fn">cargarProductos</span>();</code></pre>
+    </div>
+
+    <h3 class="sub">Consumir una API desde PHP con cURL</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>api.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="cmt">// cURL permite hacer peticiones HTTP desde PHP</span>
+<span class="var">$url</span> = <span class="str">'https://api.ejemplo.com/productos'</span>;
+<span class="var">$ch</span> = <span class="fn">curl_init</span>(<span class="var">$url</span>);
+
+<span class="fn">curl_setopt</span>(<span class="var">$ch</span>, CURLOPT_RETURNTRANSFER, <span class="kw">true</span>);
+<span class="fn">curl_setopt</span>(<span class="var">$ch</span>, CURLOPT_TIMEOUT, 10);
+<span class="fn">curl_setopt</span>(<span class="var">$ch</span>, CURLOPT_HTTPHEADER, [<span class="str">'Accept: application/json'</span>]);
+
+<span class="var">$respuesta</span> = <span class="fn">curl_exec</span>(<span class="var">$ch</span>);
+<span class="var">$codigo</span>    = <span class="fn">curl_getinfo</span>(<span class="var">$ch</span>, CURLINFO_HTTP_CODE);
+<span class="fn">curl_close</span>(<span class="var">$ch</span>);
+
+<span class="kw">if</span> (<span class="var">$codigo</span> === 200) {
+    <span class="var">$datos</span> = <span class="fn">json_decode</span>(<span class="var">$respuesta</span>, <span class="kw">true</span>);
+    <span class="kw">foreach</span> (<span class="var">$datos</span> <span class="kw">as</span> <span class="var">$p</span>) {
+        <span class="kw">echo</span> <span class="str">"Producto: "</span> . <span class="var">$p</span>[<span class="str">'nombre'</span>] . <span class="str">" - $"</span> . <span class="var">$p</span>[<span class="str">'precio'</span>] . <span class="str">"&lt;br&gt;"</span>;
+    }
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">"Error al consultar API (HTTP "</span> . <span class="var">$codigo</span> . <span class="str">")"</span>;
+}</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Integración con BD local:</strong> puedes leer datos de una API externa,
+      transformarlos y guardarlos en tu MySQL con <code>PDO</code>. Esa es la base de los
+      proyectos integradores del sinóptico.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 7: CONEXIÓN PHP-MYSQL ===================== -->
+  <section class="topic" id="conexion">
+    <h2><span class="badge">Tema 7</span> Conexión entre PHP y MySQL (PDO)</h2>
+    <p class="lead">Conectar de forma segura, con consultas preparadas y manejo de errores.</p>
+
+    <p>
+      En PHP moderno se recomienda usar <strong>PDO (PHP Data Objects)</strong> frente a
+      <code>mysqli</code>: soporta varios motores de BD y permite <strong>sentencias preparadas</strong>
+      que evitan inyección SQL.
+    </p>
+
+    <h3 class="sub">Archivo de conexión reutilizable</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>db.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="cmt">// Parámetros de conexión (ajusta a tu servidor local)</span>
+<span class="var">$host</span> = <span class="str">'localhost'</span>;
+<span class="var">$db</span>   = <span class="str">'tienda_web'</span>;
+<span class="var">$user</span> = <span class="str">'root'</span>;
+<span class="var">$pass</span> = <span class="str">''</span>;
+<span class="var">$charset</span> = <span class="str">'utf8mb4'</span>;
+
+<span class="var">$dsn</span> = <span class="str">"mysql:host=$host;dbname=$db;charset=$charset"</span>;
+<span class="var">$opciones</span> = [
+    PDO::ATTR_ERRMODE            =&gt; PDO::ERRMODE_EXCEPTION, <span class="cmt">// lanza excepciones</span>
+    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,        <span class="cmt">// arrays asociativos</span>
+    PDO::ATTR_EMULATE_PREPARES   =&gt; <span class="kw">false</span>,               <span class="cmt">// preparadas reales</span>
+];
+
+<span class="kw">try</span> {
+    <span class="var">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="var">$dsn</span>, <span class="var">$user</span>, <span class="var">$pass</span>, <span class="var">$opciones</span>);
+} <span class="kw">catch</span> (PDOException <span class="var">$e</span>) {
+    <span class="cmt">// En producción NO mostrar el mensaje real al usuario.</span>
+    <span class="kw">die</span>(<span class="str">'Error de conexión: '</span> . <span class="var">$e</span>-&gt;<span class="fn">getMessage</span>());
+}</code></pre>
+    </div>
+
+    <h3 class="sub">Consultas preparadas: evitar inyección SQL</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparación entre consulta con concatenación insegura y consulta preparada segura">
+        <!-- Inseguro -->
+        <rect x="20" y="20" width="320" height="190" rx="12" fill="#FFEDED" stroke="#E05C5C" stroke-width="2"/>
+        <text x="180" y="48" text-anchor="middle" fill="#B03030" font-family="Segoe UI,Arial" font-size="14" font-weight="700">❌ Concatenación insegura</text>
+        <rect x="40" y="70" width="280" height="50" rx="6" fill="#fff" stroke="#E05C5C"/>
+        <text x="52" y="90" fill="#B03030" font-family="Consolas,monospace" font-size="10">$sql = "SELECT * FROM usuarios</text>
+        <text x="52" y="108" fill="#B03030" font-family="Consolas,monospace" font-size="10">WHERE email = '$email'";</text>
+        <text x="40" y="145" fill="#B03030" font-family="Segoe UI,Arial" font-size="11">Si $email = "' OR '1'='1"</text>
+        <text x="40" y="165" fill="#B03030" font-family="Segoe UI,Arial" font-size="11">devuelve TODOS los usuarios.</text>
+        <text x="40" y="190" fill="#B03030" font-family="Segoe UI,Arial" font-size="11" font-weight="700">→ INYECCIÓN SQL</text>
+
+        <!-- Seguro -->
+        <rect x="380" y="20" width="320" height="190" rx="12" fill="#EDF7EE" stroke="#3FB950" stroke-width="2"/>
+        <text x="540" y="48" text-anchor="middle" fill="#1E6B2A" font-family="Segoe UI,Arial" font-size="14" font-weight="700">✅ Consulta preparada</text>
+        <rect x="400" y="70" width="280" height="50" rx="6" fill="#fff" stroke="#3FB950"/>
+        <text x="412" y="90" fill="#1E6B2A" font-family="Consolas,monospace" font-size="10">$stmt = $pdo-&gt;prepare(</text>
+        <text x="412" y="108" fill="#1E6B2A" font-family="Consolas,monospace" font-size="10">"SELECT * FROM usuarios WHERE email = ?");</text>
+        <text x="400" y="145" fill="#1E6B2A" font-family="Segoe UI,Arial" font-size="11">$stmt-&gt;execute([$email]);</text>
+        <text x="400" y="165" fill="#1E6B2A" font-family="Segoe UI,Arial" font-size="11">PDO escapa el valor automáticamente.</text>
+        <text x="400" y="190" fill="#1E6B2A" font-family="Segoe UI,Arial" font-size="11" font-weight="700">→ SEGURO</text>
+      </svg>
+      <figcaption>Figura 6. La concatenación directa permite inyección SQL; las sentencias preparadas tratan el valor como dato, no como código.</figcaption>
+    </figure>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>prepared.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'db.php'</span>;
+
+<span class="cmt">// Placeholders con ? (posicionales)</span>
+<span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(
+    <span class="str">'SELECT id, nombre, precio FROM productos WHERE precio &gt; ? AND stock &gt; ?'</span>
+);
+<span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="str">3</span>, <span class="str">0</span>]);
+<span class="var">$productos</span> = <span class="var">$stmt</span>-&gt;<span class="fn">fetchAll</span>();   <span class="cmt">// array asociativo</span>
+
+<span class="kw">foreach</span> (<span class="var">$productos</span> <span class="kw">as</span> <span class="var">$p</span>) {
+    <span class="kw">echo</span> <span class="fn">htmlspecialchars</span>(<span class="var">$p</span>[<span class="str">'nombre'</span>]) . <span class="str">' - $'</span> . <span class="var">$p</span>[<span class="str">'precio'</span>] . <span class="str">'&lt;br&gt;'</span>;
+}
+
+<span class="cmt">// Placeholders con nombre (más legible)</span>
+<span class="var">$stmt2</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(
+    <span class="str">'SELECT * FROM usuarios WHERE email = :email'</span>
+);
+<span class="var">$stmt2</span>-&gt;<span class="fn">execute</span>([<span class="str">':email'</span> =&gt; <span class="var">$email</span>]);
+<span class="var">$usuario</span> = <span class="var">$stmt2</span>-&gt;<span class="fn">fetch</span>();</code></pre>
+    </div>
+
+    <div class="warn">
+      <strong>Nunca</strong> concatenes datos del usuario en el SQL.
+      <strong>Siempre</strong> usa <code>prepare()</code> + <code>execute()</code>.
+      Y al mostrar en HTML, aplica <code>htmlspecialchars()</code> para evitar XSS.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 8: CRUD ===================== -->
+  <section class="topic" id="crud">
+    <h2><span class="badge">Tema 8</span> CRUD con PHP y MySQL</h2>
+    <p class="lead">Create, Read, Update, Delete: el corazón de toda aplicación web.</p>
+
+    <h3 class="sub">Ciclo completo de un CRUD</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ciclo CRUD: Create, Read, Update, Delete">
+        <defs>
+          <marker id="arrowCRUD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#777BB4"/>
+          </marker>
+        </defs>
+        <!-- Nodos -->
+        <rect x="40" y="30" width="150" height="60" rx="12" fill="#3FB950"/>
+        <text x="115" y="58" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">CREATE</text>
+        <text x="115" y="78" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="10">INSERT</text>
+
+        <rect x="290" y="30" width="150" height="60" rx="12" fill="#777BB4"/>
+        <text x="365" y="58" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">READ</text>
+        <text x="365" y="78" text-anchor="middle" fill="#E9E9F6" font-family="Segoe UI,Arial" font-size="10">SELECT</text>
+
+        <rect x="540" y="30" width="150" height="60" rx="12" fill="#E6A817"/>
+        <text x="615" y="58" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">UPDATE</text>
+        <text x="615" y="78" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="10">UPDATE</text>
+
+        <rect x="290" y="170" width="150" height="60" rx="12" fill="#E05C5C"/>
+        <text x="365" y="198" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">DELETE</text>
+        <text x="365" y="218" text-anchor="middle" fill="#FFEDED" font-family="Segoe UI,Arial" font-size="10">DELETE</text>
+
+        <!-- Flechas -->
+        <line x1="190" y1="60" x2="290" y2="60" stroke="#777BB4" stroke-width="2.5" marker-end="url(#arrowCRUD)"/>
+        <line x1="440" y1="60" x2="540" y2="60" stroke="#777BB4" stroke-width="2.5" marker-end="url(#arrowCRUD)"/>
+        <line x1="615" y1="90" x2="615" y2="170" stroke="#777BB4" stroke-width="2.5"/>
+        <line x1="615" y1="170" x2="440" y2="200" stroke="#777BB4" stroke-width="2.5" marker-end="url(#arrowCRUD)"/>
+        <line x1="290" y1="200" x2="115" y2="90" stroke="#777BB4" stroke-width="2.5" marker-end="url(#arrowCRUD)"/>
+
+        <text x="360" y="130" text-anchor="middle" fill="#5A5E78" font-family="Segoe UI,Arial" font-size="11" font-style="italic">Ciclo de vida de un registro</text>
+      </svg>
+      <figcaption>Figura 7. Ciclo CRUD: crear, leer, actualizar y eliminar registros sobre una misma entidad.</figcaption>
+    </figure>
+
+    <h3 class="sub">Create (INSERT)</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>crear.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'db.php'</span>;
+
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="var">$nombre</span> = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'nombre'</span>] ?? <span class="str">''</span>);
+    <span class="var">$precio</span> = (<span class="kw">float</span>)(<span class="var">$_POST</span>[<span class="str">'precio'</span>] ?? 0);
+    <span class="var">$stock</span>  = (<span class="kw">int</span>)(<span class="var">$_POST</span>[<span class="str">'stock'</span>] ?? 0);
+
+    <span class="kw">if</span> (<span class="var">$nombre</span> === <span class="str">''</span> || <span class="var">$precio</span> &lt;= 0) {
+        <span class="var">$error</span> = <span class="str">'Nombre y precio son obligatorios'</span>;
+    } <span class="kw">else</span> {
+        <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(
+            <span class="str">'INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)'</span>
+        );
+        <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="var">$nombre</span>, <span class="var">$precio</span>, <span class="var">$stock</span>]);
+        <span class="kw">header</span>(<span class="str">'Location: listar.php'</span>);
+        <span class="kw">exit</span>;
+    }
+}
+<span class="cmt">?&gt;</span>
+
+<span class="tag">&lt;form</span> method=<span class="str">"post"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"nombre"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"precio"</span> type=<span class="str">"number"</span> step=<span class="str">"0.01"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"stock"</span> type=<span class="str">"number"</span> value=<span class="str">"0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;button&gt;</span>Guardar<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/form&gt;</span></code></pre>
+    </div>
+
+    <h3 class="sub">Read (SELECT) con listado en HTML</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>listar.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'db.php'</span>;
+<span class="var">$productos</span> = <span class="var">$pdo</span>-&gt;<span class="fn">query</span>(<span class="str">'SELECT id, nombre, precio, stock FROM productos ORDER BY id DESC'</span>)
+                    -&gt;<span class="fn">fetchAll</span>();
+<span class="cmt">?&gt;</span>
+<span class="tag">&lt;table&gt;</span>
+  <span class="tag">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;</span>ID<span class="tag">&lt;/th&gt;&lt;th&gt;</span>Nombre<span class="tag">&lt;/th&gt;&lt;th&gt;</span>Precio<span class="tag">&lt;/th&gt;&lt;th&gt;</span>Stock<span class="tag">&lt;/th&gt;&lt;th&gt;</span>Acciones<span class="tag">&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</span>
+  <span class="tag">&lt;tbody&gt;</span>
+  <span class="cmt">&lt;?php foreach ($productos as $p): ?&gt;</span>
+    <span class="tag">&lt;tr&gt;</span>
+      <span class="tag">&lt;td&gt;&lt;?=</span> (int)<span class="var">$p</span>[<span class="str">'id'</span>] <span class="tag">?&gt;&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="var">$p</span>[<span class="str">'nombre'</span>]) <span class="tag">?&gt;&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;&lt;?=</span> <span class="fn">number_format</span>(<span class="var">$p</span>[<span class="str">'precio'</span>], 2) <span class="tag">?&gt;&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;&lt;?=</span> (int)<span class="var">$p</span>[<span class="str">'stock'</span>] <span class="tag">?&gt;&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;</span>
+        <span class="tag">&lt;a</span> href=<span class="str">"editar.php?id=&lt;?= $p['id'] ?&gt;"</span><span class="tag">&gt;</span>Editar<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;a</span> href=<span class="str">"eliminar.php?id=&lt;?= $p['id'] ?&gt;"</span>
+           onclick=<span class="str">"return confirm('¿Eliminar?')"</span><span class="tag">&gt;</span>Eliminar<span class="tag">&lt;/a&gt;</span>
+      <span class="tag">&lt;/td&gt;</span>
+    <span class="tag">&lt;/tr&gt;</span>
+  <span class="cmt">&lt;?php endforeach; ?&gt;</span>
+  <span class="tag">&lt;/tbody&gt;</span>
+<span class="tag">&lt;/table&gt;</span></code></pre>
+    </div>
+
+    <h3 class="sub">Update y Delete</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>editar_eliminar.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'db.php'</span>;
+
+<span class="cmt">// ----- UPDATE -----</span>
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span> &amp;&amp; <span class="fn">isset</span>(<span class="var">$_POST</span>[<span class="str">'id'</span>])) {
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(
+        <span class="str">'UPDATE productos SET nombre = ?, precio = ?, stock = ? WHERE id = ?'</span>
+    );
+    <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([
+        <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'nombre'</span>]),
+        (<span class="kw">float</span>)<span class="var">$_POST</span>[<span class="str">'precio'</span>],
+        (<span class="kw">int</span>)<span class="var">$_POST</span>[<span class="str">'stock'</span>],
+        (<span class="kw">int</span>)<span class="var">$_POST</span>[<span class="str">'id'</span>],
+    ]);
+    <span class="kw">header</span>(<span class="str">'Location: listar.php'</span>);
+    <span class="kw">exit</span>;
+}
+
+<span class="cmt">// ----- DELETE -----</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$_GET</span>[<span class="str">'eliminar'</span>])) {
+    <span class="var">$id</span> = (<span class="kw">int</span>)<span class="var">$_GET</span>[<span class="str">'eliminar'</span>];
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(<span class="str">'DELETE FROM productos WHERE id = ?'</span>);
+    <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="var">$id</span>]);
+    <span class="kw">header</span>(<span class="str">'Location: listar.php'</span>);
+    <span class="kw">exit</span>;
+}</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Buena práctica:</strong> tras un POST exitoso, redirige con
+      <code>header('Location: ...')</code> + <code>exit</code>. Así evitas que al recargar
+      se dupliquen registros (patrón PRG: Post/Redirect/Get).
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 9: FORMULARIOS ===================== -->
+  <section class="topic" id="formularios">
+    <h2><span class="badge">Tema 9</span> Validación de Formularios</h2>
+    <p class="lead">Validar en frontend (HTML/JS) y en backend (PHP) siempre en conjunto.</p>
+
+    <h3 class="sub">Doble validación: cliente y servidor</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Validación en dos capas: cliente y servidor">
+        <defs>
+          <marker id="arrowVal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F5B93"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="90" width="160" height="80" rx="12" fill="#777BB4"/>
+        <text x="100" y="122" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">USUARIO</text>
+        <text x="100" y="144" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="11">llena el formulario</text>
+
+        <rect x="240" y="60" width="180" height="140" rx="12" fill="#E6A817"/>
+        <text x="330" y="88" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">FRONTEND</text>
+        <text x="330" y="110" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="11">HTML5 required · type</text>
+        <text x="330" y="128" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="11">JS: validación inmediata</text>
+        <text x="330" y="146" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="11">Mejora la UX</text>
+        <text x="330" y="170" text-anchor="middle" fill="#8a5a00" font-family="Segoe UI,Arial" font-size="10" font-style="italic">se puede saltar</text>
+
+        <rect x="480" y="60" width="220" height="140" rx="12" fill="#3FB950"/>
+        <text x="590" y="88" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">BACKEND (PHP)</text>
+        <text x="590" y="110" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="11">filter_var · trim</text>
+        <text x="590" y="128" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="11">comprueba tipos y rangos</text>
+        <text x="590" y="146" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="11">escapa con htmlspecialchars</text>
+        <text x="590" y="170" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="10" font-style="italic" font-weight="700">OBLIGATORIA</text>
+
+        <line x1="180" y1="130" x2="240" y2="130" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowVal)"/>
+        <line x1="420" y1="130" x2="480" y2="130" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowVal)"/>
+        <text x="450" y="122" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">POST</text>
+      </svg>
+      <figcaption>Figura 8. La validación en el cliente mejora la experiencia, pero la validación en el servidor es la que realmente protege la aplicación.</figcaption>
+    </figure>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>validar.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="var">$errores</span> = [];
+<span class="var">$nombre</span> = <span class="var">$email</span> = <span class="var">$edad</span> = <span class="str">''</span>;
+
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="var">$nombre</span> = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'nombre'</span>] ?? <span class="str">''</span>);
+    <span class="var">$email</span>  = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>);
+    <span class="var">$edad</span>   = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'edad'</span>] ?? <span class="str">''</span>);
+
+    <span class="cmt">// 1) Nombre: mínimo 3 caracteres</span>
+    <span class="kw">if</span> (<span class="fn">mb_strlen</span>(<span class="var">$nombre</span>) &lt; 3) {
+        <span class="var">$errores</span>[] = <span class="str">'El nombre debe tener al menos 3 caracteres.'</span>;
+    }
+
+    <span class="cmt">// 2) Email: formato válido</span>
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="var">$email</span>, FILTER_VALIDATE_EMAIL)) {
+        <span class="var">$errores</span>[] = <span class="str">'El email no es válido.'</span>;
+    }
+
+    <span class="cmt">// 3) Edad: entero entre 1 y 120</span>
+    <span class="var">$edadInt</span> = <span class="fn">filter_var</span>(<span class="var">$edad</span>, FILTER_VALIDATE_INT);
+    <span class="kw">if</span> (<span class="var">$edadInt</span> === <span class="kw">false</span> || <span class="var">$edadInt</span> &lt; 1 || <span class="var">$edadInt</span> &gt; 120) {
+        <span class="var">$errores</span>[] = <span class="str">'La edad debe ser un número entre 1 y 120.'</span>;
+    }
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="var">$errores</span>)) {
+        <span class="kw">echo</span> <span class="str">'&lt;p class="ok"&gt;Datos válidos: '</span>
+           . <span class="fn">htmlspecialchars</span>(<span class="var">$nombre</span>) . <span class="str">'&lt;/p&gt;'</span>;
+    }
+}
+<span class="cmt">?&gt;</span>
+
+<span class="tag">&lt;form</span> method=<span class="str">"post"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"nombre"</span> value=<span class="str">"&lt;?= htmlspecialchars($nombre) ?&gt;"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"email"</span> type=<span class="str">"email"</span> value=<span class="str">"&lt;?= htmlspecialchars($email) ?&gt;"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"edad"</span> type=<span class="str">"number"</span> min=<span class="str">"1"</span> max=<span class="str">"120"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;button&gt;</span>Enviar<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/form&gt;</span>
+
+<span class="cmt">&lt;?php if ($errores): ?&gt;</span>
+  <span class="tag">&lt;ul class</span>=<span class="str">"errores"</span><span class="tag">&gt;</span>
+    <span class="cmt">&lt;?php foreach ($errores as $e): ?&gt;</span>
+      <span class="tag">&lt;li&gt;&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="var">$e</span>) <span class="tag">?&gt;&lt;/li&gt;</span>
+    <span class="cmt">&lt;?php endforeach; ?&gt;</span>
+  <span class="tag">&lt;/ul&gt;</span>
+<span class="cmt">&lt;?php endif; ?&gt;</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Regla de oro:</strong> nunca confíes en el navegador.
+      Todo dato que venga por <code>$_GET</code>, <code>$_POST</code>, <code>$_COOKIE</code>
+      debe validarse y escaparse en el servidor.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 10: SESIONES ===================== -->
+  <section class="topic" id="sesiones">
+    <h2><span class="badge">Tema 10</span> Sesiones y Autenticación Básica</h2>
+    <p class="lead">Login con contraseña hasheada y protección de páginas privadas.</p>
+
+    <h3 class="sub">Flujo de login</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flujo de autenticación con sesiones PHP">
+        <defs>
+          <marker id="arrowSes" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F5B93"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="80" width="150" height="70" rx="12" fill="#777BB4"/>
+        <text x="95" y="112" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Login</text>
+        <text x="95" y="132" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="10">email + password</text>
+
+        <rect x="220" y="80" width="170" height="70" rx="12" fill="#3FB950"/>
+        <text x="305" y="106" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Verificar</text>
+        <text x="305" y="126" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="10">password_verify()</text>
+        <text x="305" y="142" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="10">contra hash en BD</text>
+
+        <rect x="440" y="80" width="150" height="70" rx="12" fill="#E6A817"/>
+        <text x="515" y="112" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Sesión</text>
+        <text x="515" y="132" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="10">$_SESSION[user]</text>
+
+        <rect x="620" y="80" width="80" height="70" rx="12" fill="#2F344E"/>
+        <text x="660" y="112" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Cookie</text>
+        <text x="660" y="132" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="10">PHPSESSID</text>
+
+        <line x1="170" y1="115" x2="220" y2="115" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowSes)"/>
+        <line x1="390" y1="115" x2="440" y2="115" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowSes)"/>
+        <line x1="590" y1="115" x2="620" y2="115" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowSes)"/>
+
+        <text x="360" y="200" text-anchor="middle" fill="#5A5E78" font-family="Segoe UI,Arial" font-size="11" font-style="italic">Si password_verify() devuelve true → guardar datos en $_SESSION y redirigir al panel</text>
+      </svg>
+      <figcaption>Figura 9. Flujo de autenticación: verificar contraseña con hash, guardar usuario en <code>$_SESSION</code> y emitir cookie de sesión.</figcaption>
+    </figure>
+
+    <h3 class="sub">Registro con contraseña hasheada</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>registro.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'db.php'</span>;
+
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="var">$nombre</span> = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'nombre'</span>]);
+    <span class="var">$email</span>  = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'email'</span>]);
+    <span class="var">$clave</span>  = <span class="var">$_POST</span>[<span class="str">'password'</span>];
+
+    <span class="cmt">// NUNCA guardar la contraseña en texto plano</span>
+    <span class="var">$hash</span> = <span class="fn">password_hash</span>(<span class="var">$clave</span>, PASSWORD_DEFAULT);
+
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(
+        <span class="str">'INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)'</span>
+    );
+    <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="var">$nombre</span>, <span class="var">$email</span>, <span class="var">$hash</span>]);
+
+    <span class="kw">header</span>(<span class="str">'Location: login.php'</span>);
+    <span class="kw">exit</span>;
+}</code></pre>
+    </div>
+
+    <h3 class="sub">Login y cierre de sesión</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>login.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">session_start</span>();          <span class="cmt">// SIEMPRE al inicio del archivo</span>
+<span class="kw">require</span> <span class="str">'db.php'</span>;
+
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="var">$email</span> = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'email'</span>]);
+    <span class="var">$clave</span> = <span class="var">$_POST</span>[<span class="str">'password'</span>];
+
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(<span class="str">'SELECT id, nombre, password FROM usuarios WHERE email = ?'</span>);
+    <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="var">$email</span>]);
+    <span class="var">$u</span> = <span class="var">$stmt</span>-&gt;<span class="fn">fetch</span>();
+
+    <span class="kw">if</span> (<span class="var">$u</span> &amp;&amp; <span class="fn">password_verify</span>(<span class="var">$clave</span>, <span class="var">$u</span>[<span class="str">'password'</span>])) {
+        <span class="fn">session_regenerate_id</span>(<span class="kw">true</span>);   <span class="cmt">// evita fijación de sesión</span>
+        <span class="var">$_SESSION</span>[<span class="str">'usuario_id'</span>] = <span class="var">$u</span>[<span class="str">'id'</span>];
+        <span class="var">$_SESSION</span>[<span class="str">'usuario'</span>]    = <span class="var">$u</span>[<span class="str">'nombre'</span>];
+        <span class="kw">header</span>(<span class="str">'Location: panel.php'</span>);
+        <span class="kw">exit</span>;
+    }
+    <span class="var">$error</span> = <span class="str">'Credenciales incorrectas'</span>;
+}
+<span class="cmt">?&gt;</span>
+
+<span class="tag">&lt;?php</span> <span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$error</span>)) <span class="kw">echo</span> <span class="str">'&lt;p&gt;'</span> . <span class="fn">htmlspecialchars</span>(<span class="var">$error</span>) . <span class="str">'&lt;/p&gt;'</span>; <span class="tag">?&gt;</span>
+<span class="tag">&lt;form</span> method=<span class="str">"post"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"email"</span> type=<span class="str">"email"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> name=<span class="str">"password"</span> type=<span class="str">"password"</span> required<span class="tag">&gt;</span>
+  <span class="tag">&lt;button&gt;</span>Entrar<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/form&gt;</span></code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>panel.php · logout.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php // panel.php — página protegida</span>
+<span class="kw">session_start</span>();
+<span class="kw">if</span> (!<span class="fn">isset</span>(<span class="var">$_SESSION</span>[<span class="str">'usuario_id'</span>])) {
+    <span class="kw">header</span>(<span class="str">'Location: login.php'</span>);
+    <span class="kw">exit</span>;
+}
+<span class="kw">echo</span> <span class="str">'Bienvenido, '</span> . <span class="fn">htmlspecialchars</span>(<span class="var">$_SESSION</span>[<span class="str">'usuario'</span>]);
+<span class="cmt">?&gt;</span>
+<span class="tag">&lt;a</span> href=<span class="str">"logout.php"</span><span class="tag">&gt;</span>Cerrar sesión<span class="tag">&lt;/a&gt;</span>
+
+<span class="cmt">&lt;?php // logout.php</span>
+<span class="kw">session_start</span>();
+<span class="var">$_SESSION</span> = [];
+<span class="fn">session_destroy</span>();
+<span class="kw">header</span>(<span class="str">'Location: login.php'</span>);
+<span class="kw">exit</span>;</code></pre>
+    </div>
+
+    <div class="warn">
+      <strong>Nunca</strong> guardes contraseñas en texto plano ni uses MD5/SHA1.
+      Usa <code>password_hash()</code> + <code>password_verify()</code>.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 11: MVC ===================== -->
+  <section class="topic" id="mvc">
+    <h2><span class="badge">Tema 11</span> Introducción a MVC</h2>
+    <p class="lead">Separar Modelo, Vista y Controlador para mantener el código ordenado.</p>
+
+    <p>
+      <strong>MVC (Modelo–Vista–Controlador)</strong> es un patrón de arquitectura que
+      divide la aplicación en tres responsabilidades. No es obligatorio, pero facilita
+      el mantenimiento y el trabajo en equipo.
+    </p>
+
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Patrón MVC: usuario, controlador, modelo y vista">
+        <defs>
+          <marker id="arrowMVC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F5B93"/>
+          </marker>
+        </defs>
+
+        <!-- Usuario -->
+        <rect x="20" y="130" width="140" height="70" rx="12" fill="#777BB4"/>
+        <text x="90" y="162" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">USUARIO</text>
+        <text x="90" y="182" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="10">navegador</text>
+
+        <!-- Controlador -->
+        <rect x="220" y="130" width="180" height="70" rx="12" fill="#3FB950"/>
+        <text x="310" y="158" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">CONTROLADOR</text>
+        <text x="310" y="178" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="10">recibe petición · valida</text>
+        <text x="310" y="192" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="10">decide qué hacer</text>
+
+        <!-- Modelo -->
+        <rect x="480" y="20" width="200" height="80" rx="12" fill="#E6A817"/>
+        <text x="580" y="52" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">MODELO</text>
+        <text x="580" y="72" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="10">accede a la BD</text>
+        <text x="580" y="88" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="10">reglas de negocio</text>
+
+        <!-- Vista -->
+        <rect x="480" y="230" width="200" height="80" rx="12" fill="#2F344E"/>
+        <text x="580" y="262" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">VISTA</text>
+        <text x="580" y="282" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="10">HTML · plantillas</text>
+        <text x="580" y="298" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="10">lo que ve el usuario</text>
+
+        <!-- Flechas -->
+        <line x1="160" y1="165" x2="220" y2="165" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowMVC)"/>
+        <text x="190" y="157" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">1. request</text>
+
+        <line x1="400" y1="150" x2="480" y2="80" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowMVC)"/>
+        <text x="450" y="105" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">2. consulta</text>
+
+        <line x1="480" y1="105" x2="400" y2="175" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowMVC)"/>
+        <text x="440" y="150" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">3. datos</text>
+
+        <line x1="400" y1="180" x2="480" y2="250" stroke="#4F5B93" stroke-width="2.5" marker-end="url(#arrowMVC)"/>
+        <text x="450" y="225" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">4. render</text>
+
+        <line x1="480" y1="270" x2="160" y2="200" stroke="#4F5B93" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowMVC)"/>
+        <text x="280" y="245" text-anchor="middle" fill="#4F5B93" font-family="Segoe UI,Arial" font-size="10" font-weight="700">5. HTML final</text>
+      </svg>
+      <figcaption>Figura 10. Flujo MVC: el controlador recibe la petición, consulta el modelo, y renderiza la vista con los datos.</figcaption>
+    </figure>
+
+    <h3 class="sub">Ejemplo mínimo de estructura MVC</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>estructura.txt</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">proyecto/
+├── index.php               ← front controller (enruta)
+├── config/
+│   └── db.php              ← conexión PDO
+├── models/
+│   └── Producto.php        ← acceso a datos
+├── controllers/
+│   └── ProductoController.php
+└── views/
+    └── productos/
+        ├── lista.php
+        └── form.php</span></code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>models/Producto.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">class</span> <span class="fn">Producto</span> {
+    <span class="kw">private</span> <span class="var">$pdo</span>;
+
+    <span class="kw">public function</span> <span class="fn">__construct</span>(PDO <span class="var">$pdo</span>) {
+        <span class="var">$this</span>-&gt;pdo = <span class="var">$pdo</span>;
+    }
+
+    <span class="kw">public function</span> <span class="fn">todos</span>(): <span class="kw">array</span> {
+        <span class="kw">return</span> <span class="var">$this</span>-&gt;pdo
+            -&gt;<span class="fn">query</span>(<span class="str">'SELECT * FROM productos ORDER BY id DESC'</span>)
+            -&gt;<span class="fn">fetchAll</span>();
+    }
+
+    <span class="kw">public function</span> <span class="fn">crear</span>(<span class="kw">string</span> <span class="var">$nombre</span>, <span class="kw">float</span> <span class="var">$precio</span>): <span class="kw">void</span> {
+        <span class="var">$stmt</span> = <span class="var">$this</span>-&gt;pdo-&gt;<span class="fn">prepare</span>(
+            <span class="str">'INSERT INTO productos (nombre, precio) VALUES (?, ?)'</span>
+        );
+        <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="var">$nombre</span>, <span class="var">$precio</span>]);
+    }
+}</code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>controllers/ProductoController.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require_once</span> <span class="str">__DIR__</span> . <span class="str">'/../models/Producto.php'</span>;
+
+<span class="kw">class</span> <span class="fn">ProductoController</span> {
+    <span class="kw">private</span> <span class="var">$modelo</span>;
+
+    <span class="kw">public function</span> <span class="fn">__construct</span>(PDO <span class="var">$pdo</span>) {
+        <span class="var">$this</span>-&gt;modelo = <span class="kw">new</span> <span class="fn">Producto</span>(<span class="var">$pdo</span>);
+    }
+
+    <span class="kw">public function</span> <span class="fn">index</span>(): <span class="kw">void</span> {
+        <span class="var">$productos</span> = <span class="var">$this</span>-&gt;modelo-&gt;<span class="fn">todos</span>();
+        <span class="kw">require</span> <span class="str">__DIR__</span> . <span class="str">'/../views/productos/lista.php'</span>;
+    }
+
+    <span class="kw">public function</span> <span class="fn">guardar</span>(): <span class="kw">void</span> {
+        <span class="var">$nombre</span> = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'nombre'</span>] ?? <span class="str">''</span>);
+        <span class="var">$precio</span> = (<span class="kw">float</span>)(<span class="var">$_POST</span>[<span class="str">'precio'</span>] ?? 0);
+
+        <span class="kw">if</span> (<span class="var">$nombre</span> !== <span class="str">''</span> &amp;&amp; <span class="var">$precio</span> &gt; 0) {
+            <span class="var">$this</span>-&gt;modelo-&gt;<span class="fn">crear</span>(<span class="var">$nombre</span>, <span class="var">$precio</span>);
+        }
+        <span class="kw">header</span>(<span class="str">'Location: index.php?accion=lista'</span>);
+        <span class="kw">exit</span>;
+    }
+}</code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>index.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'config/db.php'</span>;
+<span class="kw">require</span> <span class="str">'controllers/ProductoController.php'</span>;
+
+<span class="var">$ctrl</span>   = <span class="kw">new</span> <span class="fn">ProductoController</span>(<span class="var">$pdo</span>);
+<span class="var">$accion</span> = <span class="var">$_GET</span>[<span class="str">'accion'</span>] ?? <span class="str">'lista'</span>;
+
+<span class="kw">switch</span> (<span class="var">$accion</span>) {
+    <span class="kw">case</span> <span class="str">'guardar'</span>: <span class="var">$ctrl</span>-&gt;<span class="fn">guardar</span>(); <span class="kw">break</span>;
+    <span class="kw">default</span>:          <span class="var">$ctrl</span>-&gt;<span class="fn">index</span>();   <span class="kw">break</span>;
+}</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Ventajas de MVC:</strong> código reutilizable, separación de responsabilidades,
+      facilita pruebas y trabajo en equipo. Frameworks como Laravel o Symfony lo implementan
+      de forma más completa, pero entender el patrón desde cero es clave.
+    </div>
+  </section>
+
+  <!-- ===================== TEMA 12: PROYECTO FINAL ===================== -->
+  <section class="topic" id="proyecto">
+    <h2><span class="badge">Tema 12</span> Proyecto Final · Sistema Web para PYME</h2>
+    <p class="lead">Integrar todo lo aprendido en una aplicación funcional con BD y API.</p>
+
+    <p>
+      El sinóptico plantea como evaluación un <strong>proyecto final de sistema web para una PYME</strong>.
+      Debe integrar: CRUD, autenticación, validación, consumo de API, diseño responsive y
+      base de datos normalizada.
+    </p>
+
+    <h3 class="sub">Requisitos mínimos del proyecto</h3>
+    <ol class="list">
+      <li>Base de datos en MySQL normalizada al menos a 3FN, creada desde PhpMyAdmin.</li>
+      <li>Módulo de <strong>autenticación</strong> (registro, login, logout) con contraseñas hasheadas.</li>
+      <li>CRUD completo de al menos <strong>dos entidades</strong> relacionadas (por ejemplo: productos y categorías).</li>
+      <li>Formularios con <strong>validación en frontend y backend</strong>.</li>
+      <li>Consumo de al menos una <strong>API REST externa</strong> (por ejemplo, cotización de moneda) e integración de esos datos con la BD local.</li>
+      <li>Diseño <strong>responsive</strong> con HTML/CSS y uso de JavaScript para interacciones.</li>
+      <li>Organización del código siguiendo una estructura cercana a <strong>MVC</strong>.</li>
+      <li>Documentación breve: descripción, modelo de datos y capturas.</li>
+    </ol>
+
+    <h3 class="sub">Diagrama de módulos sugerido</h3>
+    <figure class="svg-figure">
+      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Módulos del sistema web final">
+        <defs>
+          <marker id="arrowProj" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F5B93"/>
+          </marker>
+        </defs>
+
+        <!-- Núcleo -->
+        <rect x="270" y="130" width="180" height="70" rx="14" fill="#777BB4"/>
+        <text x="360" y="162" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">SISTEMA PYME</text>
+        <text x="360" y="182" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="10">PHP + MySQL</text>
+
+        <!-- Módulos -->
+        <rect x="20" y="30" width="150" height="60" rx="10" fill="#3FB950"/>
+        <text x="95" y="58" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Usuarios</text>
+        <text x="95" y="76" text-anchor="middle" fill="#EAF7EC" font-family="Segoe UI,Arial" font-size="9">login · roles</text>
+
+        <rect x="20" y="230" width="150" height="60" rx="10" fill="#E6A817"/>
+        <text x="95" y="258" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Productos</text>
+        <text x="95" y="276" text-anchor="middle" fill="#FFF6E6" font-family="Segoe UI,Arial" font-size="9">CRUD + categorías</text>
+
+        <rect x="550" y="30" width="150" height="60" rx="10" fill="#2F344E"/>
+        <text x="625" y="58" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Ventas</text>
+        <text x="625" y="76" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="9">pedidos · detalle</text>
+
+        <rect x="550" y="230" width="150" height="60" rx="10" fill="#4F5B93"/>
+        <text x="625" y="258" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">Reportes</text>
+        <text x="625" y="276" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="9">JOIN · GROUP BY</text>
+
+        <!-- API externa -->
+        <rect x="270" y="20" width="180" height="60" rx="10" fill="#8B8FCB"/>
+        <text x="360" y="48" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="12" font-weight="700">API externa</text>
+        <text x="360" y="66" text-anchor="middle" fill="#EAEAF5" font-family="Segoe UI,Arial" font-size="9">fetch · cURL · JSON</text>
+
+        <!-- Flechas -->
+        <line x1="170" y1="70" x2="270" y2="140" stroke="#4F5B93" stroke-width="2" marker-end="url(#arrowProj)"/>
+        <line x1="170" y1="250" x2="270" y2="180" stroke="#4F5B93" stroke-width="2" marker-end="url(#arrowProj)"/>
+        <line x1="450" y1="140" x2="550" y2="70" stroke="#4F5B93" stroke-width="2" marker-end="url(#arrowProj)"/>
+        <line x1="450" y1="180" x2="550" y2="250" stroke="#4F5B93" stroke-width="2" marker-end="url(#arrowProj)"/>
+        <line x1="360" y1="130" x2="360" y2="80" stroke="#8B8FCB" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowProj)"/>
+      </svg>
+      <figcaption>Figura 11. Módulos sugeridos para el proyecto final de la PYME, integrando autenticación, CRUD, reportes y consumo de API.</figcaption>
+    </figure>
+
+    <h3 class="sub">Ejemplo integrador: guardar cotización de una API en la BD</h3>
+    <div class="code-wrap">
+      <div class="code-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span>cotizacion.php</span>
+        <button class="copy-btn" type="button">Copiar</button>
+      </div>
+      <pre><code><span class="cmt">&lt;?php</span>
+<span class="kw">require</span> <span class="str">'config/db.php'</span>;
+
+<span class="cmt">// 1) Consumir API de cotización (ejemplo público)</span>
+<span class="var">$url</span> = <span class="str">'https://api.exchangerate.host/latest?base=USD&amp;symbols=EUR'</span>;
+<span class="var">$ch</span>  = <span class="fn">curl_init</span>(<span class="var">$url</span>);
+<span class="fn">curl_setopt</span>(<span class="var">$ch</span>, CURLOPT_RETURNTRANSFER, <span class="kw">true</span>);
+<span class="var">$json</span> = <span class="fn">curl_exec</span>(<span class="var">$ch</span>);
+<span class="fn">curl_close</span>(<span class="var">$ch</span>);
+
+<span class="var">$datos</span> = <span class="fn">json_decode</span>(<span class="var">$json</span>, <span class="kw">true</span>);
+
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="var">$datos</span>[<span class="str">'rates'</span>][<span class="str">'EUR'</span>])) {
+    <span class="var">$eur</span> = (<span class="kw">float</span>)<span class="var">$datos</span>[<span class="str">'rates'</span>][<span class="str">'EUR'</span>];
+
+    <span class="cmt">// 2) Guardar en BD local</span>
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(
+        <span class="str">'INSERT INTO cotizaciones (par, valor, fecha) VALUES (?, ?, NOW())'</span>
+    );
+    <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="str">'USD/EUR'</span>, <span class="var">$eur</span>]);
+
+    <span class="kw">echo</span> <span class="str">"Cotización guardada: 1 USD = $eur EUR"</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">'No se pudo obtener la cotización.'</span>;
+}</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>Evaluación sugerida por el sinóptico:</strong> CRUD funcionales, presentación
+      de módulos, pruebas prácticas de programación, talleres aplicados, exposiciones
+      y proyecto final de sistema web para una PYME.
+    </div>
+
+    <h3 class="sub">Checklist final</h3>
+    <ul class="steps">
+      <li><strong>BD:</strong> normalizada, con PK y FK, creada en MySQL/PhpMyAdmin.</li>
+      <li><strong>PHP:</strong> conexión PDO, sentencias preparadas, sesiones seguras.</li>
+      <li><strong>CRUD:</strong> dos entidades relacionadas con validación doble.</li>
+      <li><strong>API:</strong> consumo con fetch o cURL y almacenamiento en BD local.</li>
+      <li><strong>Frontend:</strong> HTML semántico, CSS responsive, JS para interacciones.</li>
+      <li><strong>MVC:</strong> separación de modelos, controladores y vistas.</li>
+      <li><strong>Documentación:</strong> README con descripción, diagramas y capturas.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <p><strong>Electiva III · Base de Datos Web</strong> · Guía única de estudio basada en el sinóptico oficial (AES522).</p>
+  <p>Instituto Universitario de Tecnología para la Informática · Quinto semestre · 48 horas · 2 UC.</p>
+</footer>
+
+<a class="top-link" href="#inicio" title="Volver arriba" aria-label="Volver arriba">↑</a>
+
+<script>
+  // Copiar código al portapapeles
+  document.querySelectorAll('button.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var wrap = btn.closest('.code-wrap');
+      var code = wrap ? wrap.querySelector('pre code') : null;
+      if(!code) return;
+
+      var text = code.innerText;
+      var done = function(){
+        var original = btn.textContent;
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('copied');
+        setTimeout(function(){
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1600);
+      };
+
+      if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(text).then(done).catch(function(){
+          fallbackCopy(text, done);
+        });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+
+  function fallbackCopy(text, cb){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    cb();
+  }
+</script>
+</body>
+</html>
