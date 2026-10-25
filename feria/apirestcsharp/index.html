@@ -229,6 +229,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography; // Necesario para SHA256
+using System.Text;                   // Necesario para Encoding.UTF8
 using System.Web.Http;
 using MySql.Data.MySqlClient;
 using APIFeria.Models;
@@ -237,52 +239,58 @@ namespace APIFeria.Controllers
 {
     public class AuthController : ApiController
     {
-        // Obtenemos la cadena de conexión definida en el archivo Web.config
         private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
-        
-        // Diccionario estático en memoria para almacenar las sesiones activas (Token -> Usuario)
-        public static Dictionary&lt;string, string&gt; Sesiones = new Dictionary&lt;string, string&gt;();
 
-        // Método POST para iniciar sesión: api/Auth/Login
+        // Memoria estática compartida para almacenar sesiones activas (Token -> Usuario)
+        public static Dictionary<string, string> Sesiones = new Dictionary<string, string>();
+
+        // Método privado auxiliar para cifrar el texto en SHA256
+        private string EncriptarSHA256(string texto)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
+                var sb = new StringBuilder();
+                foreach (var b in bytes) sb.Append(b.ToString("x2"));
+                return sb.ToString();
+            }
+        }
+
+        // POST: api/Auth/Login
         [HttpPost]
         public HttpResponseMessage Login([FromBody] LoginModel credenciales)
         {
-            // Validamos que el cliente haya enviado los datos obligatorios
             if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) || string.IsNullOrEmpty(credenciales.password))
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Debe enviar usuario y contraseña.");
 
+            // Ciframos lo que escribe el alumno para compararlo con el hash de la base de datos
+            string passHash = EncriptarSHA256(credenciales.password);
             bool usuarioValido = false;
 
-            // Conexión y consulta a MySQL usando ADO.NET clásico
             using (var conexion = new MySqlConnection(conexionDB))
             {
                 string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
                 using (var cmd = new MySqlCommand(query, conexion))
                 {
-                    // Añadimos parámetros para prevenir ataques de Inyección SQL
                     cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
-                    cmd.Parameters.AddWithValue("@pass", credenciales.password);
-                    
+                    cmd.Parameters.AddWithValue("@pass", passHash); // Comparamos contra el hash SHA256
                     conexion.Open();
                     int resultado = Convert.ToInt32(cmd.ExecuteScalar());
-                    if (resultado &gt; 0) usuarioValido = true;
+                    if (resultado > 0) usuarioValido = true;
                 }
             }
 
-            // Si las credenciales son incorrectas, devolvemos error 401 (No autorizado)
             if (!usuarioValido)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
 
-            // Si es correcto, generamos un Token único utilizando un GUID
+            // Generar Token único
             string token = Guid.NewGuid().ToString();
-            
-            // Usamos lock para sincronizar hilos concurrentes en el diccionario compartido
+
             lock (Sesiones)
             {
                 Sesiones[token] = credenciales.usuario;
             }
 
-            // Devolvemos una respuesta HTTP 200 con el token generado en formato JSON
             return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
         }
     }
