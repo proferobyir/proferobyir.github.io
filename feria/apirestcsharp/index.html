@@ -134,7 +134,7 @@
     <div class="container">
         <header>
             <h1>Guía Práctica: API REST en C# 5 y MySQL</h1>
-            <p>Diseñado para Visual Studio 2012 (.NET Framework 4.5) de forma simple y didáctica</p>
+            <p>Diseñado para Visual Studio 2012 (.NET Framework 4.5) con autenticación basada en métodos privados</p>
         </header>
 
         <div class="alert">
@@ -153,23 +153,21 @@
                 <li>Ve al menú superior y selecciona <strong>File > New > Project...</strong> (Archivo > Nuevo >
                     Proyecto).</li>
                 <li>En la ventana emergente, selecciona <strong>Visual C# > Web</strong> y elige la plantilla
-                    <strong>ASP.NET MVC 4 Web Application</strong>.
-                </li>
+                    <strong>ASP.NET MVC 4 Web Application</strong>.</li>
                 <li>Abajo en el selector de versión, asegúrate de que esté seleccionado <strong>.NET Framework
-                        4.5</strong>. Asignale un nombre (ej. <code>FeriaIutepiAPI</code>) y haz clic en <em>OK</em>.
+                        4.5</strong>. Asígnale un nombre (ej. <code>FeriaIutepiAPI</code>) y haz clic en <em>OK</em>.
                 </li>
                 <li>En el asistente que aparece a continuación, selecciona la plantilla <strong>Web API</strong> y
                     presiona <em>OK</em>.</li>
                 <li><strong>Agregar el conector:</strong> En el Explorador de soluciones (derecha), haz clic derecho
                     sobre <em>References</em> > <em>Add Reference...</em>, busca y selecciona el archivo
-                    <code>MySql.Data.dll</code> que descargaste previamente para habilitar la conexión con MySQL.
-                </li>
+                    <code>MySql.Data.dll</code> que descargaste previamente para habilitar la conexión con MySQL.</li>
             </ol>
         </section>
 
         <!-- PASO 1 -->
         <section>
-            <h2>Paso 1: Configurar CORS y Conexión (Web.config)</h2>
+            <h2>Paso 1: Configurar Conexión y CORS (Web.config)</h2>
             <p>Agrega la cadena de conexión a tu base de datos <code>feria_iutepi</code> y habilita los encabezados CORS
                 en el archivo <code>Web.config</code> para permitir peticiones externas.</p>
             <div class="code-box">
@@ -186,7 +184,7 @@
         &lt;!-- Permite conexiones de origen cruzado (CORS) --&gt;
         &lt;add name="Access-Control-Allow-Origin" value="*" /&gt;
         &lt;add name="Access-Control-Allow-Methods" value="GET, POST, PUT, DELETE, OPTIONS" /&gt;
-        &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Authorization" /&gt;
+        &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Token" /&gt;
       &lt;/customHeaders&gt;
     &lt;/httpProtocol&gt;
   &lt;/system.webServer&gt;
@@ -196,52 +194,16 @@
 
         <!-- PASO 2 -->
         <section>
-            <h2>Paso 2: Filtro de Seguridad / Middleware (CustomAuthorizeAttribute.cs)</h2>
-            <p>Crea una carpeta llamada <code>Filters</code> y dentro agrega esta clase que intercepta cada solicitud
-                HTTP para verificar que el cliente envíe un Token válido
-                (<code>Authorization: Bearer &lt;token&gt;</code>).</p>
+            <h2>Paso 2: Crear el Modelo de Credenciales (Models/LoginModel.cs)</h2>
+            <p>Crea una carpeta llamada <code>Models</code> (si no existe) y agrega esta clase para recibir de forma
+                limpia el usuario y la contraseña enviados desde el cliente.</p>
             <div class="code-box">
-                <pre>using System.Net;
-using System.Net.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
-using FeriaIutepiAPI.Controllers;
-
-namespace FeriaIutepiAPI.Filters
+                <pre>namespace FeriaIutepiAPI.Models
 {
-    public class CustomAuthorizeAttribute : AuthorizationFilterAttribute
+    public class LoginModel
     {
-        public override void OnAuthorization(HttpActionContext actionContext)
-        {
-            var authHeader = actionContext.Request.Headers.Authorization;
-
-            // Valida si se incluyó el token bajo el esquema Bearer
-            if (authHeader != null && authHeader.Scheme == "Bearer")
-            {
-                string token = authHeader.Parameter;
-                bool tokenValido = false;
-
-                lock (AuthController.SesionesActivas)
-                {
-                    if (!string.IsNullOrEmpty(token) && AuthController.SesionesActivas.ContainsKey(token))
-                    {
-                        tokenValido = true;
-                    }
-                }
-
-                if (tokenValido)
-                {
-                    base.OnAuthorization(actionContext);
-                    return; // Permite el acceso
-                }
-            }
-
-            // Rechaza la solicitud si no hay token o es inválido (Error 401)
-            actionContext.Response = actionContext.Request.CreateErrorResponse(
-                HttpStatusCode.Unauthorized, 
-                "Acceso denegado. Debe iniciar sesión para obtener un token."
-            );
-        }
+        public string usuario { get; set; }
+        public string password { get; set; }
     }
 }</pre>
             </div>
@@ -249,78 +211,62 @@ namespace FeriaIutepiAPI.Filters
 
         <!-- PASO 3 -->
         <section>
-            <h2>Paso 3: Controlador de Autenticación (AuthController.cs)</h2>
-            <p>Crea este controlador dentro de la carpeta <code>Controllers</code>. Valida las credenciales contra la
-                tabla <code>usuarios</code> usando cifrado SHA256 y emite un token GUID temporal.</p>
+            <h2>Paso 3: Controlador de Autenticación (Controllers/AuthController.cs)</h2>
+            <p>Crea este controlador en la carpeta <code>Controllers</code>. Valida las credenciales contra la tabla
+                <code>usuarios</code> y emite un token temporal guardado en una lista estática.</p>
             <div class="code-box">
                 <pre>using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Web.Http;
 using MySql.Data.MySqlClient;
+using FeriaIutepiAPI.Models;
 
 namespace FeriaIutepiAPI.Controllers
 {
-    [RoutePrefix("api/auth")]
     public class AuthController : ApiController
     {
         private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
         
-        // Memoria estática para almacenar sesiones activas (Token -> Usuario)
-        public static Dictionary&lt;string, string&gt; SesionesActivas = new Dictionary&lt;string, string&gt;();
+        // Memoria estática compartida para almacenar sesiones activas (Token -> Usuario)
+        public static Dictionary&lt;string, string&gt; Sesiones = new Dictionary&lt;string, string&gt;();
 
-        // Función auxiliar para cifrar texto en SHA256
-        private string EncriptarSHA256(string texto)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
-                var sb = new StringBuilder();
-                foreach (var b in bytes) sb.Append(b.ToString("x2"));
-                return sb.ToString();
-            }
-        }
-
-        // POST: api/auth/login
+        // POST: api/Auth/Login
         [HttpPost]
-        [Route("login")]
-        public HttpResponseMessage Login([FromBody] dynamic credenciales)
+        public HttpResponseMessage Login([FromBody] LoginModel credenciales)
         {
-            string usuario = credenciales?.usuario;
-            string password = credenciales?.password;
+            if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) || string.IsNullOrEmpty(credenciales.password))
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Debe enviar usuario y contraseña.");
 
-            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Usuario y contraseña requeridos.");
-
-            string passHash = EncriptarSHA256(password);
-            string rol = string.Empty;
+            bool usuarioValido = false;
 
             using (var conexion = new MySqlConnection(conexionDB))
             {
-                string query = "SELECT rol FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
+                string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
                 using (var cmd = new MySqlCommand(query, conexion))
                 {
-                    cmd.Parameters.AddWithValue("@usu", usuario);
-                    cmd.Parameters.AddWithValue("@pass", passHash);
+                    cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
+                    cmd.Parameters.AddWithValue("@pass", credenciales.password);
                     conexion.Open();
-                    var resultado = cmd.ExecuteScalar();
-                    if (resultado != null) rol = resultado.ToString();
+                    int resultado = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (resultado &gt; 0) usuarioValido = true;
                 }
             }
 
-            if (string.IsNullOrEmpty(rol))
-                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas o usuario inactivo.");
+            if (!usuarioValido)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
 
             // Generar Token único
             string token = Guid.NewGuid().ToString();
-            lock (SesionesActivas) { SesionesActivas[token] = usuario; }
+            
+            lock (Sesiones)
+            {
+                Sesiones[token] = credenciales.usuario;
+            }
 
-            return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Rol = rol });
+            return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
         }
     }
 }</pre>
@@ -329,29 +275,53 @@ namespace FeriaIutepiAPI.Controllers
 
         <!-- PASO 4 -->
         <section>
-            <h2>Paso 4: Controlador Protegido (ProductosController.cs)</h2>
-            <p>Crea el controlador de productos en la carpeta <code>Controllers</code>. Utiliza ADO.NET clásico y está
-                protegido automáticamente por el middleware <code>[CustomAuthorize]</code>.</p>
+            <h2>Paso 4: Controlador Protegido con Método Privado (Controllers/ProductosController.cs)</h2>
+            <p>Crea este controlador en la carpeta <code>Controllers</code>. Aquí aplicamos el concepto de
+                <strong>método privado</strong> para encapsular la validación del Token antes de entregar los datos de
+                la base de datos.</p>
             <div class="code-box">
                 <pre>using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using MySql.Data.MySqlClient;
-using FeriaIutepiAPI.Filters;
 
 namespace FeriaIutepiAPI.Controllers
 {
-    [CustomAuthorize] // &lt;--- ¡Protege todo el controlador con el token de seguridad!
     public class ProductosController : ApiController
     {
         private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
 
-        // GET: api/productos
+        // =========================================================================
+        // MÉTODO PRIVADO DE SEGURIDAD
+        // Es privado porque solo este controlador necesita verificar el Token recibido.
+        // =========================================================================
+        private bool ValidarToken()
+        {
+            if (Request.Headers.Contains("Token"))
+            {
+                string tokenEnviado = Request.Headers.GetValues("Token").FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(tokenEnviado) && AuthController.Sesiones.ContainsKey(tokenEnviado))
+                {
+                    return true; // Token válido
+                }
+            }
+            return false; // Token inválido o ausente
+        }
+
+        // GET: api/Productos (Protegido)
         [HttpGet]
         public HttpResponseMessage Get()
         {
+            // Validamos usando nuestro método privado antes de consultar la BD
+            if (!ValidarToken())
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Acceso denegado. Falta el Token o es inválido.");
+            }
+
             var lista = new List&lt;object&gt;();
 
             using (var conexion = new MySqlConnection(conexionDB))
@@ -374,6 +344,7 @@ namespace FeriaIutepiAPI.Controllers
                     }
                 }
             }
+
             return Request.CreateResponse(HttpStatusCode.OK, lista);
         }
     }
@@ -382,7 +353,7 @@ namespace FeriaIutepiAPI.Controllers
         </section>
 
         <footer>
-            <p>Guía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - Profesor: Ing.Robyir Loreto</p>
+            <p>Guía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - Profesor: Ing. Robyir Loreto</p>
         </footer>
     </div>
 </body>
