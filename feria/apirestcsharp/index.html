@@ -134,7 +134,7 @@
     <div class="container">
         <header>
             <h1>Guía Práctica: API REST en C# 5 y MySQL</h1>
-            <p>Diseñado para Visual Studio 2012 (.NET Framework 4.5) con autenticación basada en métodos privados</p>
+            <p>Diseñado para Visual Studio 2012 (.NET Framework 4.5) con explicaciones detalladas en código</p>
         </header>
 
         <div class="alert">
@@ -153,17 +153,15 @@
                 <li>Ve al menú superior y selecciona <strong>File > New > Project...</strong> (Archivo > Nuevo >
                     Proyecto).</li>
                 <li>En la ventana emergente, selecciona <strong>Visual C# > Web</strong> y elige la plantilla
-                    <strong>ASP.NET MVC 4 Web Application</strong>.
-                </li>
+                    <strong>ASP.NET MVC 4 Web Application</strong>.</li>
                 <li>Abajo en el selector de versión, asegúrate de que esté seleccionado <strong>.NET Framework
-                        4.5</strong>. Asígnale un nombre (ej. <code>APIFeria</code>) y haz clic en <em>OK</em>.
+                        4.5</strong>. Asígnale un nombre (ej. <code>FeriaIutepiAPI</code>) y haz clic en <em>OK</em>.
                 </li>
                 <li>En el asistente que aparece a continuación, selecciona la plantilla <strong>Web API</strong> y
                     presiona <em>OK</em>.</li>
                 <li><strong>Agregar el conector:</strong> En el Explorador de soluciones (derecha), haz clic derecho
                     sobre <em>References</em> > <em>Add Reference...</em>, busca y selecciona el archivo
-                    <code>MySql.Data.dll</code> que descargaste previamente para habilitar la conexión con MySQL.
-                </li>
+                    <code>MySql.Data.dll</code> que descargaste previamente para habilitar la conexión con MySQL.</li>
             </ol>
         </section>
 
@@ -174,16 +172,18 @@
                 en el archivo <code>Web.config</code> para permitir peticiones externas.</p>
             <div class="code-box">
                 <pre>&lt;configuration&gt;
+  &lt;!-- Sección donde definimos las cadenas de conexión a bases de datos --&gt;
   &lt;connectionStrings&gt;
     &lt;add name="ConexionMySQL" 
          connectionString="Server=127.0.0.1;Database=feria_iutepi;Uid=root;Pwd=;" 
          providerName="MySql.Data.MySqlClient" /&gt;
   &lt;/connectionStrings&gt;
 
+  &lt;!-- Configuración del servidor web IIS Express para la API --&gt;
   &lt;system.webServer&gt;
     &lt;httpProtocol&gt;
       &lt;customHeaders&gt;
-        &lt;!-- Permite conexiones de origen cruzado (CORS) --&gt;
+        &lt;!-- CORS: Permite que aplicaciones o páginas web externas consuman esta API --&gt;
         &lt;add name="Access-Control-Allow-Origin" value="*" /&gt;
         &lt;add name="Access-Control-Allow-Methods" value="GET, POST, PUT, DELETE, OPTIONS" /&gt;
         &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Token" /&gt;
@@ -200,11 +200,15 @@
             <p>Crea una carpeta llamada <code>Models</code> (si no existe) y agrega esta clase para recibir de forma
                 limpia el usuario y la contraseña enviados desde el cliente.</p>
             <div class="code-box">
-                <pre>namespace APIFeria.Models
+                <pre>namespace FeriaIutepiAPI.Models
 {
+    // Clase DTO (Objeto de Transferencia de Datos) para mapear el JSON del Login
     public class LoginModel
     {
+        // Propiedad pública para capturar el usuario enviado
         public string usuario { get; set; }
+
+        // Propiedad pública para capturar la contraseña enviada
         public string password { get; set; }
     }
 }</pre>
@@ -215,8 +219,7 @@
         <section>
             <h2>Paso 3: Controlador de Autenticación (Controllers/AuthController.cs)</h2>
             <p>Crea este controlador en la carpeta <code>Controllers</code>. Valida las credenciales contra la tabla
-                <code>usuarios</code> y emite un token temporal guardado en una lista estática.
-            </p>
+                <code>usuarios</code> y emite un token temporal guardado en una lista estática.</p>
             <div class="code-box">
                 <pre>using System;
 using System.Collections.Generic;
@@ -225,50 +228,58 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using MySql.Data.MySqlClient;
-using APIFeria.Models;
+using FeriaIutepiAPI.Models;
 
-namespace APIFeria.Controllers
+namespace FeriaIutepiAPI.Controllers
 {
     public class AuthController : ApiController
     {
+        // Obtenemos la cadena de conexión definida en el archivo Web.config
         private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
         
-        // Memoria estática compartida para almacenar sesiones activas (Token -> Usuario)
+        // Diccionario estático en memoria para almacenar las sesiones activas (Token -> Usuario)
         public static Dictionary&lt;string, string&gt; Sesiones = new Dictionary&lt;string, string&gt;();
 
-        // POST: api/Auth/Login
+        // Método POST para iniciar sesión: api/Auth/Login
         [HttpPost]
         public HttpResponseMessage Login([FromBody] LoginModel credenciales)
         {
+            // Validamos que el cliente haya enviado los datos obligatorios
             if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) || string.IsNullOrEmpty(credenciales.password))
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Debe enviar usuario y contraseña.");
 
             bool usuarioValido = false;
 
+            // Conexión y consulta a MySQL usando ADO.NET clásico
             using (var conexion = new MySqlConnection(conexionDB))
             {
                 string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
                 using (var cmd = new MySqlCommand(query, conexion))
                 {
+                    // Añadimos parámetros para prevenir ataques de Inyección SQL
                     cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
                     cmd.Parameters.AddWithValue("@pass", credenciales.password);
+                    
                     conexion.Open();
                     int resultado = Convert.ToInt32(cmd.ExecuteScalar());
                     if (resultado &gt; 0) usuarioValido = true;
                 }
             }
 
+            // Si las credenciales son incorrectas, devolvemos error 401 (No autorizado)
             if (!usuarioValido)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
 
-            // Generar Token único
+            // Si es correcto, generamos un Token único utilizando un GUID
             string token = Guid.NewGuid().ToString();
             
+            // Usamos lock para sincronizar hilos concurrentes en el diccionario compartido
             lock (Sesiones)
             {
                 Sesiones[token] = credenciales.usuario;
             }
 
+            // Devolvemos una respuesta HTTP 200 con el token generado en formato JSON
             return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
         }
     }
@@ -281,8 +292,7 @@ namespace APIFeria.Controllers
             <h2>Paso 4: Controlador Protegido con Método Privado (Controllers/ProductosController.cs)</h2>
             <p>Crea este controlador en la carpeta <code>Controllers</code>. Aquí aplicamos el concepto de
                 <strong>método privado</strong> para encapsular la validación del Token antes de entregar los datos de
-                la base de datos.
-            </p>
+                la base de datos.</p>
             <div class="code-box">
                 <pre>using System.Collections.Generic;
 using System.Configuration;
@@ -292,35 +302,38 @@ using System.Net.Http;
 using System.Web.Http;
 using MySql.Data.MySqlClient;
 
-namespace APIFeria.Controllers
+namespace FeriaIutepiAPI.Controllers
 {
     public class ProductosController : ApiController
     {
         private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
 
         // =========================================================================
-        // MÉTODO PRIVADO DE SEGURIDAD
-        // Es privado porque solo este controlador necesita verificar el Token recibido.
+        // MÉTODO PRIVADO DE SEGURIDAD (Concepto clave de visibilidad)
+        // Es 'private' porque solo este controlador necesita ejecutar esta validación 
+        // internamente y no debe ser expuesto como una ruta web pública para clientes.
         // =========================================================================
         private bool ValidarToken()
         {
+            // Verificamos si en los headers (cabeceras HTTP) de la petición viene el campo "Token"
             if (Request.Headers.Contains("Token"))
             {
                 string tokenEnviado = Request.Headers.GetValues("Token").FirstOrDefault();
 
+                // Comprobamos si el token existe dentro de las sesiones activas del AuthController
                 if (!string.IsNullOrEmpty(tokenEnviado) && AuthController.Sesiones.ContainsKey(tokenEnviado))
                 {
-                    return true; // Token válido
+                    return true; // ¡Token legítimo y válido!
                 }
             }
-            return false; // Token inválido o ausente
+            return false; // ¡Token ausente o incorrecto!
         }
 
-        // GET: api/Productos (Protegido)
+        // GET: api/Productos (Método público protegido)
         [HttpGet]
         public HttpResponseMessage Get()
         {
-            // Validamos usando nuestro método privado antes de consultar la BD
+            // Llamamos al método privado de seguridad antes de consultar la base de datos
             if (!ValidarToken())
             {
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Acceso denegado. Falta el Token o es inválido.");
@@ -328,6 +341,7 @@ namespace APIFeria.Controllers
 
             var lista = new List&lt;object&gt;();
 
+            // Realizamos la consulta a la tabla productos con ADO.NET
             using (var conexion = new MySqlConnection(conexionDB))
             {
                 string query = "SELECT id, nombre, precio, stock FROM productos";
@@ -336,6 +350,7 @@ namespace APIFeria.Controllers
                     conexion.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
+                        // Recorremos fila por fila los registros obtenidos de MySQL
                         while (reader.Read())
                         {
                             lista.Add(new {
@@ -349,6 +364,7 @@ namespace APIFeria.Controllers
                 }
             }
 
+            // Web API convierte automáticamente la lista de objetos anónimos a formato JSON
             return Request.CreateResponse(HttpStatusCode.OK, lista);
         }
     }
