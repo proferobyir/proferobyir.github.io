@@ -14,7 +14,6 @@
             --accent: #38bdf8;
             --code-bg: #090d16;
             --border: #334155;
-            --success: #22c55e;
         }
 
         * {
@@ -87,19 +86,18 @@
             padding-bottom: 8px;
         }
 
-        p {
+        p,
+        ol {
             margin-bottom: 15px;
             color: var(--text-muted);
         }
 
-        ul {
+        ol {
             margin-left: 20px;
-            margin-bottom: 15px;
-            color: var(--text-muted);
         }
 
         li {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .code-box {
@@ -116,15 +114,6 @@
             color: #e2e8f0;
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.85rem;
-        }
-
-        .tag {
-            background: #334155;
-            color: var(--text-color);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
         }
 
         footer {
@@ -144,17 +133,38 @@
         </header>
 
         <div class="alert">
-            <strong>Recurso esencial:</strong> Para conectar tu proyecto con MySQL de forma clásica en este entorno
-            offline, puedes descargar el conector oficial <a
+            <strong>Recurso esencial:</strong> Para conectar tu proyecto con MySQL en este entorno offline, puedes
+            descargar el conector oficial <a
                 href="https://drive.google.com/file/d/1zu6gZRcbfd6fXRAt6YE0Z7uLNpvPnctH/view?usp=sharing"
                 target="_blank">MySql.Data.dll desde este enlace de Google Drive</a> y agregarlo a tus referencias.
         </div>
+
+        <!-- PASO 0: CREACIÓN DEL PROYECTO -->
+        <section>
+            <h2>Paso 0: Creación y Configuración Inicial en Visual Studio 2012</h2>
+            <p>Sigue estos pasos para crear el proyecto base desde cero en el entorno de laboratorio:</p>
+            <ol>
+                <li>Abre <strong>Visual Studio 2012</strong>.</li>
+                <li>Ve al menú superior y selecciona <strong>File > New > Project...</strong> (Archivo > Nuevo >
+                    Proyecto).</li>
+                <li>En la ventana emergente, selecciona <strong>Visual C# > Web</strong> y elige la plantilla
+                    <strong>ASP.NET MVC 4 Web Application</strong>.</li>
+                <li>Abajo en el selector de versión, asegúrate de que esté seleccionado <strong>.NET Framework
+                        4.5</strong>. Asignale un nombre (ej. <code>FeriaIutepiAPI</code>) y haz clic en <em>OK</em>.
+                </li>
+                <li>En el asistente que aparece a continuación, selecciona la plantilla <strong>Web API</strong> y
+                    presiona <em>OK</em>.</li>
+                <li><strong>Agregar el conector:</strong> En el Explorador de soluciones (derecha), haz clic derecho
+                    sobre <em>References</em> > <em>Add Reference...</em>, busca y selecciona el archivo
+                    <code>MySql.Data.dll</code> que descargaste previamente para habilitar la conexión con MySQL.</li>
+            </ol>
+        </section>
 
         <!-- PASO 1 -->
         <section>
             <h2>Paso 1: Configurar CORS y Conexión (Web.config)</h2>
             <p>Agrega la cadena de conexión a tu base de datos <code>feria_iutepi</code> y habilita los encabezados CORS
-                en el archivo <code>Web.config</code> para permitir peticiones externas de manera limpia.</p>
+                en el archivo <code>Web.config</code> para permitir peticiones externas.</p>
             <div class="code-box">
                 <pre>&lt;configuration&gt;
   &lt;connectionStrings&gt;
@@ -170,7 +180,7 @@
         &lt;add name="Access-Control-Allow-Origin" value="*" /&gt;
         &lt;add name="Access-Control-Allow-Methods" value="GET, POST, PUT, DELETE, OPTIONS" /&gt;
         &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Authorization" /&gt;
-      &lt;!-- /customHeaders --&gt;
+      &lt;/customHeaders&gt;
     &lt;/httpProtocol&gt;
   &lt;/system.webServer&gt;
 &lt;/configuration&gt;</pre>
@@ -180,8 +190,9 @@
         <!-- PASO 2 -->
         <section>
             <h2>Paso 2: Filtro de Seguridad / Middleware (CustomAuthorizeAttribute.cs)</h2>
-            <p>Este filtro intercepta cada solicitud HTTP para verificar que el cliente envíe un Token válido en el
-                encabezado (<code>Authorization: Bearer &lt;token&gt;</code>).</p>
+            <p>Crea una carpeta llamada <code>Filters</code> y dentro agrega esta clase que intercepta cada solicitud
+                HTTP para verificar que el cliente envíe un Token válido
+                (<code>Authorization: Bearer &lt;token&gt;</code>).</p>
             <div class="code-box">
                 <pre>using System.Net;
 using System.Net.Http;
@@ -232,8 +243,8 @@ namespace FeriaIutepiAPI.Filters
         <!-- PASO 3 -->
         <section>
             <h2>Paso 3: Controlador de Autenticación (AuthController.cs)</h2>
-            <p>Valida las credenciales contra la tabla <code>usuarios</code> usando el cifrado SHA256 nativo de la base
-                de datos y emite un token GUID temporal.</p>
+            <p>Crea este controlador dentro de la carpeta <code>Controllers</code>. Valida las credenciales contra la
+                tabla <code>usuarios</code> usando cifrado SHA256 y emite un token GUID temporal.</p>
             <div class="code-box">
                 <pre>using System;
 using System.Collections.Generic;
@@ -312,8 +323,8 @@ namespace FeriaIutepiAPI.Controllers
         <!-- PASO 4 -->
         <section>
             <h2>Paso 4: Controlador Protegido (ProductosController.cs)</h2>
-            <p>Utiliza ADO.NET clásico y está protegido automáticamente por el middleware
-                <code>[CustomAuthorize]</code>.</p>
+            <p>Crea el controlador de productos en la carpeta <code>Controllers</code>. Utiliza ADO.NET clásico y está
+                protegido automáticamente por el middleware <code>[CustomAuthorize]</code>.</p>
             <div class="code-box">
                 <pre>using System.Collections.Generic;
 using System.Configuration;
@@ -364,7 +375,7 @@ namespace FeriaIutepiAPI.Controllers
         </section>
 
         <footer>
-            <p>Guía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - IUTEPI</p>
+            <p>Guía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - Profesor: Ing.Robyir Loreto</p>
         </footer>
     </div>
 </body>
