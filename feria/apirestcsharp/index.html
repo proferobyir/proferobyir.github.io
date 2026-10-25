@@ -4,710 +4,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Didáctica API REST C# 5 & MySQL - IUTEPI</title>
+    <title>Guía Didáctica: API REST en C# 5 y MySQL</title>
     <style>
         :root {
-            --bg-primary: #121214;
-            --bg-secondary: #1e1e24;
-            --bg-card: #25252d;
-            --text-primary: #e6e6e6;
-            --text-secondary: #a0a0b0;
-            --accent-color: #3b82f6;
-            --accent-hover: #2563eb;
-            --accent-green: #10b981;
-            --accent-gold: #f59e0b;
-            --border-color: #333340;
-            --code-bg: #18181c;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --code-bg: #090d16;
+            --border: #334155;
+            --success: #22c55e;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         header {
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        .site-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .site-badge {
-            background-color: var(--accent-color);
-            color: #fff;
-            font-size: 0.75rem;
-            padding: 2px 8px;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--card-bg);
             border-radius: 12px;
-            text-transform: uppercase;
-            font-weight: bold;
+            border: 1px solid var(--border);
         }
 
-        nav {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: thin;
+        header h1 {
+            color: var(--accent);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
         }
 
-        nav::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        nav::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 4px;
-        }
-
-        nav a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            background-color: var(--bg-card);
-            font-size: 0.85rem;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-            border: 1px solid var(--border-color);
-        }
-
-        nav a:hover,
-        nav a.active {
-            color: #ffffff;
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        main {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 1.5rem 1rem;
-            flex: 1;
-        }
-
-        .intro-banner {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-color);
-            border-radius: 8px;
-            padding: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .intro-banner h1 {
-            font-size: 1.5rem;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-        }
-
-        .intro-banner p {
+        header p {
+            color: var(--text-muted);
             font-size: 0.95rem;
-            color: var(--text-secondary);
         }
 
-        .download-box {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-left: 4px solid var(--accent-gold);
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .download-box strong {
-            color: var(--accent-gold);
-        }
-
-        .download-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--accent-color);
-            color: #ffffff;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            width: fit-content;
-            transition: background-color 0.2s ease;
-            margin-top: 4px;
-        }
-
-        .download-link-btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .section-card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .section-header {
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.8rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .file-path-badge {
-            display: inline-block;
-            background-color: #2d2d30;
-            color: #dcdcdc;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.85rem;
-            padding: 4px 8px;
+        .alert {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
             border-radius: 4px;
-            margin-top: 6px;
-            border: 1px solid #3e3e42;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
         }
 
-        .section-description {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 8px;
+        .alert a {
+            color: var(--accent);
+            font-weight: bold;
+            text-decoration: underline;
         }
 
-        .steps-list {
-            margin: 1rem 0;
-            padding-left: 1.2rem;
-            color: var(--text-primary);
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 25px;
+            margin-bottom: 25px;
         }
 
-        .steps-list li {
-            margin-bottom: 0.8rem;
-            font-size: 0.92rem;
+        h2 {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
         }
 
-        .steps-list strong {
-            color: var(--accent-gold);
+        p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
         }
 
-        .code-container {
-            position: relative;
-            background-color: var(--code-bg);
-            border: 1px solid var(--border-color);
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .code-box {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            overflow: hidden;
-            margin-top: 1rem;
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #18181c;
-            padding: 8px 14px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .copy-btn {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background-color 0.2s ease;
-        }
-
-        .copy-btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .copy-btn.copied {
-            background-color: var(--accent-green);
+            padding: 15px;
+            overflow-x: auto;
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
 
         pre {
-            margin: 0;
-            padding: 1rem;
-            overflow-x: auto;
-            font-family: "Consolas", "Courier New", Courier, monospace;
-            font-size: 0.88rem;
-            line-height: 1.5;
-            color: var(--text-primary);
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
         }
 
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: var(--accent-green);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 12px;
-            position: fixed;
-            z-index: 2000;
-            right: 20px;
-            bottom: 30px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        #toast.show {
-            visibility: visible;
-            opacity: 1;
+        .tag {
+            background: #334155;
+            color: var(--text-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
 
         footer {
-            background-color: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
             text-align: center;
-            padding: 1.5rem;
+            margin-top: 40px;
+            color: var(--text-muted);
             font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: auto;
-        }
-
-        @media (min-width: 768px) {
-            .header-container {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .site-title {
-                font-size: 1.6rem;
-            }
-
-            .intro-banner h1 {
-                font-size: 1.8rem;
-            }
-
-            .section-title {
-                font-size: 1.4rem;
-            }
         }
     </style>
 </head>
 
 <body>
+    <div class="container">
+        <header>
+            <h1>Guía Práctica: API REST en C# 5 y MySQL</h1>
+            <p>Diseñado para Visual Studio 2012 (.NET Framework 4.5) de forma simple y didáctica</p>
+        </header>
 
-    <header>
-        <div class="header-container">
-            <div class="site-title">
-                <span>API REST BASE</span>
-                <span class="site-badge">C# 5 / VS2012</span>
-            </div>
-            <nav id="nav-menu">
-                <a href="#sec-pasoapaso">1. Paso a Paso</a>
-                <a href="#sec-webconfig">2. Web.config (CORS)</a>
-                <a href="#sec-webapiconfig">3. WebApiConfig</a>
-                <a href="#sec-modelos">4. Modelos y DTOs</a>
-                <a href="#sec-auth">5. AuthController & Token</a>
-                <a href="#sec-middleware">6. Middleware Filtro</a>
-                <a href="#sec-productos">7. ProductosController</a>
-                <a href="#sec-ventas">8. VentasController</a>
-            </nav>
+        <div class="alert">
+            <strong>Recurso esencial:</strong> Para conectar tu proyecto con MySQL de forma clásica en este entorno
+            offline, puedes descargar el conector oficial <a
+                href="https://drive.google.com/file/d/1zu6gZRcbfd6fXRAt6YE0Z7uLNpvPnctH/view?usp=sharing"
+                target="_blank">MySql.Data.dll desde este enlace de Google Drive</a> y agregarlo a tus referencias.
         </div>
-    </header>
 
-    <main>
-        <section class="intro-banner">
-            <h1>Guía Didáctica: API REST Segura en C# 5 & MySQL</h1>
-            <p>Aprende a construir desde cero una API REST en <strong>Visual Studio 2012 (.NET Framework 4.5)</strong>
-                conectada a MySQL. Incluye soporte abierto para <strong>CORS</strong>, <strong>Autenticación con
-                    Token</strong>, <strong>Middleware de Autorización</strong> y transacciones de ventas.</p>
-        </section>
-
-        <!-- SECCIÓN 1: Paso a Paso -->
-        <section id="sec-pasoapaso" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">1. Configuración Paso a Paso en Visual Studio 2012</h2>
-                <p class="section-description">Sigue estas instrucciones para crear e integrar la solución en tu entorno
-                    local:</p>
-            </div>
-            <ol class="steps-list">
-                <li><strong>Crear el Proyecto:</strong> Abre Visual Studio 2012, selecciona <em>File -> New ->
-                        Project</em>. Elige <strong>ASP.NET MVC 4 Web Application</strong>, nómbralo
-                    <code>FeriaIutepiAPI</code> y selecciona la plantilla <strong>Web API</strong> con <strong>.NET
-                        Framework 4.5</strong>.
-                </li>
-                <li><strong>Agregar Conector MySQL:</strong> Haz clic derecho en <em>References -> Add Reference...</em>
-                    y busca la librería <code>MySql.Data.dll</code> (Connector/Net de MySQL para .NET 4.5).
-                    <div class="download-box">
-                        <span><strong>Nota de Descarga:</strong> Puedes descargar directamente el conector oficial de
-                            MySQL (<code>MySql.Data.dll</code>) necesario para este laboratorio desde el siguiente
-                            enlace oficial en Google Drive:</span>
-                        <a href="https://drive.google.com/file/d/1zu6gZRcbfd6fXRAt6YE0Z7uLNpvPnctH/view?usp=sharing"
-                            target="_blank" class="download-link-btn">
-                            📥 Descargar MySql.Data.dll (Google Drive)
-                        </a>
-                    </div>
-                </li>
-                <li><strong>Configurar Web.config:</strong> Reemplaza la sección de cadenas de conexión y habilita los
-                    encabezados de <strong>CORS</strong>.</li>
-                <li><strong>Crear Estructura de Carpetas:</strong> En el Explorador de Soluciones, asegúrate de tener
-                    las carpetas: <code>Models</code>, <code>Controllers</code> y crea la carpeta <code>Filters</code>.
-                </li>
-                <li><strong>Agregar los Archivos del Código:</strong> Copia y pega los bloques de código que se muestran
-                    a continuación en sus respectivas ubicaciones.</li>
-            </ol>
-        </section>
-
-        <!-- SECCIÓN 2: Web.config (CORS y BD) -->
-        <section id="sec-webconfig" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">2. Cadena de Conexión & CORS Abierto</h2>
-                <div class="file-path-badge">Ubicación: Web.config</div>
-                <p class="section-description">
-                    Configura la conexión a la base de datos MySQL <code>feria_iutepi</code> y habilita <strong>CORS
-                        (Cross-Origin Resource Sharing)</strong> para que la API acepte peticiones desde aplicaciones
-                    móviles o clientes web.
-                </p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>XML / Web.config</span>
-                    <button class="copy-btn" onclick="copyCode('code-webconfig', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-webconfig">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;configuration&gt;
+        <!-- PASO 1 -->
+        <section>
+            <h2>Paso 1: Configurar CORS y Conexión (Web.config)</h2>
+            <p>Agrega la cadena de conexión a tu base de datos <code>feria_iutepi</code> y habilita los encabezados CORS
+                en el archivo <code>Web.config</code> para permitir peticiones externas de manera limpia.</p>
+            <div class="code-box">
+                <pre>&lt;configuration&gt;
   &lt;connectionStrings&gt;
-    &lt;!-- Conexión a la base de datos MySQL feria_iutepi --&gt;
     &lt;add name="ConexionMySQL" 
-         connectionString="Server=127.0.0.1;Port=3306;Database=feria_iutepi;Uid=root;Pwd=;SslMode=None;" 
+         connectionString="Server=127.0.0.1;Database=feria_iutepi;Uid=root;Pwd=;" 
          providerName="MySql.Data.MySqlClient" /&gt;
   &lt;/connectionStrings&gt;
 
-  &lt;system.web&gt;
-    &lt;compilation debug="true" targetFramework="4.5" /&gt;
-    &lt;httpRuntime targetFramework="4.5" /&gt;
-  &lt;/system.web&gt;
-
   &lt;system.webServer&gt;
-    &lt;!-- Configuración de Encabezados CORS para Conexiones Externas --&gt;
     &lt;httpProtocol&gt;
       &lt;customHeaders&gt;
+        &lt;!-- Permite conexiones de origen cruzado (CORS) --&gt;
         &lt;add name="Access-Control-Allow-Origin" value="*" /&gt;
         &lt;add name="Access-Control-Allow-Methods" value="GET, POST, PUT, DELETE, OPTIONS" /&gt;
-        &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Accept, Authorization, X-Requested-With" /&gt;
-      &lt;/customHeaders&gt;
+        &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Authorization" /&gt;
+      &lt;!-- /customHeaders --&gt;
     &lt;/httpProtocol&gt;
-
-    &lt;handlers&gt;
-      &lt;remove name="ExtensionlessUrlHandler-Integrated-4.0" /&gt;
-      &lt;remove name="OPTIONSVerbHandler" /&gt;
-      &lt;remove name="TRACEVerbHandler" /&gt;
-      &lt;add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="*" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0" /&gt;
-    &lt;/handlers&gt;
   &lt;/system.webServer&gt;
-&lt;/configuration&gt;</code></pre>
+&lt;/configuration&gt;</pre>
             </div>
         </section>
 
-        <!-- SECCIÓN 3: WebApiConfig.cs -->
-        <section id="sec-webapiconfig" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">3. Rutas y Formateador JSON</h2>
-                <div class="file-path-badge">Ubicación: App_Start/WebApiConfig.cs</div>
-                <p class="section-description">Registra el mapa de rutas e impone formato JSON en todas las respuestas
-                    HTTP.</p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>C# (.NET 4.5)</span>
-                    <button class="copy-btn" onclick="copyCode('code-webapiconfig', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-webapiconfig">using System;
-using System.Net.Http.Headers;
-using System.Web.Http;
-
-namespace FeriaIutepiAPI
-{
-    public static class WebApiConfig
-    {
-        public static void Register(HttpConfiguration config)
-        {
-            // Habilitar atributos de rutas
-            config.MapHttpAttributeRoutes();
-
-            // Ruta predeterminada
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-
-            // Forzar respuesta siempre en JSON
-            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
-            config.Formatters.Remove(config.Formatters.XmlFormatter);
-        }
-    }
-}</code></pre>
-            </div>
-        </section>
-
-        <!-- SECCIÓN 4: Modelos y DTOs -->
-        <section id="sec-modelos" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">4. Modelos de Entidades y DTOs</h2>
-                <div class="file-path-badge">Ubicación: Models/Entidades.cs</div>
-                <p class="section-description">Define los objetos para mapear la base de datos y la transferencia de
-                    datos.</p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>C# (.NET 4.5)</span>
-                    <button class="copy-btn" onclick="copyCode('code-modelos', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-modelos">using System;
-using System.Collections.Generic;
-
-namespace FeriaIutepiAPI.Models
-{
-    public class Producto
-    {
-        public int Id { get; set; }
-        public int? CategoriaId { get; set; }
-        public string CategoriaNombre { get; set; }
-        public string Nombre { get; set; }
-        public decimal Precio { get; set; }
-        public int Stock { get; set; }
-    }
-
-    public class LoginRequest
-    {
-        public string Usuario { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class TokenResponse
-    {
-        public string Token { get; set; }
-        public string Rol { get; set; }
-        public string NombreCompleto { get; set; }
-    }
-
-    public class RegistrarVentaDTO
-    {
-        public int? ClienteId { get; set; }
-        public List&lt;ItemVentaDTO&gt; Detalles { get; set; }
-
-        public RegistrarVentaDTO()
-        {
-            Detalles = new List&lt;ItemVentaDTO&gt;();
-        }
-    }
-
-    public class ItemVentaDTO
-    {
-        public int ProductoId { get; set; }
-        public int Cantidad { get; set; }
-    }
-
-    public class VentaCompletaDTO
-    {
-        public int Id { get; set; }
-        public int? ClienteId { get; set; }
-        public string ClienteNombre { get; set; }
-        public DateTime Fecha { get; set; }
-        public decimal Total { get; set; }
-        public List&lt;DetalleVenta&gt; Detalles { get; set; }
-
-        public VentaCompletaDTO()
-        {
-            Detalles = new List&lt;DetalleVenta&gt;();
-        }
-    }
-
-    public class DetalleVenta
-    {
-        public int Id { get; set; }
-        public int VentaId { get; set; }
-        public int ProductoId { get; set; }
-        public string ProductoNombre { get; set; }
-        public int Cantidad { get; set; }
-        public decimal Subtotal { get; set; }
-    }
-}</code></pre>
-            </div>
-        </section>
-
-        <!-- SECCIÓN 5: AuthController -->
-        <section id="sec-auth" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">5. Controlador de Autenticación & Tokens</h2>
-                <div class="file-path-badge">Ubicación: Controllers/AuthController.cs</div>
-                <p class="section-description">Valida usuarios contra la tabla <code>usuarios</code> (contraseñas
-                    SHA256) y emite un token de acceso temporal.</p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>C# (.NET 4.5)</span>
-                    <button class="copy-btn" onclick="copyCode('code-auth', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-auth">using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web.Http;
-using MySql.Data.MySqlClient;
-using FeriaIutepiAPI.Models;
-
-namespace FeriaIutepiAPI.Controllers
-{
-    [RoutePrefix("api/auth")]
-    public class AuthController : ApiController
-    {
-        private readonly string cadenaConexion = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
-
-        // Diccionario estático en memoria para almacenar tokens activos
-        public static Dictionary&lt;string, string&gt; SesionesActivas = new Dictionary&lt;string, string&gt;();
-
-        private string EncriptarSHA256(string texto)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
-                var sb = new StringBuilder();
-                foreach (var b in bytes) sb.Append(b.ToString("x2"));
-                return sb.ToString();
-            }
-        }
-
-        // POST: api/auth/login
-        [HttpPost]
-        [Route("login")]
-        public HttpResponseMessage Login([FromBody] LoginRequest credenciales)
-        {
-            if (credenciales == null || string.IsNullOrEmpty(credenciales.Usuario) || string.IsNullOrEmpty(credenciales.Password))
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Proporcione usuario y contraseña.");
-            }
-
-            string passwordHash = EncriptarSHA256(credenciales.Password);
-            string rol = string.Empty;
-            string nombreCompleto = string.Empty;
-            bool activo = false;
-
-            using (var conexion = new MySqlConnection(cadenaConexion))
-            {
-                string query = "SELECT rol, nombre_completo, estado FROM usuarios WHERE usuario = @usuario AND password = @password";
-                using (var cmd = new MySqlCommand(query, conexion))
-                {
-                    cmd.Parameters.AddWithValue("@usuario", credenciales.Usuario);
-                    cmd.Parameters.AddWithValue("@password", passwordHash);
-
-                    conexion.Open();
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            rol = reader.GetString("rol");
-                            nombreCompleto = reader.GetString("nombre_completo");
-                            activo = reader.GetBoolean("estado");
-                        }
-                    }
-                }
-            }
-
-            if (string.IsNullOrEmpty(rol))
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
-            }
-
-            if (!activo)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.Forbidden, "El usuario está inactivo.");
-            }
-
-            string token = Guid.NewGuid().ToString();
-
-            lock (SesionesActivas)
-            {
-                SesionesActivas[token] = credenciales.Usuario;
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, new TokenResponse
-            {
-                Token = token,
-                Rol = rol,
-                NombreCompleto = nombreCompleto
-            });
-        }
-    }
-}</code></pre>
-            </div>
-        </section>
-
-        <!-- SECCIÓN 6: Middleware Filtro -->
-        <section id="sec-middleware" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">6. Middleware Filtro de Autorización</h2>
-                <div class="file-path-badge">Ubicación: Filters/CustomAuthorizeAttribute.cs</div>
-                <p class="section-description">Intercepta las peticiones y bloquea el acceso con HTTP 401 si no se envía
-                    un encabezado <code>Authorization: Bearer &lt;token&gt;</code> válido.</p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>C# (.NET 4.5)</span>
-                    <button class="copy-btn" onclick="copyCode('code-middleware', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-middleware">using System.Net;
+        <!-- PASO 2 -->
+        <section>
+            <h2>Paso 2: Filtro de Seguridad / Middleware (CustomAuthorizeAttribute.cs)</h2>
+            <p>Este filtro intercepta cada solicitud HTTP para verificar que el cliente envíe un Token válido en el
+                encabezado (<code>Authorization: Bearer &lt;token&gt;</code>).</p>
+            <div class="code-box">
+                <pre>using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -721,6 +197,7 @@ namespace FeriaIutepiAPI.Filters
         {
             var authHeader = actionContext.Request.Headers.Authorization;
 
+            // Valida si se incluyó el token bajo el esquema Bearer
             if (authHeader != null && authHeader.Scheme == "Bearer")
             {
                 string token = authHeader.Parameter;
@@ -737,290 +214,159 @@ namespace FeriaIutepiAPI.Filters
                 if (tokenValido)
                 {
                     base.OnAuthorization(actionContext);
-                    return;
+                    return; // Permite el acceso
                 }
             }
 
+            // Rechaza la solicitud si no hay token o es inválido (Error 401)
             actionContext.Response = actionContext.Request.CreateErrorResponse(
                 HttpStatusCode.Unauthorized, 
-                "Acceso denegado. Se requiere un token válido en el encabezado Authorization."
+                "Acceso denegado. Debe iniciar sesión para obtener un token."
             );
         }
     }
-}</code></pre>
+}</pre>
             </div>
         </section>
 
-        <!-- SECCIÓN 7: ProductosController -->
-        <section id="sec-productos" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">7. Controlador Protegido de Productos</h2>
-                <div class="file-path-badge">Ubicación: Controllers/ProductosController.cs</div>
-                <p class="section-description">Protegido con el atributo <code>[CustomAuthorize]</code>. Gestiona
-                    operaciones CRUD en MySQL.</p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>C# (.NET 4.5)</span>
-                    <button class="copy-btn" onclick="copyCode('code-productos', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-productos">using System;
+        <!-- PASO 3 -->
+        <section>
+            <h2>Paso 3: Controlador de Autenticación (AuthController.cs)</h2>
+            <p>Valida las credenciales contra la tabla <code>usuarios</code> usando el cifrado SHA256 nativo de la base
+                de datos y emite un token GUID temporal.</p>
+            <div class="code-box">
+                <pre>using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web.Http;
+using MySql.Data.MySqlClient;
+
+namespace FeriaIutepiAPI.Controllers
+{
+    [RoutePrefix("api/auth")]
+    public class AuthController : ApiController
+    {
+        private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
+        
+        // Memoria estática para almacenar sesiones activas (Token -> Usuario)
+        public static Dictionary&lt;string, string&gt; SesionesActivas = new Dictionary&lt;string, string&gt;();
+
+        // Función auxiliar para cifrar texto en SHA256
+        private string EncriptarSHA256(string texto)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
+                var sb = new StringBuilder();
+                foreach (var b in bytes) sb.Append(b.ToString("x2"));
+                return sb.ToString();
+            }
+        }
+
+        // POST: api/auth/login
+        [HttpPost]
+        [Route("login")]
+        public HttpResponseMessage Login([FromBody] dynamic credenciales)
+        {
+            string usuario = credenciales?.usuario;
+            string password = credenciales?.password;
+
+            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Usuario y contraseña requeridos.");
+
+            string passHash = EncriptarSHA256(password);
+            string rol = string.Empty;
+
+            using (var conexion = new MySqlConnection(conexionDB))
+            {
+                string query = "SELECT rol FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
+                using (var cmd = new MySqlCommand(query, conexion))
+                {
+                    cmd.Parameters.AddWithValue("@usu", usuario);
+                    cmd.Parameters.AddWithValue("@pass", passHash);
+                    conexion.Open();
+                    var resultado = cmd.ExecuteScalar();
+                    if (resultado != null) rol = resultado.ToString();
+                }
+            }
+
+            if (string.IsNullOrEmpty(rol))
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas o usuario inactivo.");
+
+            // Generar Token único
+            string token = Guid.NewGuid().ToString();
+            lock (SesionesActivas) { SesionesActivas[token] = usuario; }
+
+            return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Rol = rol });
+        }
+    }
+}</pre>
+            </div>
+        </section>
+
+        <!-- PASO 4 -->
+        <section>
+            <h2>Paso 4: Controlador Protegido (ProductosController.cs)</h2>
+            <p>Utiliza ADO.NET clásico y está protegido automáticamente por el middleware
+                <code>[CustomAuthorize]</code>.</p>
+            <div class="code-box">
+                <pre>using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using MySql.Data.MySqlClient;
 using FeriaIutepiAPI.Filters;
-using FeriaIutepiAPI.Models;
 
 namespace FeriaIutepiAPI.Controllers
 {
-    [CustomAuthorize] // Middleware aplicado a todo el controlador
+    [CustomAuthorize] // &lt;--- ¡Protege todo el controlador con el token de seguridad!
     public class ProductosController : ApiController
     {
-        private readonly string cadenaConexion = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
+        private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
 
         // GET: api/productos
         [HttpGet]
-        public HttpResponseMessage ObtenerTodos()
+        public HttpResponseMessage Get()
         {
-            try
-            {
-                var lista = new List&lt;Producto&gt;();
-                using (var conexion = new MySqlConnection(cadenaConexion))
-                {
-                    string sql = @"SELECT p.id, p.categoria_id, c.nombre AS categoria_nombre, p.nombre, p.precio, p.stock 
-                                   FROM productos p 
-                                   LEFT JOIN categorias c ON p.categoria_id = c.id";
+            var lista = new List&lt;object&gt;();
 
-                    using (var cmd = new MySqlCommand(sql, conexion))
+            using (var conexion = new MySqlConnection(conexionDB))
+            {
+                string query = "SELECT id, nombre, precio, stock FROM productos";
+                using (var cmd = new MySqlCommand(query, conexion))
+                {
+                    conexion.Open();
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        conexion.Open();
-                        using (var reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                lista.Add(new Producto
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    CategoriaId = reader.IsDBNull(reader.GetOrdinal("categoria_id")) ? (int?)null : reader.GetInt32("categoria_id"),
-                                    CategoriaNombre = reader.IsDBNull(reader.GetOrdinal("categoria_nombre")) ? "Sin Categoría" : reader.GetString("categoria_nombre"),
-                                    Nombre = reader.GetString("nombre"),
-                                    Precio = reader.GetDecimal("precio"),
-                                    Stock = reader.GetInt32("stock")
-                                });
-                            }
+                            lista.Add(new {
+                                Id = reader.GetInt32("id"),
+                                Nombre = reader.GetString("nombre"),
+                                Precio = reader.GetDecimal("precio"),
+                                Stock = reader.GetInt32("stock")
+                            });
                         }
                     }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, lista);
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
+            return Request.CreateResponse(HttpStatusCode.OK, lista);
         }
     }
-}</code></pre>
+}</pre>
             </div>
         </section>
 
-        <!-- SECCIÓN 8: VentasController -->
-        <section id="sec-ventas" class="section-card">
-            <div class="section-header">
-                <h2 class="section-title">8. Controlador Transaccional de Ventas</h2>
-                <div class="file-path-badge">Ubicación: Controllers/VentasController.cs</div>
-                <p class="section-description">Proceso atómico con <code>MySqlTransaction</code> para insertar en
-                    <code>ventas</code>, descontar <code>stock</code> y registrar <code>detalle_ventas</code>.
-                </p>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <span>C# (.NET 4.5 / ACID)</span>
-                    <button class="copy-btn" onclick="copyCode('code-ventas', this)">📋 Copiar Código</button>
-                </div>
-                <pre><code id="code-ventas">using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using MySql.Data.MySqlClient;
-using FeriaIutepiAPI.Filters;
-using FeriaIutepiAPI.Models;
-
-namespace FeriaIutepiAPI.Controllers
-{
-    [CustomAuthorize]
-    public class VentasController : ApiController
-    {
-        private readonly string cadenaConexion = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
-
-        // POST: api/ventas/registrar
-        [HttpPost]
-        [Route("api/ventas/registrar")]
-        public HttpResponseMessage RegistrarVenta([FromBody] RegistrarVentaDTO dto)
-        {
-            if (dto == null || dto.Detalles == null || dto.Detalles.Count == 0)
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Detalles de venta incompletos.");
-
-            using (var conexion = new MySqlConnection(cadenaConexion))
-            {
-                conexion.Open();
-                MySqlTransaction transaccion = conexion.BeginTransaction();
-
-                try
-                {
-                    decimal totalVenta = 0;
-                    var listaProcesar = new List&lt;DetalleVenta&gt;();
-
-                    foreach (var item in dto.Detalles)
-                    {
-                        string sqlProd = "SELECT nombre, precio, stock FROM productos WHERE id = @prodId FOR UPDATE";
-                        using (var cmdProd = new MySqlCommand(sqlProd, conexion, transaccion))
-                        {
-                            cmdProd.Parameters.AddWithValue("@prodId", item.ProductoId);
-                            using (var reader = cmdProd.ExecuteReader())
-                            {
-                                if (!reader.Read())
-                                {
-                                    reader.Close();
-                                    transaccion.Rollback();
-                                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Producto no encontrado.");
-                                }
-
-                                string nombre = reader.GetString("nombre");
-                                decimal precio = reader.GetDecimal("precio");
-                                int stock = reader.GetInt32("stock");
-                                reader.Close();
-
-                                if (stock &lt; item.Cantidad)
-                                {
-                                    transaccion.Rollback();
-                                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Stock insuficiente para " + nombre);
-                                }
-
-                                decimal subtotal = precio * item.Cantidad;
-                                totalVenta += subtotal;
-
-                                listaProcesar.Add(new DetalleVenta
-                                {
-                                    ProductoId = item.ProductoId,
-                                    Cantidad = item.Cantidad,
-                                    Subtotal = subtotal
-                                });
-                            }
-                        }
-                    }
-
-                    // Insertar Venta
-                    string sqlVenta = "INSERT INTO ventas (cliente_id, fecha, total) VALUES (@cli, NOW(), @tot); SELECT LAST_INSERT_ID();";
-                    int ventaId = 0;
-                    using (var cmdVenta = new MySqlCommand(sqlVenta, conexion, transaccion))
-                    {
-                        cmdVenta.Parameters.AddWithValue("@cli", (object)dto.ClienteId ?? DBNull.Value);
-                        cmdVenta.Parameters.AddWithValue("@tot", totalVenta);
-                        ventaId = Convert.ToInt32(cmdVenta.ExecuteScalar());
-                    }
-
-                    // Detalle y Descuento de Stock
-                    foreach (var det in listaProcesar)
-                    {
-                        string sqlDet = "INSERT INTO detalle_ventas (venta_id, producto_id, cantidad, subtotal) VALUES (@vId, @pId, @cant, @sub)";
-                        using (var cmdDet = new MySqlCommand(sqlDet, conexion, transaccion))
-                        {
-                            cmdDet.Parameters.AddWithValue("@vId", ventaId);
-                            cmdDet.Parameters.AddWithValue("@pId", det.ProductoId);
-                            cmdDet.Parameters.AddWithValue("@cant", det.Cantidad);
-                            cmdDet.Parameters.AddWithValue("@sub", det.Subtotal);
-                            cmdDet.ExecuteNonQuery();
-                        }
-
-                        string sqlStock = "UPDATE productos SET stock = stock - @cant WHERE id = @pId";
-                        using (var cmdStock = new MySqlCommand(sqlStock, conexion, transaccion))
-                        {
-                            cmdStock.Parameters.AddWithValue("@cant", det.Cantidad);
-                            cmdStock.Parameters.AddWithValue("@pId", det.ProductoId);
-                            cmdStock.ExecuteNonQuery();
-                        }
-                    }
-
-                    transaccion.Commit();
-                    return Request.CreateResponse(HttpStatusCode.Created, new { Mensaje = "Venta exitosa", VentaId = ventaId, Total = totalVenta });
-                }
-                catch (Exception ex)
-                {
-                    transaccion.Rollback();
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
-                }
-            }
-        }
-    }
-}</code></pre>
-            </div>
-        </section>
-    </main>
-
-    <div id="toast">¡Código copiado al portapapeles!</div>
-
-    <footer>
-        <p>&copy; 2026 Guía Didáctica API REST C# 5 & MySQL - Universidad IUTEPI</p>
-    </footer>
-
-    <script>
-        function copyCode(elementId, btnElement) {
-            const codeElement = document.getElementById(elementId);
-            if (!codeElement) return;
-
-            const textToCopy = codeElement.textContent;
-
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    showSuccessCopy(btnElement);
-                }).catch(() => {
-                    fallbackCopyText(textToCopy, btnElement);
-                });
-            } else {
-                fallbackCopyText(textToCopy, btnElement);
-            }
-        }
-
-        function fallbackCopyText(text, btnElement) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-
-            try {
-                document.execCommand('copy');
-                showSuccessCopy(btnElement);
-            } catch (err) {
-                console.error(err);
-            }
-
-            document.body.removeChild(textArea);
-        }
-
-        function showSuccessCopy(btnElement) {
-            const originalText = btnElement.innerHTML;
-            btnElement.innerHTML = "✓ ¡Copiado!";
-            btnElement.classList.add("copied");
-
-            const toast = document.getElementById("toast");
-            toast.classList.add("show");
-
-            setTimeout(() => {
-                btnElement.innerHTML = originalText;
-                btnElement.classList.remove("copied");
-                toast.classList.remove("show");
-            }, 2000);
-        }
-    </script>
-
+        <footer>
+            <p>Guía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - IUTEPI</p>
+        </footer>
+    </div>
 </body>
 
 </html>
