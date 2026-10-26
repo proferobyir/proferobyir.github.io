@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Práctica: Sistema Modular en Windows Forms (C# 5)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            font-size: 11pt;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border: 2px solid #000000;
+        }
+        h1, h2, h3 {
+            color: #000000;
+            border-bottom: 1px solid #000000;
+            padding-bottom: 5px;
+            page-break-after: avoid;
+        }
+        h1 { font-size: 16pt; text-align: center; border-bottom: 2px solid #000000; padding-bottom: 10px; }
+        h2 { font-size: 13pt; margin-top: 25px; }
+        h3 { font-size: 11pt; border: none; margin-top: 15px; text-decoration: underline; }
+        p, li {
+            font-size: 10.5pt;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #000000;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 10pt;
+        }
+        th {
+            background-color: #f0f0f0;
+            color: #000000;
+        }
+        code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border: 1px solid #ccc;
+            font-size: 10pt;
+            color: #000000;
+        }
+        pre {
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            padding: 10px;
+            font-size: 9.5pt;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+        pre code {
+            border: none;
+            background-color: transparent;
+            padding: 0;
+        }
+        .note {
+            background-color: #ffffff;
+            border: 1px dashed #000000;
+            padding: 10px 15px;
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        .challenge {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            padding: 15px;
+            margin-top: 25px;
+            page-break-inside: avoid;
+        }
+        .challenge h3 { margin-top: 0; text-decoration: underline; }
+        
+        /* Ajustes específicos para impresión física limpia */
+        @media print {
+            body { padding: 0; }
+            .container { border: none; padding: 0; }
+            pre { white-space: pre-wrap; word-wrap: break-word; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GUÍA PRÁCTICA DE LABORATORIO</h1>
+    <h2>Construcción de un Sistema Modular con Contenedores en Windows Forms (C# 5)</h2>
+    
+    <p><strong>Entorno de Trabajo:</strong> Visual Studio 2012 — .NET Framework 4.5<br>
+    <strong>Objetivo:</strong> Diseñar interfaces responsivas usando contenedores (<code>TableLayoutPanel</code>, <code>Panel</code>, <code>GroupBox</code>), implementar inicio de sesión con enmascaramiento de clave y construir un panel principal (Dashboard) con navegación modular.</p>
+
+    <hr style="border:0; border-top: 1px solid #000000; margin: 20px 0;">
+
+    <h2>PARTE 1: Manejo de Contenedores y Diseño Adaptable</h2>
+    
+    <h3>Paso 1: Crear el Proyecto</h3>
+    <ol>
+        <li>Abre <strong>Visual Studio 2012</strong>.</li>
+        <li>Ve a <strong>Archivo &rarr; Nuevo &rarr; Proyecto...</strong></li>
+        <li>Selecciona <strong>Visual C# &rarr; Aplicación de Windows Forms</strong>.</li>
+        <li>Nombra el proyecto como <code>SistemaModuloControl</code> y haz clic en <strong>Aceptar</strong>.</li>
+    </ol>
+
+    <h3>Paso 2: Formulario de Login (<code>FormLogin.cs</code>)</h3>
+    <ol>
+        <li>Cambia el nombre de <code>Form1.cs</code> a <code>FormLogin.cs</code> en el Explorador de Soluciones.</li>
+        <li>En Propiedades configura: <code>Text = Inicio de Sesión</code>, <code>StartPosition = CenterScreen</code>.</li>
+        <li>Arrastra los siguientes controles y cambia sus nombres (<code>Name</code>):</li>
+    </ol>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Control</th>
+                <th>Nombre (<code>Name</code>)</th>
+                <th>Propiedad / Configuración</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>TableLayoutPanel</code></td><td><code>tableLayoutPanel1</code></td><td><code>Dock = Fill</code></td></tr>
+            <tr><td><code>Label</code></td><td><code>lblUsuario</code></td><td>Texto: <code>Usuario:</code></td></tr>
+            <tr><td><code>TextBox</code></td><td><code>txtUsuario</code></td><td>Vacío</td></tr>
+            <tr><td><code>Label</code></td><td><code>lblClave</code></td><td>Texto: <code>Contraseña:</code></td></tr>
+            <tr><td><code>TextBox</code></td><td><code>txtClave</code></td><td><code>PasswordChar = *</code></td></tr>
+            <tr><td><code>CheckBox</code></td><td><code>chkMostrar</code></td><td>Texto: <code>Mostrar contraseña</code></td></tr>
+            <tr><td><code>Button</code></td><td><code>btnIngresar</code></td><td>Texto: <code>Iniciar Sesión</code></td></tr>
+            <tr><td><code>Button</code></td><td><code>btnCancelar</code></td><td>Texto: <code>Cancelar</code></td></tr>
+        </tbody>
+    </table>
+
+    <div class="note">
+        <strong>Nota:</strong> En la configuración del <code>TableLayoutPanel</code>, establece 2 columnas al 50% para distribuir los campos uniformemente.
+    </div>
+
+    <h2>PARTE 2: Código del Módulo de Autenticación</h2>
+    <p>Haz doble clic sobre el formulario o presiona <code>F7</code> para abrir el código fuente e implementa la siguiente lógica en C# 5:</p>
+
+    <pre><code>using System;
+using System.Windows.Forms;
+
+namespace SistemaModuloControl
+{
+    public partial class FormLogin : Form
+    {
+        public FormLogin()
+        {
+            InitializeComponent();
+        }
+
+        // 1. Mostrar u ocultar la clave al marcar el CheckBox
+        private void chkMostrar_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkMostrar.Checked)
+            {
+                // '\0' es el carácter nulo: revela el texto original
+                txtClave.PasswordChar = '\0';
+            }
+            else
+            {
+                txtClave.PasswordChar = '*';
+            }
+        }
+
+        // 2. Validar credenciales
+        private void btnIngresar_Click(object sender, EventArgs e)
+        {
+            string usuario = txtUsuario.Text.Trim();
+            string clave = txtClave.Text.Trim();
+
+            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(clave))
+            {
+                MessageBox.Show("Por favor, llene todos los campos.", "Atención", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Credenciales de prueba
+            if (usuario == "admin" && clave == "1234")
+            {
+                MessageBox.Show("¡Acceso concedido!", "Bienvenido", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                this.Hide(); // Oculta el Login
+
+                // Instancia y abre el Dashboard
+                FormDashboard dashboard = new FormDashboard(usuario);
+                dashboard.ShowDialog(); 
+
+                this.Close(); // Cierra la app al salir del Dashboard
+            }
+            else
+            {
+                MessageBox.Show("Usuario o clave incorrectos.", "Error", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtClave.Clear();
+                txtClave.Focus();
+            }
+        }
+
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}</code></pre>
+
+    <h2>PARTE 3: Creación del Dashboard Modular</h2>
+    
+    <h3>Paso 1: Agregar el Formulario Principal</h3>
+    <ol>
+        <li>Haz clic derecho en el proyecto &rarr; <strong>Agregar &rarr; Windows Form...</strong> y nómbralo <code>FormDashboard.cs</code>.</li>
+        <li>Ajusta su tamaño a <code>900 x 600</code> y <code>StartPosition = CenterScreen</code>.</li>
+    </ol>
+
+    <h3>Paso 2: Estructurar con Paneles</h3>
+    <ul>
+        <li><code>Panel</code> izquierdo (<code>Name: panelMenu</code>, <code>Dock: Left</code>, <code>Width: 200</code>).</li>
+        <li><code>Panel</code> central (<code>Name: panelContenedor</code>, <code>Dock: Fill</code>).</li>
+        <li>Dentro del menú coloca un <code>Label</code> (<code>lblUsuarioActivo</code>) y tres botones para los módulos y cerrar sesión.</li>
+    </ul>
+
+    <h2>PARTE 4: Código de Navegación Dinámica (<code>FormDashboard.cs</code>)</h2>
+    
+    <pre><code>using System;
+using System.Windows.Forms;
+
+namespace SistemaModuloControl
+{
+    public partial class FormDashboard : Form
+    {
+        public FormDashboard()
+        {
+            InitializeComponent();
+        }
+
+        public FormDashboard(string nombreUsuario) : this()
+        {
+            lblUsuarioActivo.Text = "Usuario: " + nombreUsuario;
+        }
+
+        // Método genérico para cargar subformularios en el panel
+        private void AbrirFormularioEnPanel(Form formularioHijo)
+        {
+            if (this.panelContenedor.Controls.Count > 0)
+            {
+                this.panelContenedor.Controls.RemoveAt(0);
+            }
+
+            formularioHijo.TopLevel = false;
+            formularioHijo.FormBorderStyle = FormBorderStyle.None;
+            formularioHijo.Dock = DockStyle.Fill;
+
+            this.panelContenedor.Controls.Add(formularioHijo);
+            this.panelContenedor.Tag = formularioHijo;
+            formularioHijo.Show();
+        }
+
+        private void btnUsuarios_Click(object sender, EventArgs e)
+        {
+            AbrirFormularioEnPanel(new FormUsuarios());
+        }
+
+        private void btnVentas_Click(object sender, EventArgs e)
+        {
+            AbrirFormularioEnPanel(new FormVentas());
+        }
+
+        private void btnCerrarSesion_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("¿Desea cerrar la sesión?", "Confirmar", 
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                this.Close();
+            }
+        }
+    }
+}</code></pre>
+
+    <div class="challenge">
+        <h3>RETO EVALUADO EN CLASE</h3>
+        <p>Realiza las siguientes modificaciones antes de finalizar la sesión:</p>
+        <ol>
+            <li><strong>Agrupación Visual (<code>GroupBox</code>):</strong> En <code>FormUsuarios.cs</code>, organiza los campos de texto dentro de un <code>GroupBox</code> titulado <em>"Información de Usuario"</em>.</li>
+            <li><strong>Botones Adaptables (<code>FlowLayoutPanel</code>):</strong> Coloca los botones <em>Guardar</em>, <em>Editar</em> y <em>Eliminar</em> dentro de un <code>FlowLayoutPanel</code> para que se reordenen automáticamente al cambiar el tamaño de la ventana.</li>
+            <li><strong>Nuevo Módulo:</strong> Agrega un formulario <code>FormReportes.cs</code> e intégralo en el menú lateral del Dashboard.</li>
+        </ol>
+    </div>
+
+</div>
+
+</body>
+</html>
