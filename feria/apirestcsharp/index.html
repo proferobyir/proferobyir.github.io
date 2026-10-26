@@ -1,316 +1,316 @@
-&lt!DOCTYPE html&gt
-&lthtml lang="es"&gt
+<!DOCTYPE html>
+<html lang="es">
 
-&lthead&gt
-&ltmeta charset="UTF-8"&gt
-&ltmeta name="viewport" content="width=device-width, initial-scale=1.0"&gt
-&ltmeta property="og:title" content="Guía para crear una API REST con C# 5 y .NET 4.5 | Prof. Ing. Robyir Loreto" /&gt
-&ltmeta property="og:description"
-content="Fuente de estudio para la creación y consumo de APIs REST con C# y .NET: controladores, enrutamiento, verbos
-HTTP, serialización JSON, manejo de códigos de estado, autenticación y conexión con bases de datos. Incluye ejemplos
-prácticos y buenas prácticas." /&gt
-&ltmeta property="og:image" content="https://proferobyir.github.io/pictures/apirestcsharp.jpg" /&gt
-&ltmeta property="og:url" content="https://proferobyir.github.io" /&gt
-&lttitle&gtGuía Didáctica: API REST en C# 5 y MySQL&lt/title&gt
-&ltstyle&gt
-:root {
---bg-color: #0f172a;
---card-bg: #1e293b;
---text-color: #f8fafc;
---text-muted: #94a3b8;
---accent: #38bdf8;
---code-bg: #090d16;
---border: #334155;
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Guía para crear una API REST con C# 5 y .NET 4.5 | Prof. Ing. Robyir Loreto" />
+    <meta property="og:description"
+        content="Fuente de estudio para la creación y consumo de APIs REST con C# y .NET: controladores, enrutamiento, verbos HTTP, serialización JSON, manejo de códigos de estado, autenticación y conexión con bases de datos. Incluye ejemplos prácticos y buenas prácticas." />
+    <meta property="og:image" content="https://proferobyir.github.io/pictures/apirestcsharp.jpg" />
+    <meta property="og:url" content="https://proferobyir.github.io" />
+    <title>Guía Didáctica: API REST en C# 5 y MySQL</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --code-bg: #090d16;
+            --border: #334155;
+        }
 
-* {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-body {
-background-color: var(--bg-color);
-color: var(--text-color);
-line-height: 1.6;
-padding: 20px;
-}
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
 
-.container {
-max-width: 900px;
-margin: 0 auto;
-}
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-header {
-text-align: center;
-margin-bottom: 40px;
-padding: 20px;
-background: var(--card-bg);
-border-radius: 12px;
-border: 1px solid var(--border);
-}
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
 
-header h1 {
-color: var(--accent);
-font-size: 1.8rem;
-margin-bottom: 10px;
-}
+        header h1 {
+            color: var(--accent);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
 
-header p {
-color: var(--text-muted);
-font-size: 0.95rem;
-}
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
 
-.alert {
-background: rgba(56, 189, 248, 0.1);
-border-left: 4px solid var(--accent);
-padding: 15px;
-border-radius: 4px;
-margin-bottom: 25px;
-font-size: 0.95rem;
-}
+        .alert {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
 
-.alert a {
-color: var(--accent);
-font-weight: bold;
-text-decoration: underline;
-}
+        .alert a {
+            color: var(--accent);
+            font-weight: bold;
+            text-decoration: underline;
+        }
 
-section {
-background: var(--card-bg);
-border-radius: 12px;
-border: 1px solid var(--border);
-padding: 25px;
-margin-bottom: 25px;
-}
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
 
-h2 {
-color: var(--accent);
-font-size: 1.3rem;
-margin-bottom: 15px;
-border-bottom: 2px solid var(--border);
-padding-bottom: 8px;
-}
+        h2 {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
 
-p,
-ol {
-margin-bottom: 15px;
-color: var(--text-muted);
-}
+        p,
+        ol {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
 
-ol {
-margin-left: 20px;
-}
+        ol {
+            margin-left: 20px;
+        }
 
-li {
-margin-bottom: 8px;
-}
+        li {
+            margin-bottom: 8px;
+        }
 
-.code-box {
-background: var(--code-bg);
-border: 1px solid var(--border);
-border-radius: 8px;
-padding: 15px;
-overflow-x: auto;
-margin-top: 15px;
-margin-bottom: 15px;
-}
+        .code-box {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
 
-pre {
-color: #e2e8f0;
-font-family: 'Courier New', Courier, monospace;
-font-size: 0.85rem;
-}
+        pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+        }
 
-footer {
-text-align: center;
-margin-top: 40px;
-color: var(--text-muted);
-font-size: 0.85rem;
-}
-&lt/style&gt
-&lt/head&gt
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
 
-&ltbody&gt
-&ltdiv class="container"&gt
-&ltheader&gt
-&lth1&gtGuía Práctica: API REST en C# 5 y MySQL&lt/h1&gt
-&ltp&gtDiseñado para Visual Studio 2012 (.NET Framework 4.5) con explicaciones detalladas en código&lt/p&gt
-&lt/header&gt
+<body>
+    <div class="container">
+        <header>
+            <h1>Guía Práctica: API REST en C# 5 y MySQL</h1>
+            <p>Diseñado para Visual Studio 2012 (.NET Framework 4.5) con explicaciones detalladas en código</p>
+        </header>
 
-&ltdiv class="alert"&gt
-&ltstrong&gtRecurso esencial:&lt/strong&gt Para conectar tu proyecto con MySQL en este entorno offline, puedes
-descargar el conector oficial &lta
-href="https://drive.google.com/file/d/1zu6gZRcbfd6fXRAt6YE0Z7uLNpvPnctH/view?usp=sharing"
-target="_blank"&gtMySql.Data.dll desde este enlace de Google Drive&lt/a&gt y agregarlo a tus referencias.
-&lt/div&gt
+        <div class="alert">
+            <strong>Recurso esencial:</strong> Para conectar tu proyecto con MySQL en este entorno offline, puedes
+            descargar el conector oficial <a
+                href="https://drive.google.com/file/d/1zu6gZRcbfd6fXRAt6YE0Z7uLNpvPnctH/view?usp=sharing"
+                target="_blank">MySql.Data.dll desde este enlace de Google Drive</a> y agregarlo a tus referencias.
+        </div>
 
-&lt!-- PASO 0: CREACIÓN DEL PROYECTO --&gt
-&ltsection&gt
-&lth2&gtPaso 0: Creación y Configuración Inicial en Visual Studio 2012&lt/h2&gt
-&ltp&gtSigue estos pasos para crear el proyecto base desde cero en el entorno de laboratorio:&lt/p&gt
-&ltol&gt
-&ltli&gtAbre &ltstrong&gtVisual Studio 2012&lt/strong&gt.&lt/li&gt
-&ltli&gtVe al menú superior y selecciona &ltstrong&gtFile &gt New &gt Project...&lt/strong&gt (Archivo &gt Nuevo &gt
-Proyecto).&lt/li&gt
-&ltli&gtEn la ventana emergente, selecciona &ltstrong&gtVisual C# &gt Web&lt/strong&gt y elige la plantilla
-&ltstrong&gtASP.NET MVC 4 Web Application&lt/strong&gt.
-&lt/li&gt
-&ltli&gtAbajo en el selector de versión, asegúrate de que esté seleccionado &ltstrong&gt.NET Framework
-4.5&lt/strong&gt. Asígnale un nombre (ej. &ltcode&gtAPIFeria&lt/code&gt) y haz clic en &ltem&gtOK&lt/em&gt.
-&lt/li&gt
-&ltli&gtEn el asistente que aparece a continuación, selecciona la plantilla &ltstrong&gtWeb API&lt/strong&gt y
-presiona &ltem&gtOK&lt/em&gt.&lt/li&gt
-&ltli&gt&ltstrong&gtAgregar el conector:&lt/strong&gt En el Explorador de soluciones (derecha), haz clic derecho
-sobre &ltem&gtReferences&lt/em&gt &gt &ltem&gtAdd Reference...&lt/em&gt, busca y selecciona el archivo
-&ltcode&gtMySql.Data.dll&lt/code&gt que descargaste previamente para habilitar la conexión con MySQL.
-&lt/li&gt
-&lt/ol&gt
-&lt/section&gt
+        <!-- PASO 0: CREACIÓN DEL PROYECTO -->
+        <section>
+            <h2>Paso 0: Creación y Configuración Inicial en Visual Studio 2012</h2>
+            <p>Sigue estos pasos para crear el proyecto base desde cero en el entorno de laboratorio:</p>
+            <ol>
+                <li>Abre <strong>Visual Studio 2012</strong>.</li>
+                <li>Ve al menú superior y selecciona <strong>File > New > Project...</strong> (Archivo > Nuevo >
+                    Proyecto).</li>
+                <li>En la ventana emergente, selecciona <strong>Visual C# > Web</strong> y elige la plantilla
+                    <strong>ASP.NET MVC 4 Web Application</strong>.
+                </li>
+                <li>Abajo en el selector de versión, asegúrate de que esté seleccionado <strong>.NET Framework
+                        4.5</strong>. Asígnale un nombre (ej. <code>APIFeria</code>) y haz clic en <em>OK</em>.
+                </li>
+                <li>En el asistente que aparece a continuación, selecciona la plantilla <strong>Web API</strong> y
+                    presiona <em>OK</em>.</li>
+                <li><strong>Agregar el conector:</strong> En el Explorador de soluciones (derecha), haz clic derecho
+                    sobre <em>References</em> > <em>Add Reference...</em>, busca y selecciona el archivo
+                    <code>MySql.Data.dll</code> que descargaste previamente para habilitar la conexión con MySQL.
+                </li>
+            </ol>
+        </section>
 
-&lt!-- PASO 1 --&gt
-&ltsection&gt
-&lth2&gtPaso 1: Configurar Conexión y CORS (Web.config)&lt/h2&gt
-&ltp&gtAgrega la cadena de conexión a tu base de datos &ltcode&gtferia_iutepi&lt/code&gt y habilita los encabezados CORS
-en el archivo &ltcode&gtWeb.config&lt/code&gt para permitir peticiones externas.&lt/p&gt
-&ltdiv class="code-box"&gt
-&ltpre&gt&lt;configuration&gt;
-&lt;!-- Sección donde definimos las cadenas de conexión a bases de datos --&gt;
-&lt;connectionStrings&gt;
-&lt;add name="ConexionMySQL"
-connectionString="Server=127.0.0.1;Database=feria_iutepi;Uid=root;Pwd=;"
-providerName="MySql.Data.MySqlClient" /&gt;
-&lt;/connectionStrings&gt;
+        <!-- PASO 1 -->
+        <section>
+            <h2>Paso 1: Configurar Conexión y CORS (Web.config)</h2>
+            <p>Agrega la cadena de conexión a tu base de datos <code>feria_iutepi</code> y habilita los encabezados CORS
+                en el archivo <code>Web.config</code> para permitir peticiones externas.</p>
+            <div class="code-box">
+                <pre>&lt;configuration&gt;
+  &lt;!-- Sección donde definimos las cadenas de conexión a bases de datos --&gt;
+  &lt;connectionStrings&gt;
+    &lt;add name="ConexionMySQL" 
+         connectionString="Server=127.0.0.1;Database=feria_iutepi;Uid=root;Pwd=;" 
+         providerName="MySql.Data.MySqlClient" /&gt;
+  &lt;/connectionStrings&gt;
 
-&lt;!-- Configuración del servidor web IIS Express para la API --&gt;
-&lt;system.webServer&gt;
-&lt;httpProtocol&gt;
-&lt;customHeaders&gt;
-&lt;!-- CORS: Permite que aplicaciones o páginas web externas consuman esta API --&gt;
-&lt;add name="Access-Control-Allow-Origin" value="*" /&gt;
-&lt;add name="Access-Control-Allow-Methods" value="GET, POST, PUT, DELETE, OPTIONS" /&gt;
-&lt;add name="Access-Control-Allow-Headers" value="Content-Type, Token" /&gt;
-&lt;/customHeaders&gt;
-&lt;/httpProtocol&gt;
-&lt;/system.webServer&gt;
-&lt;/configuration&gt;&lt/pre&gt
-&lt/div&gt
-&lt/section&gt
+  &lt;!-- Configuración del servidor web IIS Express para la API --&gt;
+  &lt;system.webServer&gt;
+    &lt;httpProtocol&gt;
+      &lt;customHeaders&gt;
+        &lt;!-- CORS: Permite que aplicaciones o páginas web externas consuman esta API --&gt;
+        &lt;add name="Access-Control-Allow-Origin" value="*" /&gt;
+        &lt;add name="Access-Control-Allow-Methods" value="GET, POST, PUT, DELETE, OPTIONS" /&gt;
+        &lt;add name="Access-Control-Allow-Headers" value="Content-Type, Token" /&gt;
+      &lt;/customHeaders&gt;
+    &lt;/httpProtocol&gt;
+  &lt;/system.webServer&gt;
+&lt;/configuration&gt;</pre>
+            </div>
+        </section>
 
-&lt!-- PASO 2 --&gt
-&ltsection&gt
-&lth2&gtPaso 2: Crear el Modelo de Credenciales (Models/LoginModel.cs)&lt/h2&gt
-&ltp&gtCrea una carpeta llamada &ltcode&gtModels&lt/code&gt (si no existe) y agrega esta clase para recibir de forma
-limpia el usuario y la contraseña enviados desde el cliente.&lt/p&gt
-&ltdiv class="code-box"&gt
-&ltpre&gtnamespace APIFeria.Models
+        <!-- PASO 2 -->
+        <section>
+            <h2>Paso 2: Crear el Modelo de Credenciales (Models/LoginModel.cs)</h2>
+            <p>Crea una carpeta llamada <code>Models</code> (si no existe) y agrega esta clase para recibir de forma
+                limpia el usuario y la contraseña enviados desde el cliente.</p>
+            <div class="code-box">
+                <pre>namespace APIFeria.Models
 {
-// Clase DTO (Objeto de Transferencia de Datos) para mapear el JSON del Login
-public class LoginModel
-{
-// Propiedad pública para capturar el usuario enviado
-public string usuario { get; set; }
+    // Clase DTO (Objeto de Transferencia de Datos) para mapear el JSON del Login
+    public class LoginModel
+    {
+        // Propiedad pública para capturar el usuario enviado
+        public string usuario { get; set; }
 
-// Propiedad pública para capturar la contraseña enviada
-public string password { get; set; }
-}
-}&lt/pre&gt
-&lt/div&gt
-&lt/section&gt
+        // Propiedad pública para capturar la contraseña enviada
+        public string password { get; set; }
+    }
+}</pre>
+            </div>
+        </section>
 
-&lt!-- PASO 3 --&gt
-&ltsection&gt
-&lth2&gtPaso 3: Controlador de Autenticación (Controllers/AuthController.cs)&lt/h2&gt
-&ltp&gtCrea este controlador en la carpeta &ltcode&gtControllers&lt/code&gt. Valida las credenciales contra la tabla
-&ltcode&gtusuarios&lt/code&gt y emite un token temporal guardado en una lista estática.
-&lt/p&gt
-&ltdiv class="code-box"&gt
-&ltpre&gt
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography; // Necesario para SHA256
-using System.Text; // Necesario para Encoding.UTF8
-using System.Web.Http;
-using MySql.Data.MySqlClient;
-using APIFeria.Models;
+        <!-- PASO 3 -->
+        <section>
+            <h2>Paso 3: Controlador de Autenticación (Controllers/AuthController.cs)</h2>
+            <p>Crea este controlador en la carpeta <code>Controllers</code>. Valida las credenciales contra la tabla
+                <code>usuarios</code> y emite un token temporal guardado en una lista estática.
+            </p>
+            <div class="code-box">
+                &ltpre&gt
+                using System;
+                using System.Collections.Generic;
+                using System.Configuration;
+                using System.Net;
+                using System.Net.Http;
+                using System.Security.Cryptography; // Necesario para SHA256
+                using System.Text; // Necesario para Encoding.UTF8
+                using System.Web.Http;
+                using MySql.Data.MySqlClient;
+                using APIFeria.Models;
 
-namespace APIFeria.Controllers
-{
-public class AuthController : ApiController
-{
-private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
+                namespace APIFeria.Controllers
+                {
+                public class AuthController : ApiController
+                {
+                private readonly string conexionDB =
+                ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
 
-// Memoria estática compartida para almacenar sesiones activas (Token -&gt Usuario)
-public static Dictionary&ltstring, string&gt Sesiones = new Dictionary&ltstring, string&gt();
+                // Memoria estática compartida para almacenar sesiones activas (Token -&gt Usuario)
+                public static Dictionary&ltstring, string&gt Sesiones = new Dictionary&ltstring, string&gt();
 
-// Método privado auxiliar para cifrar el texto en SHA256
-private string EncriptarSHA256(string texto)
-{
-using (var sha256 = SHA256.Create())
-{
-byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
-var sb = new StringBuilder();
-foreach (var b in bytes) sb.Append(b.ToString("x2"));
-return sb.ToString();
-}
-}
+                // Método privado auxiliar para cifrar el texto en SHA256
+                private string EncriptarSHA256(string texto)
+                {
+                using (var sha256 = SHA256.Create())
+                {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
+                var sb = new StringBuilder();
+                foreach (var b in bytes) sb.Append(b.ToString("x2"));
+                return sb.ToString();
+                }
+                }
 
-// POST: api/Auth/Login
-[HttpPost]
-public HttpResponseMessage Login([FromBody] LoginModel credenciales)
-{
-if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) || string.IsNullOrEmpty(credenciales.password))
-return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Debe enviar usuario y contraseña.");
+                // POST: api/Auth/Login
+                [HttpPost]
+                public HttpResponseMessage Login([FromBody] LoginModel credenciales)
+                {
+                if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) ||
+                string.IsNullOrEmpty(credenciales.password))
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Debe enviar usuario y contraseña.");
 
-// Ciframos lo que escribe el alumno para compararlo con el hash de la base de datos
-string passHash = EncriptarSHA256(credenciales.password);
-bool usuarioValido = false;
+                // Ciframos lo que escribe el alumno para compararlo con el hash de la base de datos
+                string passHash = EncriptarSHA256(credenciales.password);
+                bool usuarioValido = false;
 
-using (var conexion = new MySqlConnection(conexionDB))
-{
-string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
-using (var cmd = new MySqlCommand(query, conexion))
-{
-cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
-cmd.Parameters.AddWithValue("@pass", passHash); // Comparamos contra el hash SHA256
-conexion.Open();
-int resultado = Convert.ToInt32(cmd.ExecuteScalar());
-if (resultado &gt 0) usuarioValido = true;
-}
-}
+                using (var conexion = new MySqlConnection(conexionDB))
+                {
+                string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
+                using (var cmd = new MySqlCommand(query, conexion))
+                {
+                cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
+                cmd.Parameters.AddWithValue("@pass", passHash); // Comparamos contra el hash SHA256
+                conexion.Open();
+                int resultado = Convert.ToInt32(cmd.ExecuteScalar());
+                if (resultado &gt 0) usuarioValido = true;
+                }
+                }
 
-if (!usuarioValido)
-return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
+                if (!usuarioValido)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
 
-// Generar Token único
-string token = Guid.NewGuid().ToString();
+                // Generar Token único
+                string token = Guid.NewGuid().ToString();
 
-lock (Sesiones)
-{
-Sesiones[token] = credenciales.usuario;
-}
+                lock (Sesiones)
+                {
+                Sesiones[token] = credenciales.usuario;
+                }
 
-return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
-}
-}
-}
-&lt/pre&gt
-&lt/div&gt
-&lt/section&gt
+                return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
+                }
+                }
+                }
+                &lt/pre&gt
+            </div>
+        </section>
 
-&lt!-- PASO 4 --&gt
-&ltsection&gt
-&lth2&gtPaso 4: Controlador Protegido con Método Privado (Controllers/ProductosController.cs)&lt/h2&gt
-&ltp&gtCrea este controlador en la carpeta &ltcode&gtControllers&lt/code&gt. Aquí aplicamos el concepto de
-&ltstrong&gtmétodo privado&lt/strong&gt para encapsular la validación del Token antes de entregar los datos de
-la base de datos.
-&lt/p&gt
-&ltdiv class="code-box"&gt
-&ltpre&gtusing System.Collections.Generic;
+        <!-- PASO 4 -->
+        <section>
+            <h2>Paso 4: Controlador Protegido con Método Privado (Controllers/ProductosController.cs)</h2>
+            <p>Crea este controlador en la carpeta <code>Controllers</code>. Aquí aplicamos el concepto de
+                <strong>método privado</strong> para encapsular la validación del Token antes de entregar los datos de
+                la base de datos.
+            </p>
+            <div class="code-box">
+                <pre>using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
@@ -320,78 +320,78 @@ using MySql.Data.MySqlClient;
 
 namespace APIFeria.Controllers
 {
-public class ProductosController : ApiController
-{
-private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
+    public class ProductosController : ApiController
+    {
+        private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
 
-// =========================================================================
-// MÉTODO PRIVADO DE SEGURIDAD (Concepto clave de visibilidad)
-// Es 'private' porque solo este controlador necesita ejecutar esta validación
-// internamente y no debe ser expuesto como una ruta web pública para clientes.
-// =========================================================================
-private bool ValidarToken()
-{
-// Verificamos si en los headers (cabeceras HTTP) de la petición viene el campo "Token"
-if (Request.Headers.Contains("Token"))
-{
-string tokenEnviado = Request.Headers.GetValues("Token").FirstOrDefault();
+        // =========================================================================
+        // MÉTODO PRIVADO DE SEGURIDAD (Concepto clave de visibilidad)
+        // Es 'private' porque solo este controlador necesita ejecutar esta validación 
+        // internamente y no debe ser expuesto como una ruta web pública para clientes.
+        // =========================================================================
+        private bool ValidarToken()
+        {
+            // Verificamos si en los headers (cabeceras HTTP) de la petición viene el campo "Token"
+            if (Request.Headers.Contains("Token"))
+            {
+                string tokenEnviado = Request.Headers.GetValues("Token").FirstOrDefault();
 
-// Comprobamos si el token existe dentro de las sesiones activas del AuthController
-if (!string.IsNullOrEmpty(tokenEnviado) && AuthController.Sesiones.ContainsKey(tokenEnviado))
-{
-return true; // ¡Token legítimo y válido!
-}
-}
-return false; // ¡Token ausente o incorrecto!
-}
+                // Comprobamos si el token existe dentro de las sesiones activas del AuthController
+                if (!string.IsNullOrEmpty(tokenEnviado) && AuthController.Sesiones.ContainsKey(tokenEnviado))
+                {
+                    return true; // ¡Token legítimo y válido!
+                }
+            }
+            return false; // ¡Token ausente o incorrecto!
+        }
 
-// GET: api/Productos (Método público protegido)
-[HttpGet]
-public HttpResponseMessage Get()
-{
-// Llamamos al método privado de seguridad antes de consultar la base de datos
-if (!ValidarToken())
-{
-return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Acceso denegado. Falta el Token o es inválido.");
-}
+        // GET: api/Productos (Método público protegido)
+        [HttpGet]
+        public HttpResponseMessage Get()
+        {
+            // Llamamos al método privado de seguridad antes de consultar la base de datos
+            if (!ValidarToken())
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Acceso denegado. Falta el Token o es inválido.");
+            }
 
-var lista = new List&lt;object&gt;();
+            var lista = new List&lt;object&gt;();
 
-// Realizamos la consulta a la tabla productos con ADO.NET
-using (var conexion = new MySqlConnection(conexionDB))
-{
-string query = "SELECT id, nombre, precio, stock FROM productos";
-using (var cmd = new MySqlCommand(query, conexion))
-{
-conexion.Open();
-using (var reader = cmd.ExecuteReader())
-{
-// Recorremos fila por fila los registros obtenidos de MySQL
-while (reader.Read())
-{
-lista.Add(new {
-Id = reader.GetInt32("id"),
-Nombre = reader.GetString("nombre"),
-Precio = reader.GetDecimal("precio"),
-Stock = reader.GetInt32("stock")
-});
-}
-}
-}
-}
+            // Realizamos la consulta a la tabla productos con ADO.NET
+            using (var conexion = new MySqlConnection(conexionDB))
+            {
+                string query = "SELECT id, nombre, precio, stock FROM productos";
+                using (var cmd = new MySqlCommand(query, conexion))
+                {
+                    conexion.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        // Recorremos fila por fila los registros obtenidos de MySQL
+                        while (reader.Read())
+                        {
+                            lista.Add(new {
+                                Id = reader.GetInt32("id"),
+                                Nombre = reader.GetString("nombre"),
+                                Precio = reader.GetDecimal("precio"),
+                                Stock = reader.GetInt32("stock")
+                            });
+                        }
+                    }
+                }
+            }
 
-// Web API convierte automáticamente la lista de objetos anónimos a formato JSON
-return Request.CreateResponse(HttpStatusCode.OK, lista);
-}
-}
-}&lt/pre&gt
-&lt/div&gt
-&lt/section&gt
+            // Web API convierte automáticamente la lista de objetos anónimos a formato JSON
+            return Request.CreateResponse(HttpStatusCode.OK, lista);
+        }
+    }
+}</pre>
+            </div>
+        </section>
 
-&ltfooter&gt
-&ltp&gtGuía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - Profesor: Ing. Robyir Loreto&lt/p&gt
-&lt/footer&gt
-&lt/div&gt
-&lt/body&gt
+        <footer>
+            <p>Guía de Laboratorio Académico - C# 5 / .NET 4.5 / MySQL - Profesor: Ing. Robyir Loreto</p>
+        </footer>
+    </div>
+</body>
 
-&lt/html&gt
+</html>
