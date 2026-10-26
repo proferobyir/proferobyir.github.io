@@ -224,79 +224,78 @@
                 <code>usuarios</code> y emite un token temporal guardado en una lista estática.
             </p>
             <div class="code-box">
-                using System;
-                using System.Collections.Generic;
-                using System.Configuration;
-                using System.Net;
-                using System.Net.Http;
-                using System.Security.Cryptography; // Necesario para SHA256
-                using System.Text; // Necesario para Encoding.UTF8
-                using System.Web.Http;
-                using MySql.Data.MySqlClient;
-                using APIFeria.Models;
+                <pre>
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography; // Necesario para SHA256
+using System.Text;                    // Necesario para Encoding.UTF8
+using System.Web.Http;
+using MySql.Data.MySqlClient;
+using APIFeria.Models;
 
-                namespace APIFeria.Controllers
-                {
-                public class AuthController : ApiController
-                {
-                private readonly string conexionDB =
-                ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
+namespace APIFeria.Controllers
+{
+    public class AuthController : ApiController
+    {
+        private readonly string conexionDB = ConfigurationManager.ConnectionStrings["ConexionMySQL"].ConnectionString;
 
-                // Memoria estática compartida para almacenar sesiones activas (Token -&gt Usuario)
-                public static Dictionary&ltstring, string&gt Sesiones = new Dictionary&ltstring, string&gt();
+        // Memoria estática compartida para almacenar sesiones activas (Token -> Usuario)
+        public static Dictionary&lt;string, string&gt; Sesiones = new Dictionary&lt;string, string&gt;();
 
-                // Método privado auxiliar para cifrar el texto en SHA256
-                private string EncriptarSHA256(string texto)
-                {
-                using (var sha256 = SHA256.Create())
-                {
+        // Método privado auxiliar para cifrar el texto en SHA256
+        private string EncriptarSHA256(string texto)
+        {
+            using (var sha256 = SHA256.Create())
+            {
                 byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
                 var sb = new StringBuilder();
                 foreach (var b in bytes) sb.Append(b.ToString("x2"));
                 return sb.ToString();
-                }
-                }
+            }
+        }
 
-                // POST: api/Auth/Login
-                [HttpPost]
-                public HttpResponseMessage Login([FromBody] LoginModel credenciales)
-                {
-                if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) ||
-                string.IsNullOrEmpty(credenciales.password))
+        // POST: api/Auth/Login
+        [HttpPost]
+        public HttpResponseMessage Login([FromBody] LoginModel credenciales)
+        {
+            if (credenciales == null || string.IsNullOrEmpty(credenciales.usuario) || string.IsNullOrEmpty(credenciales.password))
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Debe enviar usuario y contraseña.");
 
-                // Ciframos lo que escribe el alumno para compararlo con el hash de la base de datos
-                string passHash = EncriptarSHA256(credenciales.password);
-                bool usuarioValido = false;
+            // Ciframos lo que escribe el alumno para compararlo con el hash de la base de datos
+            string passHash = EncriptarSHA256(credenciales.password);
+            bool usuarioValido = false;
 
-                using (var conexion = new MySqlConnection(conexionDB))
-                {
+            using (var conexion = new MySqlConnection(conexionDB))
+            {
                 string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usu AND password = @pass AND estado = 1";
                 using (var cmd = new MySqlCommand(query, conexion))
                 {
-                cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
-                cmd.Parameters.AddWithValue("@pass", passHash); // Comparamos contra el hash SHA256
-                conexion.Open();
-                int resultado = Convert.ToInt32(cmd.ExecuteScalar());
-                if (resultado &gt 0) usuarioValido = true;
+                    cmd.Parameters.AddWithValue("@usu", credenciales.usuario);
+                    cmd.Parameters.AddWithValue("@pass", passHash); // Comparamos contra el hash SHA256
+                    conexion.Open();
+                    int resultado = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (resultado &gt; 0) usuarioValido = true;
                 }
-                }
+            }
 
-                if (!usuarioValido)
+            if (!usuarioValido)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "Credenciales incorrectas.");
 
-                // Generar Token único
-                string token = Guid.NewGuid().ToString();
+            // Generar Token único
+            string token = Guid.NewGuid().ToString();
 
-                lock (Sesiones)
-                {
+            lock (Sesiones)
+            {
                 Sesiones[token] = credenciales.usuario;
-                }
+            }
 
-                return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
-                }
-                }
-                }
+            return Request.CreateResponse(HttpStatusCode.OK, new { Token = token, Mensaje = "¡Login exitoso!" });
+        }
+    }
+}
                 </pre>
             </div>
         </section>
