@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Laboratorio: WinForms Layouts & Contenedores (C# 5 / VS 2012)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ghBg: '#0d1117',
+                        ghCard: '#161b22',
+                        ghBorder: '#30363d',
+                        ghText: '#c9d1d9',
+                        ghMuted: '#8b949e',
+                        accentBlue: '#58a6ff',
+                        accentGreen: '#2ea043',
+                        accentPurple: '#bc8cff',
+                        accentOrange: '#f0883e',
+                        accentRed: '#ff7b72',
+                        vsCodeBg: '#1e1e1e'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'Consolas', 'Monaco', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #58a6ff;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Glow Effects */
+        .neon-glow-blue {
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.25);
+        }
+
+        .neon-glow-green {
+            box-shadow: 0 0 15px rgba(46, 160, 67, 0.25);
+        }
+
+        /* Resizable Simulator Window */
+        .resizable-window {
+            resize: both;
+            overflow: hidden;
+            min-width: 320px;
+            min-height: 280px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-accentBlue selection:text-ghBg">
+
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-ghBorder z-50">
+        <div id="progressBar"
+            class="h-full bg-gradient-to-r from-accentBlue via-accentPurple to-accentGreen w-0 transition-all duration-150">
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header
+        class="sticky top-0 z-40 bg-ghCard/90 backdrop-blur border-b border-ghBorder px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-accentBlue to-accentPurple p-2 rounded-lg text-ghBg font-bold text-lg">
+                <i class="fa-solid fa-cube"></i>
+            </div>
+            <div>
+                <span class="text-xs font-mono text-accentBlue uppercase tracking-wider block">DevLab // WinForms C#
+                    5</span>
+                <h1 class="text-sm md:text-base font-bold text-white tracking-tight">Contenedores & Layouts Responsivos
+                </h1>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <span
+                class="hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-accentBlue/10 text-accentBlue border border-accentBlue/30">
+                <i class="fa-brands fa-windows mr-1.5"></i> Visual Studio 2012
+            </span>
+            <a href="#simulador"
+                class="px-3 py-1.5 text-xs font-semibold rounded-md bg-accentBlue text-ghBg hover:bg-accentBlue/90 transition flex items-center">
+                <i class="fa-solid fa-laptop-code mr-1.5"></i> Probador Interactivo
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:col-span-3">
+            <div class="sticky top-20 bg-ghCard border border-ghBorder rounded-xl p-4 space-y-4">
+                <h3 class="text-xs font-mono uppercase tracking-wider text-ghMuted flex items-center justify-between">
+                    <span>Índice del Laboratorio</span>
+                    <i class="fa-solid fa-list-ul"></i>
+                </h3>
+                <nav class="space-y-1 text-sm font-medium">
+                    <a href="#intro"
+                        class="block px-3 py-2 rounded-lg text-ghText hover:text-accentBlue hover:bg-ghBorder/50 transition border-l-2 border-transparent hover:border-accentBlue">1.
+                        El Problema X,Y vs Layouts</a>
+                    <a href="#contenedores"
+                        class="block px-3 py-2 rounded-lg text-ghText hover:text-accentBlue hover:bg-ghBorder/50 transition border-l-2 border-transparent hover:border-accentBlue">2.
+                        Los 4 Contenedores Clave</a>
+                    <a href="#propiedades"
+                        class="block px-3 py-2 rounded-lg text-ghText hover:text-accentBlue hover:bg-ghBorder/50 transition border-l-2 border-transparent hover:border-accentBlue">3.
+                        Propiedades Anchor & Dock</a>
+                    <a href="#simulador"
+                        class="block px-3 py-2 rounded-lg text-accentPurple hover:bg-accentPurple/10 transition border-l-2 border-transparent hover:border-accentPurple font-semibold">4.
+                        Simulador Interactivo</a>
+                    <a href="#paso-a-paso"
+                        class="block px-3 py-2 rounded-lg text-ghText hover:text-accentBlue hover:bg-ghBorder/50 transition border-l-2 border-transparent hover:border-accentBlue">5.
+                        Ejercicio Paso a Paso</a>
+                    <a href="#codigo"
+                        class="block px-3 py-2 rounded-lg text-ghText hover:text-accentBlue hover:bg-ghBorder/50 transition border-l-2 border-transparent hover:border-accentBlue">6.
+                        Código C# 5 & Eventos</a>
+                    <a href="#reto"
+                        class="block px-3 py-2 rounded-lg text-accentGreen hover:bg-accentGreen/10 transition border-l-2 border-transparent hover:border-accentGreen font-semibold">7.
+                        Reto de Clase</a>
+                </nav>
+                <div class="pt-4 border-t border-ghBorder text-xs text-ghMuted space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span>LENGUAJE:</span>
+                        <span class="font-mono text-white">C# 5.0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>FRAMEWORK:</span>
+                        <span class="font-mono text-white">.NET 4.5</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>IDE:</span>
+                        <span class="font-mono text-white">VS 2012</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Guide Body -->
+        <main class="lg:col-span-9 space-y-12">
+
+            <!-- Hero Banner -->
+            <section
+                class="bg-gradient-to-br from-ghCard via-ghCard to-ghBorder/30 border border-ghBorder rounded-2xl p-6 sm:p-8 relative overflow-hidden neon-glow-blue">
+                <div
+                    class="absolute -right-10 -bottom-10 w-60 h-60 bg-accentBlue/10 rounded-full blur-3xl pointer-events-none">
+                </div>
+                <div class="relative z-10 space-y-4">
+                    <div
+                        class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-accentBlue/10 border border-accentBlue/30 text-accentBlue text-xs font-mono">
+                        <span class="animate-pulse w-2 h-2 rounded-full bg-accentBlue"></span>
+                        <span>GUÍA OFICIAL DE GUÍA PRÁCTICA // WINFORMS</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                        Contenedores y Layouts Responsivos en Windows Forms
+                    </h1>
+                    <p class="text-ghMuted text-sm sm:text-base max-w-2xl">
+                        Aprende a dominar las herramientas de maquetación en C# 5 y Visual Studio 2012 para construir
+                        interfaces gráfica profesionales que se adapten a cualquier resolución sin deformarse.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2 text-xs font-mono text-ghText">
+                        <span class="flex items-center bg-ghBg/80 px-3 py-1.5 rounded-lg border border-ghBorder"><i
+                                class="fa-solid fa-clock mr-2 text-accentBlue"></i> Duración estimada: 90 min</span>
+                        <span class="flex items-center bg-ghBg/80 px-3 py-1.5 rounded-lg border border-ghBorder"><i
+                                class="fa-solid fa-graduation-cap mr-2 text-accentGreen"></i> Nivel: Intermedio</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1: Intro X,Y vs Fluid -->
+            <section id="intro" class="space-y-4 scroll-mt-24">
+                <div class="flex items-center space-x-3 border-b border-ghBorder pb-3">
+                    <span class="font-mono text-accentBlue font-bold text-lg">01.</span>
+                    <h2 class="text-xl font-bold text-white">El Problema de las Coordenadas Absolutas (X, Y)</h2>
+                </div>
+
+                <p class="text-ghText leading-relaxed">
+                    Cuando diseñamos una ventana en Windows Forms arrastrando elementos de manera libre, Visual Studio
+                    asigna coordenadas fijas basadas en la propiedad <code
+                        class="text-accentBlue font-mono bg-ghCard px-1.5 py-0.5 rounded border border-ghBorder">Location (X, Y)</code>
+                    y dimensiones en píxeles <code
+                        class="text-accentBlue font-mono bg-ghCard px-1.5 py-0.5 rounded border border-ghBorder">Size (Width, Height)</code>.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+                    <!-- Bad Approach Card -->
+                    <div class="bg-ghCard border border-accentRed/30 rounded-xl p-5 space-y-3 relative overflow-hidden">
+                        <div class="flex items-center space-x-2 text-accentRed font-bold text-sm">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Diseño Fijo (Sin Contenedores)</span>
+                        </div>
+                        <p class="text-xs text-ghMuted">
+                            Al maximizar la ventana o cambiar la resolución del monitor, los controles se quedan pegados
+                            en la esquina superior izquierda. El resto del formulario queda vacío e inutilizable.
+                        </p>
+                        <div
+                            class="bg-ghBg p-4 rounded-lg border border-ghBorder font-mono text-xs text-accentRed/80 space-y-1">
+                            <div>// Posicionamiento absoluto rígido</div>
+                            <div>this.btnGuardar.Location = new Point(120, 250);</div>
+                            <div>this.btnGuardar.Size = new Size(100, 30);</div>
+                        </div>
+                    </div>
+
+                    <!-- Good Approach Card -->
+                    <div
+                        class="bg-ghCard border border-accentGreen/30 rounded-xl p-5 space-y-3 relative overflow-hidden">
+                        <div class="flex items-center space-x-2 text-accentGreen font-bold text-sm">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Diseño Fluido (Con Layout Containers)</span>
+                        </div>
+                        <p class="text-xs text-ghMuted">
+                            Utilizando contenedores como <code class="text-accentGreen">TableLayoutPanel</code> y <code
+                                class="text-accentGreen">FlowLayoutPanel</code>, los controles recalculan su tamaño y
+                            posición en tiempo real de forma automática.
+                        </p>
+                        <div
+                            class="bg-ghBg p-4 rounded-lg border border-ghBorder font-mono text-xs text-accentGreen/80 space-y-1">
+                            <div>// Anclaje y acoplamiento dinámico</div>
+                            <div>this.tableLayoutPanel.Dock = DockStyle.Fill;</div>
+                            <div>this.txtNombre.Dock = DockStyle.Fill;</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Contenedores Principales -->
+            <section id="contenedores" class="space-y-6 scroll-mt-24">
+                <div class="flex items-center space-x-3 border-b border-ghBorder pb-3">
+                    <span class="font-mono text-accentBlue font-bold text-lg">02.</span>
+                    <h2 class="text-xl font-bold text-white">Los 4 Contenedores Clave de Windows Forms</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Panel -->
+                    <div
+                        class="bg-ghCard border border-ghBorder hover:border-accentBlue/50 transition rounded-xl p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-accentBlue font-bold text-base flex items-center">
+                                <i class="fa-regular fa-square mr-2"></i> Panel
+                            </span>
+                            <span
+                                class="text-xs font-mono bg-accentBlue/10 text-accentBlue px-2 py-0.5 rounded border border-accentBlue/20">Genérico</span>
+                        </div>
+                        <p class="text-xs text-ghMuted leading-relaxed">
+                            Funciona como un lienzo o caja invisible. Es ideal para agrupar controles visuales o actuar
+                            como sub-pantallas dinámicas dentro de una misma ventana.
+                        </p>
+                        <ul class="text-xs text-ghText space-y-1.5 list-disc list-inside">
+                            <li>Permite barras de desplazamiento automáticas (<code
+                                    class="text-accentBlue font-mono">AutoScroll = true</code>).</li>
+                            <li>Facilita ocultar o mostrar grupos enteros de controles a la vez.</li>
+                        </ul>
+                    </div>
+
+                    <!-- GroupBox -->
+                    <div
+                        class="bg-ghCard border border-ghBorder hover:border-accentPurple/50 transition rounded-xl p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-accentPurple font-bold text-base flex items-center">
+                                <i class="fa-regular fa-object-group mr-2"></i> GroupBox
+                            </span>
+                            <span
+                                class="text-xs font-mono bg-accentPurple/10 text-accentPurple px-2 py-0.5 rounded border border-accentPurple/20">Semántico</span>
+                        </div>
+                        <p class="text-xs text-ghMuted leading-relaxed">
+                            Similar al Panel pero cuenta con un borde visible y una cabecera de texto editable (<code
+                                class="text-accentPurple font-mono">Text</code>). Agrupa lógicamente campos
+                            relacionados.
+                        </p>
+                        <ul class="text-xs text-ghText space-y-1.5 list-disc list-inside">
+                            <li>Excelente para dividir secciones (ej. "Datos Personales", "Dirección").</li>
+                            <li>Aísla el comportamiento de los <code
+                                    class="text-accentPurple font-mono">RadioButton</code>.</li>
+                        </ul>
+                    </div>
+
+                    <!-- FlowLayoutPanel -->
+                    <div
+                        class="bg-ghCard border border-ghBorder hover:border-accentOrange/50 transition rounded-xl p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-accentOrange font-bold text-base flex items-center">
+                                <i class="fa-solid fa-bars-staggered mr-2"></i> FlowLayoutPanel
+                            </span>
+                            <span
+                                class="text-xs font-mono bg-accentOrange/10 text-accentOrange px-2 py-0.5 rounded border border-accentOrange/20">En
+                                Cascada</span>
+                        </div>
+                        <p class="text-xs text-ghMuted leading-relaxed">
+                            Alinea automáticamente sus elementos hijos horizontal o verticalmente. Si un elemento no
+                            cabe en la línea, salta automáticamente a la siguiente fila.
+                        </p>
+                        <ul class="text-xs text-ghText space-y-1.5 list-disc list-inside">
+                            <li>Ideal para barras de botones dinámicas (Guardar, Cancelar, etc.).</li>
+                            <li>Controlable mediante <code class="text-accentOrange font-mono">FlowDirection</code>
+                                (LeftToRight, RightToLeft).</li>
+                        </ul>
+                    </div>
+
+                    <!-- TableLayoutPanel -->
+                    <div
+                        class="bg-ghCard border border-ghBorder hover:border-accentGreen/50 transition rounded-xl p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-accentGreen font-bold text-base flex items-center">
+                                <i class="fa-solid fa-table-cells mr-2"></i> TableLayoutPanel
+                            </span>
+                            <span
+                                class="text-xs font-mono bg-accentGreen/10 text-accentGreen px-2 py-0.5 rounded border border-accentGreen/20">Matriz
+                                Proporcional</span>
+                        </div>
+                        <p class="text-xs text-ghMuted leading-relaxed">
+                            La herramienta estrella para formularios. Organiza el espacio en celdas por filas y columnas
+                            configurables mediante porcentajes (%) o píxeles fijos.
+                        </p>
+                        <ul class="text-xs text-ghText space-y-1.5 list-disc list-inside">
+                            <li>Garantiza alineación exacta de Labels y TextBoxes.</li>
+                            <li>Las celdas se redimensionan proporcionalmente al estirar el Form.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Anchor & Dock -->
+            <section id="propiedades" class="space-y-4 scroll-mt-24">
+                <div class="flex items-center space-x-3 border-b border-ghBorder pb-3">
+                    <span class="font-mono text-accentBlue font-bold text-lg">03.</span>
+                    <h2 class="text-xl font-bold text-white">Las Propiedades Reinas: Anchor y Dock</h2>
+                </div>
+
+                <p class="text-ghText text-sm leading-relaxed">
+                    Todo control dentro de Windows Forms posee estas dos propiedades dentro de su panel de propiedades.
+                    Son la clave para el comportamiento adaptable:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Anchor -->
+                    <div class="bg-ghCard border border-ghBorder rounded-xl p-5 space-y-4">
+                        <div class="flex items-center space-x-2 text-accentBlue font-bold text-base">
+                            <i class="fa-solid fa-anchor"></i>
+                            <span>Propiedad: Anchor (Anclaje)</span>
+                        </div>
+                        <p class="text-xs text-ghMuted">
+                            Define a qué bordes del contenedor padre mantendrá una <strong>distancia fija</strong> el
+                            control. Por defecto es <code class="text-accentBlue font-mono">Top, Left</code>.
+                        </p>
+                        <div class="bg-ghBg p-4 rounded-lg border border-ghBorder text-xs space-y-2 font-mono">
+                            <div class="text-white font-bold">// Ejemplos de comportamiento:</div>
+                            <div class="text-ghMuted"><span class="text-accentBlue">Top, Right:</span> El botón se
+                                mantendrá siempre pegado a la esquina superior derecha.</div>
+                            <div class="text-ghMuted"><span class="text-accentBlue">Bottom, Right:</span> Mantiene el
+                                elemento abajo a la derecha (ideal para botón Salir).</div>
+                            <div class="text-ghMuted"><span class="text-accentBlue">Top, Bottom, Left, Right:</span> El
+                                control se estirará en todas direcciones al ampliar el Form.</div>
+                        </div>
+                    </div>
+
+                    <!-- Dock -->
+                    <div class="bg-ghCard border border-ghBorder rounded-xl p-5 space-y-4">
+                        <div class="flex items-center space-x-2 text-accentPurple font-bold text-base">
+                            <i class="fa-solid fa-arrows-to-dot"></i>
+                            <span>Propiedad: Dock (Acoplamiento)</span>
+                        </div>
+                        <p class="text-xs text-ghMuted">
+                            Obliga al control a <strong>adherirse completamente</strong> a un borde específico del
+                            contenedor o a ocupar la totalidad del espacio disponible (<code
+                                class="text-accentPurple font-mono">Fill</code>).
+                        </p>
+                        <div class="bg-ghBg p-4 rounded-lg border border-ghBorder text-xs space-y-2 font-mono">
+                            <div class="text-white font-bold">// Opciones de DockStyle:</div>
+                            <div class="text-ghMuted"><span class="text-accentPurple">Top / Bottom:</span> Ocupa todo el
+                                ancho superior o inferior.</div>
+                            <div class="text-ghMuted"><span class="text-accentPurple">Left / Right:</span> Ocupa la
+                                franja lateral completa.</div>
+                            <div class="text-ghMuted"><span class="text-accentPurple">Fill:</span> Rellena todo el
+                                espacio restante disponible en la celda o contenedor.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Interactive Simulator -->
+            <section id="simulador" class="space-y-4 scroll-mt-24">
+                <div class="flex items-center justify-between border-b border-ghBorder pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="font-mono text-accentPurple font-bold text-lg">04.</span>
+                        <h2 class="text-xl font-bold text-white">Simulador Interactivo de Contenedores WinForms</h2>
+                    </div>
+                    <span
+                        class="text-xs font-mono text-accentPurple bg-accentPurple/10 px-2.5 py-1 rounded-full border border-accentPurple/30">
+                        <i class="fa-solid fa-gamepad mr-1"></i> Prueba en Vivo
+                    </span>
+                </div>
+
+                <p class="text-xs text-ghMuted">
+                    Arrastra la esquina inferior derecha de la ventana virtual a continuación para simular cómo responde
+                    un formulario configurado con <code
+                        class="text-accentBlue font-mono">TableLayoutPanel (30% / 70%)</code> y un <code
+                        class="text-accentOrange font-mono">FlowLayoutPanel</code> inferior:
+                </p>
+
+                <!-- Interactive Canvas Container -->
+                <div
+                    class="bg-ghBg border border-ghBorder rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center min-h-[420px] relative overflow-hidden">
+                    <div class="text-xs font-mono text-ghMuted mb-2 flex items-center space-x-2">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center text-accentBlue"></i>
+                        <span>Cambia el tamaño de la ventana arrastrando la esquina inferior derecha</span>
+                    </div>
+
+                    <!-- Resizable Simulated WinForms Window -->
+                    <div
+                        class="resizable-window w-[480px] h-[340px] bg-[#f0f0f0] border-2 border-[#005a9e] rounded-lg shadow-2xl flex flex-col font-sans text-black relative">
+                        <!-- Window TitleBar -->
+                        <div
+                            class="bg-[#005a9e] text-white px-3 py-1.5 flex items-center justify-between text-xs font-semibold select-none">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-brands fa-windows text-blue-200"></i>
+                                <span>Form1 - Registro de Productos (WinForms C# 5)</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 bg-gray-300 rounded-sm inline-block opacity-70"></span>
+                                <span class="w-3 h-3 bg-gray-300 rounded-sm inline-block opacity-70"></span>
+                                <span class="w-3 h-3 bg-red-500 rounded-sm inline-block"></span>
+                            </div>
+                        </div>
+
+                        <!-- Simulated Form Body (TableLayoutPanel) -->
+                        <div class="flex-1 p-3 bg-gray-100 flex flex-col gap-2 overflow-auto">
+                            <!-- GroupBox Simulator -->
+                            <div class="border border-gray-400 rounded p-3 bg-white flex-1 flex flex-col shadow-sm">
+                                <span class="text-xs font-bold text-gray-700 -mt-5 bg-white px-1 self-start">Datos del
+                                    Producto</span>
+
+                                <!-- TableLayoutPanel simulation -->
+                                <div class="grid grid-cols-12 gap-2 mt-2 items-center flex-1">
+                                    <!-- Row 1 -->
+                                    <label
+                                        class="col-span-4 text-xs font-medium text-gray-700 text-right pr-2">Código:</label>
+                                    <input type="text" value="PROD-001" readonly
+                                        class="col-span-8 text-xs border border-gray-300 rounded px-2 py-1 bg-blue-50 text-gray-800 w-full focus:outline-none">
+
+                                    <!-- Row 2 -->
+                                    <label
+                                        class="col-span-4 text-xs font-medium text-gray-700 text-right pr-2">Nombre:</label>
+                                    <input type="text" value="Teclado Mecánico RGB" readonly
+                                        class="col-span-8 text-xs border border-gray-300 rounded px-2 py-1 bg-blue-50 text-gray-800 w-full focus:outline-none">
+
+                                    <!-- Row 3 -->
+                                    <label
+                                        class="col-span-4 text-xs font-medium text-gray-700 text-right pr-2">Categoría:</label>
+                                    <select disabled
+                                        class="col-span-8 text-xs border border-gray-300 rounded px-2 py-1 bg-blue-50 text-gray-800 w-full">
+                                        <option>Electrónica</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- FlowLayoutPanel Simulation for Buttons -->
+                            <div
+                                class="bg-gray-200 border border-dashed border-gray-400 p-2 rounded flex flex-wrap gap-2 justify-end items-center">
+                                <button
+                                    class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded shadow-sm transition">
+                                    <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar
+                                </button>
+                                <button
+                                    class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium rounded shadow-sm transition">
+                                    <i class="fa-solid fa-broom mr-1"></i> Limpiar
+                                </button>
+                                <button
+                                    class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded shadow-sm transition">
+                                    <i class="fa-solid fa-xmark mr-1"></i> Salir
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Resize Indicator overlay -->
+                        <div
+                            class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-center justify-center text-gray-500 pointer-events-none">
+                            <i class="fa-solid fa-ellipsis-vertical rotate-45 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Step by Step Lab -->
+            <section id="paso-a-paso" class="space-y-6 scroll-mt-24">
+                <div class="flex items-center space-x-3 border-b border-ghBorder pb-3">
+                    <span class="font-mono text-accentBlue font-bold text-lg">05.</span>
+                    <h2 class="text-xl font-bold text-white">Ejercicio Práctico Paso a Paso (Visual Studio 2012)</h2>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Step 1 -->
+                    <div class="bg-ghCard border border-ghBorder rounded-xl p-5 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <span
+                                class="w-7 h-7 rounded-full bg-accentBlue/10 text-accentBlue border border-accentBlue/30 flex items-center justify-center font-mono font-bold text-sm">1</span>
+                            <h3 class="font-bold text-white text-base">Crear el Proyecto en Visual Studio 2012</h3>
+                        </div>
+                        <ol class="list-decimal list-inside text-xs text-ghText space-y-2 pl-2">
+                            <li>Abre <strong>Visual Studio 2012</strong>.</li>
+                            <li>Dirígete a <code
+                                    class="text-accentBlue font-mono">Archivo &gt; Nuevo &gt; Proyecto...</code> (o
+                                presiona <code class="text-accentBlue font-mono">Ctrl + Mayús + N</code>).</li>
+                            <li>En el panel izquierdo, selecciona <strong>Visual C# &gt; Windows</strong>.</li>
+                            <li>Selecciona <strong>Aplicación de Windows Forms</strong>. Asegúrate de tener seleccionado
+                                <strong>.NET Framework 4.5</strong> en la barra superior.</li>
+                            <li>Asigna el nombre <code
+                                    class="text-accentGreen font-mono">GuiaContenedoresWinForms</code> y haz clic en
+                                <strong>Aceptar</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-ghCard border border-ghBorder rounded-xl p-5 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <span
+                                class="w-7 h-7 rounded-full bg-accentBlue/10 text-accentBlue border border-accentBlue/30 flex items-center justify-center font-mono font-bold text-sm">2</span>
+                            <h3 class="font-bold text-white text-base">Configurar la Malla Principal
+                                (`TableLayoutPanel`)</h3>
+                        </div>
+                        <ol class="list-decimal list-inside text-xs text-ghText space-y-2 pl-2">
+                            <li>Abre el Cuadro de Herramientas (<code
+                                    class="text-accentBlue font-mono">Ctrl + Alt + X</code>) y despliega la categoría
+                                <strong>Contenedores</strong>.</li>
+                            <li>Arrastra un <strong>TableLayoutPanel</strong> sobre el formulario vacio.</li>
+                            <li>En la ventana de propiedades, cambia su propiedad <code
+                                    class="text-accentPurple font-mono">Dock</code> a <strong
+                                    class="text-white">Fill</strong>.</li>
+                            <li>Haz clic sobre el botón de tareas inteligentes de la esquina superior derecha del
+                                TableLayoutPanel (<i class="fa-solid fa-play text-accentBlue"></i>) y selecciona
+                                <strong>Editar filas y columnas</strong>.</li>
+                            <li>Configura las <strong>Columnas</strong>:
+                                <ul class="list-disc list-inside pl-4 text-ghMuted mt-1">
+                                    <li>Columna 0: <code class="text-white font-mono">Porcentaje = 30%</code> (Para las
+                                        etiquetas)</li>
+                                    <li>Columna 1: <code class="text-white font-mono">Porcentaje = 70%</code> (Para las
+                                        cajas de texto)</li>
+                                </ul>
+                            </li>
+                            <li>Configura las <strong>Filas</strong>: Crea 3 filas con estilo <code
+                                    class="text-white font-mono">Absoluto = 40px</code> y 1 fila final con <code
+                                    class="text-white font-mono">Porcentaje = 100%</code>.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-ghCard border border-ghBorder rounded-xl p-5 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <span
+                                class="w-7 h-7 rounded-full bg-accentBlue/10 text-accentBlue border border-accentBlue/30 flex items-center justify-center font-mono font-bold text-sm">3</span>
+                            <h3 class="font-bold text-white text-base">Poblar las Celdas con Controles</h3>
+                        </div>
+                        <p class="text-xs text-ghMuted">
+                            Arrastra desde el cuadro de herramientas los siguientes controles a cada celda de la matriz:
+                        </p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs font-mono border-collapse border border-ghBorder">
+                                <thead>
+                                    <tr class="bg-ghBg text-accentBlue">
+                                        <th class="border border-ghBorder p-2">Ubicación</th>
+                                        <th class="border border-ghBorder p-2">Control</th>
+                                        <th class="border border-ghBorder p-2">Nombre (`(Name)`)</th>
+                                        <th class="border border-ghBorder p-2">Propiedades Clave</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-ghText">
+                                    <tr>
+                                        <td class="border border-ghBorder p-2">Fila 0, Col 0</td>
+                                        <td class="border border-ghBorder p-2">Label</td>
+                                        <td class="border border-ghBorder p-2">lblCodigo</td>
+                                        <td class="border border-ghBorder p-2 text-ghMuted">Text = "Código:"</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-ghBorder p-2">Fila 0, Col 1</td>
+                                        <td class="border border-ghBorder p-2">TextBox</td>
+                                        <td class="border border-ghBorder p-2 text-accentGreen">txtCodigo</td>
+                                        <td class="border border-ghBorder p-2 text-accentPurple">Dock = Fill</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-ghBorder p-2">Fila 1, Col 0</td>
+                                        <td class="border border-ghBorder p-2">Label</td>
+                                        <td class="border border-ghBorder p-2">lblNombre</td>
+                                        <td class="border border-ghBorder p-2 text-ghMuted">Text = "Nombre:"</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-ghBorder p-2">Fila 1, Col 1</td>
+                                        <td class="border border-ghBorder p-2">TextBox</td>
+                                        <td class="border border-ghBorder p-2 text-accentGreen">txtNombre</td>
+                                        <td class="border border-ghBorder p-2 text-accentPurple">Dock = Fill</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-ghBorder p-2">Fila 2, Col 0</td>
+                                        <td class="border border-ghBorder p-2">Label</td>
+                                        <td class="border border-ghBorder p-2">lblCategoria</td>
+                                        <td class="border border-ghBorder p-2 text-ghMuted">Text = "Categoría:"</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-ghBorder p-2">Fila 2, Col 1</td>
+                                        <td class="border border-ghBorder p-2">ComboBox</td>
+                                        <td class="border border-ghBorder p-2 text-accentGreen">cmbCategoria</td>
+                                        <td class="border border-ghBorder p-2 text-accentPurple">Dock = Fill,
+                                            DropDownStyle = DropDownList</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="bg-ghCard border border-ghBorder rounded-xl p-5 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <span
+                                class="w-7 h-7 rounded-full bg-accentBlue/10 text-accentBlue border border-accentBlue/30 flex items-center justify-center font-mono font-bold text-sm">4</span>
+                            <h3 class="font-bold text-white text-base">Agregar la Barra de Botones (`FlowLayoutPanel`)
+                            </h3>
+                        </div>
+                        <ol class="list-decimal list-inside text-xs text-ghText space-y-2 pl-2">
+                            <li>En la <strong>Fila 3, Columna 1</strong> (la celda inferior más grande), arrastra un
+                                <strong>FlowLayoutPanel</strong>.</li>
+                            <li>Asigna su propiedad <code class="text-accentPurple font-mono">Dock = Fill</code> y <code
+                                    class="text-accentOrange font-mono">FlowDirection = RightToLeft</code> (para que los
+                                botones se alienen a la derecha).</li>
+                            <li>Dentro del FlowLayoutPanel agrega 3 botones:
+                                <ul class="list-disc list-inside pl-4 text-ghMuted mt-1">
+                                    <li><code class="text-accentGreen font-mono">btnGuardar</code> (Text: "Guardar")
+                                    </li>
+                                    <li><code class="text-accentGreen font-mono">btnLimpiar</code> (Text: "Limpiar")
+                                    </li>
+                                    <li><code class="text-accentGreen font-mono">btnSalir</code> (Text: "Salir")</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6: C# 5 Code -->
+            <section id="codigo" class="space-y-4 scroll-mt-24">
+                <div class="flex items-center justify-between border-b border-ghBorder pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="font-mono text-accentGreen font-bold text-lg">06.</span>
+                        <h2 class="text-xl font-bold text-white">Código Fuente C# 5 (.NET 4.5)</h2>
+                    </div>
+                    <button onclick="copyCode()"
+                        class="px-3 py-1.5 text-xs font-mono bg-ghBorder hover:bg-ghBorder/80 text-white rounded-lg transition flex items-center space-x-1.5">
+                        <i id="copyIcon" class="fa-regular fa-copy"></i>
+                        <span id="copyText">Copiar Código</span>
+                    </button>
+                </div>
+
+                <p class="text-xs text-ghMuted">
+                    Presiona <code class="text-accentBlue font-mono">F7</code> en Visual Studio 2012 para abrir la vista
+                    de código (<code class="text-accentBlue font-mono">Form1.cs</code>) e implementa la lógica de
+                    eventos y carga inicial:
+                </p>
+
+                <!-- Code Editor Block (VS Code Style) -->
+                <div class="bg-vsCodeBg border border-ghBorder rounded-xl overflow-hidden shadow-2xl">
+                    <!-- Tab Bar -->
+                    <div
+                        class="bg-[#252526] px-4 py-2 flex items-center justify-between border-b border-ghBorder text-xs font-mono text-ghMuted">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-accentBlue"><i class="fa-solid fa-code"></i></span>
+                            <span class="text-white font-medium">Form1.cs</span>
+                            <span class="text-ghMuted text-[10px]">(C# 5.0 / .NET Framework 4.5)</span>
+                        </div>
+                        <span class="text-[10px] text-ghMuted">UTF-8</span>
+                    </div>
+
+                    <!-- Code Body -->
+                    <pre class="p-4 text-xs font-mono text-ghText overflow-x-auto leading-relaxed"><code id="csCode" class="language-csharp"><span class="text-accentPurple">using</span> System;
+<span class="text-accentPurple">using</span> System.Windows.Forms;
+
+<span class="text-accentPurple">namespace</span> <span class="text-accentGreen">GuiaContenedoresWinForms</span>
+{
+    <span class="text-accentPurple">public partial class</span> <span class="text-accentYellow text-yellow-300">Form1</span> : <span class="text-accentGreen">Form</span>
+    {
+        <span class="text-accentPurple">public</span> <span class="text-accentYellow text-yellow-300">Form1</span>()
+        {
+            <span class="text-accentBlue">InitializeComponent</span>();
+        }
+
+        <span class="text-ghMuted">// Evento que se ejecuta al cargar el formulario</span>
+        <span class="text-accentPurple">private void</span> <span class="text-accentBlue">Form1_Load</span>(<span class="text-accentPurple">object</span> sender, <span class="text-accentGreen">EventArgs</span> e)
+        {
+            <span class="text-ghMuted">// Poblamos el ComboBox de categorías</span>
+            cmbCategoria.Items.<span class="text-accentBlue">Add</span>(<span class="text-accentOrange">"Electrónica"</span>);
+            cmbCategoria.Items.<span class="text-accentBlue">Add</span>(<span class="text-accentOrange">"Ferretería"</span>);
+            cmbCategoria.Items.<span class="text-accentBlue">Add</span>(<span class="text-accentOrange">"Papelería"</span>);
+            cmbCategoria.SelectedIndex = <span class="text-accentPurple">0</span>;
+        }
+
+        <span class="text-ghMuted">// Evento Guardar con validaciones básicas</span>
+        <span class="text-accentPurple">private void</span> <span class="text-accentBlue">btnGuardar_Click</span>(<span class="text-accentPurple">object</span> sender, <span class="text-accentGreen">EventArgs</span> e)
+        {
+            <span class="text-accentPurple">string</span> codigo = txtCodigo.Text.<span class="text-accentBlue">Trim</span>();
+            <span class="text-accentPurple">string</span> nombre = txtNombre.Text.<span class="text-accentBlue">Trim</span>();
+
+            <span class="text-accentPurple">if</span> (<span class="text-accentGreen">string</span>.<span class="text-accentBlue">IsNullOrEmpty</span>(codigo) || <span class="text-accentGreen">string</span>.<span class="text-accentBlue">IsNullOrEmpty</span>(nombre))
+            {
+                <span class="text-accentGreen">MessageBox</span>.<span class="text-accentBlue">Show</span>(<span class="text-accentOrange">"Por favor complete todos los campos obligatorios."</span>, 
+                                <span class="text-accentOrange">"Atención"</span>, <span class="text-accentGreen">MessageBoxButtons</span>.OK, <span class="text-accentGreen">MessageBoxIcon</span>.Warning);
+                <span class="text-accentPurple">return</span>;
+            }
+
+            <span class="text-accentGreen">MessageBox</span>.<span class="text-accentBlue">Show</span>(<span class="text-accentOrange">"¡Producto registrado exitosamente!"</span>, 
+                            <span class="text-accentOrange">"Éxito"</span>, <span class="text-accentGreen">MessageBoxButtons</span>.OK, <span class="text-accentGreen">MessageBoxIcon</span>.Information);
+        }
+
+        <span class="text-ghMuted">// Evento Limpiar campos</span>
+        <span class="text-accentPurple">private void</span> <span class="text-accentBlue">btnLimpiar_Click</span>(<span class="text-accentPurple">object</span> sender, <span class="text-accentGreen">EventArgs</span> e)
+        {
+            txtCodigo.<span class="text-accentBlue">Clear</span>();
+            txtNombre.<span class="text-accentBlue">Clear</span>();
+            cmbCategoria.SelectedIndex = <span class="text-accentPurple">0</span>;
+            txtCodigo.<span class="text-accentBlue">Focus</span>();
+        }
+
+        <span class="text-ghMuted">// Evento Salir</span>
+        <span class="text-accentPurple">private void</span> <span class="text-accentBlue">btnSalir_Click</span>(<span class="text-accentPurple">object</span> sender, <span class="text-accentGreen">EventArgs</span> e)
+        {
+            <span class="text-accentPurple">this</span>.<span class="text-accentBlue">Close</span>();
+        }
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Section 7: Class Challenge -->
+            <section id="reto" class="space-y-4 scroll-mt-24">
+                <div
+                    class="bg-gradient-to-r from-ghCard via-ghCard to-accentGreen/10 border-2 border-accentGreen/40 rounded-2xl p-6 space-y-4 neon-glow-green">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-accentGreen/20 text-accentGreen rounded-lg text-lg">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-mono text-accentGreen uppercase tracking-wider block">Evaluación
+                                Práctica</span>
+                            <h2 class="text-lg font-bold text-white">Reto Individual de Laboratorio</h2>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-ghText leading-relaxed">
+                        Aplica los conocimientos adquiridos modificando el diseño que acabas de construir en Visual
+                        Studio 2012:
+                    </p>
+
+                    <div class="space-y-2 text-xs font-mono">
+                        <div class="flex items-start space-x-2 bg-ghBg/80 p-3 rounded-lg border border-ghBorder">
+                            <span class="text-accentGreen font-bold">[1]</span>
+                            <span class="text-ghText">Encierra todo el <code
+                                    class="text-accentBlue">TableLayoutPanel</code> dentro de un contenedor <code
+                                    class="text-accentPurple">GroupBox</code> titulado <i>"Información del Producto"</i>
+                                y asegúrate de que el GroupBox tenga <code
+                                    class="text-accentGreen">Dock = Fill</code>.</span>
+                        </div>
+                        <div class="flex items-start space-x-2 bg-ghBg/80 p-3 rounded-lg border border-ghBorder">
+                            <span class="text-accentGreen font-bold">[2]</span>
+                            <span class="text-ghText">Agrega una cuarta fila al TableLayoutPanel para colocar un <code
+                                    class="text-accentBlue">CheckBox</code> llamado <code
+                                    class="text-accentGreen">chkDisponible</code> (Text: "Producto Activo /
+                                Disponible").</span>
+                        </div>
+                        <div class="flex items-start space-x-2 bg-ghBg/80 p-3 rounded-lg border border-ghBorder">
+                            <span class="text-accentGreen font-bold">[3]</span>
+                            <span class="text-ghText">Demuestra al profesor el comportamiento responsivo maximizando y
+                                reduciendo la ventana sin que ningún botón se solape.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-ghCard border-t border-ghBorder py-6 px-4 text-center text-xs font-mono text-ghMuted">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <i class="fa-brands fa-windows text-accentBlue"></i>
+                <span>C# 5.0 & .NET Framework 4.5 — Visual Studio 2012</span>
+            </div>
+            <div>
+                <span>Desarrollado para Sesiones de Laboratorio de Programación</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Reading Progress Bar Logic
+        window.onscroll = function () {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progressBar").style.width = scrolled + "%";
+        };
+
+        // Copy Code Functionality
+        function copyCode() {
+            const rawCode = `using System;
+using System.Windows.Forms;
+
+namespace GuiaContenedoresWinForms
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cmbCategoria.Items.Add("Electrónica");
+            cmbCategoria.Items.Add("Ferretería");
+            cmbCategoria.Items.Add("Papelería");
+            cmbCategoria.SelectedIndex = 0;
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            string codigo = txtCodigo.Text.Trim();
+            string nombre = txtNombre.Text.Trim();
+
+            if (string.IsNullOrEmpty(codigo) || string.IsNullOrEmpty(nombre))
+            {
+                MessageBox.Show("Por favor complete todos los campos obligatorios.", 
+                                "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            MessageBox.Show("¡Producto registrado exitosamente!", 
+                            "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            txtCodigo.Clear();
+            txtNombre.Clear();
+            cmbCategoria.SelectedIndex = 0;
+            txtCodigo.Focus();
+        }
+
+        private void btnSalir_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}`;
+
+            // Use document.execCommand fallback for iframe safety
+            const textarea = document.createElement("textarea");
+            textarea.value = rawCode;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+
+            // Update UI feedback
+            const copyIcon = document.getElementById("copyIcon");
+            const copyText = document.getElementById("copyText");
+
+            copyIcon.className = "fa-solid fa-check text-accentGreen";
+            copyText.innerText = "¡Copiado!";
+
+            setTimeout(() => {
+                copyIcon.className = "fa-regular fa-copy";
+                copyText.innerText = "Copiar Código";
+            }, 2500);
+        }
+    </script>
+</body>
+
+</html>
