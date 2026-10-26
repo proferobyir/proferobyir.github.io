@@ -346,39 +346,139 @@
                     </div>
                 </div>
             </section>
-
             <!-- LECCIÓN 2 -->
             <section id="lec2" class="lesson-card">
                 <div class="lesson-header">
-                    <h2 class="lesson-title">Lección 2: Contenedores de Layout (Grid y StackPanel)</h2>
+                    <h2 class="lesson-title">Lección 2: Contenedores de Layout (Grid, StackPanel, DockPanel y WrapPanel)
+                    </h2>
                     <span class="badge">Nivel Intermedio</span>
                 </div>
                 <p class="explanation">
-                    A diferencia de Windows Forms, WPF no usa coordenadas fijas. Se emplean paneles adaptativos como
-                    <code>Grid</code> (filas y columnas) y <code>StackPanel</code> (apilamiento).
+                    A diferencia de Windows Forms (que usa coordenadas fijas <em>Top/Left</em>), WPF emplea
+                    <strong>paneles de layout adaptativos</strong> que redistribuyen automáticamente sus hijos cuando
+                    la ventana cambia de tamaño. Cada panel tiene una filosofía distinta: elegir el correcto simplifica
+                    enormemente la interfaz. Los cuatro paneles fundamentales son:
                 </p>
+
+                <div class="def-container">
+                    <div class="def-box">
+                        <h3>Grid</h3>
+                        <p>Organiza los hijos en una <strong>cuadrícula de filas y columnas</strong> definidas con
+                            <code>RowDefinition</code> y <code>ColumnDefinition</code>. Es el más flexible y el más
+                            usado
+                            para formularios complejos. Admite celdas combinadas con <code>Grid.RowSpan</code> /
+                            <code>Grid.ColumnSpan</code>.
+                        </p>
+                    </div>
+                    <div class="def-box">
+                        <h3>StackPanel</h3>
+                        <p>Apila los hijos <strong>uno tras otro</strong> en una sola dirección
+                            (<code>Orientation="Vertical"</code> por defecto, o <code>"Horizontal"</code>). Ideal para
+                            menús, listas de botones y grupos de campos. No desperdicia espacio, pero no permite
+                            superponer elementos.</p>
+                    </div>
+                    <div class="def-box">
+                        <h3>DockPanel</h3>
+                        <p>Ancla cada hijo a un borde (<code>DockPanel.Dock="Top|Bottom|Left|Right"</code>). El último
+                            hijo (o el que tenga <code>LastChildFill="True"</code>) ocupa el espacio restante. Perfecto
+                            para barras de herramientas, menús superiores y paneles laterales.</p>
+                    </div>
+                    <div class="def-box">
+                        <h3>WrapPanel</h3>
+                        <p>Coloca los hijos en línea y, cuando se acaba el espacio, <strong>salta a la siguiente
+                                línea</strong> (como texto en un párrafo). Útil para galerías de miniaturas o etiquetas
+                            que deben reacomodarse al redimensionar.</p>
+                    </div>
+                </div>
+
+                <h3 style="color: var(--accent-green); margin-top: 0.5rem;">Reglas de dimensionamiento en Grid</h3>
+                <p class="explanation">
+                    El alto de una fila (<code>RowDefinition.Height</code>) y el ancho de una columna
+                    (<code>ColumnDefinition.Width</code>) admiten tres modos:
+                </p>
+                <ul
+                    style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.35rem;">
+                    <li><strong style="color: var(--accent-blue);">Auto:</strong> la fila/columna toma exactamente el
+                        tamaño de su contenido. Ideal para títulos y botones.</li>
+                    <li><strong style="color: var(--accent-blue);">Valor fijo (ej. "120"):</strong> tamaño absoluto en
+                        píxeles (DIPs). Se usa para barras laterales o encabezados.</li>
+                    <li><strong style="color: var(--accent-blue);">* (estrella):</strong> ocupa todo el espacio
+                        restante, repartiéndolo proporcionalmente. <code>"2*"</code> recibe el doble que
+                        <code>"*"</code>. Es el modo clave para que la UI se adapte.</li>
+                </ul>
+
+                <h3 style="color: var(--accent-green); margin-top: 0.5rem;">Ejemplo: Grid + StackPanel anidados</h3>
                 <div class="code-grid">
                     <div class="code-block">
                         <div class="code-header"><span>FormularioLayout.xaml</span><span>XAML Layout</span></div>
                         <pre><code>&lt;<span class="xml-tag">Grid</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"15"</span>&gt;
     &lt;<span class="xml-tag">Grid.RowDefinitions</span>&gt;
-        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
-        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
-        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"*"</span>/&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;   <span class="cs-cm">&lt;!-- Título --&gt;</span>
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;   <span class="cs-cm">&lt;!-- Campos --&gt;</span>
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"*"</span>/&gt;      <span class="cs-cm">&lt;!-- Relleno --&gt;</span>
     &lt;/<span class="xml-tag">Grid.RowDefinitions</span>&gt;
 
     &lt;!-- Fila 0: Título --&gt;
     &lt;<span class="xml-tag">TextBlock</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"0"</span> <span class="xml-attr">Text</span>=<span class="xml-str">"Registro de Usuario"</span> 
-               <span class="xml-attr">FontSize</span>=<span class="xml-str">"18"</span> <span class="xml-attr">FontWeight</span>=<span class="xml-str">"Bold"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>/&gt;
+               <span class="xml-attr">FontSize</span>=<span class="xml-str">"18"</span> <span class="xml-attr">FontWeight</span>=<span class="xml-str">"Bold"</span> 
+               <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>/&gt;
 
-    &lt;!-- Fila 1: Campos apilados --&gt;
+    &lt;!-- Fila 1: Campos apilados verticalmente --&gt;
     &lt;<span class="xml-tag">StackPanel</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"1"</span> <span class="xml-attr">Orientation</span>=<span class="xml-str">"Vertical"</span>&gt;
         &lt;<span class="xml-tag">Label</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Nombre:"</span>/&gt;
         &lt;<span class="xml-tag">TextBox</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"txtNombre"</span> <span class="xml-attr">Padding</span>=<span class="xml-str">"5"</span>/&gt;
+
+        &lt;<span class="xml-tag">Label</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Email:"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,8,0,0"</span>/&gt;
+        &lt;<span class="xml-tag">TextBox</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"txtEmail"</span> <span class="xml-attr">Padding</span>=<span class="xml-str">"5"</span>/&gt;
+
+        &lt;!-- Botones en horizontal dentro del StackPanel vertical --&gt;
+        &lt;<span class="xml-tag">StackPanel</span> <span class="xml-attr">Orientation</span>=<span class="xml-str">"Horizontal"</span> 
+                    <span class="xml-attr">Margin</span>=<span class="xml-str">"0,12,0,0"</span>&gt;
+            &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Guardar"</span> <span class="xml-attr">Width</span>=<span class="xml-str">"90"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,8,0"</span>/&gt;
+            &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Cancelar"</span> <span class="xml-attr">Width</span>=<span class="xml-str">"90"</span>/&gt;
+        &lt;/<span class="xml-tag">StackPanel</span>&gt;
     &lt;/<span class="xml-tag">StackPanel</span>&gt;
 &lt;/<span class="xml-tag">Grid</span>&gt;</code></pre>
                     </div>
+                    <div class="code-block">
+                        <div class="code-header"><span>LayoutPrincipal.xaml</span><span>DockPanel + WrapPanel</span>
+                        </div>
+                        <pre><code>&lt;<span class="xml-tag">DockPanel</span> <span class="xml-attr">LastChildFill</span>=<span class="xml-str">"True"</span>&gt;
+
+    <span class="cs-cm">&lt;!-- Menú anclado arriba --&gt;</span>
+    &lt;<span class="xml-tag">Menu</span> <span class="xml-attr">DockPanel.Dock</span>=<span class="xml-str">"Top"</span> <span class="xml-attr">Background</span>=<span class="xml-str">"#252526"</span>&gt;
+        &lt;<span class="xml-tag">MenuItem</span> <span class="xml-attr">Header</span>=<span class="xml-str">"Archivo"</span>/&gt;
+        &lt;<span class="xml-tag">MenuItem</span> <span class="xml-attr">Header</span>=<span class="xml-str">"Ayuda"</span>/&gt;
+    &lt;/<span class="xml-tag">Menu</span>&gt;
+
+    <span class="cs-cm">&lt;!-- Barra lateral izquierda --&gt;</span>
+    &lt;<span class="xml-tag">Border</span> <span class="xml-attr">DockPanel.Dock</span>=<span class="xml-str">"Left"</span> <span class="xml-attr">Width</span>=<span class="xml-str">"180"</span> 
+            <span class="xml-attr">Background</span>=<span class="xml-str">"#1E1E1E"</span> <span class="xml-attr">Padding</span>=<span class="xml-str">"10"</span>&gt;
+        &lt;<span class="xml-tag">StackPanel</span>&gt;
+            &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Inicio"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,6"</span>/&gt;
+            &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Usuarios"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,6"</span>/&gt;
+        &lt;/<span class="xml-tag">StackPanel</span>&gt;
+    &lt;/<span class="xml-tag">Border</span>&gt;
+
+    <span class="cs-cm">&lt;!-- Zona central: galería que se reacomoda --&gt;</span>
+    &lt;<span class="xml-tag">WrapPanel</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"15"</span> <span class="xml-attr">ItemWidth</span>=<span class="xml-str">"120"</span> <span class="xml-attr">ItemHeight</span>=<span class="xml-str">"80"</span>&gt;
+        &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Tarjeta 1"</span>/&gt;
+        &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Tarjeta 2"</span>/&gt;
+        &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Tarjeta 3"</span>/&gt;
+        &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Tarjeta 4"</span>/&gt;
+    &lt;/<span class="xml-tag">WrapPanel</span>&gt;
+&lt;/<span class="xml-tag">DockPanel</span>&gt;</code></pre>
+                    </div>
                 </div>
+
+                <p class="explanation">
+                    <strong>Buenas prácticas:</strong> usa <code>Grid</code> para la estructura raíz de la ventana,
+                    <code>StackPanel</code> para agrupar campos relacionados, <code>DockPanel</code> para menús y barras
+                    laterales, y <code>WrapPanel</code> para contenido dinámico. Evita anidar más de 3-4 paneles en
+                    profundidad: si te ves obligado, probablemente un <code>Grid</code> con filas/columnas resuelva
+                    lo mismo con mejor rendimiento. Asigna también <code>Margin</code> y <code>Padding</code> en lugar
+                    de posiciones fijas para que la interfaz respire y se adapte.
+                </p>
             </section>
 
             <!-- LECCIÓN 3 -->
