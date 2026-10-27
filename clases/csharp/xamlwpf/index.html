@@ -637,7 +637,8 @@
                 <!-- ===== NUEVO: explicación de object sender, RoutedEventArgs e ===== -->
                 <div class="def-box" style="border-left-color: var(--accent-yellow); margin-top: 0.5rem;">
                     <h3 style="color: var(--accent-yellow);">¿Qué significa
-                        <code>object sender, RoutedEventArgs e</code>?</h3>
+                        <code>object sender, RoutedEventArgs e</code>?
+                    </h3>
                     <p style="margin-bottom: 0.6rem;">
                         Es la firma estándar de <strong>cualquier evento en WPF</strong>. No necesitas memorizarla:
                         Visual Studio la genera sola cuando haces doble clic sobre el botón en el diseñador, o cuando
@@ -672,8 +673,44 @@
                 <p class="explanation">
                     <strong>¿Para qué sirve <code>sender</code> en la práctica?</strong> Si tienes tres botones que
                     hacen lo mismo pero con distinto mensaje, no necesitas tres métodos. Conectas los tres al mismo
-                    evento y usas <code>sender</code> para saber cuál se presionó:
+                    evento y usas <code>sender</code> para saber cuál se presionó.
                 </p>
+
+                <div class="def-box" style="border-left-color: var(--accent-yellow);">
+                    <h3 style="color: var(--accent-yellow);">¿Qué es ese <code>(Button)sender</code>? (casting)</h3>
+                    <p style="margin-bottom: 0.6rem;">
+                        <code>sender</code> está declarado como <code>object</code>, el tipo más general de C#: puede
+                        ser cualquier cosa (un botón, un textbox, una imagen). Por eso, si escribes
+                        <code>sender.Tag</code>, el compilador te da error: <em>"object no tiene una propiedad
+                            Tag"</em>.
+                    </p>
+                    <p style="margin-bottom: 0.6rem;">
+                        Para acceder a las propiedades específicas del <code>Button</code>, debes decirle al compilador
+                        <em>"confía en mí, esto es un Button"</em>. Eso se hace con un <strong>casting</strong> (o
+                        <em>máscara</em>, <em>molde</em> o <em>conversión explícita</em>):
+                    </p>
+                    <div class="code-block" style="margin-bottom: 0.6rem;">
+                        <div class="code-header"><span>Sintaxis del casting</span><span>C#</span></div>
+                        <pre><code><span class="cs-type">Button</span> b = (<span class="cs-type">Button</span>)sender;
+<span class="cs-cm">//           ↑</span>
+<span class="cs-cm">//   (Tipo)objeto  →  "trata a este object como si fuera un Button"</span></code></pre>
+                    </div>
+                    <p style="margin-bottom: 0.6rem;">
+                        <strong>Analogía:</strong> imagina que <code>sender</code> es una caja etiquetada como
+                        <em>"objeto genérico"</em>. Por fuera no sabes qué hay dentro. El casting
+                        <code>(Button)sender</code>
+                        es abrir la caja y decir <em>"esto es un botón"</em>. A partir de ese momento, la variable
+                        <code>b</code> sí te deja usar <code>b.Tag</code>, <code>b.Content</code>,
+                        <code>b.Background</code>, etc.
+                    </p>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">
+                        <strong>Ojo:</strong> si <code>sender</code> no fuera realmente un <code>Button</code> (por
+                        ejemplo,
+                        si conectaste el mismo evento a un <code>TextBox</code>), el casting lanzaría una excepción
+                        <code>InvalidCastException</code> en tiempo de ejecución. En este ejemplo estamos seguros de que
+                        solo los botones llaman a <code>btnColor_Click</code>, así que es seguro.
+                    </p>
+                </div>
 
                 <div class="code-grid">
                     <div class="code-block">
@@ -689,11 +726,19 @@
                         <div class="code-header"><span>MainWindow.xaml.cs</span><span>C#</span></div>
                         <pre><code><span class="cs-kw">private void</span> btnColor_Click(<span class="cs-type">object</span> sender, <span class="cs-type">RoutedEventArgs</span> e)
 {
-    <span class="cs-type">Button</span> b = (<span class="cs-type">Button</span>)sender;      <span class="cs-cm">// "quién lo hizo"</span>
+    <span class="cs-type">Button</span> b = (<span class="cs-type">Button</span>)sender;      <span class="cs-cm">// casting: "esto es un Button"</span>
     <span class="cs-type">MessageBox</span>.Show(<span class="cs-str">"Elegiste: "</span> + b.Tag);
 }</code></pre>
                     </div>
                 </div>
+
+                <p class="explanation conexion">
+                    <strong>Truco para no olvidar el casting:</strong> si el compilador te dice
+                    <em>"'object' no contiene una definición para 'Tag'"</em>, es porque olvidaste el
+                    <code>(Button)sender</code>. La regla es simple: <strong>siempre que uses <code>sender</code>
+                        para acceder a una propiedad específica, castealo primero al tipo de control que
+                        esperas</strong>.
+                </p>
 
                 <p class="explanation conexion">
                     <strong>Tip de productividad:</strong> nunca escribas <code>object sender, RoutedEventArgs e</code>
