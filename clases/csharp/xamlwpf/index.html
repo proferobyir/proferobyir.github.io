@@ -583,7 +583,7 @@
                 </ul>
 
                 <p class="explanation conexion">
-                    <strong>El diseñador y el XAML son la misma cosa vista de dos formas.</strong> Arrastrar un botón
+                    <strong>El diseñador y el XAML jsou la misma cosa vista de dos formas.</strong> Arrastrar un botón
                     escribe XAML por ti; escribir XAML hace aparecer el botón en el diseñador. No son dos archivos
                     distintos: es el mismo archivo.
                 </p>
@@ -634,7 +634,6 @@
                     </div>
                 </div>
 
-                <!-- ===== NUEVO: explicación de object sender, RoutedEventArgs e ===== -->
                 <div class="def-box" style="border-left-color: var(--accent-yellow); margin-top: 0.5rem;">
                     <h3 style="color: var(--accent-yellow);">¿Qué significa
                         <code>object sender, RoutedEventArgs e</code>?
@@ -647,109 +646,18 @@
                     </p>
 
                     <ul class="lista" style="margin-bottom: 0.6rem;">
-                        <li><strong>object sender</strong> = <em>"quién disparó el evento"</em>. Si tienes varios
-                            botones conectados al mismo método, <code>sender</code> te dice cuál fue. Por eso es
-                            <code>object</code>: puede ser un Button, un MenuItem, un TextBox, cualquier control.
-                        </li>
-                        <li><strong>RoutedEventArgs e</strong> = <em>"información extra del evento"</em>. En un
-                            <code>Click</code> casi nunca se usa. Existe porque el patrón de eventos de .NET lo exige.
-                        </li>
+                        <li><strong>object sender</strong> = <em>"quién disparó el evento"</em>. Representa al control
+                            que originó la acción.</li>
+                        <li><strong>RoutedEventArgs e</strong> = <em>"información extra del evento"</em>. Detalles
+                            técnicos del clic o la interacción.</li>
                     </ul>
-
-                    <p style="margin-bottom: 0.6rem;">
-                        <strong>Regla mental:</strong> <em>"quién lo hizo" y "detalles del evento"</em>. Si no usas
-                        ninguno de los dos (el 95% de los casos en un curso introductorio), puedes ignorarlos dentro
-                        del método sin problema.
-                    </p>
 
                     <p style="font-size: 0.82rem; color: var(--text-muted);">
                         <strong>Para el examen escrito:</strong> <code>object</code> primero (quién),
-                        <code>EventArgs</code>
-                        segundo (qué pasó). Siempre en ese orden, siempre <code>sender</code> y <code>e</code> en
-                        minúscula.
+                        <code>EventArgs</code> segundo (qué pasó). Siempre en ese orden, siempre <code>sender</code> y
+                        <code>e</code> en minúscula.
                     </p>
                 </div>
-
-                <p class="explanation">
-                    <strong>¿Para qué sirve <code>sender</code> en la práctica?</strong> Si tienes tres botones que
-                    hacen lo mismo pero con distinto mensaje, no necesitas tres métodos. Conectas los tres al mismo
-                    evento y usas <code>sender</code> para saber cuál se presionó.
-                </p>
-
-                <div class="def-box" style="border-left-color: var(--accent-yellow);">
-                    <h3 style="color: var(--accent-yellow);">¿Qué es ese <code>(Button)sender</code>? (casting)</h3>
-                    <p style="margin-bottom: 0.6rem;">
-                        <code>sender</code> está declarado como <code>object</code>, el tipo más general de C#: puede
-                        ser cualquier cosa (un botón, un textbox, una imagen). Por eso, si escribes
-                        <code>sender.Tag</code>, el compilador te da error: <em>"object no tiene una propiedad
-                            Tag"</em>.
-                    </p>
-                    <p style="margin-bottom: 0.6rem;">
-                        Para acceder a las propiedades específicas del <code>Button</code>, debes decirle al compilador
-                        <em>"confía en mí, esto es un Button"</em>. Eso se hace con un <strong>casting</strong> (o
-                        <em>máscara</em>, <em>molde</em> o <em>conversión explícita</em>):
-                    </p>
-                    <div class="code-block" style="margin-bottom: 0.6rem;">
-                        <div class="code-header"><span>Sintaxis del casting</span><span>C#</span></div>
-                        <pre><code><span class="cs-type">Button</span> b = (<span class="cs-type">Button</span>)sender;
-<span class="cs-cm">//           ↑</span>
-<span class="cs-cm">//   (Tipo)objeto  →  "trata a este object como si fuera un Button"</span></code></pre>
-                    </div>
-                    <p style="margin-bottom: 0.6rem;">
-                        <strong>Analogía:</strong> imagina que <code>sender</code> es una caja etiquetada como
-                        <em>"objeto genérico"</em>. Por fuera no sabes qué hay dentro. El casting
-                        <code>(Button)sender</code>
-                        es abrir la caja y decir <em>"esto es un botón"</em>. A partir de ese momento, la variable
-                        <code>b</code> sí te deja usar <code>b.Tag</code>, <code>b.Content</code>,
-                        <code>b.Background</code>, etc.
-                    </p>
-                    <p style="font-size: 0.82rem; color: var(--text-muted);">
-                        <strong>Ojo:</strong> si <code>sender</code> no fuera realmente un <code>Button</code> (por
-                        ejemplo,
-                        si conectaste el mismo evento a un <code>TextBox</code>), el casting lanzaría una excepción
-                        <code>InvalidCastException</code> en tiempo de ejecución. En este ejemplo estamos seguros de que
-                        solo los botones llaman a <code>btnColor_Click</code>, así que es seguro.
-                    </p>
-                </div>
-
-                <div class="code-grid">
-                    <div class="code-block">
-                        <div class="code-header"><span>MainWindow.xaml</span><span>XAML</span></div>
-                        <pre><code>&lt;<span class="xml-tag">StackPanel</span>&gt;
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Rojo"</span>  <span class="xml-attr">Tag</span>=<span class="xml-str">"Rojo"</span>  <span class="xml-attr">Click</span>=<span class="xml-str">"btnColor_Click"</span>/&gt;
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Verde"</span> <span class="xml-attr">Tag</span>=<span class="xml-str">"Verde"</span> <span class="xml-attr">Click</span>=<span class="xml-str">"btnColor_Click"</span>/&gt;
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Azul"</span>  <span class="xml-attr">Tag</span>=<span class="xml-str">"Azul"</span>  <span class="xml-attr">Click</span>=<span class="xml-str">"btnColor_Click"</span>/&gt;
-&lt;/<span class="xml-tag">StackPanel</span>&gt;</code></pre>
-                    </div>
-
-                    <div class="code-block">
-                        <div class="code-header"><span>MainWindow.xaml.cs</span><span>C#</span></div>
-                        <pre><code><span class="cs-kw">private void</span> btnColor_Click(<span class="cs-type">object</span> sender, <span class="cs-type">RoutedEventArgs</span> e)
-{
-    <span class="cs-type">Button</span> b = (<span class="cs-type">Button</span>)sender;      <span class="cs-cm">// casting: "esto es un Button"</span>
-    <span class="cs-type">MessageBox</span>.Show(<span class="cs-str">"Elegiste: "</span> + b.Tag);
-}</code></pre>
-                    </div>
-                </div>
-
-                <p class="explanation conexion">
-                    <strong>Truco para no olvidar el casting:</strong> si el compilador te dice
-                    <em>"'object' no contiene una definición para 'Tag'"</em>, es porque olvidaste el
-                    <code>(Button)sender</code>. La regla es simple: <strong>siempre que uses <code>sender</code>
-                        para acceder a una propiedad específica, castealo primero al tipo de control que
-                        esperas</strong>.
-                </p>
-
-                <p class="explanation conexion">
-                    <strong>Tip de productividad:</strong> nunca escribas <code>object sender, RoutedEventArgs e</code>
-                    a mano. En Visual Studio 2012 tienes tres formas de que aparezca solo:
-                    (1) <strong>doble clic</strong> sobre el botón en el diseñador;
-                    (2) panel <strong>Propiedades</strong> (<code>F4</code>) → pestaña de eventos (ícono ⚡) → doble clic
-                    en <code>Click</code>;
-                    (3) escribir <code>Click="btnSaludar_Click"</code> en el XAML y presionar <code>Ctrl+.</code> →
-                    <em>Generar controlador de eventos</em>.
-                </p>
-                <!-- ===== FIN NUEVO ===== -->
 
                 <p class="explanation conexion">
                     <strong>Conectar el botón al evento Click:</strong> cuando arrastras el botón y haces doble clic
@@ -857,15 +765,14 @@
             <!-- ==================== LECCIÓN 3 ==================== -->
             <section id="lec3" class="lesson-card">
                 <div class="lesson-header">
-                    <h2 class="lesson-title">Lección 3: Apilar controles con StackPanel</h2>
+                    <h2 class="lesson-title">Lección 3: Apilar controles con StackPanel y uso del Tag</h2>
                     <span class="badge principiante">Principiante · 20 min</span>
                 </div>
 
                 <p class="explanation">
-                    Hasta ahora todo vive dentro de un <code>Grid</code> sin filas ni columnas (lo cual no aprovecha
-                    nada). Hoy aprendes el panel <strong>más simple</strong>: <code>StackPanel</code>. Apila sus hijos
-                    uno debajo de otro (o uno al lado de otro si cambias la orientación). No hay coordenadas: el panel
-                    calcula todo.
+                    Hasta ahora todo vive dentro de un <code>Grid</code> sin filas ni columnas. Hoy aprendes el panel
+                    <strong>más simple</strong>: <code>StackPanel</code>. Apila sus hijos uno debajo de otro (o uno al
+                    lado de otro si cambias la orientación).
                 </p>
 
                 <div class="def-box" style="margin: 0;">
@@ -875,67 +782,48 @@
                         formularios simples.</p>
                 </div>
 
+                <p class="explanation" style="margin-top: 1rem;">
+                    <strong>Reutilizando eventos con la propiedad <code>Tag</code> y Casting:</strong>
+                    Cuando tienes varios botones que realizan una tarea similar, puedes conectarlos a un <strong>mismo
+                        método</strong> y usar un atributo oculto llamado <code>Tag</code> junto con un
+                    <strong>casting</strong> en C# para diferenciarlos sin duplicar código.
+                </p>
+
                 <div class="code-grid">
                     <div class="code-block">
                         <div class="code-header"><span>MainWindow.xaml</span><span>XAML</span></div>
                         <pre><code>&lt;<span class="xml-tag">StackPanel</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"20"</span>&gt;
-    &lt;<span class="xml-tag">TextBlock</span> <span class="xml-attr">Text</span>=<span class="xml-str">"Mi primer formulario"</span>
-               <span class="xml-attr">FontSize</span>=<span class="xml-str">"18"</span>
-               <span class="xml-attr">FontWeight</span>=<span class="xml-str">"Bold"</span>
-               <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>/&gt;
-
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Botón 1"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,8"</span>/&gt;
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Botón 2"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,8"</span>/&gt;
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Botón 3"</span>/&gt;
+    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Rojo"</span>  <span class="xml-attr">Tag</span>=<span class="xml-str">"Rojo"</span>  <span class="xml-attr">Click</span>=<span class="xml-str">"btnColor_Click"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,5"</span>/&gt;
+    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Verde"</span> <span class="xml-attr">Tag</span>=<span class="xml-str">"Verde"</span> <span class="xml-attr">Click</span>=<span class="xml-str">"btnColor_Click"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,5"</span>/&gt;
+    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Azul"</span>  <span class="xml-attr">Tag</span>=<span class="xml-str">"Azul"</span>  <span class="xml-attr">Click</span>=<span class="xml-str">"btnColor_Click"</span>/&gt;
 &lt;/<span class="xml-tag">StackPanel</span>&gt;</code></pre>
                     </div>
 
                     <div class="code-block">
-                        <div class="code-header"><span>Resultado visual</span><span>Concepto</span></div>
-                        <div class="svg-diagrama">
-                            <svg viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg" role="img"
-                                aria-label="StackPanel vertical con tres botones apilados">
-                                <rect x="20" y="10" width="280" height="280" rx="8" fill="#1e293b" stroke="#475569"
-                                    stroke-width="2" />
-                                <rect x="20" y="10" width="280" height="28" rx="8" fill="#334155" />
-                                <rect x="20" y="30" width="280" height="8" fill="#334155" />
-                                <circle cx="38" cy="24" r="4" fill="#ef4444" />
-                                <circle cx="52" cy="24" r="4" fill="#facc15" />
-                                <circle cx="66" cy="24" r="4" fill="#4ade80" />
-                                <text x="88" y="29" font-size="11" fill="#94a3b8">Mi primer formulario</text>
-
-                                <rect x="50" y="70" width="220" height="42" rx="6" fill="#38bdf8" opacity="0.85" />
-                                <text x="160" y="96" font-size="13" fill="#0f172a" text-anchor="middle"
-                                    font-weight="600">Botón 1</text>
-
-                                <rect x="50" y="128" width="220" height="42" rx="6" fill="#38bdf8" opacity="0.85" />
-                                <text x="160" y="154" font-size="13" fill="#0f172a" text-anchor="middle"
-                                    font-weight="600">Botón 2</text>
-
-                                <rect x="50" y="186" width="220" height="42" rx="6" fill="#38bdf8" opacity="0.85" />
-                                <text x="160" y="212" font-size="13" fill="#0f172a" text-anchor="middle"
-                                    font-weight="600">Botón 3</text>
-
-                                <line x1="290" y1="80" x2="290" y2="220" stroke="#4ade80" stroke-width="1.5"
-                                    stroke-dasharray="4 3" />
-                                <polygon points="290,225 285,215 295,215" fill="#4ade80" />
-                                <text x="300" y="155" font-size="9" fill="#4ade80" transform="rotate(90 300 155)">apila
-                                    ↓</text>
-                            </svg>
-                        </div>
+                        <div class="code-header"><span>MainWindow.xaml.cs</span><span>C# (Casting y Tag)</span></div>
+                        <pre><code><span class="cs-kw">private void</span> btnColor_Click(<span class="cs-type">object</span> sender, <span class="cs-type">RoutedEventArgs</span> e)
+{
+    <span class="cs-cm">// Casting: "trata a este object como un Button"</span>
+    <span class="cs-type">Button</span> b = (<span class="cs-type">Button</span>)sender;      
+    
+    <span class="cs-cm">// Leemos la etiqueta interna (Tag)</span>
+    <span class="cs-type">MessageBox</span>.Show(<span class="cs-str">"Elegiste: "</span> + b.Tag);
+}</code></pre>
                     </div>
                 </div>
 
-                <p class="explanation conexion">
-                    <strong>Conexión con la Lección 1:</strong> reemplazamos el <code>Grid</code> por
-                    <code>StackPanel</code>. Los botones ya no se superponen en el centro: se acomodan uno debajo de
-                    otro sin que tú indiques posiciones.
-                </p>
+                <div class="def-box" style="border-left-color: var(--accent-yellow); margin-top: 1rem;">
+                    <h3 style="color: var(--accent-yellow);">¿Qué es ese <code>(Button)sender</code>? (casting)</h3>
+                    <p style="margin-bottom: 0.6rem;">
+                        <code>sender</code> llega como un <code>object</code> genérico. Para usar propiedades
+                        específicas como <code>Tag</code>, realizamos un casting indicando explícitamente: <em>"trata a
+                            este objeto como un Botón"</em>.
+                    </p>
+                </div>
 
                 <div class="explanation ejercicio">
-                    <strong>Ejercicio:</strong> cambia a
-                    <code>&lt;StackPanel Orientation="Horizontal" Margin="20"&gt;</code>
-                    y observa cómo los botones se ponen uno al lado de otro. Ese es todo el concepto de hoy.
+                    <strong>Ejercicio:</strong> crea un StackPanel horizontal con tres botones que cambien el fondo de
+                    la ventana usando un método compartido y el <code>Tag</code>.
                 </div>
             </section>
 
@@ -1544,7 +1432,7 @@
                     conn.Open();
                     <span class="cs-type">string</span> query = <span class="cs-str">"SELECT id, nombre, email FROM usuarios"</span>;
                     <span class="cs-type">MySqlDataAdapter</span> adapter = <span class="cs-kw">new</span> <span class="cs-type">MySqlDataAdapter</span>(query, conn);
-                    <span class="cs-type">DataTable</span> dt = <span class="cs-kw">new</span> <span class="cs-type">DataTable</span>();
+                    <span class="cs-type">DataTable</span> dt = <span class="cs-type">new</span> <span class="cs-type">DataTable</span>();
                     adapter.Fill(dt);
 
                     dgUsuarios.ItemsSource = dt.DefaultView;
@@ -1592,11 +1480,6 @@
             var sections = document.querySelectorAll('.lesson-card');
 
             function onScroll() {
-                // Usamos getBoundingClientRect para medir respecto al viewport y
-                // sumamos scrollY para obtener la posición absoluta en el documento.
-                // offsetTop no sirve aquí porque los .lesson-card están dentro de
-                // .main-content, que es el offsetParent, y daría valores relativos
-                // al contenedor en vez de al documento.
                 var current = sections[0] ? sections[0].id : null;
                 var umbral = 120;
 
