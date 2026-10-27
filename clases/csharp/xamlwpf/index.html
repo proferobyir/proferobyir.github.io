@@ -583,7 +583,7 @@
                 </ul>
 
                 <p class="explanation conexion">
-                    <strong>El diseñador y el XAML jsou la misma cosa vista de dos formas.</strong> Arrastrar un botón
+                    <strong>El diseñador y el XAML son la misma cosa vista de dos formas.</strong> Arrastrar un botón
                     escribe XAML por ti; escribir XAML hace aparecer el botón en el diseñador. No son dos archivos
                     distintos: es el mismo archivo.
                 </p>
@@ -1080,7 +1080,7 @@
         {
             <span class="cs-type">string</span> nombre = txtNombre.Text;
 
-            <span class="cs-kw">if</span> (nombre == <span class="cs-str">""</span>)
+            <span class="cs-kw">if</span> (string.IsNullOrWhiteSpace(nombre))
             {
                 <span class="cs-type">MessageBox</span>.Show(<span class="cs-str">"Escribe un nombre primero."</span>);
                 <span class="cs-kw">return</span>;
@@ -1097,7 +1097,7 @@
                     <strong>Conexión con la Lección 5:</strong> cada control de entrada tiene una propiedad distinta
                     que debes leer: <code>TextBox.Text</code>, <code>PasswordBox.Password</code>,
                     <code>ComboBox.SelectedValue</code> o <code>ComboBox.Text</code>,
-                    <code>CheckBox.IsChecked</code>. Si confundes la propiedad, el código no compila.
+                    <code>CheckBox.IsChecked</code>. Si confundes la propiedad, el código no compilará.
                 </p>
 
                 <div class="explanation ejercicio">
@@ -1123,8 +1123,8 @@
 
                 <p class="explanation">
                     Para que el binding funcione en ambos sentidos y se actualice mientras escribes, el objeto debe
-                    implementar <code>INotifyPropertyChanged</code>. Ese es el patrón que en la Lección 8 llevarás al
-                    <code>DataGrid</code>.
+                    implementar <code>INotifyPropertyChanged</code>. Usaremos el atributo <code>[CallerMemberName]</code>
+                    introducido en C# 5 (.NET 4.5) para simplificar la notificación de cambios sin quemar strings rígidos.
                 </p>
 
                 <div class="code-grid">
@@ -1141,8 +1141,9 @@
                     </div>
 
                     <div class="code-block">
-                        <div class="code-header"><span>MainWindow.xaml.cs</span><span>C#</span></div>
+                        <div class="code-header"><span>MainWindow.xaml.cs</span><span>C# (Con C# 5 / .NET 4.5)</span></div>
                         <pre><code><span class="cs-kw">using</span> System.ComponentModel;
+<span class="cs-kw">using</span> System.Runtime.CompilerServices; <span class="cs-cm">// Importante para C# 5</span>
 <span class="cs-kw">using</span> System.Windows;
 
 <span class="cs-kw">namespace</span> AppWpf
@@ -1156,13 +1157,24 @@
             <span class="cs-kw">get</span> { <span class="cs-kw">return</span> _nombre; }
             <span class="cs-kw">set</span>
             {
-                _nombre = <span class="cs-kw">value</span>;
-                <span class="cs-kw">if</span> (PropertyChanged != <span class="cs-kw">null</span>)
-                    PropertyChanged(<span class="cs-kw">this</span>, <span class="cs-kw">new</span> <span class="cs-type">PropertyChangedEventArgs</span>(<span class="cs-str">"Nombre"</span>));
+                <span class="cs-kw">if</span> (_nombre != <span class="cs-kw">value</span>)
+                {
+                    _nombre = <span class="cs-kw">value</span>;
+                    OnPropertyChanged(); <span class="cs-cm">// C# 5 infiere el nombre "Nombre"</span>
+                }
             }
         }
 
         <span class="cs-kw">public event</span> <span class="cs-type">PropertyChangedEventHandler</span> PropertyChanged;
+
+        <span class="cs-cm">// Novedad C# 5: CallerMemberName detecta automáticamente qué propiedad llamó al método</span>
+        <span class="cs-kw">protected void</span> OnPropertyChanged([<span class="cs-type">CallerMemberName</span>] <span class="cs-type">string</span> propertyName = <span class="cs-kw">null</span>)
+        {
+            <span class="cs-kw">if</span> (PropertyChanged != <span class="cs-kw">null</span>)
+            {
+                PropertyChanged(<span class="cs-kw">this</span>, <span class="cs-kw">new</span> <span class="cs-type">PropertyChangedEventArgs</span>(propertyName));
+            }
+        }
 
         <span class="cs-kw">public</span> MainWindow()
         {
@@ -1384,22 +1396,31 @@
 (<span class="cs-str">'Carla Ruiz'</span>, <span class="cs-str">'carla@ejemplo.com'</span>);</code></pre>
                 </div>
 
-                <h3 style="color: var(--accent-green); font-size: 1rem;">Paso 3: El XAML (DataGrid)</h3>
+                <h3 style="color: var(--accent-green); font-size: 1rem;">Paso 3: El XAML (DataGrid + Registro)</h3>
                 <div class="code-grid">
                     <div class="code-block">
                         <div class="code-header"><span>MainWindow.xaml</span><span>XAML</span></div>
                         <pre><code>&lt;<span class="xml-tag">Grid</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"10"</span>&gt;
     &lt;<span class="xml-tag">Grid.RowDefinitions</span>&gt;
         &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
+        &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"Auto"</span>/&gt;
         &lt;<span class="xml-tag">RowDefinition</span> <span class="xml-attr">Height</span>=<span class="xml-str">"*"</span>/&gt;
     &lt;/<span class="xml-tag">Grid.RowDefinitions</span>&gt;
 
-    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Cargar Usuarios desde MariaDB"</span>
+    &lt;!-- Formulario simple de inserción --&gt;
+    &lt;<span class="xml-tag">StackPanel</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"0"</span> <span class="xml-attr">Orientation</span>=<span class="xml-str">"Horizontal"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>&gt;
+        &lt;<span class="xml-tag">TextBox</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"txtNombre"</span> <span class="xml-attr">Width</span>=<span class="xml-str">"120"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,5,0"</span>/&gt;
+        &lt;<span class="xml-tag">TextBox</span> <span class="xml-attr">x:Name</span>=<span class="xml-str">"txtEmail"</span> <span class="xml-attr">Width</span>=<span class="xml-str">"150"</span> <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,5,0"</span>/&gt;
+        &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Content</span>=<span class="xml-str">"Guardar"</span> <span class="xml-attr">Click</span>=<span class="xml-str">"btnGuardar_Click"</span> <span class="xml-attr">Padding</span>=<span class="xml-str">"10,2"</span>/&gt;
+    &lt;/<span class="xml-tag">StackPanel</span>&gt;
+
+    &lt;<span class="xml-tag">Button</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"1"</span>
+            <span class="xml-attr">Content</span>=<span class="xml-str">"Cargar Usuarios desde MariaDB"</span>
             <span class="xml-attr">Click</span>=<span class="xml-str">"btnCargar_Click"</span>
             <span class="xml-attr">Padding</span>=<span class="xml-str">"8"</span>
             <span class="xml-attr">Margin</span>=<span class="xml-str">"0,0,0,10"</span>/&gt;
 
-    &lt;<span class="xml-tag">DataGrid</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"1"</span>
+    &lt;<span class="xml-tag">DataGrid</span> <span class="xml-attr">Grid.Row</span>=<span class="xml-str">"2"</span>
               <span class="xml-attr">x:Name</span>=<span class="xml-str">"dgUsuarios"</span>
               <span class="xml-attr">AutoGenerateColumns</span>=<span class="xml-str">"True"</span>/&gt;
 &lt;/<span class="xml-tag">Grid</span>&gt;</code></pre>
@@ -1443,9 +1464,45 @@
                 }
             }
         }
+
+        <span class="cs-kw">private void</span> btnGuardar_Click(<span class="cs-type">object</span> sender, <span class="cs-type">RoutedEventArgs</span> e)
+        {
+            <span class="cs-kw">using</span> (<span class="cs-type">MySqlConnection</span> conn = <span class="cs-kw">new</span> <span class="cs-type">MySqlConnection</span>(cadenaConexion))
+            {
+                <span class="cs-kw">try</span>
+                {
+                    conn.Open();
+                    <span class="cs-type">string</span> query = <span class="cs-str">"INSERT INTO usuarios (nombre, email) VALUES (@nombre, @email)"</span>;
+                    <span class="cs-type">MySqlCommand</span> cmd = <span class="cs-kw">new</span> <span class="cs-type">MySqlCommand</span>(query, conn);
+                    
+                    <span class="cs-cm">// Uso de parámetros para evitar Inyección SQL</span>
+                    cmd.Parameters.AddWithValue(<span class="cs-str">"@nombre"</span>, txtNombre.Text);
+                    cmd.Parameters.AddWithValue(<span class="cs-str">"@email"</span>, txtEmail.Text);
+
+                    cmd.ExecuteNonQuery();
+                    
+                    txtNombre.Clear();
+                    txtEmail.Clear();
+                    
+                    <span class="cs-cm">// Recargamos los datos en la tabla</span>
+                    btnCargar_Click(sender, e);
+                }
+                <span class="cs-kw">catch</span> (<span class="cs-type">System.Exception</span> ex)
+                {
+                    <span class="cs-type">MessageBox</span>.Show(<span class="cs-str">"Error: "</span> + ex.Message);
+                }
+            }
+        }
     }
 }</code></pre>
                     </div>
+                </div>
+
+                <div class="def-box" style="border-left-color: var(--accent-maria); margin-top: 0.5rem;">
+                    <h3>¿DataAdapter o DataReader?</h3>
+                    <p>
+                        Usamos <code>MySqlDataAdapter</code> con <code>DataTable</code> porque es la forma más rápida de volcar una consulta directa sobre el <code>DataGrid</code>. El <code>DataAdapter</code> maneja la apertura/cierre de la conexión internamente al ejecutar <code>Fill()</code>.
+                    </p>
                 </div>
 
                 <p class="explanation conexion">
@@ -1465,10 +1522,7 @@
                 </p>
 
                 <div class="explanation ejercicio">
-                    <strong>Ejercicio final:</strong> agrega un <code>TextBox</code> y un <code>Button</code> para
-                    insertar un usuario nuevo. Usa <code>MySqlCommand</code> con parámetros
-                    (<code>@nombre</code>, <code>@email</code>) para evitar inyección SQL. Luego recarga el
-                    <code>DataGrid</code> llamando al mismo método <code>btnCargar_Click</code>.
+                    <strong>Ejercicio final:</strong> agrega un botón "Eliminar" que obtenga el `id` de la fila seleccionada en el `DataGrid` mediante `DataRowView row = (DataRowView)dgUsuarios.SelectedItem;` y ejecute un `DELETE FROM usuarios WHERE id = @id`.
                 </div>
             </section>
         </main>
