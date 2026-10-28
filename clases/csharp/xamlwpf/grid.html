@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Aprendizaje: El Control Grid en WPF (C# 5)</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --panel-bg: #252526;
+            --border-color: #3f3f46;
+            --text-color: #d4d4d4;
+            --text-bright: #ffffff;
+            --accent-blue: #569cd6;
+            --accent-orange: #ce9178;
+            --accent-green: #4ec9b0;
+            --accent-yellow: #dcdcaa;
+            --accent-purple: #c586c0;
+            --code-bg: #111111;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Consolas', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--text-bright);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .subtitle {
+            color: var(--accent-blue);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        h2 {
+            color: var(--accent-green);
+            font-size: 1.3rem;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-green);
+            padding-left: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.98rem;
+        }
+
+        ul {
+            margin-bottom: 20px;
+            padding-left: 25px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 20px 0;
+            color: var(--text-bright);
+            line-height: 1.5;
+        }
+
+        .tag {
+            color: var(--accent-blue);
+        }
+
+        .attr {
+            color: #9cdcfe;
+        }
+
+        .string {
+            color: var(--accent-orange);
+        }
+
+        .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .highlight-prop {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .concept-card {
+            background-color: rgba(86, 156, 214, 0.08);
+            border: 1px solid rgba(86, 156, 214, 0.3);
+            border-left: 5px solid var(--accent-blue);
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .warning-card {
+            background-color: rgba(206, 145, 120, 0.08);
+            border: 1px solid rgba(206, 145, 120, 0.3);
+            border-left: 5px solid var(--accent-orange);
+            padding: 18px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.92rem;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2d2d2d;
+            color: var(--text-bright);
+        }
+
+        footer {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #858585;
+            font-family: 'Segoe UI', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Guía de Aprendizaje: Posicionamiento con el Control Grid</h1>
+            <div class="subtitle">Transición de Consola a Entorno Gráfico | Visual Studio 2012 &bull; C# 5.0 &bull; WPF
+            </div>
+        </header>
+
+        <section>
+            <h2>1. El Concepto Clave: Un Mapa Invisible</h2>
+            <p>Al programar en consola, los datos se imprimían en orden vertical secuencial. En un entorno gráfico
+                (WPF), necesitas colocar controles (botones, cajas de texto, etiquetas) en posiciones específicas dentro
+                de un área bidimensional.</p>
+            <p>El contenedor <strong>Grid</strong> funciona como la cuadrícula de un plano o una hoja de cálculo. Por sí
+                solo es completamente invisible; su única función es definir filas y columnas.</p>
+
+            <div class="concept-card">
+                <strong> Regla Fundamental de Ubicación:</strong><br>
+                Los elementos visuales (como un <code>Label</code> o un <code>TextBox</code>) <strong>NO se escriben
+                    anidados dentro de las definiciones de filas o columnas</strong>. Las definiciones son solo el mapa.
+                Los elementos se declaran directamente como hijos del <code>Grid</code> y se les indica en qué celda
+                deben colocarse utilizando las propiedades adjuntas <code>Grid.Row</code> y <code>Grid.Column</code>.
+            </div>
+        </section>
+
+        <section>
+            <h2>2. La Analogía del Hotel: ¿Cómo se Ubican los Elementos?</h2>
+            <p>Para entender la sintaxis en XAML, imagina un edificio de departamentos:</p>
+            <ul>
+                <li><code>Grid.RowDefinitions</code> y <code>Grid.ColumnDefinitions</code> son los planos
+                    arquitectónicos que construyen los pisos y departamentos (las divisiones del espacio).</li>
+                <li>Un control (por ejemplo, un <code>Button</code>) es un huésped.</li>
+                <li>El huésped no vive "dentro" del plano impreso en papel. El huésped camina por el edificio y lleva
+                    una etiqueta en la mano que dice: <em>"Yo me hospedo en el Piso 1, Habitación 0"</em>.</li>
+            </ul>
+            <p>Esa etiqueta en XAML es la propiedad adjunta: <code>Grid.Row="1" Grid.Column="0"</code>.</p>
+        </section>
+
+        <section>
+            <h2>3. Unidades de Medida para Tamaño de Filas y Columnas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de Medida</th>
+                        <th>Sintaxis XAML</th>
+                        <th>Comportamiento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Absoluta</strong></td>
+                        <td><code>Width="120"</code></td>
+                        <td>Mide exactamente el número de píxeles indicado. No cambia aunque la ventana se modifique.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Automática</strong></td>
+                        <td><code>Height="Auto"</code></td>
+                        <td>Ajusta su tamaño exactamente a lo que mida el control que esté dentro de esa celda.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proporcional (Estrella)</strong></td>
+                        <td><code>Width="*"</code> o <code>Width="2*"</code></td>
+                        <td>Ocupa el espacio restante disponible. Si una columna mide <code>1*</code> y otra
+                            <code>2*</code>, la segunda ocupará el doble de espacio sobrante que la primera.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>4. Código XAML Explicado Paso a Paso</h2>
+            <p>A continuación se muestra la estructura completa y correcta de un formulario configurado con
+                <code>Grid</code> en Visual Studio 2012:</p>
+
+            <pre><code><span class="tag">&lt;Window</span> <span class="attr">x:Class</span>=<span class="string">"AppWpf.MainWindow"</span>
+        <span class="attr">xmlns</span>=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</span>
+        <span class="attr">xmlns:x</span>=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml"</span>
+        <span class="attr">Title</span>=<span class="string">"Formulario de Usuario"</span> <span class="attr">Height</span>=<span class="string">"250"</span> <span class="attr">Width</span>=<span class="string">"400"</span><span class="tag">&gt;</span>
+
+    <span class="comment">&lt;!-- EL CONTENEDOR PRINCIPAL --&gt;</span>
+    <span class="tag">&lt;Grid</span> <span class="attr">Margin</span>=<span class="string">"15"</span><span class="tag">&gt;</span>
+
+        <span class="comment">&lt;!-- ========================================================== --&gt;</span>
+        <span class="comment">&lt;!-- PASO 1: CONSTRUIR EL PLANO (DEFINICIONES)                   --&gt;</span>
+        <span class="comment">&lt;!-- Aquí solo declaramos cuántas filas/columnas hay y cuánto    --&gt;</span>
+        <span class="comment">&lt;!-- van a medir. ¡NUNCA COLOQUES CONTROLES AQUÍ ADENTRO!        --&gt;</span>
+        <span class="comment">&lt;!-- ========================================================== --&gt;</span>
+        
+        <span class="tag">&lt;Grid.ColumnDefinitions&gt;</span>
+            <span class="tag">&lt;ColumnDefinition</span> <span class="attr">Width</span>=<span class="string">"Auto"</span><span class="tag">/&gt;</span> <span class="comment">&lt;!-- Columna 0: Se ajusta al texto --&gt;</span>
+            <span class="tag">&lt;ColumnDefinition</span> <span class="attr">Width</span>=<span class="string">"*"</span><span class="tag">/&gt;</span>    <span class="comment">&lt;!-- Columna 1: Ocupa todo el resto --&gt;</span>
+        <span class="tag">&lt;/Grid.ColumnDefinitions&gt;</span>
+
+        <span class="tag">&lt;Grid.RowDefinitions&gt;</span>
+            <span class="tag">&lt;RowDefinition</span> <span class="attr">Height</span>=<span class="string">"Auto"</span><span class="tag">/&gt;</span> <span class="comment">&lt;!-- Fila 0: Para el título --&gt;</span>
+            <span class="tag">&lt;RowDefinition</span> <span class="attr">Height</span>=<span class="string">"Auto"</span><span class="tag">/&gt;</span> <span class="comment">&lt;!-- Fila 1: Para la caja de texto --&gt;</span>
+            <span class="tag">&lt;RowDefinition</span> <span class="attr">Height</span>=<span class="string">"*"</span><span class="tag">/&gt;</span>    <span class="comment">&lt;!-- Fila 2: Espacio libre/Botón --&gt;</span>
+        <span class="tag">&lt;/Grid.RowDefinitions&gt;</span>
+
+        <span class="comment">&lt;!-- ========================================================== --&gt;</span>
+        <span class="comment">&lt;!-- PASO 2: UBICAR LOS CONTROLES EN LAS CELDAS                 --&gt;</span>
+        <span class="comment">&lt;!-- Nota cómo los controles están afuera de las definiciones   --&gt;</span>
+        <span class="comment">&lt;!-- y usan las propiedades Grid.Row y Grid.Column.             --&gt;</span>
+        <span class="comment">&lt;!-- Recordar: El conteo de celdas empieza desde cero (0).     --&gt;</span>
+        <span class="comment">&lt;!-- ========================================================== --&gt;</span>
+
+        <span class="comment">&lt;!-- Título: Se ubica en Fila 0, Columna 0. Con ColumnSpan="2" se extiende a 2 columnas --&gt;</span>
+        <span class="tag">&lt;Label</span> <span class="attr">Content</span>=<span class="string">"Registro de Usuario"</span> 
+               <span class="highlight-prop">Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"</span> 
+               <span class="attr">FontWeight</span>=<span class="string">"Bold"</span> <span class="attr">FontSize</span>=<span class="string">"14"</span> <span class="attr">Margin</span>=<span class="string">"0,0,0,10"</span><span class="tag">/&gt;</span>
+
+        <span class="comment">&lt;!-- Etiqueta "Nombre:": Ubicada en Fila 1, Columna 0 --&gt;</span>
+        <span class="tag">&lt;Label</span> <span class="attr">Content</span>=<span class="string">"Nombre:"</span> 
+               <span class="highlight-prop">Grid.Row="1" Grid.Column="0"</span> 
+               <span class="attr">VerticalAlignment</span>=<span class="string">"Center"</span><span class="tag">/&gt;</span>
+
+        <span class="comment">&lt;!-- Caja de Entrada de Texto: Ubicada en Fila 1, Columna 1 --&gt;</span>
+        <span class="tag">&lt;TextBox</span> <span class="highlight-prop">Grid.Row="1" Grid.Column="1"</span> 
+                 <span class="attr">Height</span>=<span class="string">"25"</span> <span class="attr">Margin</span>=<span class="string">"5"</span> <span class="attr">VerticalContentAlignment</span>=<span class="string">"Center"</span><span class="tag">/&gt;</span>
+
+        <span class="comment">&lt;!-- Botón: Ubicado en Fila 2, Columna 1 --&gt;</span>
+        <span class="tag">&lt;Button</span> <span class="attr">Content</span>=<span class="string">"Guardar"</span> 
+                <span class="highlight-prop">Grid.Row="2" Grid.Column="1"</span> 
+                <span class="attr">HorizontalAlignment</span>=<span class="string">"Right"</span> <span class="attr">VerticalAlignment</span>=<span class="string">"Bottom"</span> 
+                <span class="attr">Width</span>=<span class="string">"90"</span> <span class="attr">Height</span>=<span class="string">"30"</span> <span class="attr">Margin</span>=<span class="string">"5"</span><span class="tag">/&gt;</span>
+
+    <span class="tag">&lt;/Grid&gt;</span>
+<span class="tag">&lt;/Window&gt;</span></code></pre>
+        </section>
+
+        <section>
+            <h2>5. Errores Comunes que Debes Evitar</h2>
+
+            <div class="warning-card">
+                <strong>❌ Error N° 1: Tratar de meter los controles dentro de las definiciones</strong><br>
+                Sintaxis Incorrecta:<br>
+                <code>&lt;RowDefinition&gt; &lt;Label Content="Hola"/&gt; &lt;/RowDefinition&gt;</code><br><br>
+                <strong>¿Por qué falla?</strong> Las etiquetas <code>RowDefinition</code> y
+                <code>ColumnDefinition</code> no aceptan elementos secundarios. Solo sirven para declarar dimensiones
+                (ancho/alto).
+            </div>
+
+            <div class="warning-card">
+                <strong>❌ Error N° 2: No indicar la fila o columna</strong><br>
+                Si declaras un control dentro del <code>Grid</code> pero no le asignas <code>Grid.Row</code> ni
+                <code>Grid.Column</code>, el sistema asumirá automáticamente por defecto que está en la <strong>Fila 0,
+                    Columna 0</strong>. Si tienes varios elementos sin esta propiedad, todos se amontonarán uno encima
+                del otro en la esquina superior izquierda.
+            </div>
+        </section>
+
+        <footer>
+            Guía de Aprendizaje &bull; Desarrollo de Interfaces Gráficas con WPF &bull; C# 5.0
+        </footer>
+    </div>
+
+</body>
+
+</html>
