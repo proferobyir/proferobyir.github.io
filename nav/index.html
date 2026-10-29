@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Completa: Barra de Navegación HTML5 & Flexbox</title>
+  <style>
+    /* RESET Y VARIABLES GLOBALES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-code: #090d16;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-top: 80px; /* Offset para no tapar contenido con la barra fija */
+    }
+
+    /* BARRA DE NAVEGACIÓN PRINCIPAL (DEMO FIJA EN LA PARTE SUPERIOR) */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-links a.btn-action {
+      background-color: var(--accent);
+      color: var(--bg-dark);
+      font-weight: 600;
+    }
+
+    .nav-links a.btn-action:hover {
+      background-color: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem 1.5rem;
+    }
+
+    .header-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header-title h1 {
+      font-size: 2.2rem;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* TARJETAS DE SECCIÓN */
+    .section-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.8rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-card h2 {
+      color: var(--accent);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+    }
+
+    /* BLOQUES DE CÓDIGO */
+    .code-block {
+      background-color: var(--bg-code);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.2rem;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .code-tag { color: #f43f5e; }
+    .code-attr { color: #38bdf8; }
+    .code-val { color: #a3e635; }
+    .code-prop { color: #facc15; }
+    .code-comm { color: #64748b; font-style: italic; }
+
+    /* ACENTUACIÓN DE CONSEJOS */
+    .tip-box {
+      background-color: rgba(56, 189, 248, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. BARRA DE NAVEGACIÓN FIJA SUPERIOR CON ÍTEMS A LA DERECHA -->
+  <nav class="navbar">
+    <a href="#" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      MiSitioWeb
+    </a>
+    <ul class="nav-links">
+      <li><a href="#html-section">HTML</a></li>
+      <li><a href="#css-section">CSS</a></li>
+      <li><a href="#explicacion-section">Explicación</a></li>
+      <li><a href="#contacto" class="btn-action">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- CONTENIDO EXPLICATIVO COMPLETO -->
+  <div class="container">
+    
+    <div class="header-title">
+      <h1>Barra de Navegación Superior con CSS Flexbox</h1>
+      <p>Guía de implementación rápida usando HTML5 semántico y CSS Vanilla.</p>
+    </div>
+
+    <!-- SECCIÓN 1: HTML -->
+    <section id="html-section" class="section-card">
+      <h2>1. Estructura HTML5 Semántica</h2>
+      <p>El elemento <code>&lt;nav&gt;</code> define la sección de navegación. Para alinear el logo a la izquierda y los enlaces a la derecha, agrupamos las opciones dentro de una lista desordenada (<code>&lt;ul&gt;</code>).</p>
+      
+      <div class="code-block">
+<span class="code-tag">&lt;nav</span> <span class="code-attr">class</span>=<span class="code-val">"navbar"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;a</span> <span class="code-attr">href</span>=<span class="code-val" >"#"</span> <span class="code-attr">class</span>=<span class="code-val">"nav-brand"</span><span class="code-tag">&gt;</span>MiSitioWeb<span class="code-tag">&lt;/a&gt;</span>
+  
+  <span class="code-tag">&lt;ul</span> <span class="code-attr">class</span>=<span class="code-val">"nav-links"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;li&gt;&lt;a</span> <span class="code-attr">href</span>=<span class="code-val" >"#inicio"</span><span class="code-tag">&gt;</span>Inicio<span class="code-tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="code-tag">&lt;li&gt;&lt;a</span> <span class="code-attr">href</span>=<span class="code-val" >"#servicios"</span><span class="code-tag">&gt;</span>Servicios<span class="code-tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="code-tag">&lt;li&gt;&lt;a</span> <span class="code-attr">href</span>=<span class="code-val" >"#acerca"</span><span class="code-tag">&gt;</span>Acerca de<span class="code-tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="code-tag">&lt;li&gt;&lt;a</span> <span class="code-attr">href</span>=<span class="code-val" >"#contacto"</span> <span class="code-attr">class</span>=<span class="code-val">"btn-action"</span><span class="code-tag">&gt;</span>Contacto<span class="code-tag">&lt;/a&gt;&lt;/li&gt;</span>
+  <span class="code-tag">&lt;/ul&gt;</span>
+<span class="code-tag">&lt;/nav&gt;</span>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: CSS -->
+    <section id="css-section" class="section-card">
+      <h2>2. Estilos CSS3 (Flexbox & Posicionamiento Fijo)</h2>
+      <p>Aplicamos <code>display: flex</code> con <code>justify-content: space-between</code> para separar el logo y el menú hacia los extremos opuestos de la pantalla.</p>
+
+      <div class="code-block">
+<span class="code-comm">/* 1. Estilos del Contenedor de la Barra */</span>
+.<span class="code-attr">navbar</span> {
+  <span class="code-prop">position</span>: fixed;
+  <span class="code-prop">top</span>: 0;
+  <span class="code-prop">left</span>: 0;
+  <span class="code-prop">width</span>: 100%;
+  <span class="code-prop">height</span>: 70px;
+  <span class="code-prop">background-color</span>: #1e293b;
+  <span class="code-prop">display</span>: flex;
+  <span class="code-prop">justify-content</span>: space-between; <span class="code-comm">/* Separa logo a la izq y enlaces a la der */</span>
+  <span class="code-prop">align-items</span>: center;          <span class="code-comm">/* Centra los elementos verticalmente */</span>
+  <span class="code-prop">padding</span>: 0 2rem;
+  <span class="code-prop">box-sizing</span>: border-box;
+  <span class="code-prop">z-index</span>: 1000;                <span class="code-comm">/* Mantiene la barra por encima del contenido */</span>
+}
+
+<span class="code-comm">/* 2. Estilos del Logo / Marca */</span>
+.<span class="code-attr">nav-brand</span> {
+  <span class="code-prop">font-size</span>: 1.25rem;
+  <span class="code-prop">font-weight</span>: bold;
+  <span class="code-prop">color</span>: #38bdf8;
+  <span class="code-prop">text-decoration</span>: none;
+}
+
+<span class="code-comm">/* 3. Estilos de la Lista de Enlaces */</span>
+.<span class="code-attr">nav-links</span> {
+  <span class="code-prop">list-style</span>: none;
+  <span class="code-prop">display</span>: flex;                 <span class="code-comm">/* Pone los ítems en línea horizontal */</span>
+  <span class="code-prop">gap</span>: 1.5rem;                   <span class="code-comm">/* Espaciado uniforme entre ítems */</span>
+  <span class="code-prop">margin</span>: 0;
+  <span class="code-prop">padding</span>: 0;
+}
+
+<span class="code-comm">/* 4. Estilos de los Enlaces */</span>
+.<span class="code-attr">nav-links</span> <span class="code-tag">a</span> {
+  <span class="code-prop">color</span>: #94a3b8;
+  <span class="code-prop">text-decoration</span>: none;
+  <span class="code-prop">font-weight</span>: 500;
+  <span class="code-prop">transition</span>: color 0.2s ease;
+}
+
+.<span class="code-attr">nav-links</span> <span class="code-tag">a</span>:<span class="code-attr">hover</span> {
+  <span class="code-prop">color</span>: #ffffff;
+}
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: EXPLICACIÓN TÉCNICA -->
+    <section id="explicacion-section" class="section-card">
+      <h2>3. Puntos Clave de la Solución</h2>
+      <p>Para lograr la apariencia de barra y la alineación a la derecha sin complicaciones:</p>
+      
+      <div class="tip-box">
+        <ul>
+          <li><strong>Ubicación Fija:</strong> <code>position: fixed; top: 0; left: 0; width: 100%;</code> garantiza que la barra esté anclada en la parte superior del navegador sin importar cuánto deslices hacia abajo.</li>
+          <li><strong>Compensación del Body:</strong> Al usar <code>fixed</code>, el elemento sale del flujo del documento. Es necesario agregar un <code>padding-top</code> al <code>body</code> equivalente al alto de la barra (ej. <code>80px</code>) para que el contenido no quede oculto por detrás.</li>
+          <li><strong>Alineación Extremo a Extremo:</strong> <code>justify-content: space-between</code> envía el primer hijo (logo) al extremo izquierdo y el segundo hijo (<code>.nav-links</code>) al extremo derecho automáticamente.</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>Ejemplo educativo de maquetación limpia en Vanilla CSS</p>
+  </footer>
+
+</body>
+</html>
