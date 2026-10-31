@@ -393,7 +393,8 @@ DB_PASSWORD=</code></pre>
 
             <h3>3.1. Estructura de Migraciones Relacionales</h3>
             <p>Creamos las migraciones interconectadas para Clientes, Productos, Facturas y Detalles de Factura:</p>
-            <pre><code>php artisan make:model Cliente -m
+            <pre><code><span class="c-comment"># Crea los modelos y sus migraciones (-m) correspondientes</span>
+php artisan make:model Cliente -m
 php artisan make:model Producto -m
 php artisan make:model Factura -m
 php artisan make:model DetalleFactura -m</code></pre>
@@ -401,11 +402,17 @@ php artisan make:model DetalleFactura -m</code></pre>
             <p>Esquema transaccional para la tabla <code>facturas</code>:</p>
             <pre><code><span class="c-keyword">public function</span> <span class="c-var">up</span>(): <span class="c-keyword">void</span>
 {
+    <span class="c-comment">// Crea la tabla 'facturas' en la base de datos</span>
     Schema::create(<span class="c-string">'facturas'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
+        <span class="c-comment">// Llave primaria autoincremental</span>
         <span class="c-var">$table</span>->id();
+        <span class="c-comment">// Llave foránea relacionada por defecto con la tabla 'clientes'</span>
         <span class="c-var">$table</span>->foreignId(<span class="c-string">'cliente_id'</span>)->constrained();
+        <span class="c-comment">// Número de factura único con límite de 30 caracteres</span>
         <span class="c-var">$table</span>->string(<span class="c-string">'numero_factura'</span>, 30)->unique();
+        <span class="c-comment">// Monto total con 12 dígitos en total y 2 decimales</span>
         <span class="c-var">$table</span>->decimal(<span class="c-string">'total'</span>, 12, 2);
+        <span class="c-comment">// Campos de marca de tiempo (created_at y updated_at)</span>
         <span class="c-var">$table</span>->timestamps();
     });
 }</code></pre>
