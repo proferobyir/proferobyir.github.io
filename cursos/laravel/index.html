@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Laravel 13 desde Cero</title>
+    <style>
+        /* --- ESTILOS GENERALES Y VARIABLES --- */
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #666666;
+            --nav-bg: #1e1e1e;
+            --nav-text: #ffffff;
+            --primary: #ff2d20;
+            /* Laravel Red */
+            --primary-hover: #e0261a;
+            --border-color: #dddddd;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --note-border: #0284c7;
+            --note-bg: #f0f9ff;
+            --warn-border: #d97706;
+            --warn-bg: #fffbeb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-top: 70px;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: var(--nav-bg);
+            color: var(--nav-text);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar .brand {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar .brand span {
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .nav-menu a {
+            color: var(--nav-text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        /* Menú Hamburguesa */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--nav-text);
+            transition: all 0.3s ease;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* --- SECCIONES Y TARJETAS --- */
+        .section-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            color: #111827;
+            font-size: 1.6rem;
+        }
+
+        .part-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .badge-mysql {
+            background-color: #00758f;
+            color: #ffffff;
+        }
+
+        .badge-postgres {
+            background-color: #336791;
+            color: #ffffff;
+        }
+
+        .badge-general {
+            background-color: #4b5563;
+            color: #ffffff;
+        }
+
+        h3 {
+            margin: 20px 0 10px 0;
+            color: #1f2937;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        ul,
+        ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* --- RECUADROS DE NOTAS Y ACOTACIONES --- */
+        .note {
+            background-color: var(--note-bg);
+            border-left: 4px solid var(--note-border);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .note-title {
+            font-weight: bold;
+            color: var(--note-border);
+            margin-bottom: 5px;
+        }
+
+        .warn {
+            background-color: var(--warn-bg);
+            border-left: 4px solid var(--warn-border);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .warn-title {
+            font-weight: bold;
+            color: var(--warn-border);
+            margin-bottom: 5px;
+        }
+
+        /* --- BLOQUES DE CÓDIGO (CARBON / VS CODE DARK STYLE) --- */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            border: 1px solid #333;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            background-color: #e5e7eb;
+            color: #1f2937;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Sintaxis básica en código */
+        .c-comment {
+            color: #6a9955;
+        }
+
+        .c-keyword {
+            color: #569cd6;
+        }
+
+        .c-string {
+            color: #ce9178;
+        }
+
+        .c-var {
+            color: #9cdcfe;
+        }
+
+        /* --- RESPONSIVE (SMARTPHONES) --- */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: absolute;
+                top: 60px;
+                right: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background-color: var(--nav-bg);
+                flex-direction: column;
+                align-items: center;
+                padding-top: 30px;
+                gap: 25px;
+                transition: right 0.3s ease;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .section-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR NATIVO (DARK STYLE) -->
+    <nav class="navbar">
+        <div class="brand">
+            <span>Laravel 13</span> Tutor
+        </div>
+        <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <ul class="nav-menu" id="nav-menu">
+            <li><a href="#entorno" onclick="closeMenu()">Entorno y VS Code</a></li>
+            <li><a href="#instalacion" onclick="closeMenu()">Instalación</a></li>
+            <li><a href="#parte-mysql" onclick="closeMenu()">Parte 1: MySQL</a></li>
+            <li><a href="#parte-postgres" onclick="closeMenu()">Parte 2: Postgres</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- INTRODUCCIÓN -->
+        <div class="section-card">
+            <span class="part-badge badge-general">Introducción</span>
+            <div class="section-header">
+                <h2>Guía Didáctica de Laravel 13</h2>
+            </div>
+            <p>Bienvenido/a a este tutor estructurado paso a paso para dominar Laravel 13. Esta guía está diseñada para
+                llevarte gradualmente desde la configuración del entorno hasta el desarrollo interactivo con dos de los
+                motores de bases de datos más extendidos en la industria: <strong>MySQL</strong> y
+                <strong>PostgreSQL</strong>.</p>
+        </div>
+
+        <!-- SECCIÓN 1: ENTORNO Y VSCODE -->
+        <div class="section-card" id="entorno">
+            <span class="part-badge badge-general">Fase Preparatoria</span>
+            <div class="section-header">
+                <h2>1. Preparación del Entorno de Trabajo y VS Code</h2>
+            </div>
+            <p>Antes de iniciar con el framework, debemos asegurar que nuestro sistema local posea las herramientas
+                clave correctamente configuradas.</p>
+
+            <h3>Requisitos Previos del Sistema</h3>
+            <ul>
+                <li><strong>PHP &gt;= 8.2:</strong> Con extensiones activas como <code>pdo</code>,
+                    <code>mbstring</code>, <code>openssl</code>, <code>xml</code>, <code>curl</code>.</li>
+                <li><strong>Composer:</strong> Manejador de dependencias global de PHP.</li>
+                <li><strong>Node.js & npm:</strong> Para la compilación de assets de frontend mediante Vite.</li>
+            </ul>
+
+            <h3>Extensiones Recomendadas para Visual Studio Code</h3>
+            <p>Para acelerar tu flujo de trabajo, abre VS Code e instala las siguientes extensiones desde el
+                Marketplace:</p>
+            <ol>
+                <li><strong>Laravel Extra Intellisense:</strong> Autocompletado inteligente de rutas, vistas y
+                    configuraciones.</li>
+                <li><strong>PHP Intelephense:</strong> Indexado de código PHP de alto rendimiento y análisis estático.
+                </li>
+                <li><strong>Laravel Blade Snippets:</strong> Resaltado de sintaxis y atajos para plantillas Blade.</li>
+                <li><strong>DotENV:</strong> Soporte de coloración y sintaxis para archivos de configuración
+                    <code>.env</code>.</li>
+                <li><strong>Prettier / PHP CS Fixer:</strong> Mantener el formato de código estandarizado bajo PSR-12.
+                </li>
+            </ol>
+
+            <div class="note">
+                <div class="note-title">💡 Acotación didáctica</div>
+                Configurar correctamente las extensiones desde el primer día evita errores tipográficos comunes en las
+                vistas de Blade y acelera la importación automática de espacios de nombres (<em>namespaces</em>).
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: INSTALACIÓN -->
+        <div class="section-card" id="instalacion">
+            <span class="part-badge badge-general">Inicio del Proyecto</span>
+            <div class="section-header">
+                <h2>2. Instalación y Estructura del Proyecto</h2>
+            </div>
+            <p>Procederemos a crear una nueva aplicación mediante Composer en la terminal integrada de VS Code
+                (<code>Ctrl + `</code>).</p>
+
+            <pre><code><span class="c-comment"># Crear proyecto Laravel 13</span>
+composer create-project laravel/laravel mi-proyecto-laravel
+
+<span class="c-comment"># Acceder al directorio</span>
+cd mi-proyecto-laravel
+
+<span class="c-comment"># Iniciar el servidor local de desarrollo</span>
+php artisan serve</code></div>
+
+            <div class="note">
+                <div class="note-title">📌 Nota sobre Laravel 13</div>
+                En las versiones modernas de Laravel, la estructura de archivos es sumamente limpia. Las rutas principales residen en <code>routes/web.php</code> y las configuraciones de servicios se estructuran mediante <code>bootstrap/app.php</code> en lugar del antiguo kernel tradicional.
+            </div>
+        </div>
+
+        <!-- PARTE 1: MYSQL -->
+        <div class="section-card" id="parte-mysql">
+            <span class="part-badge badge-mysql">Parte 1: Integración MySQL</span>
+            <div class="section-header">
+                <h2>3. Desarrollo Avanzado orientando a MySQL</h2>
+            </div>
+            <p>En esta sección configuraremos Laravel 13 para conectarse a un servidor MySQL/MariaDB y construiremos una estructura de datos transaccional.</p>
+
+            <h3>3.1. Configuración del Archivo .env</h3>
+            <p>Edita las variables de entorno en la raíz de tu proyecto para establecer el driver de MySQL:</p>
+            <pre><code>DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sistema_gestion_db
+DB_USERNAME=root
+DB_PASSWORD=secret</code></div>
+
+            <h3>3.2. Creación de Migración y Modelo</h3>
+            <p>Crearemos una tabla de <code>Productos</code> con campos estructurados para MySQL:</p>
+            <pre><code>php artisan make:model Producto -m</code></div>
+
+            <p>Modifica el archivo de migración generado en <code>database/migrations/xxxx_create_productos_table.php</code>:</p>
+            <pre><code><span class="c-keyword">public function</span> <span class="c-var">up</span>(): <span class="c-keyword">void</span>
+{
+    Schema::create(<span class="c-string">'productos'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
+        <span class="c-var">$table</span>->id();
+        <span class="c-var">$table</span>->string(<span class="c-string">'codigo'</span>, 50)->unique();
+        <span class="c-var">$table</span>->string(<span class="c-string">'nombre'</span>);
+        <span class="c-var">$table</span>->decimal(<span class="c-string">'precio'</span>, 10, 2);
+        <span class="c-var">$table</span>->integer(<span class="c-string">'stock'</span>)->default(0);
+        <span class="c-var">$table</span>->timestamps();
+    });
+}</code></div>
+
+            <h3>3.3. Ejecución de Migraciones y Controlador</h3>
+            <pre><code>php artisan migrate</code></div>
+
+            <p>Creamos el controlador para administrar los productos mediante Eloquent ORM:</p>
+            <pre><code>php artisan make:controller ProductoController --resource</code></div>
+
+            <div class="note">
+                <div class="note-title">💡 Acotación MySQL</div>
+                MySQL maneja de manera óptima el tipo <code>decimal(10,2)</code> para valores monetarios. Evita utilizar <code>float</code> o <code>double</code> al almacenar precios para prevenir imprecisiones de redondeo en cálculos financieros.
+            </div>
+        </div>
+
+        <!-- PARTE 2: POSTGRESQL -->
+        <div class="section-card" id="parte-postgres">
+            <span class="part-badge badge-postgres">Parte 2: Integración PostgreSQL</span>
+            <div class="section-header">
+                <h2>4. Desarrollo Avanzado orientando a PostgreSQL</h2>
+            </div>
+            <p>PostgreSQL destaca por sus capacidades avanzadas con datos no estructurados (JSONB) y búsquedas complejas. En esta segunda parte, migraremos el contexto hacia un motor PostgreSQL.</p>
+
+            <h3>4.1. Configuración de la Conexión PostgreSQL</h3>
+            <p>Modifica la configuración en el archivo <code>.env</code>:</p>
+            <pre><code>DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=sistema_avanzado_db
+DB_USERNAME=postgres
+DB_PASSWORD=postgres</code></div>
+
+            <div class="warn">
+                <div class="warn-title">⚠️ Nota de Extensión PHP</div>
+                Asegúrate de tener activa la extensión <code>extension=pdo_pgsql</code> en tu archivo <code>php.ini</code> para evitar errores de conexión con PostgreSQL.
+            </div>
+
+            <h3>4.2. Uso de Campos Nativos JSONB en Migraciones</h3>
+            <p>Aprovecharemos las características nativas de PostgreSQL creando un modelo de <code>Bitacora</code> o historial técnico:</p>
+            <pre><code>php artisan make:model EventoAuditoria -m</code></div>
+
+            <p>En la migración correspondiente:</p>
+            <pre><code><span class="c-keyword">public function</span> <span class="c-var">up</span>(): <span class="c-keyword">void</span>
+{
+    Schema::create(<span class="c-string">'eventos_auditoria'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
+        <span class="c-var">$table</span>->uuid(<span class="c-string">'id'</span>)->primary();
+        <span class="c-var">$table</span>->string(<span class="c-string">'accion'</span>);
+        <span class="c-var">$table</span>->jsonb(<span class="c-string">'metadatos'</span>); <span class="c-comment">// Columna JSONB nativa de PG</span>
+        <span class="c-var">$table</span>->timestamps();
+    });
+}</code></div>
+
+            <h3>4.3. Consulta ORM Avanzada sobre Datos JSONB</h3>
+            <p>En Laravel 13 puedes realizar consultas directas sobre propiedades dentro del objeto JSON de Postgres de forma transparente:</p>
+            <pre><code><span class="c-keyword">use</span> App\Models\EventoAuditoria;
+
+<span class="c-comment">// Buscar eventos donde el rol dentro del metadato sea 'Administrador'</span>
+<span class="c-var">$eventos</span> = EventoAuditoria::where(<span class="c-string">'metadatos->usuario->rol'</span>, <span class="c-string">'Administrador'</span>)
+    ->orderBy(<span class="c-string">'created_at'</span>, <span class="c-string">'desc'</span>)
+    ->get();</code></div>
+
+            <div class="note">
+                <div class="note-title">💡 Acotación PostgreSQL</div>
+                A diferencia de MySQL tradicional, el uso de <code>jsonb</code> en PostgreSQL permite indexar directamente atributos dentro del documento JSON, optimizando exponencialmente la velocidad de búsqueda en grandes volúmenes de registros auditables.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT NATIVO SIN DEPENDENCIAS -->
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
