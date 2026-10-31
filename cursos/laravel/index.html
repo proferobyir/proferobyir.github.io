@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Didáctico Integral: Laravel 13 con XAMPP (Inventario, Facturación y API REST)</title>
+    <title>Tutor Didáctico Integral: Laravel 13 con XAMPP (API REST Completa y Sistemas)</title>
     <style>
         /* --- ESTILOS GENERALES Y VARIABLES (UX/UI: ALTO CONTRASTE Y COGNICIÓN CLARA) --- */
         :root {
@@ -327,9 +327,9 @@
             <li><a href="#entorno-basico" onclick="closeMenu()">1. Entorno XAMPP</a></li>
             <li><a href="#vscode-avanzado" onclick="closeMenu()">2. VS Code</a></li>
             <li><a href="#parte-mysql" onclick="closeMenu()">Parte 1: MySQL (Sistema)</a></li>
-            <li><a href="#api-mysql" onclick="closeMenu()">API REST MySQL</a></li>
+            <li><a href="#api-mysql" onclick="closeMenu()">API REST MySQL (CRUD)</a></li>
             <li><a href="#parte-postgres" onclick="closeMenu()">Parte 2: Postgres (Sistema)</a></li>
-            <li><a href="#api-postgres" onclick="closeMenu()">API REST Postgres</a></li>
+            <li><a href="#api-postgres" onclick="closeMenu()">API REST Postgres (CRUD)</a></li>
         </ul>
     </nav>
 
@@ -341,9 +341,9 @@
             <div class="section-header">
                 <h2>Tutor Didáctico Integral: Laravel 13 con XAMPP</h2>
             </div>
-            <p>Guía paso a paso rigurosa que cubre desde la preparación exhaustiva del entorno hasta el desarrollo
-                completo de sistemas de <strong>Inventario y Facturación</strong> y sus respectivas <strong>API
-                    REST</strong>, optimizada bajo estrictos estándares de accesibilidad visual UX/UI.</p>
+            <p>Tienes toda la razón. Vamos a desarrollar de forma exhaustiva, detallada y sin omitir ningún método HTTP
+                (<strong>GET, POST, PUT, DELETE</strong>) la construcción completa de las API REST para ambos motores de
+                bases de datos.</p>
         </div>
 
         <!-- SECCIÓN 1: ENTORNO XAMPP -->
@@ -451,33 +451,98 @@ php artisan make:model DetalleFactura -m</code></pre>
             </div>
         </div>
 
-        <!-- API REST MYSQL -->
+        <!-- API REST MYSQL COMPLETA (CRUD) -->
         <div class="section-card" id="api-mysql">
-            <span class="part-badge badge-mysql">API REST Parte 1</span>
+            <span class="part-badge badge-mysql">API REST Parte 1 (CRUD Completo)</span>
             <div class="section-header">
-                <h2>4. Construcción de API REST (Inventario y Facturación - MySQL)</h2>
+                <h2>4. API REST Completa con Métodos GET, POST, PUT y DELETE (MySQL)</h2>
             </div>
-            <p>Definición de rutas dedicadas en <code>routes/api.php</code> para consumo mediante clientes HTTP (como
-                Bruno o Postman):</p>
+            <p>Registramos un controlador de recursos dedicado en <code>routes/api.php</code>:</p>
             <pre><code><span class="c-keyword">use</span> App\Http\Controllers\Api\ProductoApiController;
-<span class="c-keyword">use</span> App\Http\Controllers\Api\FacturaApiController;
 
-Route::apiResource(<span class="c-string">'productos'</span>, ProductoApiController::class);
-Route::apiResource(<span class="c-string">'facturas'</span>, FacturaApiController::class);</code></pre>
+Route::apiResource(<span class="c-string">'productos'</span>, ProductoApiController::class);</code></pre>
 
-            <p>Ejemplo de Controlador API con recursos JSON:</p>
+            <p>Implementación completa del controlador <code>ProductoApiController.php</code> abarcando todas las
+                operaciones HTTP para la gestión de inventario:</p>
             <pre><code><span class="c-keyword">namespace</span> App\Http\Controllers\Api;
 
 <span class="c-keyword">use</span> App\Http\Controllers\Controller;
 <span class="c-keyword">use</span> App\Models\Producto;
+<span class="c-keyword">use</span> Illuminate\Http\Request;
 
 <span class="c-keyword">class</span> ProductoApiController <span class="c-keyword">extends</span> Controller
 {
+    <span class="c-comment">// GET /api/productos (Listar todos los productos)</span>
     <span class="c-keyword">public function</span> <span class="c-var">index</span>()
     {
-        <span class="c-keyword">return</span> response()->json(Producto::all(), 200);
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'data'</span> => Producto::all()
+        ], 200);
+    }
+
+    <span class="c-comment">// POST /api/productos (Crear un nuevo producto - Método POST)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">store</span>(Request <span class="c-var">$request</span>)
+    {
+        <span class="c-var">$validated</span> = <span class="c-var">$request</span>->validate([
+            <span class="c-string">'nombre'</span> => <span class="c-string">'required|string|max:255'</span>,
+            <span class="c-string">'precio'</span> => <span class="c-string">'required|numeric|min:0'</span>,
+            <span class="c-string">'stock'</span> => <span class="c-string">'required|integer|min:0'</span>
+        ]);
+
+        <span class="c-var">$producto</span> = Producto::create(<span class="c-var">$validated</span>);
+
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'message'</span> => <span class="c-string">'Producto creado exitosamente'</span>,
+            <span class="c-string">'data'</span> => <span class="c-var">$producto</span>
+        ], 201);
+    }
+
+    <span class="c-comment">// GET /api/productos/{id} (Mostrar un producto específico)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">show</span>(Producto <span class="c-var">$producto</span>)
+    {
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'data'</span> => <span class="c-var">$producto</span>
+        ], 200);
+    }
+
+    <span class="c-comment">// PUT /api/productos/{id} (Actualizar un producto existente - Método PUT)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">update</span>(Request <span class="c-var">$request</span>, Producto <span class="c-var">$producto</span>)
+    {
+        <span class="c-var">$validated</span> = <span class="c-var">$request</span>->validate([
+            <span class="c-string">'nombre'</span> => <span class="c-string">'sometimes|required|string|max:255'</span>,
+            <span class="c-string">'precio'</span> => <span class="c-string">'sometimes|required|numeric|min:0'</span>,
+            <span class="c-string">'stock'</span> => <span class="c-string">'sometimes|required|integer|min:0'</span>
+        ]);
+
+        <span class="c-var">$producto</span>->update(<span class="c-var">$validated</span>);
+
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'message'</span> => <span class="c-string">'Producto actualizado exitosamente'</span>,
+            <span class="c-string">'data'</span> => <span class="c-var">$producto</span>
+        ], 200);
+    }
+
+    <span class="c-comment">// DELETE /api/productos/{id} (Eliminar un producto - Método DELETE)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">destroy</span>(Producto <span class="c-var">$producto</span>)
+    {
+        <span class="c-var">$producto</span>->delete();
+
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'message'</span> => <span class="c-string">'Producto eliminado exitosamente'</span>
+        ], 200);
     }
 }</code></pre>
+            <div class="note">
+                <div class="note-title">💡 Acotación didáctica sobre API REST</div>
+                El uso de validaciones previas (<code>$request->validate()</code>) en los métodos <code>POST</code> y
+                <code>PUT</code> garantiza que la API devuelva una respuesta uniforme y estructurada en formato JSON
+                ante cualquier dato erróneo enviado por el cliente.
+            </div>
         </div>
 
         <!-- PARTE 2: SISTEMA COMPLETO POSTGRESQL -->
@@ -514,31 +579,85 @@ DB_PASSWORD=clave_segura</code></pre>
 }</code></pre>
         </div>
 
-        <!-- API REST POSTGRESQL -->
+        <!-- API REST POSTGRESQL COMPLETA (CRUD Y JSONB) -->
         <div class="section-card" id="api-postgres">
-            <span class="part-badge badge-postgres">API REST Parte 2</span>
+            <span class="part-badge badge-postgres">API REST Parte 2 (CRUD y JSONB)</span>
             <div class="section-header">
-                <h2>6. Construcción de API REST Avanzada (PostgreSQL)</h2>
+                <h2>6. API REST Avanzada con Métodos POST, PUT y Manipulación JSONB (PostgreSQL)</h2>
             </div>
-            <p>Exposición de endpoints analíticos consumiendo campos <code>jsonb</code> mediante Eloquent:</p>
-            <pre><code><span class="c-keyword">public function</span> <span class="c-var">getByFiscalRegion</span>(Request <span class="c-var">$request</span>)
+            <p>Registramos el controlador para las auditorías fiscales en <code>routes/api.php</code>:</p>
+            <pre><code><span class="c-keyword">use</span> App\Http\Controllers\Api\AuditoriaApiController;
+
+Route::apiResource(<span class="c-string">'auditorias'</span>, AuditoriaApiController::class);</code></pre>
+
+            <p>Implementación completa del controlador <code>AuditoriaApiController.php</code> manipulando campos
+                nativos <code>jsonb</code> mediante operaciones completas de API REST:</p>
+            <pre><code><span class="c-keyword">namespace</span> App\Http\Controllers\Api;
+
+<span class="c-keyword">use</span> App\Http\Controllers\Controller;
+<span class="c-keyword">use</span> App\Models\AuditoriaFacturacion;
+<span class="c-keyword">use</span> Illuminate\Http\Request;
+
+<span class="c-keyword">class</span> AuditoriaApiController <span class="c-keyword">extends</span> Controller
 {
-    <span class="c-var">$region</span> = <span class="c-var">$request</span>->query(<span class="c-string">'region'</span>);
+    <span class="c-comment">// GET /api/auditorias (Listar registros de auditoría)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">index</span>()
+    {
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'data'</span> => AuditoriaFacturacion::all()
+        ], 200);
+    }
 
-    <span class="c-var">$auditorias</span> = AuditoriaFacturacion::where(
-        <span class="c-string">'detalles_fiscales->region'</span>, 
-        <span class="c-var">$region</span>
-    )->get();
+    <span class="c-comment">// POST /api/auditorias (Crear registro con estructura JSONB - Método POST)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">store</span>(Request <span class="c-var">$request</span>)
+    {
+        <span class="c-var">$validated</span> = <span class="c-var">$request</span>->validate([
+            <span class="c-string">'factura_id'</span> => <span class="c-string">'required|exists:facturas,id'</span>,
+            <span class="c-string">'detalles_fiscales'</span> => <span class="c-string">'required|array'</span> <span class="c-comment">// Recibe array asociativo para JSONB</span>
+        ]);
 
-    <span class="c-keyword">return</span> response()->json([
-        <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
-        <span class="c-string">'data'</span> => <span class="c-var">$auditorias</span>
-    ], 200);
+        <span class="c-var">$auditoria</span> = AuditoriaFacturacion::create(<span class="c-var">$validated</span>);
+
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'message'</span> => <span class="c-string">'Auditoría fiscal registrada en PostgreSQL'</span>,
+            <span class="c-string">'data'</span> => <span class="c-var">$auditoria</span>
+        ], 201);
+    }
+
+    <span class="c-comment">// PUT /api/auditorias/{id} (Actualizar campos o metadatos JSONB - Método PUT)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">update</span>(Request <span class="c-var">$request</span>, AuditoriaFacturacion <span class="c-var">$auditoria</span>)
+    {
+        <span class="c-var">$validated</span> = <span class="c-var">$request</span>->validate([
+            <span class="c-string">'detalles_fiscales'</span> => <span class="c-string">'sometimes|required|array'</span>
+        ]);
+
+        <span class="c-var">$auditoria</span>->update(<span class="c-var">$validated</span>);
+
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'message'</span> => <span class="c-string">'Auditoría actualizada correctamente'</span>,
+            <span class="c-string">'data'</span> => <span class="c-var">$auditoria</span>
+        ], 200);
+    }
+
+    <span class="c-comment">// DELETE /api/auditorias/{id} (Eliminar registro - Método DELETE)</span>
+    <span class="c-keyword">public function</span> <span class="c-var">destroy</span>(AuditoriaFacturacion <span class="c-var">$auditoria</span>)
+    {
+        <span class="c-var">$auditoria</span>->delete();
+
+        <span class="c-keyword">return</span> response()->json([
+            <span class="c-string">'status'</span> => <span class="c-string">'success'</span>,
+            <span class="c-string">'message'</span> => <span class="c-string">'Auditoria eliminada exitosamente'</span>
+        ], 200);
+    }
 }</code></pre>
             <div class="note">
                 <div class="note-title">💡 Acotación didáctica final</div>
-                Esta arquitectura completa cubre los requerimientos de entornos académicos y profesionales, conectando
-                la solidez relacional con la flexibilidad analítica requerida en sistemas modernos.
+                Con esta implementación completa cubrimos rigurosamente los métodos <strong>GET, POST, PUT y
+                    DELETE</strong> tanto en arquitecturas relacionales puras (MySQL) como en esquemas orientados a
+                documentos y analítica avanzada (PostgreSQL).
             </div>
         </div>
 
