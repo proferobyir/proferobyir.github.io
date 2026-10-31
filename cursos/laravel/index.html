@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Interactiva: Laravel 13 desde Cero</title>
+    <title>Tutor Didáctico Integral: Laravel 13 con XAMPP (De lo Básico a lo Avanzado)</title>
     <style>
         /* --- ESTILOS GENERALES Y VARIABLES --- */
         :root {
@@ -283,10 +283,10 @@
 
 <body>
 
-    <!-- NAVBAR NATIVO (DARK STYLE) -->
+    <!-- NAVBAR NATIVO (DARK STYLE) CON ENLACES A LA DERECHA -->
     <nav class="navbar">
         <div class="brand">
-            <span>Laravel 13</span> Tutor
+            <span>Laravel 13</span> Tutor Integral
         </div>
         <div class="hamburger" id="hamburger" onclick="toggleMenu()">
             <div class="bar"></div>
@@ -294,8 +294,9 @@
             <div class="bar"></div>
         </div>
         <ul class="nav-menu" id="nav-menu">
-            <li><a href="#entorno" onclick="closeMenu()">Entorno y VS Code</a></li>
-            <li><a href="#instalacion" onclick="closeMenu()">Instalación</a></li>
+            <li><a href="#entorno-basico" onclick="closeMenu()">1. Entorno Básico (XAMPP)</a></li>
+            <li><a href="#vscode-avanzado" onclick="closeMenu()">2. VS Code Avanzado</a></li>
+            <li><a href="#instalacion-proyecto" onclick="closeMenu()">3. Instalación Proyecto</a></li>
             <li><a href="#parte-mysql" onclick="closeMenu()">Parte 1: MySQL</a></li>
             <li><a href="#parte-postgres" onclick="closeMenu()">Parte 2: Postgres</a></li>
         </ul>
@@ -307,178 +308,204 @@
         <div class="section-card">
             <span class="part-badge badge-general">Introducción</span>
             <div class="section-header">
-                <h2>Guía Didáctica de Laravel 13</h2>
+                <h2>Tutor Didáctico Paso a Paso: Laravel 13 con XAMPP</h2>
             </div>
-            <p>Bienvenido/a a este tutor estructurado paso a paso para dominar Laravel 13. Esta guía está diseñada para
-                llevarte gradualmente desde la configuración del entorno hasta el desarrollo interactivo con dos de los
-                motores de bases de datos más extendidos en la industria: <strong>MySQL</strong> y
-                <strong>PostgreSQL</strong>.</p>
+            <p>Esta guía interactiva detalla de forma exhaustiva cada procedimiento técnico, asegurando que no se omita
+                ningún detalle crítico en la preparación del entorno de trabajo, abarcando desde las configuraciones
+                esenciales de XAMPP y VS Code hasta arquitecturas avanzadas conectadas a MySQL y PostgreSQL.</p>
         </div>
 
-        <!-- SECCIÓN 1: ENTORNO Y VSCODE -->
-        <div class="section-card" id="entorno">
-            <span class="part-badge badge-general">Fase Preparatoria</span>
+        <!-- SECCIÓN 1: ENTORNO BÁSICO CON XAMPP -->
+        <div class="section-card" id="entorno-basico">
+            <span class="part-badge badge-general">Fase 1: Preparación Básica del Entorno</span>
             <div class="section-header">
-                <h2>1. Preparación del Entorno de Trabajo y VS Code</h2>
+                <h2>1. Configuración Detallada de XAMPP y PHP</h2>
             </div>
-            <p>Antes de iniciar con el framework, debemos asegurar que nuestro sistema local posea las herramientas
-                clave correctamente configuradas.</p>
+            <p>Para que Laravel 13 funcione de manera óptima sobre XAMPP, debemos asegurar que el motor de PHP y sus
+                extensiones cumplan con los requisitos estrictos del framework.</p>
 
-            <h3>Requisitos Previos del Sistema</h3>
-            <ul>
-                <li><strong>PHP &gt;= 8.2:</strong> Con extensiones activas como <code>pdo</code>,
-                    <code>mbstring</code>, <code>openssl</code>, <code>xml</code>, <code>curl</code>.</li>
-                <li><strong>Composer:</strong> Manejador de dependencias global de PHP.</li>
-                <li><strong>Node.js & npm:</strong> Para la compilación de assets de frontend mediante Vite.</li>
-            </ul>
+            <h3>1.1. Activación de Extensiones Críticas en php.ini</h3>
+            <p>Abre el archivo de configuración ubicado por defecto en <code>C:\xampp\php\php.ini</code> utilizando un
+                editor de texto (como Notepad o VS Code). Asegúrate de que las siguientes líneas <strong>no tengan punto
+                    y coma (;)</strong> al inicio:</p>
+            <pre><code>extension=curl
+extension=fileinfo
+extension=mbstring
+extension=openssl
+extension=pdo_mysql
+extension=pdo_pgsql
+extension=pgsql
+extension=sqlite3
+extension=xml</code></div>
 
-            <h3>Extensiones Recomendadas para Visual Studio Code</h3>
-            <p>Para acelerar tu flujo de trabajo, abre VS Code e instala las siguientes extensiones desde el
-                Marketplace:</p>
+            <h3>1.2. Configuración de Variables de Entorno del Sistema (PATH)</h3>
+            <p>Para poder invocar comandos de PHP y Composer desde cualquier terminal sin errores:</p>
             <ol>
-                <li><strong>Laravel Extra Intellisense:</strong> Autocompletado inteligente de rutas, vistas y
-                    configuraciones.</li>
-                <li><strong>PHP Intelephense:</strong> Indexado de código PHP de alto rendimiento y análisis estático.
-                </li>
-                <li><strong>Laravel Blade Snippets:</strong> Resaltado de sintaxis y atajos para plantillas Blade.</li>
-                <li><strong>DotENV:</strong> Soporte de coloración y sintaxis para archivos de configuración
-                    <code>.env</code>.</li>
-                <li><strong>Prettier / PHP CS Fixer:</strong> Mantener el formato de código estandarizado bajo PSR-12.
+                <li>Presiona la tecla Windows, escribe <strong>Variables de entorno</strong> y selecciona "Editar las variables de entorno del sistema".</li>
+                <li>Haz clic en el botón <strong>Variables de entorno...</strong>.</li>
+                <li>En "Variables del sistema", busca la variable llamada <code>Path</code> y haz clic en <strong>Editar</strong>.</li>
+                <li>Añade las siguientes dos rutas exactas:
+                    <ul>
+                        <li><code>C:\xampp\php</code></li>
+                        <li><code>C:\Users\TU_USUARIO\AppData\Roaming\Composer\vendor\bin</code> (Directorio global de Composer)</li>
+                    </ul>
                 </li>
             </ol>
 
             <div class="note">
                 <div class="note-title">💡 Acotación didáctica</div>
-                Configurar correctamente las extensiones desde el primer día evita errores tipográficos comunes en las
-                vistas de Blade y acelera la importación automática de espacios de nombres (<em>namespaces</em>).
+                Reinicia cualquier terminal o consola abierta (CMD, PowerShell o VS Code) después de modificar el PATH para que los comandos <code>php</code> y <code>composer</code> se reconozcan correctamente de inmediato.
             </div>
         </div>
 
-        <!-- SECCIÓN 2: INSTALACIÓN -->
-        <div class="section-card" id="instalacion">
-            <span class="part-badge badge-general">Inicio del Proyecto</span>
+        <!-- SECCIÓN 2: VS CODE AVANZADO Y EXTENSIONES -->
+        <div class="section-card" id="vscode-avanzado">
+            <span class="part-badge badge-general">Fase 2: Preparación Avanzada</span>
             <div class="section-header">
-                <h2>2. Instalación y Estructura del Proyecto</h2>
+                <h2>2. VS Code y Extensiones Recomendadas</h2>
             </div>
-            <p>Procederemos a crear una nueva aplicación mediante Composer en la terminal integrada de VS Code
-                (<code>Ctrl + `</code>).</p>
+            <p>Un entorno de desarrollo profesional requiere herramientas de apoyo cognitivo y autocompletado avanzado para evitar errores de sintaxis.</p>
 
-            <pre><code><span class="c-comment"># Crear proyecto Laravel 13</span>
-composer create-project laravel/laravel mi-proyecto-laravel
+            <h3>Extensiones Esenciales para el Stack Laravel</h3>
+            <ol>
+                <li><strong>PHP Intelephense (bmewburn):</strong> Ofrece autocompletado rápido, análisis estático y navegación de clases.</li>
+                <li><strong>Laravel Extra Intellisense (Amir Vahedi):</strong> Autocompleta nombres de rutas, vistas Blade, migraciones y traducciones.</li>
+                <li><strong>Laravel Blade Snippets (Mahmoud Ali):</strong> Sintaxis y atajos rápidos para directivas Blade (<code>@if</code>, <code>@foreach</code>, etc.).</li>
+                <li><strong>DotENV (Microsof / Chuckali):</strong> Colores y resaltado de sintaxis para archivos de configuración <code>.env</code>.</li>
+                <li><strong>Prettier - Code formatter:</strong> Mantiene la limpieza y el formateo estándar del código HTML y JavaScript.</li>
+            </ol>
 
-<span class="c-comment"># Acceder al directorio</span>
-cd mi-proyecto-laravel
+            <div class="warn">
+                <div class="warn-title">⚠️ Nota técnica sobre VS Code</div>
+                Desactiva temporalmente el formateador nativo de PHP de VS Code si usas <em>Intelephense</em> para evitar conflictos de indentación en clases y métodos extensos.
+            </div>
+        </div>
 
-<span class="c-comment"># Iniciar el servidor local de desarrollo</span>
+        <!-- SECCIÓN 3: INSTALACIÓN Y ARRANQUE DEL PROYECTO -->
+        <div class="section-card" id="instalacion-proyecto">
+            <span class="part-badge badge-general">Fase 3: Creación del Proyecto</span>
+            <div class="section-header">
+                <h2>3. Instalación de Laravel 13 paso a paso</h2>
+            </div>
+            <p>Abrimos la terminal integrada de Visual Studio Code (<code>Ctrl + `</code>) y procedemos a descargar el núcleo de Laravel mediante Composer.</p>
+
+            <pre><code><span class="c-comment"># Crear un nuevo proyecto Laravel 13 en el directorio actual</span>
+composer create-project laravel/laravel proyecto-laravel-master
+
+<span class="c-comment"># Entrar a la carpeta del proyecto</span>
+cd proyecto-laravel-master
+
+<span class="c-comment"># Levantar el servidor de desarrollo integrado</span>
 php artisan serve</code></div>
 
             <div class="note">
-                <div class="note-title">📌 Nota sobre Laravel 13</div>
-                En las versiones modernas de Laravel, la estructura de archivos es sumamente limpia. Las rutas principales residen en <code>routes/web.php</code> y las configuraciones de servicios se estructuran mediante <code>bootstrap/app.php</code> en lugar del antiguo kernel tradicional.
+                <div class="note-title">📌 Nota sobre el servidor local</div>
+                El comando <code>php artisan serve</code> iniciará un servidor local en <code>http://127.0.0.1:8000</code>. Mantén esta terminal abierta mientras desarrollas.
             </div>
         </div>
 
-        <!-- PARTE 1: MYSQL -->
+        <!-- PARTE 1: MYSQL (XAMPP) -->
         <div class="section-card" id="parte-mysql">
-            <span class="part-badge badge-mysql">Parte 1: Integración MySQL</span>
+            <span class="part-badge badge-mysql">Parte 1: Integración Avanzada con MySQL</span>
             <div class="section-header">
-                <h2>3. Desarrollo Avanzado orientando a MySQL</h2>
+                <h2>4. Gestión de Base de Datos relacional en MySQL (XAMPP)</h2>
             </div>
-            <p>En esta sección configuraremos Laravel 13 para conectarse a un servidor MySQL/MariaDB y construiremos una estructura de datos transaccional.</p>
+            <p>Con el módulo MySQL activo desde el panel de control de XAMPP, conectaremos nuestra aplicación Laravel y desarrollaremos un esquema transaccional.</p>
 
-            <h3>3.1. Configuración del Archivo .env</h3>
-            <p>Edita las variables de entorno en la raíz de tu proyecto para establecer el driver de MySQL:</p>
+            <h3>4.1. Configuración del archivo .env</h3>
+            <p>Abre el archivo <code>.env</code> en la raíz del proyecto y ajusta las credenciales por defecto de XAMPP (usuario <code>root</code> sin contraseña):</p>
             <pre><code>DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=sistema_gestion_db
+DB_DATABASE=sistema_xampp_db
 DB_USERNAME=root
-DB_PASSWORD=secret</code></div>
+DB_PASSWORD=</code></div>
 
-            <h3>3.2. Creación de Migración y Modelo</h3>
-            <p>Crearemos una tabla de <code>Productos</code> con campos estructurados para MySQL:</p>
-            <pre><code>php artisan make:model Producto -m</code></div>
+            <h3>4.2. Creación de Migraciones y Modelos Avanzados</h3>
+            <p>Generaremos el modelo y su respectivo archivo de migración para una tabla de transacciones de inventario:</p>
+            <pre><code>php artisan make:model TransaccionInventario -m</code></div>
 
-            <p>Modifica el archivo de migración generado en <code>database/migrations/xxxx_create_productos_table.php</code>:</p>
+            <p>Define la estructura detallada en el archivo de migración generado dentro de <code>database/migrations/</code>:</p>
             <pre><code><span class="c-keyword">public function</span> <span class="c-var">up</span>(): <span class="c-keyword">void</span>
 {
-    Schema::create(<span class="c-string">'productos'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
+    Schema::create(<span class="c-string">'transacciones_inventario'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
         <span class="c-var">$table</span>->id();
-        <span class="c-var">$table</span>->string(<span class="c-string">'codigo'</span>, 50)->unique();
-        <span class="c-var">$table</span>->string(<span class="c-string">'nombre'</span>);
-        <span class="c-var">$table</span>->decimal(<span class="c-string">'precio'</span>, 10, 2);
-        <span class="c-var">$table</span>->integer(<span class="c-string">'stock'</span>)->default(0);
+        <span class="c-var">$table</span>->string(<span class="c-string">'referencia'</span>, 30)->unique();
+        <span class="c-var">$table</span>->enum(<span class="c-string">'tipo'</span>, [<span class="c-string">'entrada'</span>, <span class="c-string">'salida'</span>]);
+        <span class="c-var">$table</span>->decimal(<span class="c-string">'monto_total'</span>, 12, 2);
+        <span class="c-var">$table</span>->unsignedBigInteger(<span class="c-string">'usuario_id'</span>);
         <span class="c-var">$table</span>->timestamps();
     });
 }</code></div>
 
-            <h3>3.3. Ejecución de Migraciones y Controlador</h3>
-            <pre><code>php artisan migrate</code></div>
+            <h3>4.3. Ejecución y Controlador con Eloquent</h3>
+            <pre><code><span class="c-comment"># Ejecutar migraciones pendientes</span>
+php artisan migrate
 
-            <p>Creamos el controlador para administrar los productos mediante Eloquent ORM:</p>
-            <pre><code>php artisan make:controller ProductoController --resource</code></div>
+<span class="c-comment"># Crear el controlador controlador de recursos</span>
+php artisan make:controller TransaccionController --resource</code></div>
 
             <div class="note">
                 <div class="note-title">💡 Acotación MySQL</div>
-                MySQL maneja de manera óptima el tipo <code>decimal(10,2)</code> para valores monetarios. Evita utilizar <code>float</code> o <code>double</code> al almacenar precios para prevenir imprecisiones de redondeo en cálculos financieros.
+                Utilizar tipos <code>decimal(12,2)</code> en MySQL previene desbordamientos de punto flotante en cálculos contables complejos dentro de entornos empresariales locales.
             </div>
         </div>
 
         <!-- PARTE 2: POSTGRESQL -->
         <div class="section-card" id="parte-postgres">
-            <span class="part-badge badge-postgres">Parte 2: Integración PostgreSQL</span>
+            <span class="part-badge badge-postgres">Parte 2: Integración Avanzada con PostgreSQL</span>
             <div class="section-header">
-                <h2>4. Desarrollo Avanzado orientando a PostgreSQL</h2>
+                <h2>5. Arquitectura de Alta Complejidad con PostgreSQL</h2>
             </div>
-            <p>PostgreSQL destaca por sus capacidades avanzadas con datos no estructurados (JSONB) y búsquedas complejas. En esta segunda parte, migraremos el contexto hacia un motor PostgreSQL.</p>
+            <p>En esta segunda parte, migramos el contexto técnico hacia PostgreSQL para explotar tipos de datos avanzados y consultas optimizadas sobre estructuras NoSQL integradas (<code>jsonb</code>).</p>
 
-            <h3>4.1. Configuración de la Conexión PostgreSQL</h3>
-            <p>Modifica la configuración en el archivo <code>.env</code>:</p>
+            <h3>5.1. Conexión y Configuración de PostgreSQL</h3>
+            <p>Modifica el archivo <code>.env</code> para apuntar al servidor de PostgreSQL:</p>
             <pre><code>DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=sistema_avanzado_db
+DB_DATABASE=sistema_postgres_db
 DB_USERNAME=postgres
-DB_PASSWORD=postgres</code></div>
+DB_PASSWORD=clave_segura</code></div>
 
             <div class="warn">
-                <div class="warn-title">⚠️ Nota de Extensión PHP</div>
-                Asegúrate de tener activa la extensión <code>extension=pdo_pgsql</code> en tu archivo <code>php.ini</code> para evitar errores de conexión con PostgreSQL.
+                <div class="warn-title">⚠️ Nota sobre extensiones PHP / XAMPP</div>
+                Verifica que la línea <code>extension=pdo_pgsql</code> esté activa en tu archivo <code>php.ini</code> y reinicia Apache o tu servidor para permitir la comunicación con el motor PostgreSQL.
             </div>
 
-            <h3>4.2. Uso de Campos Nativos JSONB en Migraciones</h3>
-            <p>Aprovecharemos las características nativas de PostgreSQL creando un modelo de <code>Bitacora</code> o historial técnico:</p>
-            <pre><code>php artisan make:model EventoAuditoria -m</code></div>
+            <h3>5.2. Migración con Campos JSONB Nativos</h3>
+            <p>Creamos una entidad de logs analíticos con soporte nativo para metadatos estructurados en formato JSON:</p>
+            <pre><code>php artisan make:model LogAnalitico -m</code></div>
 
-            <p>En la migración correspondiente:</p>
+            <p>Estructura de la migración para PostgreSQL:</p>
             <pre><code><span class="c-keyword">public function</span> <span class="c-var">up</span>(): <span class="c-keyword">void</span>
 {
-    Schema::create(<span class="c-string">'eventos_auditoria'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
-        <span class="c-var">$table</span>->uuid(<span class="c-string">'id'</span>)->primary();
-        <span class="c-var">$table</span>->string(<span class="c-string">'accion'</span>);
-        <span class="c-var">$table</span>->jsonb(<span class="c-string">'metadatos'</span>); <span class="c-comment">// Columna JSONB nativa de PG</span>
+    Schema::create(<span class="c-string">'logs_analiticos'</span>, <span class="c-keyword">function</span> (Blueprint <span class="c-var">$table</span>) {
+        <span class="c-var">$table</span>->id();
+        <span class="c-var">$table</span>->string(<span class="c-string">'evento'</span>);
+        <span class="c-var">$table</span>->jsonb(<span class="c-string">'payload_datos'</span>); <span class="c-comment">// Campo nativo de alta velocidad en Postgres</span>
         <span class="c-var">$table</span>->timestamps();
     });
 }</code></div>
 
-            <h3>4.3. Consulta ORM Avanzada sobre Datos JSONB</h3>
-            <p>En Laravel 13 puedes realizar consultas directas sobre propiedades dentro del objeto JSON de Postgres de forma transparente:</p>
-            <pre><code><span class="c-keyword">use</span> App\Models\EventoAuditoria;
+            <h3>5.3. Consulta Avanzada de Eloquent sobre JSONB</h3>
+            <p>Ejemplo de consulta transaccional avanzada filtrando propiedades internas del documento JSON en PostgreSQL:</p>
+            <pre><code><span class="c-keyword">use</span> App\Models\LogAnalitico;
 
-<span class="c-comment">// Buscar eventos donde el rol dentro del metadato sea 'Administrador'</span>
-<span class="c-var">$eventos</span> = EventoAuditoria::where(<span class="c-string">'metadatos->usuario->rol'</span>, <span class="c-string">'Administrador'</span>)
+<span class="c-comment">// Filtrar registros donde el nivel dentro del payload sea 'critical'</span>
+<span class="c-var">$logsCriticos</span> = LogAnalitico::where(<span class="c-string">'payload_datos->nivel'</span>, <span class="c-string">'critical'</span>)
     ->orderBy(<span class="c-string">'created_at'</span>, <span class="c-string">'desc'</span>)
     ->get();</code></div>
 
             <div class="note">
-                <div class="note-title">💡 Acotación PostgreSQL</div>
-                A diferencia de MySQL tradicional, el uso de <code>jsonb</code> en PostgreSQL permite indexar directamente atributos dentro del documento JSON, optimizando exponencialmente la velocidad de búsqueda en grandes volúmenes de registros auditables.
+                <div class="note-title">💡 Acotación didáctica final</div>
+                Dominar tanto MySQL (ideal para esquemas relacionales directos con XAMPP) como PostgreSQL (potente para analítica y estructuras semi-estructuradas) proporciona al desarrollador una versatilidad profesional sobresaliente en Laravel 13.
             </div>
         </div>
 
     </div>
 
-    <!-- JAVASCRIPT NATIVO SIN DEPENDENCIAS -->
+    <!-- JAVASCRIPT NATIVO SIN DEPENDENCIAS PARA EL MENÚ HAMBURGUESA -->
     <script>
         function toggleMenu() {
             const navMenu = document.getElementById('nav-menu');
