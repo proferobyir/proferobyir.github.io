@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de C# .NET: WPF Moderno con MySQL</title>
+    <style>
+        /* Variables de color y tipografía accesible */
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #090d16;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --accent: #38bdf8;
+            --accent-hover: #7dd3fc;
+            --border: #334155;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            /* Tipografía ampliada para facilitar la lectura */
+            font-size: 1.25rem; 
+            line-height: 1.7;
+            padding: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: var(--accent);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        p, li {
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Bloques de código legibles y responsivos */
+        .code-container {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .code-header {
+            background-color: #1e293b;
+            color: var(--accent);
+            font-family: monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        pre {
+            background-color: var(--bg-code);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 1.2rem;
+            overflow-x: auto;
+            /* Tamaño de fuente más grande para código */
+            font-size: 1.1rem; 
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 1.05rem;
+        }
+
+        .copy-btn {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .tip-box {
+            background-color: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Ajustes específicos para pantallas pequeñas */
+        @media (max-width: 600px) {
+            body {
+                font-size: 1.15rem;
+                padding: 0.8rem;
+            }
+            section {
+                padding: 1.2rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+            pre {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Desarrollo Desktop Moderno con C# .NET y MySQL</h1>
+        <p class="subtitle">Guía didáctica paso a paso: Estilos globales en WPF y consumo de MySQL con ADO.NET síncrono</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Modernizando el Aspecto Visual (App.xaml)</h2>
+            <p>
+                En WPF no necesitamos modificar cada ventana manualmente. Configurando los recursos globales en el archivo 
+                <code>App.xaml</code>, todos los controles de la aplicación cambian de apariencia automáticamente.
+            </p>
+            <p>
+                Este diseño aplica tipografía limpia (<strong>Segoe UI</strong>), bordes redondeados y una paleta de colores oscura y moderna.
+            </p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>App.xaml</span>
+                    <button class="copy-btn" onclick="copyCode('code-app-xaml')">Copiar</button>
+                </div>
+                <pre id="code-app-xaml"><code>&lt;Application x:Class="MiProyecto.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml"&gt;
+    
+    &lt;Application.Resources&gt;
+        
+        &lt;!-- Estilo General de la Ventana --&gt;
+        &lt;Style TargetType="Window"&gt;
+            &lt;Setter Property="FontFamily" Value="Segoe UI"/&gt;
+            &lt;Setter Property="Background" Value="#0F172A"/&gt;
+            &lt;Setter Property="Foreground" Value="#F8FAFC"/&gt;
+        &lt;/Style&gt;
+
+        &lt;!-- Estilo Moderno para Botones --&gt;
+        &lt;Style TargetType="Button"&gt;
+            &lt;Setter Property="Background" Value="#0284C7"/&gt;
+            &lt;Setter Property="Foreground" Value="White"/&gt;
+            &lt;Setter Property="FontSize" Value="16"/&gt;
+            &lt;Setter Property="FontWeight" Value="Bold"/&gt;
+            &lt;Setter Property="Padding" Value="14,8"/&gt;
+            &lt;Setter Property="Margin" Value="4"/&gt;
+            &lt;Setter Property="Cursor" Value="Hand"/&gt;
+            &lt;Setter Property="Template"&gt;
+                &lt;Setter.Value&gt;
+                    &lt;ControlTemplate TargetType="Button"&gt;
+                        &lt;Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6" 
+                                Padding="{TemplateBinding Padding}"&gt;
+                            &lt;ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/&gt;
+                        &lt;/Border&gt;
+                    &lt;/ControlTemplate&gt;
+                &lt;/Setter.Value&gt;
+            &lt;/Setter&gt;
+        &lt;/Style&gt;
+
+        &lt;!-- Estilo para DataGrid (Tabla de Datos) --&gt;
+        &lt;Style TargetType="DataGrid"&gt;
+            &lt;Setter Property="Background" Value="#1E293B"/&gt;
+            &lt;Setter Property="RowBackground" Value="#1E293B"/&gt;
+            &lt;Setter Property="AlternatingRowBackground" Value="#0F172A"/&gt;
+            &lt;Setter Property="Foreground" Value="#F8FAFC"/&gt;
+            &lt;Setter Property="BorderBrush" Value="#334155"/&gt;
+            &lt;Setter Property="GridLinesVisibility" Value="Horizontal"/&gt;
+            &lt;Setter Property="HorizontalGridLinesBrush" Value="#334155"/&gt;
+            &lt;Setter Property="RowHeight" Value="35"/&gt;
+            &lt;Setter Property="FontSize" Value="15"/&gt;
+        &lt;/Style&gt;
+
+    &lt;/Application.Resources&gt;
+&lt;/Application&gt;</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Estructura de la Interfaz (MainWindow.xaml)</h2>
+            <p>
+                Diseñamos una vista sencilla con un encabezado, un botón para cargar los datos y un control <code>DataGrid</code> 
+                que presentará la información leída desde MySQL.
+            </p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>MainWindow.xaml</span>
+                    <button class="copy-btn" onclick="copyCode('code-main-xaml')">Copiar</button>
+                </div>
+                <pre id="code-main-xaml"><code>&lt;Window x:Class="MiProyecto.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gestión de Estudiantes - MySQL" Height="450" Width="700"&gt;
+
+    &lt;Grid Padding="20"&gt;
+        &lt;Grid.RowDefinitions&gt;
+            &lt;RowDefinition Height="Auto"/&gt;
+            &lt;RowDefinition Height="Auto"/&gt;
+            &lt;RowDefinition Height="*"/&gt;
+        &lt;/Grid.RowDefinitions&gt;
+
+        &lt;!-- Título de la interfaz --&gt;
+        &lt;TextBlock Grid.Row="0" Text="Lista de Estudiantes Registrados" 
+                   FontSize="22" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,15"/&gt;
+
+        &lt;!-- Botón de Carga --&gt;
+        &lt;Button Grid.Row="1" Content="Cargar Datos de MySQL" 
+                Click="BtnCargar_Click" HorizontalAlignment="Left" Width="220" Margin="0,0,0,15"/&gt;
+
+        &lt;!-- Tabla DataGrid --&gt;
+        &lt;DataGrid Grid.Row="2" x:Name="dgEstudiantes" AutoGenerateColumns="True" 
+                  IsReadOnly="True" CanUserAddRows="False"/&gt;
+    &lt;/Grid&gt;
+&lt;/Window&gt;</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>3. Definición del Modelo (Estudiante.cs)</h2>
+            <p>
+                Definimos una clase modelada según la tabla de la base de datos para almacenar temporalmente los datos en memoria mediante POO.
+            </p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Estudiante.cs</span>
+                    <button class="copy-btn" onclick="copyCode('code-model-cs')">Copiar</button>
+                </div>
+                <pre id="code-model-cs"><code>public class Estudiante
+{
+    public int Id { get; set; }
+    public string Nombre { get; set; }
+    public string Apellido { get; set; }
+    public string Correo { get; set; }
+}</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Conexión y Lectura con ADO.NET (MainWindow.xaml.cs)</h2>
+            <p>
+                Utilizamos los objetos tradicionales de MySQL (<code>MySqlConnection</code>, <code>MySqlCommand</code> y <code>MySqlDataReader</code>) 
+                de forma síncrona. La lectura llena una <code>List&lt;Estudiante&gt;</code> y se asigna a la propiedad <code>ItemsSource</code> del DataGrid.
+            </p>
+
+            <div class="tip-box">
+                <strong>Nota docente:</strong> Recuerda a tus alumnos agregar la referencia del paquete de MySQL (<code>MySql.Data.MySqlClient</code>) en el proyecto.
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span>MainWindow.xaml.cs</span>
+                    <button class="copy-btn" onclick="copyCode('code-codebehind-cs')">Copiar</button>
+                </div>
+                <pre id="code-codebehind-cs"><code>using System.Collections.Generic;
+using System.Windows;
+using MySql.Data.MySqlClient;
+
+namespace MiProyecto
+{
+    public partial class MainWindow : Window
+    {
+        // Cadena de conexión a MySQL local
+        private string cadenaConexion = "Server=localhost;Database=escuela;Uid=root;Pwd=1234;";
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void BtnCargar_Click(object sender, RoutedEventArgs e)
+        {
+            List&lt;Estudiante&gt; listaEstudiantes = new List&lt;Estudiante&gt;();
+
+            using (MySqlConnection conexion = new MySqlConnection(cadenaConexion))
+            {
+                try
+                {
+                    conexion.Open();
+                    string query = "SELECT id, nombre, apellido, correo FROM estudiantes";
+
+                    using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                    {
+                        using (MySqlDataReader lector = comando.ExecuteReader())
+                        {
+                            while (lector.Read())
+                            {
+                                Estudiante est = new Estudiante
+                                {
+                                    Id = lector.GetInt32("id"),
+                                    Nombre = lector.GetString("nombre"),
+                                    Apellido = lector.GetString("apellido"),
+                                    Correo = lector.GetString("correo")
+                                };
+
+                                listaEstudiantes.Add(est);
+                            }
+                        }
+                    }
+
+                    // Enlazamos la lista poblada al DataGrid en la interfaz
+                    dgEstudiantes.ItemsSource = listaEstudiantes;
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show("Error al conectar con MySQL: " + ex.Message);
+                }
+            }
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Material docente de apoyo — C# .NET & WPF</p>
+    </footer>
+
+    <script>
+        function copyCode(elementId) {
+            const codeText = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                alert('Código copiado al portapapeles');
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
