@@ -16,6 +16,10 @@
             --code-bg: #181818;
             --note-bg: #112a45;
             --note-border: #007acc;
+            --warn-bg: #3a2a10;
+            --warn-border: #d7ba7d;
+            --challenge-bg: #1e2d1e;
+            --challenge-border: #4ec9b0;
         }
 
         * {
@@ -50,6 +54,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .step {
@@ -148,6 +153,32 @@
             color: #569cd6;
         }
 
+        .warn {
+            background-color: var(--warn-bg);
+            border-left: 4px solid var(--warn-border);
+            padding: 12px 16px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+        }
+
+        .warn strong {
+            color: #d7ba7d;
+        }
+
+        .challenge {
+            background-color: var(--challenge-bg);
+            border-left: 4px solid var(--challenge-border);
+            padding: 12px 16px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+        }
+
+        .challenge strong {
+            color: #4ec9b0;
+        }
+
         ul.extensions-list {
             margin: 10px 0 0 20px;
             padding: 0;
@@ -155,6 +186,52 @@
 
         ul.extensions-list li {
             margin-bottom: 8px;
+        }
+
+        .intro-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid #4ec9b0;
+            border-radius: 6px;
+            padding: 18px 22px;
+            margin-bottom: 30px;
+        }
+
+        .intro-box h2 {
+            margin-top: 0;
+        }
+
+        details {
+            margin-top: 10px;
+        }
+
+        details summary {
+            cursor: pointer;
+            color: #569cd6;
+            font-weight: bold;
+            padding: 6px 0;
+        }
+
+        details summary:hover {
+            text-decoration: underline;
+        }
+
+        .check-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .check-list li {
+            padding: 6px 0 6px 30px;
+            position: relative;
+        }
+
+        .check-list li::before {
+            content: "✔";
+            position: absolute;
+            left: 0;
+            color: #4ec9b0;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -165,6 +242,25 @@
         <h1>Creación de un Snippet para Razor Pages (.cshtml) en VS Code</h1>
         <p>Guía paso a paso para configurar un fragmento de código personalizado que genera automáticamente la plantilla
             base para vistas Razor Pages.</p>
+
+        <!-- INTRODUCCIÓN: ¿Por qué usar snippets? -->
+        <div class="intro-box">
+            <h2>¿Por qué usar un snippet?</h2>
+            <p>Un <strong>snippet</strong> (fragmento de código) es una plantilla reutilizable que VS Code inserta al
+                escribir un prefijo corto. En lugar de teclear manualmente las directivas <code>@page</code>,
+                <code>@model</code>, <code>ViewData</code> y toda la estructura HTML cada vez que creas una vista, un
+                snippet te permite generar todo eso en segundos.
+            </p>
+            <p>¿Qué problema resuelve?</p>
+            <ul class="check-list">
+                <li><strong>Consistencia:</strong> todas tus vistas tendrán la misma estructura base.</li>
+                <li><strong>Velocidad:</strong> una plantilla de ~15 líneas en una sola pulsación de <kbd>Tab</kbd>.
+                </li>
+                <li><strong>Menos errores:</strong> evita olvidar directivas o escribir mal <code>@model</code>.</li>
+                <li><strong>Aprendizaje activo:</strong> configurar tu entorno es parte del oficio del desarrollador.
+                </li>
+            </ul>
+        </div>
 
         <!-- Requisito previo: Extensiones de C# -->
         <div class="step">
@@ -179,7 +275,12 @@
                     para la administración de soluciones, proyectos y archivos Razor.</li>
             </ul>
             <p>Puedes instalarlas rápidamente yendo a la pestaña de Extensiones en VS Code (<kbd>Ctrl</kbd> +
-                <kbd>Shift</kbd> + <kbd>X</kbd>) y buscando <strong>"C#"</strong>.</p>
+                <kbd>Shift</kbd> + <kbd>X</kbd>) y buscando <strong>"C#"</strong>.
+            </p>
+            <div class="note">
+                <strong>Nota para macOS:</strong> donde veas <kbd>Ctrl</kbd>, usa <kbd>⌘ Cmd</kbd>. Por ejemplo,
+                <kbd>⌘ Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> abre la paleta de comandos.
+            </div>
             <img src="./pictures/paso0.png" alt="Requisito: Extensiones de C# y C# Dev Kit en VS Code"
                 class="step-image">
         </div>
@@ -189,7 +290,8 @@
             <h2><span class="step-number">Paso 1</span> Abrir la Paleta de Comandos</h2>
             <p>En Visual Studio Code, presiona <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (o <kbd>F1</kbd>) para
                 desplegar la paleta de comandos. Escribe <code>Snippets: Configure Snippets</code> y presiona
-                <kbd>Enter</kbd>.</p>
+                <kbd>Enter</kbd>.
+            </p>
             <img src="./pictures/paso1.png" alt="Paso 1: Configurar Snippets en la Paleta de Comandos"
                 class="step-image">
         </div>
@@ -207,6 +309,18 @@
             <h2><span class="step-number">Paso 3</span> Abrir el Archivo de Configuración JSON</h2>
             <p>Se abrirá el archivo de configuración <code>aspnetcorerazor.json</code>. Ubica la sección interna entre
                 las llaves principales <code>{ ... }</code> donde se agregará la nueva estructura.</p>
+            <div class="warn">
+                <strong>¡Cuidado con el JSON!</strong> Si el archivo ya tiene otros snippets, cada snippet debe
+                separarse con una <strong>coma</strong> <code>,</code>. Un JSON mal formado es la causa más común de que
+                el snippet no aparezca. Ejemplo de dos snippets conviviendo:
+                <pre style="margin-top:10px; font-size:0.82rem;">{
+    "Snippet Existente": { ... },
+    "Plantilla Base CSHTML Razor": { ... }
+}</pre>
+                Nota que hay una <code>,</code> después de la llave de cierre del primer snippet, pero
+                <strong>no</strong>
+                después del último.
+            </div>
             <img src="./pictures/paso3.png" alt="Paso 3: Estructura vacía de aspnetcorerazor.json" class="step-image">
         </div>
 
@@ -240,6 +354,22 @@
     "description": "Genera la plantilla base para Razor Pages (.cshtml)"
 }</code></pre>
             </div>
+
+            <details>
+                <summary>¿Qué hace cada directiva que genera el snippet? (clic para expandir)</summary>
+                <ul>
+                    <li><code>@page</code>: convierte el archivo <code>.cshtml</code> en una <strong>Razor Page</strong>
+                        navegable por URL.</li>
+                    <li><code>@model</code>: declara el tipo de modelo que la vista recibirá desde el
+                        <em>PageModel</em>.
+                    </li>
+                    <li><code>ViewData["Title"]</code>: título dinámico que se usa en <code>&lt;title&gt;</code> y que
+                        el
+                        layout puede leer.</li>
+                    <li><code>$0</code>: posición final del cursor, dentro del <code>&lt;body&gt;</code>.</li>
+                </ul>
+            </details>
+
             <img src="./pictures/paso4.png" alt="Paso 4: Código fuente del snippet" class="step-image">
         </div>
 
@@ -247,7 +377,8 @@
         <div class="step">
             <h2><span class="step-number">Paso 5</span> Pegar y Guardar en aspnetcorerazor.json</h2>
             <p>Pega el código anterior dentro de <code>aspnetcorerazor.json</code> y guarda el archivo presionando
-                <kbd>Ctrl</kbd> + <kbd>S</kbd>.</p>
+                <kbd>Ctrl</kbd> + <kbd>S</kbd>.
+            </p>
             <img src="./pictures/paso5.png" alt="Paso 5: Snippet pegado dentro de aspnetcorerazor.json"
                 class="step-image">
         </div>
@@ -266,6 +397,62 @@
                 ubica en la clase del modelo, la segunda (<code>$2</code>) en el título del <code>ViewData</code>, y la
                 tercera (<code>$0</code>) directamente dentro de las etiquetas <code>&lt;body&gt;</code>.
             </div>
+
+            <div class="note">
+                <strong>¿Cómo saber que funcionó?</strong> Si todo está correcto, al escribir <code>html:razor</code>
+                deberías ver una sugerencia con la descripción <em>"Genera la plantilla base para Razor Pages
+                    (.cshtml)"</em>. Al aceptarla, el archivo debe contener las directivas <code>@page</code>,
+                <code>@model</code> y el bloque HTML completo con el cursor dentro del <code>&lt;body&gt;</code>.
+            </div>
+        </div>
+
+        <!-- Solución de problemas -->
+        <div class="step">
+            <h2><span class="step-number" style="background-color: #d7ba7d;">?</span> Solución de problemas</h2>
+            <p>Si el snippet no aparece o no se expande, revisa en este orden:</p>
+            <ul>
+                <li><strong>El JSON está mal formado:</strong> abre la paleta
+                    (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>)
+                    y ejecuta <code>Problems: Focus on Problems View</code>; los errores de sintaxis JSON aparecerán
+                    subrayados en rojo en el archivo.</li>
+                <li><strong>Falta la coma entre snippets:</strong> revisa el ejemplo del Paso 3.</li>
+                <li><strong>Editaste el archivo equivocado:</strong> debe ser <code>aspnetcorerazor.json</code>, no
+                    <code>html.json</code> ni <code>csharp.json</code>.
+                </li>
+                <li><strong>El archivo no es <code>.cshtml</code>:</strong> el snippet solo se activa en archivos con
+                    esa
+                    extensión y con el modo de lenguaje "ASP.NET Razor".</li>
+                <li><strong>La extensión C# no está activa:</strong> verifica en la pestaña de Extensiones que
+                    <code>ms-dotnettools.csdevkit</code> esté habilitada.
+                </li>
+                <li><strong>No guardaste:</strong> <kbd>Ctrl</kbd> + <kbd>S</kbd> es obligatorio; el snippet se recarga
+                    al guardar.</li>
+            </ul>
+        </div>
+
+        <!-- Reto evaluativo -->
+        <div class="step">
+            <h2><span class="step-number" style="background-color: #4ec9b0;">Reto</span> Actividad de refuerzo</h2>
+            <p>Crea un <strong>segundo snippet</strong> en el mismo archivo <code>aspnetcorerazor.json</code> que genere
+                una tabla HTML de 3 columnas con clases de Bootstrap, y verifica que <strong>ambos snippets
+                    convivan</strong>
+                sin romper el JSON.</p>
+            <div class="challenge">
+                <strong>Especificaciones del reto:</strong>
+                <ul style="margin: 8px 0 0 0;">
+                    <li>Prefijo sugerido: <code>html:tabla</code>.</li>
+                    <li>El cuerpo debe incluir <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code> con tres
+                        <code>&lt;th&gt;</code> y un <code>&lt;tbody&gt;</code> con una fila de ejemplo.
+                    </li>
+                    <li>Usa puntos de tabulación (<code>$1</code>, <code>$2</code>, <code>$3</code>) para los
+                        encabezados.</li>
+                    <li>Al terminar, escribe <code>html:razor</code> y luego <code>html:tabla</code> en un mismo archivo
+                        <code>.cshtml</code> para comprobar que ambos se despliegan.
+                    </li>
+                </ul>
+            </div>
+            <p style="margin-top:15px;"><strong>Criterios de evaluación:</strong> JSON válido (sin errores en Problems),
+                ambos snippets visibles en el autocompletado, y la tabla se inserta con la estructura correcta.</p>
         </div>
     </div>
 
