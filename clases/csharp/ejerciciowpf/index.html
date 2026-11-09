@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio: ADO.NET, Modelos POCO y ComboBox en C# / MySQL</title>
+<style>
+:root {
+--bg-color: #1e1e1e;
+--card-bg: #252526;
+--text-color: #d4d4d4;
+--accent-color: #007acc;
+--code-bg: #111111;
+--border-color: #333333;
+--highlight-color: #4ec9b0;
+}
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-color: var(--bg-color);
+color: var(--text-color);
+margin: 0;
+padding: 20px;
+line-height: 1.6;
+}
+.container {
+max-width: 950px;
+margin: 0 auto;
+background-color: var(--card-bg);
+padding: 40px;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+h1, h2, h3 {
+color: var(--highlight-color);
+}
+h1 {
+border-bottom: 2px solid var(--border-color);
+padding-bottom: 15px;
+margin-top: 0;
+}
+.step {
+background-color: rgba(255,255,255, 0.02);
+border-left: 4px solid var(--accent-color);
+padding: 20px;
+margin-bottom: 25px;
+border-radius: 0 6px 6px 0;
+}
+pre {
+background-color: var(--code-bg);
+color: #dcdcaa;
+padding: 15px;
+border-radius: 6px;
+overflow-x: auto;
+border: 1px solid var(--border-color);
+font-family: Consolas, Monaco, monospace;
+font-size: 14px;
+}
+.keyword { color: #569cd6; }
+.type { color: #4ec9b0; }
+.string { color: #ce9178; }
+.comment { color: #6a9955; }
+.exercise-box {
+background-color: #2d2d30;
+border: 1px solid #3e3e42;
+padding: 20px;
+border-radius: 6px;
+margin-top: 20px;
+}
+ul, ol {
+padding-left: 20px;
+}
+li {
+margin-bottom: 8px;
+}
+</style>
+</head>
+<body>
+​<div class="container">
+<h1>Guía de Laboratorio: ADO.NET, Modelos POCO y Enlace de Datos</h1>
+<p><strong>Entorno:</strong> C# 5 (.NET Framework 4.5) | Visual Studio 2012 | MySQL Connector/NET</p>
+<p><strong>Objetivo:</strong> Comprender la separación de responsabilidades en ADO.NET (Conexión, Comando y Lectura), mapear registros SQL a objetosfuertemente tipados (POCOs) y poblar controles visuales (ComboBox).</p>
+​<!-- PASO 1 -->
+<div class="step">
+<h2>Paso 1: Definición de las Clases de Modelo (POCOs)</h2>
+<p>Crea las clases que representan la estructura de las entidades <code>Departamento</code> y <code>Usuario</code>:</p>
+<pre><code><span class="keyword">public class</span> <span class="type">Departamento</span>
+{
+<span class="keyword">public int</span> Id { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+<span class="keyword">public string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}
+​<span class="keyword">public class</span> <span class="type">Usuario</span>
+{
+<span class="keyword">public int</span> Id { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+<span class="keyword">public string</span> Nickname { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+<span class="keyword">public string</span> PasswordHash { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+<span class="keyword">public string</span> Correo { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+<span class="keyword">public int</span> IdDepartamento { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}</code></pre>
+</div>
+​<!-- PASO 2 -->
+<div class="step">
+<h2>Paso 2: Extracción, Mapeo a Lista y Carga del ComboBox</h2>
+<p>Implementa la conexión usando <code>MySqlConnection</code>, ejecuta la consulta con <code>MySqlCommand</code>, lee fila por fila mediante <code>MySqlDataReader</code> e integra la opción por defecto ("-- Seleccione --"):</p>
+<pre><code><span class="keyword">using</span> System;
+<span class="keyword">using</span> System.Collections.Generic;
+<span class="keyword">using</span> System.Windows.Forms;
+<span class="keyword">using</span> MySql.Data.MySqlClient;
+​<span class="keyword">private void</span> CargarDepartamentosEnComboBox()
+{
+<span class="keyword">string</span> connectionString = <span class="string">"Server=localhost;Database=tu_bd;Uid=root;Pwd=tu_pass;SslMode=none;"</span>;
+<span class="type">List<Departamento></span> listaDepartamentos = <span class="keyword">new</span> <span class="type">List<Departamento></span>();
+<span class="keyword">string</span> query = <span class="string">"SELECT id, nombre FROM departamentos ORDER BY nombre ASC;"</span>;
+​<span class="comment">// 1. OBJETO QUE SE CONECTA</span>
+<span class="keyword">using</span> (<span class="type">MySqlConnection</span> conexion = <span class="keyword">new</span> <span class="type">MySqlConnection</span>(connectionString))
+{
+<span class="comment">// 2. OBJETO QUE EJECUTA LA CONSULTA</span>
+<span class="keyword">using</span> (<span class="type">MySqlCommand</span> comando = <span class="keyword">new</span> <span class="type">MySqlCommand</span>(query, conexion))
+{
+<span class="keyword">try</span>
+{
+conexion.Open();
+​<span class="comment">// 3. OBJETO QUE LEE LA DATA</span>
+<span class="keyword">using</span> (<span class="type">MySqlDataReader</span> lector = comando.ExecuteReader())
+{
+<span class="keyword">while</span> (lector.Read())
+{
+<span class="comment">// Mapeo directo a objeto</span>
+<span class="type">Departamento</span> depto = <span class="keyword">new</span> <span class="type">Departamento</span>
+{
+Id = lector.GetInt32(<span class="string">"id"</span>),
+Nombre = lector.GetString(<span class="string">"nombre"</span>)
+};
+listaDepartamentos.Add(depto);
+}
+}
+}
+<span class="keyword">catch</span> (<span class="type">MySqlException</span> ex)
+{
+MessageBox.Show(<span class="string">"Error de MySQL: "</span> + ex.Message, <span class="string">"Error"</span>, MessageBoxButtons.OK, MessageBoxIcon.Error);
+<span class="keyword">return</span>;
+}
+}
+}
+​<span class="comment">// Insertar opción por defecto</span>
+listaDepartamentos.Insert(<span class="string">0</span>, <span class="keyword">new</span> <span class="type">Departamento</span> { Id = <span class="string">0</span>, Nombre = <span class="string">"-- Seleccione un Departamento --"</span> });
+​<span class="comment">// Enlace de datos con el control ComboBox</span>
+comboBoxDepartamentos.DataSource = listaDepartamentos;
+comboBoxDepartamentos.DisplayMember = <span class="string">"Nombre"</span>;
+comboBoxDepartamentos.ValueMember = <span class="string">"Id"</span>;
+}</code></pre>
+</div>
+​<!-- PASO 3 -->
+<div class="step">
+<h2>Paso 3: Inserción Segura de Datos utilizando Parámetros</h2>
+<p>Utiliza parámetros nombrados en <code>MySqlCommand</code> para insertar un nuevo objeto <code>Usuario</code> de forma segura (previniendo SQL Injection):</p>
+<pre><code><span class="keyword">public bool</span> GuardarUsuario(<span class="type">Usuario</span> nuevoUsuario)
+{
+<span class="keyword">string</span> connectionString = <span class="string">"Server=localhost;Database=tu_bd;Uid=root;Pwd=tu_pass;SslMode=none;"</span>;
+<span class="keyword">string</span> query = <span class="string">"INSERT INTO usuarios (nickname, password_hash, correo, id_departamento) "</span> +
+<span class="string">"VALUES (@nickname, @password, @correo, @idDepto);"</span>;
+​<span class="keyword">using</span> (<span class="type">MySqlConnection</span> conexion = <span class="keyword">new</span> <span class="type">MySqlConnection</span>(connectionString))
+{
+<span class="keyword">using</span> (<span class="type">MySqlCommand</span> comando = <span class="keyword">new</span> <span class="type">MySqlCommand</span>(query, conexion))
+{
+<span class="comment">// Parametrización segura de variables</span>
+comando.Parameters.AddWithValue(<span class="string">"@nickname"</span>, nuevoUsuario.Nickname);
+comando.Parameters.AddWithValue(<span class="string">"@password"</span>, nuevoUsuario.PasswordHash);
+comando.Parameters.AddWithValue(<span class="string">"@correo"</span>, nuevoUsuario.Correo);
+comando.Parameters.AddWithValue(<span class="string">"@idDepto"</span>, nuevoUsuario.IdDepartamento);
+​<span class="keyword">try</span>
+{
+conexion.Open();
+<span class="keyword">int</span> filasAfectadas = comando.ExecuteNonQuery();
+<span class="keyword">return</span> filasAfectadas > <span class="string">0</span>;
+}
+<span class="keyword">catch</span> (<span class="type">MySqlException</span> ex)
+{
+MessageBox.Show(<span class="string">"Error al guardar: "</span> + ex.Message);
+<span class="keyword">return false</span>;
+}
+}
+}
+}</code></pre>
+</div>
+​<!-- EJERCICIOS Y EVALUACIÓN -->
+<h2>🏋️ Ejercicios Prácticos y Evaluación de Laboratorio</h2>
+​<div class="exercise-box">
+<h3>Ejercicio Práctico 1: Filtro en Tiempo Real</h3>
+<p><strong>Requerimiento:</strong> Modifica el evento <code>SelectedIndexChanged</code> del <code>ComboBox</code> para que, al cambiar de departamento, se valide que no sea la opción comodín (ID > 0) y se muestren las propiedades del objeto seleccionado en un control <code>Label</code>.</p>
+<pre><code><span class="keyword">private void</span> comboBoxDepartamentos_SelectedIndexChanged(<span class="keyword">object</span> sender, <span class="type">EventArgs</span> e)
+{
+<span class="type">Departamento</span> seleccionado = comboBoxDepartamentos.SelectedItem <span class="keyword">as</span> <span class="type">Departamento</span>;
+​<span class="keyword">if</span> (seleccionado != <span class="keyword">null</span> && seleccionado.Id > <span class="string">0</span>)
+{
+lblEstado.Text = <span class="string">"Selección actual: "</span> + seleccionado.Nombre + <span class="string">" (ID: "</span> + seleccionado.Id + <span class="string">")"</span>;
+}
+<span class="keyword">else</span>
+{
+lblEstado.Text = <span class="string">"Por favor, seleccione un departamento válido."</span>;
+}
+}</code></pre>
+</div>
+​<div class="exercise-box">
+<h3>Preguntas de Comprobación Técnica</h3>
+<ol>
+<li><strong>¿Qué rol cumple el <code>MySqlDataReader</code> y por qué cerramos la conexión inmediatamente después de mapear la lista?</strong></li>
+<li><strong>¿Cuál es la diferencia entre <code>DisplayMember</code> y <code>ValueMember</code> al hacer Binding en un ComboBox?</strong></li>
+<li><strong>¿Por qué el uso de <code>Parameters.AddWithValue</code> evita ataques de SQL Injection?</strong></li>
+</ol>
+</div>
+​</div>
+​</body>
+</html>
