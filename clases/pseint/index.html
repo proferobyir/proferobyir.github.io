@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial Interactivo de PSeInt - Condicionales y Bucles</title>
+    <title>Tutorial Interactivo de PSeInt - Condicionales, Operadores y Bucles</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -20,6 +21,13 @@
             --text-main: #d4d4d4;
             --text-muted: #9cdcfe;
             --code-bg: #1e1e1e;
+
+            /* Colores para las Tablas de Verdad */
+            --matrix-border: #000000;
+            --matrix-header-bg: #111827;
+            --matrix-row-bg: #1f2937;
+            --val-true: #4ec9b0;
+            --val-false: #f14c4c;
         }
 
         * {
@@ -72,12 +80,14 @@
             font-size: 1.2rem;
             color: var(--accent-yellow);
             margin-bottom: 1rem;
+            border-bottom: none;
+            padding-bottom: 0;
         }
 
         nav.toc ul {
             list-style: none;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 0.75rem;
         }
 
@@ -119,7 +129,8 @@
             margin-bottom: 1rem;
         }
 
-        ul, ol {
+        ul,
+        ol {
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
@@ -151,12 +162,32 @@
             color: #d4d4d4;
         }
 
-        .kw { color: var(--primary-accent); font-weight: bold; }
-        .op { color: var(--accent-purple); }
-        .str { color: var(--accent-orange); }
-        .num { color: #b5cea8; }
-        .cm { color: #6a9955; font-style: italic; }
-        .var { color: var(--text-muted); }
+        .kw {
+            color: var(--primary-accent);
+            font-weight: bold;
+        }
+
+        .op {
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        .str {
+            color: var(--accent-orange);
+        }
+
+        .num {
+            color: #b5cea8;
+        }
+
+        .cm {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .var {
+            color: var(--text-muted);
+        }
 
         .callout {
             background-color: #1a2733;
@@ -172,6 +203,63 @@
             margin-bottom: 0.3rem;
         }
 
+        /* Estilos para Tablas de Verdad / Matriz */
+        .matrix-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .matrix-card {
+            flex: 1;
+            min-width: 280px;
+            background-color: var(--card-bg);
+            border: 2px solid var(--matrix-border);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .matrix-card h4 {
+            color: var(--accent-green);
+            text-align: center;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .truth-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-family: 'Consolas', monospace;
+            border: 2px solid var(--matrix-border);
+        }
+
+        .truth-table th,
+        .truth-table td {
+            border: 2px solid var(--matrix-border);
+            padding: 0.6rem;
+        }
+
+        .truth-table th {
+            background-color: var(--matrix-header-bg);
+            color: var(--accent-yellow);
+        }
+
+        .truth-table td {
+            background-color: var(--matrix-row-bg);
+        }
+
+        .val-v {
+            color: var(--val-true);
+            font-weight: bold;
+        }
+
+        .val-f {
+            color: var(--val-false);
+            font-weight: bold;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -181,17 +269,31 @@
         }
 
         @media (max-width: 600px) {
-            header h1 { font-size: 1.5rem; }
-            section { padding: 1.25rem; }
-            pre { padding: 0.85rem; font-size: 0.85rem; }
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            pre {
+                padding: 0.85rem;
+                font-size: 0.85rem;
+            }
+
+            .matrix-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <header>
         <h1>Guía de Aprendizaje: PSeInt</h1>
-        <p>Estructuras de Control Condicionales, Bucles y Resolución de Problemas Matemáticos</p>
+        <p>Estructuras Condicionales, Operadores Lógicos (Y / O), Bucles y Ejercicios Prácticos</p>
     </header>
 
     <div class="container">
@@ -201,18 +303,22 @@
             <ul>
                 <li><a href="#intro">1. Introducción a PSeInt</a></li>
                 <li><a href="#condicionales">2. Estructuras Condicionales</a></li>
-                <li><a href="#bucles">3. Estructuras Repetitivas (Bucles)</a></li>
-                <li><a href="#ejercicio-par">4. Ejercicio 1: Par o Impar</a></li>
-                <li><a href="#ejercicio-primo">5. Ejercicio 2: Número Primo</a></li>
-                <li><a href="#ejercicio-factorial">6. Ejercicio 3: Factorial de un Número</a></li>
-                <li><a href="#ejercicio-fibonacci">7. Ejercicio 4: Serie de Fibonacci</a></li>
+                <li><a href="#operadores-logicos">3. Operadores Lógicos (Y / O) y Tablas de Verdad</a></li>
+                <li><a href="#bucles">4. Estructuras Repetitivas (Bucles)</a></li>
+                <li><a href="#ejercicio-par">5. Ejercicio 1: Par o Impar</a></li>
+                <li><a href="#ejercicio-rangos">6. Ejercicio 2: Validación con Operadores Lógicos</a></li>
+                <li><a href="#ejercicio-primo">7. Ejercicio 3: Número Primo</a></li>
+                <li><a href="#ejercicio-factorial">8. Ejercicio 4: Factorial de un Número</a></li>
+                <li><a href="#ejercicio-fibonacci">9. Ejercicio 5: Serie de Fibonacci</a></li>
             </ul>
         </nav>
 
-        <!-- INTRODUCCIÓN -->
+        <!-- 1. INTRODUCCIÓN -->
         <section id="intro">
             <h2>1. Introducción a PSeInt</h2>
-            <p><strong>PSeInt</strong> (Pseudocódigo Intérprete) es una herramienta educativa diseñada para enseñar la lógica de programación mediante un lenguaje en español claro e intuitivo. Todo programa estructurado en PSeInt sigue un esquema básico:</p>
+            <p><strong>PSeInt</strong> (Pseudocódigo Intérprete) es una herramienta educativa diseñada para enseñar la
+                lógica de programación mediante un lenguaje en español claro e intuitivo. Todo programa estructurado en
+                PSeInt sigue un esquema básico:</p>
             <pre><span class="kw">Algoritmo</span> <span class="var">NombreDelAlgoritmo</span>
     <span class="cm">// Declaración e inicialización de variables</span>
     <span class="kw">Definir</span> <span class="var">variable</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
@@ -223,13 +329,15 @@
 <span class="kw">FinAlgoritmo</span></pre>
         </section>
 
-        <!-- CONDICIONALES -->
+        <!-- 2. CONDICIONALES -->
         <section id="condicionales">
             <h2>2. Estructuras Condicionales</h2>
-            <p>Las estructuras condicionales permiten evaluar una condición lógica ($TRUE$ o $FALSE$) y bifurcar la ejecución del algoritmo según el resultado.</p>
+            <p>Las estructuras condicionales permiten evaluar una expresión lógica (Verdadera o Falsa) y bifurcar el
+                flujo de ejecución según el resultado.</p>
 
             <h3>Condicional Simple y Compuesto (Si-Entonces / Sino)</h3>
-            <p>Evalúa una expresión lógica. Si se cumple, ejecuta el bloque correspondiente; de lo contrario, salta al bloque alternativo si existe.</p>
+            <p>Evalúa una expresión lógica. Si se cumple, ejecuta el bloque correspondiente; de lo contrario, salta al
+                bloque alternativo si existe.</p>
             <pre><span class="kw">Si</span> <span class="var">condicion</span> <span class="kw">Entonces</span>
     <span class="cm">// Instrucciones si la condición es Verdadera</span>
 <span class="kw">Sino</span>
@@ -237,7 +345,8 @@
 <span class="kw">FinSi</span></pre>
 
             <h3>Condicional Múltiple (Según)</h3>
-            <p>Permite evaluar una variable discreta frente a múltiples casos posibles evitando múltiples anidaciones de <code>Si-Entonces</code>.</p>
+            <p>Permite evaluar una variable discreta frente a múltiples casos posibles evitando estructuras anidadas
+                complejas.</p>
             <pre><span class="kw">Segun</span> <span class="var">variable_numerica</span> <span class="kw">Hacer</span>
     <span class="num">1</span>:
         <span class="cm">// Instrucciones para caso 1</span>
@@ -248,38 +357,150 @@
 <span class="kw">FinSegun</span></pre>
         </section>
 
-        <!-- BUCLES -->
+        <!-- 3. OPERADORES LÓGICOS Y TABLAS DE VERDAD -->
+        <section id="operadores-logicos">
+            <h2>3. Operadores Lógicos (Y / O) y Tablas de Verdad</h2>
+            <p>Cuando necesitamos evaluar <strong>múltiples condiciones al mismo tiempo</strong> dentro de una
+                estructura <code>Si-Entonces</code>, utilizamos operadores lógicos:</p>
+
+            <ul>
+                <li><code>Y</code> (ó <code>&&</code>): Devuelve <strong>Verdadero</strong> únicamente si
+                    <strong>AMBAS</strong> condiciones son verdaderas.</li>
+                <li><code>O</code> (ó <code>||</code>): Devuelve <strong>Verdadero</strong> si <strong>AL MENOS
+                        UNA</strong> de las condiciones es verdadera.</li>
+            </ul>
+
+            <div class="callout">
+                <div class="callout-title">Recordatorio Visual: Matriz / Tabla de la Verdad</div>
+                <p>Las siguientes matrices con líneas oscuras resumen el comportamiento de los operadores lógicos según
+                    el valor de dos condiciones ($A$ y $B$):</p>
+            </div>
+
+            <!-- Tablas estilo Matriz con líneas negras gruesas -->
+            <div class="matrix-container">
+                <!-- Matriz AND -->
+                <div class="matrix-card">
+                    <h4>Operador Lógico Y (AND / &amp;&amp;)</h4>
+                    <table class="truth-table">
+                        <thead>
+                            <tr>
+                                <th>Condición A</th>
+                                <th>Condición B</th>
+                                <th>A Y B</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="val-v">V</td>
+                                <td class="val-v">V</td>
+                                <td class="val-v">V</td>
+                            </tr>
+                            <tr>
+                                <td class="val-v">V</td>
+                                <td class="val-f">F</td>
+                                <td class="val-f">F</td>
+                            </tr>
+                            <tr>
+                                <td class="val-f">F</td>
+                                <td class="val-v">V</td>
+                                <td class="val-f">F</td>
+                            </tr>
+                            <tr>
+                                <td class="val-f">F</td>
+                                <td class="val-f">F</td>
+                                <td class="val-f">F</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Matriz OR -->
+                <div class="matrix-card">
+                    <h4>Operador Lógico O (OR / ||)</h4>
+                    <table class="truth-table">
+                        <thead>
+                            <tr>
+                                <th>Condición A</th>
+                                <th>Condición B</th>
+                                <th>A O B</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="val-v">V</td>
+                                <td class="val-v">V</td>
+                                <td class="val-v">V</td>
+                            </tr>
+                            <tr>
+                                <td class="val-v">V</td>
+                                <td class="val-f">F</td>
+                                <td class="val-v">V</td>
+                            </tr>
+                            <tr>
+                                <td class="val-f">F</td>
+                                <td class="val-v">V</td>
+                                <td class="val-v">V</td>
+                            </tr>
+                            <tr>
+                                <td class="val-f">F</td>
+                                <td class="val-f">F</td>
+                                <td class="val-f">F</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Sintaxis en PSeInt</h3>
+            <pre><span class="cm">// Ejemplo usando el operador Y</span>
+<span class="kw">Si</span> <span class="var">edad</span> <span class="op">&gt;=</span> <span class="num">18</span> <span class="op">Y</span> <span class="var">tieneLicencia</span> <span class="op">=</span> <span class="kw">Verdadero</span> <span class="kw">Entonces</span>
+    <span class="kw">Escribir</span> <span class="str">"Puede conducir un vehículo."</span>;
+<span class="kw">FinSi</span>
+
+<span class="cm">// Ejemplo usando el operador O</span>
+<span class="kw">Si</span> <span class="var">dia</span> <span class="op">=</span> <span class="str">"Sábado"</span> <span class="op">O</span> <span class="var">dia</span> <span class="op">=</span> <span class="str">"Domingo"</span> <span class="kw">Entonces</span>
+    <span class="kw">Escribir</span> <span class="str">"Es fin de semana."</span>;
+<span class="kw">FinSi</span></pre>
+        </section>
+
+        <!-- 4. BUCLES -->
         <section id="bucles">
-            <h2>3. Estructuras Repetitivas (Bucles)</h2>
-            <p>Los bucles permiten ejecutar de forma reiterada un conjunto de instrucciones basándose en condiciones de parada o en contadores explícitos.</p>
+            <h2>4. Estructuras Repetitivas (Bucles)</h2>
+            <p>Los bucles permiten ejecutar de forma reiterada un conjunto de instrucciones basándose en condiciones de
+                parada o en contadores explícitos.</p>
 
             <h3>Bucle "Mientras" (Pre-prueba)</h3>
-            <p>Evalúa la condición antes de ejecutar el bloque. Continúa iterando mientras la condición resulte verdadera. Si la condición inicial es falsa, el bloque jamás se ejecuta.</p>
+            <p>Evalúa la condición antes de ejecutar el bloque. Continúa iterando mientras la condición resulte
+                verdadera. Si la condición inicial es falsa, el bloque jamás se ejecuta.</p>
             <pre><span class="kw">Mientras</span> <span class="var">condicion</span> <span class="kw">Hacer</span>
     <span class="cm">// Instrucciones a repetir</span>
 <span class="kw">FinMientras</span></pre>
 
             <h3>Bucle "Repetir-Hasta Que" (Post-prueba)</h3>
-            <p>Garantiza al menos una ejecución del bloque interno antes de evaluar la condición. Finaliza cuando la condición evaluada resulta verdadera.</p>
+            <p>Garantiza al menos una ejecución del bloque interno antes de evaluar la condición. Finaliza cuando la
+                condición evaluada resulta verdadera.</p>
             <pre><span class="kw">Repetir</span>
     <span class="cm">// Instrucciones a repetir</span>
 <span class="kw">Hasta Que</span> <span class="var">condicion</span></pre>
 
             <h3>Bucle "Para" (Controlado por Contador)</h3>
-            <p>Ideal para cuando se conoce de antemano la cantidad exacta de iteraciones. Maneja automáticamente la inicialización, la condición de parada y el incremento de una variable de control.</p>
+            <p>Ideal para cuando se conoce de antemano la cantidad exacta de iteraciones. Maneja automáticamente la
+                inicialización, la condición de parada y el incremento de una variable de control.</p>
             <pre><span class="kw">Para</span> <span class="var">i</span> <span class="op">&lt;-</span> <span class="num">1</span> <span class="kw">Hasta</span> <span class="num">10</span> <span class="kw">Con Paso</span> <span class="num">1</span> <span class="kw">Hacer</span>
     <span class="cm">// Instrucciones ejecutadas con i variando de 1 a 10</span>
 <span class="kw">FinPara</span></pre>
         </section>
 
-        <!-- EJERCICIO 1 -->
+        <!-- 5. EJERCICIO 1 -->
         <section id="ejercicio-par">
-            <h2>4. Ejercicio 1: Determinación de Par o Impar</h2>
-            <p><strong>Problema:</strong> Determinar si un número entero ingresado por el usuario es par o impar utilizando el operador módulo (<code>%</code> o <code>MOD</code>).</p>
-            
+            <h2>5. Ejercicio 1: Determinación de Par o Impar</h2>
+            <p><strong>Problema:</strong> Determinar si un número entero ingresado por el usuario es par o impar
+                utilizando el operador módulo (<code>%</code> o <code>MOD</code>).</p>
+
             <div class="callout">
                 <div class="callout-title">Análisis Matemático</div>
-                Un número entero $n$ es par si es divisible por 2, es decir, si $n \bmod 2 = 0$. En caso contrario, el residuo es 1 y el número es impar.
+                Un número entero $n$ es par si es divisible por 2, es decir, si $n \bmod 2 = 0$. En caso contrario, el
+                residuo es 1 y el número es impar.
             </div>
 
             <pre><span class="kw">Algoritmo</span> <span class="var">DeterminarParImpar</span>
@@ -296,14 +517,47 @@
 <span class="kw">FinAlgoritmo</span></pre>
         </section>
 
-        <!-- EJERCICIO 2 -->
+        <!-- 6. EJERCICIO 2 (NUEVO: OPERADORES LÓGICOS) -->
+        <section id="ejercicio-rangos">
+            <h2>6. Ejercicio 2: Validación de Rangos con Operadores Lógicos (Y / O)</h2>
+            <p><strong>Problema:</strong> Solicitar al usuario una nota académica (0 a 20) o un código especial de
+                exoneración (-1). Determinar si la entrada es válida y si aprueba.</p>
+
+            <div class="callout">
+                <div class="callout-title">Uso de Operadores Lógicos</div>
+                Se usa el operador <code>Y</code> para comprobar si una nota está dentro del rango válido ($nota \ge 0
+                \land nota \le 20$), y el operador <code>O</code> para verificar condiciones alternativas.
+            </div>
+
+            <pre><span class="kw">Algoritmo</span> <span class="var">ValidarNotaYExoneracion</span>
+    <span class="kw">Definir</span> <span class="var">nota</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
+    
+    <span class="kw">Escribir</span> <span class="str">"Ingrese la nota del estudiante (0 a 20) o -1 para exoneración:"</span>;
+    <span class="kw">Leer</span> <span class="var">nota</span>;
+    
+    <span class="cm">// Evaluamos rango válido usando Y, u opción especial usando O</span>
+    <span class="kw">Si</span> (<span class="var">nota</span> <span class="op">&gt;=</span> <span class="num">0</span> <span class="op">Y</span> <span class="var">nota</span> <span class="op">&lt;=</span> <span class="num">20</span>) <span class="op">O</span> <span class="var">nota</span> <span class="op">=</span> <span class="num">-1</span> <span class="kw">Entonces</span>
+        <span class="kw">Si</span> <span class="var">nota</span> <span class="op">=</span> <span class="num">-1</span> <span class="op">O</span> <span class="var">nota</span> <span class="op">&gt;=</span> <span class="num">10</span> <span class="kw">Entonces</span>
+            <span class="kw">Escribir</span> <span class="str">"Estado: APROBADO / EXONERADO."</span>;
+        <span class="kw">Sino</span>
+            <span class="kw">Escribir</span> <span class="str">"Estado: REPROBADO."</span>;
+        <span class="kw">FinSi</span>
+    <span class="kw">Sino</span>
+        <span class="kw">Escribir</span> <span class="str">"Error: La nota ingresada no es válida."</span>;
+    <span class="kw">FinSi</span>
+<span class="kw">FinAlgoritmo</span></pre>
+        </section>
+
+        <!-- 7. EJERCICIO 3 -->
         <section id="ejercicio-primo">
-            <h2>5. Ejercicio 2: Verificación de Número Primo</h2>
-            <p><strong>Problema:</strong> Validar si un número entero mayor que 1 es primo (divisible únicamente entre 1 y sí mismo).</p>
+            <h2>7. Ejercicio 3: Verificación de Número Primo</h2>
+            <p><strong>Problema:</strong> Validar si un número entero mayor que 1 es primo (divisible únicamente entre 1
+                y sí mismo).</p>
 
             <div class="callout">
                 <div class="callout-title">Análisis Lógico</div>
-                Contaremos cuántos divisores exactos tiene el número desde $1$ hasta $n$. Si la suma total de divisores es igual a 2, el número es primo.
+                Contaremos cuántos divisores exactos tiene el número desde $1$ hasta $n$. Si la suma total de divisores
+                es igual a 2, el número es primo.
             </div>
 
             <pre><span class="kw">Algoritmo</span> <span class="var">VerificarNumeroPrimo</span>
@@ -331,9 +585,9 @@
 <span class="kw">FinAlgoritmo</span></pre>
         </section>
 
-        <!-- EJERCICIO 3 -->
+        <!-- 8. EJERCICIO 4 -->
         <section id="ejercicio-factorial">
-            <h2>6. Ejercicio 3: Cálculo del Factorial</h2>
+            <h2>8. Ejercicio 4: Cálculo del Factorial</h2>
             <p><strong>Problema:</strong> Calcule el factorial de un número $n$ no negativo ($n!$).</p>
 
             <div class="callout">
@@ -360,9 +614,9 @@
 <span class="kw">FinAlgoritmo</span></pre>
         </section>
 
-        <!-- EJERCICIO 4 -->
+        <!-- 9. EJERCICIO 5 -->
         <section id="ejercicio-fibonacci">
-            <h2>7. Ejercicio 4: Generación de la Serie de Fibonacci</h2>
+            <h2>9. Ejercicio 5: Generación de la Serie de Fibonacci</h2>
             <p><strong>Problema:</strong> Generar e imprimir los primeros $N$ términos de la sucesión de Fibonacci.</p>
 
             <div class="callout">
@@ -402,5 +656,5 @@
     </footer>
 
 </body>
-</html>
 
+</html>
