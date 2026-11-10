@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Interactivo de PSeInt - Condicionales y Bucles</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --surface-color-hover: #252526;
+            --card-bg: #2d2d2d;
+            --border-color: #3e3e42;
+            --primary-color: #007acc;
+            --primary-accent: #0098ff;
+            --accent-green: #4ec9b0;
+            --accent-yellow: #dcdcaa;
+            --accent-orange: #ce9178;
+            --accent-purple: #c586c0;
+            --text-main: #d4d4d4;
+            --text-muted: #9cdcfe;
+            --code-bg: #1e1e1e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--surface-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #ffffff;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        nav.toc {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        nav.toc h2 {
+            font-size: 1.2rem;
+            color: var(--accent-yellow);
+            margin-bottom: 1rem;
+        }
+
+        nav.toc ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 0.75rem;
+        }
+
+        nav.toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            display: inline-block;
+        }
+
+        nav.toc a:hover {
+            color: var(--primary-accent);
+            text-decoration: underline;
+        }
+
+        section {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: #ffffff;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: var(--accent-yellow);
+            margin: 1.5rem 0 0.75rem 0;
+            font-size: 1.2rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--accent-green);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem 0;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+
+        .kw { color: var(--primary-accent); font-weight: bold; }
+        .op { color: var(--accent-purple); }
+        .str { color: var(--accent-orange); }
+        .num { color: #b5cea8; }
+        .cm { color: #6a9955; font-style: italic; }
+        .var { color: var(--text-muted); }
+
+        .callout {
+            background-color: #1a2733;
+            border-left: 4px solid var(--primary-accent);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .callout-title {
+            font-weight: bold;
+            color: var(--primary-accent);
+            margin-bottom: 0.3rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.5rem; }
+            section { padding: 1.25rem; }
+            pre { padding: 0.85rem; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Guía de Aprendizaje: PSeInt</h1>
+        <p>Estructuras de Control Condicionales, Bucles y Resolución de Problemas Matemáticos</p>
+    </header>
+
+    <div class="container">
+
+        <nav class="toc">
+            <h2>Índice de Contenidos</h2>
+            <ul>
+                <li><a href="#intro">1. Introducción a PSeInt</a></li>
+                <li><a href="#condicionales">2. Estructuras Condicionales</a></li>
+                <li><a href="#bucles">3. Estructuras Repetitivas (Bucles)</a></li>
+                <li><a href="#ejercicio-par">4. Ejercicio 1: Par o Impar</a></li>
+                <li><a href="#ejercicio-primo">5. Ejercicio 2: Número Primo</a></li>
+                <li><a href="#ejercicio-factorial">6. Ejercicio 3: Factorial de un Número</a></li>
+                <li><a href="#ejercicio-fibonacci">7. Ejercicio 4: Serie de Fibonacci</a></li>
+            </ul>
+        </nav>
+
+        <!-- INTRODUCCIÓN -->
+        <section id="intro">
+            <h2>1. Introducción a PSeInt</h2>
+            <p><strong>PSeInt</strong> (Pseudocódigo Intérprete) es una herramienta educativa diseñada para enseñar la lógica de programación mediante un lenguaje en español claro e intuitivo. Todo programa estructurado en PSeInt sigue un esquema básico:</p>
+            <pre><span class="kw">Algoritmo</span> <span class="var">NombreDelAlgoritmo</span>
+    <span class="cm">// Declaración e inicialización de variables</span>
+    <span class="kw">Definir</span> <span class="var">variable</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
+    
+    <span class="cm">// Instrucciones</span>
+    <span class="kw">Escribir</span> <span class="str">"Ingrese un dato:"</span>;
+    <span class="kw">Leer</span> <span class="var">variable</span>;
+<span class="kw">FinAlgoritmo</span></pre>
+        </section>
+
+        <!-- CONDICIONALES -->
+        <section id="condicionales">
+            <h2>2. Estructuras Condicionales</h2>
+            <p>Las estructuras condicionales permiten evaluar una condición lógica ($TRUE$ o $FALSE$) y bifurcar la ejecución del algoritmo según el resultado.</p>
+
+            <h3>Condicional Simple y Compuesto (Si-Entonces / Sino)</h3>
+            <p>Evalúa una expresión lógica. Si se cumple, ejecuta el bloque correspondiente; de lo contrario, salta al bloque alternativo si existe.</p>
+            <pre><span class="kw">Si</span> <span class="var">condicion</span> <span class="kw">Entonces</span>
+    <span class="cm">// Instrucciones si la condición es Verdadera</span>
+<span class="kw">Sino</span>
+    <span class="cm">// Instrucciones si la condición es Falsa</span>
+<span class="kw">FinSi</span></pre>
+
+            <h3>Condicional Múltiple (Según)</h3>
+            <p>Permite evaluar una variable discreta frente a múltiples casos posibles evitando múltiples anidaciones de <code>Si-Entonces</code>.</p>
+            <pre><span class="kw">Segun</span> <span class="var">variable_numerica</span> <span class="kw">Hacer</span>
+    <span class="num">1</span>:
+        <span class="cm">// Instrucciones para caso 1</span>
+    <span class="num">2</span>:
+        <span class="cm">// Instrucciones para caso 2</span>
+    <span class="kw">De Otro Modo</span>:
+        <span class="cm">// Instrucciones si no coincide con ningún caso</span>
+<span class="kw">FinSegun</span></pre>
+        </section>
+
+        <!-- BUCLES -->
+        <section id="bucles">
+            <h2>3. Estructuras Repetitivas (Bucles)</h2>
+            <p>Los bucles permiten ejecutar de forma reiterada un conjunto de instrucciones basándose en condiciones de parada o en contadores explícitos.</p>
+
+            <h3>Bucle "Mientras" (Pre-prueba)</h3>
+            <p>Evalúa la condición antes de ejecutar el bloque. Continúa iterando mientras la condición resulte verdadera. Si la condición inicial es falsa, el bloque jamás se ejecuta.</p>
+            <pre><span class="kw">Mientras</span> <span class="var">condicion</span> <span class="kw">Hacer</span>
+    <span class="cm">// Instrucciones a repetir</span>
+<span class="kw">FinMientras</span></pre>
+
+            <h3>Bucle "Repetir-Hasta Que" (Post-prueba)</h3>
+            <p>Garantiza al menos una ejecución del bloque interno antes de evaluar la condición. Finaliza cuando la condición evaluada resulta verdadera.</p>
+            <pre><span class="kw">Repetir</span>
+    <span class="cm">// Instrucciones a repetir</span>
+<span class="kw">Hasta Que</span> <span class="var">condicion</span></pre>
+
+            <h3>Bucle "Para" (Controlado por Contador)</h3>
+            <p>Ideal para cuando se conoce de antemano la cantidad exacta de iteraciones. Maneja automáticamente la inicialización, la condición de parada y el incremento de una variable de control.</p>
+            <pre><span class="kw">Para</span> <span class="var">i</span> <span class="op">&lt;-</span> <span class="num">1</span> <span class="kw">Hasta</span> <span class="num">10</span> <span class="kw">Con Paso</span> <span class="num">1</span> <span class="kw">Hacer</span>
+    <span class="cm">// Instrucciones ejecutadas con i variando de 1 a 10</span>
+<span class="kw">FinPara</span></pre>
+        </section>
+
+        <!-- EJERCICIO 1 -->
+        <section id="ejercicio-par">
+            <h2>4. Ejercicio 1: Determinación de Par o Impar</h2>
+            <p><strong>Problema:</strong> Determinar si un número entero ingresado por el usuario es par o impar utilizando el operador módulo (<code>%</code> o <code>MOD</code>).</p>
+            
+            <div class="callout">
+                <div class="callout-title">Análisis Matemático</div>
+                Un número entero $n$ es par si es divisible por 2, es decir, si $n \bmod 2 = 0$. En caso contrario, el residuo es 1 y el número es impar.
+            </div>
+
+            <pre><span class="kw">Algoritmo</span> <span class="var">DeterminarParImpar</span>
+    <span class="kw">Definir</span> <span class="var">num</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
+    
+    <span class="kw">Escribir</span> <span class="str">"Ingrese un numero entero:"</span>;
+    <span class="kw">Leer</span> <span class="var">num</span>;
+    
+    <span class="kw">Si</span> <span class="var">num</span> <span class="op">%</span> <span class="num">2</span> <span class="op">=</span> <span class="num">0</span> <span class="kw">Entonces</span>
+        <span class="kw">Escribir</span> <span class="str">"El numero "</span>, <span class="var">num</span>, <span class="str">" es PAR."</span>;
+    <span class="kw">Sino</span>
+        <span class="kw">Escribir</span> <span class="str">"El numero "</span>, <span class="var">num</span>, <span class="str">" es IMPAR."</span>;
+    <span class="kw">FinSi</span>
+<span class="kw">FinAlgoritmo</span></pre>
+        </section>
+
+        <!-- EJERCICIO 2 -->
+        <section id="ejercicio-primo">
+            <h2>5. Ejercicio 2: Verificación de Número Primo</h2>
+            <p><strong>Problema:</strong> Validar si un número entero mayor que 1 es primo (divisible únicamente entre 1 y sí mismo).</p>
+
+            <div class="callout">
+                <div class="callout-title">Análisis Lógico</div>
+                Contaremos cuántos divisores exactos tiene el número desde $1$ hasta $n$. Si la suma total de divisores es igual a 2, el número es primo.
+            </div>
+
+            <pre><span class="kw">Algoritmo</span> <span class="var">VerificarNumeroPrimo</span>
+    <span class="kw">Definir</span> <span class="var">num</span>, <span class="var">i</span>, <span class="var">contDivisores</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
+    <span class="var">contDivisores</span> <span class="op">&lt;-</span> <span class="num">0</span>;
+    
+    <span class="kw">Escribir</span> <span class="str">"Ingrese un numero entero mayor a 1:"</span>;
+    <span class="kw">Leer</span> <span class="var">num</span>;
+    
+    <span class="kw">Si</span> <span class="var">num</span> <span class="op">&lt;=</span> <span class="num">1</span> <span class="kw">Entonces</span>
+        <span class="kw">Escribir</span> <span class="str">"El numero debe ser mayor a 1."</span>;
+    <span class="kw">Sino</span>
+        <span class="kw">Para</span> <span class="var">i</span> <span class="op">&lt;-</span> <span class="num">1</span> <span class="kw">Hasta</span> <span class="var">num</span> <span class="kw">Con Paso</span> <span class="num">1</span> <span class="kw">Hacer</span>
+            <span class="kw">Si</span> <span class="var">num</span> <span class="op">%</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span> <span class="kw">Entonces</span>
+                <span class="var">contDivisores</span> <span class="op">&lt;-</span> <span class="var">contDivisores</span> <span class="op">+</span> <span class="num">1</span>;
+            <span class="kw">FinSi</span>
+        <span class="kw">FinPara</span>
+        
+        <span class="kw">Si</span> <span class="var">contDivisores</span> <span class="op">=</span> <span class="num">2</span> <span class="kw">Entonces</span>
+            <span class="kw">Escribir</span> <span class="str">"El numero "</span>, <span class="var">num</span>, <span class="str">" es PRIMO."</span>;
+        <span class="kw">Sino</span>
+            <span class="kw">Escribir</span> <span class="str">"El numero "</span>, <span class="var">num</span>, <span class="str">" NO es primo."</span>;
+        <span class="kw">FinSi</span>
+    <span class="kw">FinSi</span>
+<span class="kw">FinAlgoritmo</span></pre>
+        </section>
+
+        <!-- EJERCICIO 3 -->
+        <section id="ejercicio-factorial">
+            <h2>6. Ejercicio 3: Cálculo del Factorial</h2>
+            <p><strong>Problema:</strong> Calcule el factorial de un número $n$ no negativo ($n!$).</p>
+
+            <div class="callout">
+                <div class="callout-title">Definición Matemática</div>
+                $n! = 1 \times 2 \times 3 \times \dots \times n$. Por definición, $0! = 1$.
+            </div>
+
+            <pre><span class="kw">Algoritmo</span> <span class="var">CalcularFactorial</span>
+    <span class="kw">Definir</span> <span class="var">n</span>, <span class="var">i</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
+    <span class="kw">Definir</span> <span class="var">factorial</span> <span class="kw">Como</span> <span class="kw">Real</span>; <span class="cm">// Usamos Real por el rápido crecimiento del valor</span>
+    
+    <span class="kw">Repetir</span>
+        <span class="kw">Escribir</span> <span class="str">"Ingrese un numero entero no negativo:"</span>;
+        <span class="kw">Leer</span> <span class="var">n</span>;
+    <span class="kw">Hasta Que</span> <span class="var">n</span> <span class="op">&gt;=</span> <span class="num">0</span>;
+    
+    <span class="var">factorial</span> <span class="op">&lt;-</span> <span class="num">1</span>;
+    
+    <span class="kw">Para</span> <span class="var">i</span> <span class="op">&lt;-</span> <span class="num">1</span> <span class="kw">Hasta</span> <span class="var">n</span> <span class="kw">Con Paso</span> <span class="num">1</span> <span class="kw">Hacer</span>
+        <span class="var">factorial</span> <span class="op">&lt;-</span> <span class="var">factorial</span> <span class="op">*</span> <span class="var">i</span>;
+    <span class="kw">FinPara</span>
+    
+    <span class="kw">Escribir</span> <span class="str">"El factorial de "</span>, <span class="var">n</span>, <span class="str">" es: "</span>, <span class="var">factorial</span>;
+<span class="kw">FinAlgoritmo</span></pre>
+        </section>
+
+        <!-- EJERCICIO 4 -->
+        <section id="ejercicio-fibonacci">
+            <h2>7. Ejercicio 4: Generación de la Serie de Fibonacci</h2>
+            <p><strong>Problema:</strong> Generar e imprimir los primeros $N$ términos de la sucesión de Fibonacci.</p>
+
+            <div class="callout">
+                <div class="callout-title">Regla de Recurrencia</div>
+                $F_0 = 0$, $F_1 = 1$, y para $n \ge 2$: $F_n = F_{n-1} + F_{n-2}$.
+            </div>
+
+            <pre><span class="kw">Algoritmo</span> <span class="var">GenerarFibonacci</span>
+    <span class="kw">Definir</span> <span class="var">n</span>, <span class="var">i</span>, <span class="var">a</span>, <span class="var">b</span>, <span class="var">c</span> <span class="kw">Como</span> <span class="kw">Entero</span>;
+    
+    <span class="kw">Escribir</span> <span class="str">"Ingrese la cantidad de terminos a generar (N &gt;= 1):"</span>;
+    <span class="kw">Leer</span> <span class="var">n</span>;
+    
+    <span class="kw">Mientras</span> <span class="var">n</span> <span class="op">&lt;</span> <span class="num">1</span> <span class="kw">Hacer</span>
+        <span class="kw">Escribir</span> <span class="str">"Por favor, ingrese un numero mayor o igual a 1:"</span>;
+        <span class="kw">Leer</span> <span class="var">n</span>;
+    <span class="kw">FinMientras</span>
+    
+    <span class="var">a</span> <span class="op">&lt;-</span> <span class="num">0</span>;
+    <span class="var">b</span> <span class="op">&lt;-</span> <span class="num">1</span>;
+    
+    <span class="kw">Escribir</span> <span class="str">"Los primeros "</span>, <span class="var">n</span>, <span class="str">" terminos de Fibonacci son:"</span>;
+    
+    <span class="kw">Para</span> <span class="var">i</span> <span class="op">&lt;-</span> <span class="num">1</span> <span class="kw">Hasta</span> <span class="var">n</span> <span class="kw">Con Paso</span> <span class="num">1</span> <span class="kw">Hacer</span>
+        <span class="kw">Escribir</span> <span class="var">a</span>;
+        <span class="var">c</span> <span class="op">&lt;-</span> <span class="var">a</span> <span class="op">+</span> <span class="var">b</span>;
+        <span class="var">a</span> <span class="op">&lt;-</span> <span class="var">b</span>;
+        <span class="var">b</span> <span class="op">&lt;-</span> <span class="var">c</span>;
+    <span class="kw">FinPara</span>
+<span class="kw">FinAlgoritmo</span></pre>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>Tutorial de PSeInt • Diseñado en HTML/CSS Puro sin dependencias externas</p>
+    </footer>
+
+</body>
+</html>
+
