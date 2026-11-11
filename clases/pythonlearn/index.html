@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial de Python desde cero · Ejemplos prácticos</title>
+    <style>
+        /* Reset básico y tipografía */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 2rem 1.5rem;
+        }
+
+        /* Cabecera */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .subhead {
+            color: #475569;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Índice pegajoso (responsive) */
+        nav.toc {
+            background: #f1f5f9;
+            padding: 1rem 1.5rem;
+            border-radius: 1.2rem;
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        nav.toc h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        nav.toc ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.2rem;
+        }
+
+        nav.toc a {
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dashed #94a3b8;
+            transition: border-color 0.2s;
+        }
+
+        nav.toc a:hover {
+            border-bottom-color: #2563eb;
+            color: #1e3a8a;
+        }
+
+        /* Secciones y títulos */
+        section {
+            margin-bottom: 3.2rem;
+            scroll-margin-top: 1rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2 span.num {
+            background: #2563eb;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #1e293b;
+        }
+
+        /* Bloques de código */
+        .code-block {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 1rem 1.2rem;
+            border-radius: 0.9rem;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0.8rem 0 1.2rem 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border-left: 4px solid #3b82f6;
+            tab-size: 4;
+        }
+
+        .code-block code {
+            font-family: inherit;
+        }
+
+        /* Cajas de ejemplo / notas */
+        .example {
+            background: #f1f5f9;
+            border-left: 4px solid #3b82f6;
+            padding: 1.2rem 1.2rem 0.8rem 1.2rem;
+            border-radius: 0.8rem;
+            margin: 1rem 0 1.2rem 0;
+        }
+
+        .example p {
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        .example .code-block {
+            margin: 0.4rem 0;
+            background: #0b1120;
+        }
+
+        .note {
+            background: #fef9c3;
+            border-left: 4px solid #eab308;
+            padding: 0.8rem 1.2rem;
+            border-radius: 0.8rem;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        /* Listas */
+        ul,
+        ol {
+            padding-left: 1.5rem;
+            margin: 0.8rem 0;
+        }
+
+        li {
+            margin-bottom: 0.3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .code-block {
+                font-size: 0.8rem;
+                padding: 0.8rem;
+            }
+
+            nav.toc ul {
+                gap: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Estilo para resaltados inline */
+        .inline-code {
+            background: #e2e8f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.3rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85em;
+            color: #0f172a;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <span aria-hidden="true">🐍</span> Python desde cero
+                <span class="badge">práctico</span>
+            </h1>
+            <p class="subhead">Ejemplos concretos de cada tema del tutorial oficial · Edición responsive</p>
+        </header>
+
+        <!-- Índice de contenidos -->
+        <nav class="toc" aria-label="Índice del tutorial">
+            <h2>📑 Contenido</h2>
+            <ul>
+                <li><a href="#intro">1. Introducción informal</a></li>
+                <li><a href="#control">2. Control de flujo</a></li>
+                <li><a href="#funciones">3. Funciones</a></li>
+                <li><a href="#estructuras">4. Estructuras de datos</a></li>
+                <li><a href="#modulos">5. Módulos</a></li>
+                <li><a href="#entrada-salida">6. Entrada / Salida</a></li>
+                <li><a href="#errores">7. Errores y excepciones</a></li>
+                <li><a href="#clases">8. Clases</a></li>
+                <li><a href="#biblioteca">9. Biblioteca estándar</a></li>
+            </ul>
+        </nav>
+
+        <!-- 1. Introducción informal -->
+        <section id="intro">
+            <h2><span class="num">1</span> Introducción informal</h2>
+            <p>Python puede usarse como calculadora, manejar texto y ejecutar código de forma interactiva. Los ejemplos
+                muestran operaciones básicas, cadenas y listas.</p>
+
+            <div class="example">
+                <p>🔹 Operaciones aritméticas y asignación múltiple</p>
+                <div class="code-block"><code>>>> 2 + 2
+4
+>>> 50 - 5 * 6
+20
+>>> (50 - 5 * 6) / 4
+5.0
+>>> # Asignación múltiple
+>>> a, b = 0, 1
+>>> a
+0
+>>> b
+1</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Cadenas: índices, rebanadas e inmutabilidad</p>
+                <div class="code-block"><code>>>> word = 'Python'
+>>> word[0]        # primer carácter
+'P'
+>>> word[-1]       # último carácter
+'n'
+>>> word[0:2]      # rebanada: desde 0 hasta 2 (sin incluir)
+'Py'
+>>> word[2:5]
+'tho'
+>>> # Las cadenas son inmutables
+>>> word[0] = 'J'  # Error: TypeError
+Traceback (most recent call last):
+  ...
+TypeError: 'str' object does not support item assignment</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Listas: mutables y flexibles</p>
+                <div class="code-block"><code>>>> squares = [1, 4, 9, 16, 25]
+>>> squares
+[1, 4, 9, 16, 25]
+>>> squares[0] = 100   # las listas sí son mutables
+>>> squares
+[100, 4, 9, 16, 25]
+>>> squares.append(36)
+>>> squares
+[100, 4, 9, 16, 25, 36]</code></div>
+            </div>
+        </section>
+
+        <!-- 2. Control de flujo -->
+        <section id="control">
+            <h2><span class="num">2</span> Más herramientas para control de flujo</h2>
+            <p>Bucles <span class="inline-code">while</span>, <span class="inline-code">for</span>, condicionales, y las
+                funciones <span class="inline-code">range()</span>, <span class="inline-code">enumerate()</span> y <span
+                    class="inline-code">break/continue</span>.</p>
+
+            <div class="example">
+                <p>🔹 Bucle <span class="inline-code">while</span> con serie de Fibonacci</p>
+                <div class="code-block"><code>>>> a, b = 0, 1
+>>> while a < 10:
+...     print(a, end=' ')
+...     a, b = b, a+b
+...
+0 1 1 2 3 5 8 </code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">for</span> con <span class="inline-code">range()</span> y <span
+                        class="inline-code">enumerate()</span></p>
+                <div class="code-block"><code>>>> for i in range(3):
+...     print(i)
+...
+0
+1
+2
+
+>>> frutas = ['manzana', 'banana', 'cereza']
+>>> for idx, fruta in enumerate(frutas):
+...     print(idx, fruta)
+...
+0 manzana
+1 banana
+2 cereza</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">break</span>, <span class="inline-code">continue</span> y cláusula <span
+                        class="inline-code">else</span> en bucles</p>
+                <div class="code-block"><code>>>> for n in range(2, 10):
+...     for x in range(2, n):
+...         if n % x == 0:
+...             print(n, 'es igual a', x, '*', n//x)
+...             break
+...     else:
+...         print(n, 'es un número primo')
+...
+2 es un número primo
+3 es un número primo
+4 es igual a 2 * 2
+5 es un número primo
+6 es igual a 2 * 3
+7 es un número primo
+8 es igual a 2 * 4
+9 es igual a 3 * 3</code></div>
+            </div>
+        </section>
+
+        <!-- 3. Funciones -->
+        <section id="funciones">
+            <h2><span class="num">3</span> Funciones</h2>
+            <p>Definición con <span class="inline-code">def</span>, argumentos posicionales, por nombre, valores por
+                defecto, <span class="inline-code">*args</span>, <span class="inline-code">**kwargs</span> y funciones
+                lambda.</p>
+
+            <div class="example">
+                <p>🔹 Función con valor por defecto y argumentos variables</p>
+                <div class="code-block"><code>>>> def saludar(nombre, saludo='Hola'):
+...     return f'{saludo}, {nombre}!'
+...
+>>> saludar('Ana')
+'Hola, Ana!'
+>>> saludar('Luis', 'Buen día')
+'Buen día, Luis!'</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">*args</span> y <span class="inline-code">**kwargs</span></p>
+                <div class="code-block"><code>>>> def mostrar(*args, **kwargs):
+...     print('Posicionales:', args)
+...     print('Nombrados:', kwargs)
+...
+>>> mostrar(1, 2, 3, nombre='Ana', edad=30)
+Posicionales: (1, 2, 3)
+Nombrados: {'nombre': 'Ana', 'edad': 30}</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Expresión lambda y ordenamiento con clave</p>
+                <div class="code-block"><code>>>> pares = [(1, 'uno'), (2, 'dos'), (3, 'tres')]
+>>> pares.sort(key=lambda par: par[1])
+>>> pares
+[(2, 'dos'), (3, 'tres'), (1, 'uno')]</code></div>
+            </div>
+        </section>
+
+        <!-- 4. Estructuras de datos -->
+        <section id="estructuras">
+            <h2><span class="num">4</span> Estructuras de datos</h2>
+            <p>Listas, tuplas, conjuntos y diccionarios. Operaciones comunes y comprensiones.</p>
+
+            <div class="example">
+                <p>🔹 Listas: métodos y comprensión</p>
+                <div class="code-block"><code>>>> letras = ['a', 'b', 'c', 'd']
+>>> letras.append('e')
+>>> letras
+['a', 'b', 'c', 'd', 'e']
+>>> [x.upper() for x in letras if x != 'c']
+['A', 'B', 'D', 'E']</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Tuplas: inmutables y desempaquetado</p>
+                <div class="code-block"><code>>>> punto = (3, 4)
+>>> x, y = punto
+>>> x, y
+(3, 4)
+>>> # Las tuplas no se pueden modificar
+>>> punto[0] = 5
+Traceback (most recent call last):
+  ...
+TypeError: 'tuple' object does not support item assignment</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Conjuntos: operaciones de unión e intersección</p>
+                <div class="code-block"><code>>>> a = {1, 2, 3, 4}
+>>> b = {3, 4, 5, 6}
+>>> a | b   # unión
+{1, 2, 3, 4, 5, 6}
+>>> a & b   # intersección
+{3, 4}</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Diccionarios: claves, valores y comprensión</p>
+                <div class="code-block"><code>>>> edades = {'Ana': 30, 'Luis': 25}
+>>> edades['Ana']
+30
+>>> edades['Carlos'] = 40
+>>> edades
+{'Ana': 30, 'Luis': 25, 'Carlos': 40}
+>>> {nombre: edad for nombre, edad in edades.items() if edad > 28}
+{'Ana': 30, 'Carlos': 40}</code></div>
+            </div>
+        </section>
+
+        <!-- 5. Módulos -->
+        <section id="modulos">
+            <h2><span class="num">5</span> Módulos</h2>
+            <p>Importación de módulos, uso de la biblioteca estándar y creación de módulos propios (simulado).</p>
+
+            <div class="example">
+                <p>🔹 Importar y usar el módulo <span class="inline-code">math</span></p>
+                <div class="code-block"><code>>>> import math
+>>> math.sqrt(16)
+4.0
+>>> math.pi
+3.141592653589793
+>>> from math import factorial
+>>> factorial(5)
+120</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Módulo propio (ejemplo conceptual)</p>
+                <p>Archivo <span class="inline-code">mi_modulo.py</span>:</p>
+                <div class="code-block"><code># mi_modulo.py
+def sumar(a, b):
+    return a + b</code></div>
+                <p>Uso desde otro archivo:</p>
+                <div class="code-block"><code>>>> import mi_modulo
+>>> mi_modulo.sumar(3, 4)
+7</code></div>
+            </div>
+        </section>
+
+        <!-- 6. Entrada / Salida -->
+        <section id="entrada-salida">
+            <h2><span class="num">6</span> Entrada y salida</h2>
+            <p>Formateo de cadenas (f-strings, formato), lectura y escritura de archivos con <span
+                    class="inline-code">open()</span> y el gestor de contexto <span class="inline-code">with</span>.</p>
+
+            <div class="example">
+                <p>🔹 Formateo con f-strings y <span class="inline-code">str.format()</span></p>
+                <div class="code-block"><code>>>> nombre = 'Ana'
+>>> edad = 30
+>>> f'{nombre} tiene {edad} años.'
+'Ana tiene 30 años.'
+>>> '{} tiene {} años.'.format(nombre, edad)
+'Ana tiene 30 años.'</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Escribir y leer un archivo de texto</p>
+                <div class="code-block"><code>>>> with open('ejemplo.txt', 'w', encoding='utf-8') as f:
+...     f.write('Hola, mundo!\nSegunda línea.')
+...
+>>> with open('ejemplo.txt', 'r', encoding='utf-8') as f:
+...     contenido = f.read()
+...
+>>> print(contenido)
+Hola, mundo!
+Segunda línea.</code></div>
+            </div>
+        </section>
+
+        <!-- 7. Errores y excepciones -->
+        <section id="errores">
+            <h2><span class="num">7</span> Errores y excepciones</h2>
+            <p>Manejo con <span class="inline-code">try</span>, <span class="inline-code">except</span>, <span
+                    class="inline-code">else</span> y <span class="inline-code">finally</span>. Lanzamiento de
+                excepciones con <span class="inline-code">raise</span>.</p>
+
+            <div class="example">
+                <p>🔹 Capturar una excepción específica</p>
+                <div class="code-block"><code>>>> try:
+...     x = int('abc')
+... except ValueError:
+...     print('No se pudo convertir a entero')
+...
+No se pudo convertir a entero</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">else</span> y <span class="inline-code">finally</span></p>
+                <div class="code-block"><code>>>> try:
+...     resultado = 10 / 2
+... except ZeroDivisionError:
+...     print('División por cero')
+... else:
+...     print('Resultado:', resultado)
+... finally:
+...     print('Bloque finally siempre se ejecuta')
+...
+Resultado: 5.0
+Bloque finally siempre se ejecuta</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Lanzar una excepción con <span class="inline-code">raise</span></p>
+                <div class="code-block"><code>>>> def validar_edad(edad):
+...     if edad < 0:
+...         raise ValueError('La edad no puede ser negativa')
+...     return edad
+...
+>>> validar_edad(-5)
+Traceback (most recent call last):
+  ...
+ValueError: La edad no puede ser negativa</code></div>
+            </div>
+        </section>
+
+        <!-- 8. Clases -->
+        <section id="clases">
+            <h2><span class="num">8</span> Clases</h2>
+            <p>Definición de clases, métodos, atributos, herencia y métodos especiales como <span
+                    class="inline-code">__init__</span>.</p>
+
+            <div class="example">
+                <p>🔹 Clase básica con método y atributo</p>
+                <div class="code-block"><code>>>> class Perro:
+...     def __init__(self, nombre):
+...         self.nombre = nombre
+...     def ladrar(self):
+...         return f'{self.nombre} dice: ¡Guau!'
+...
+>>> mi_perro = Perro('Rex')
+>>> mi_perro.ladrar()
+'Rex dice: ¡Guau!'</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Herencia y sobrescritura de métodos</p>
+                <div class="code-block"><code>>>> class Animal:
+...     def hablar(self):
+...         return 'Sonido genérico'
+...
+>>> class Gato(Animal):
+...     def hablar(self):
+...         return 'Miau'
+...
+>>> Animal().hablar()
+'Sonido genérico'
+>>> Gato().hablar()
+'Miau'</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 Método especial <span class="inline-code">__str__</span></p>
+                <div class="code-block"><code>>>> class Punto:
+...     def __init__(self, x, y):
+...         self.x = x
+...         self.y = y
+...     def __str__(self):
+...         return f'({self.x}, {self.y})'
+...
+>>> print(Punto(3, 4))
+(3, 4)</code></div>
+            </div>
+        </section>
+
+        <!-- 9. Biblioteca estándar -->
+        <section id="biblioteca">
+            <h2><span class="num">9</span> Biblioteca estándar</h2>
+            <p>Python incluye una amplia biblioteca estándar. Algunos módulos útiles: <span
+                    class="inline-code">os</span>, <span class="inline-code">sys</span>, <span
+                    class="inline-code">datetime</span>, <span class="inline-code">json</span>, <span
+                    class="inline-code">random</span>.</p>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">os</span> y <span class="inline-code">sys</span></p>
+                <div class="code-block"><code>>>> import os
+>>> os.getcwd()  # directorio actual (ejemplo)
+'/home/usuario'
+>>> import sys
+>>> sys.version.split()[0]  # versión de Python
+'3.12.0'</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">datetime</span> y <span class="inline-code">json</span></p>
+                <div class="code-block"><code>>>> from datetime import date
+>>> date.today()
+datetime.date(2026, 11, 11)
+>>> import json
+>>> json.dumps({'nombre': 'Ana', 'edad': 30})
+'{"nombre": "Ana", "edad": 30}'</code></div>
+            </div>
+
+            <div class="example">
+                <p>🔹 <span class="inline-code">random</span>: elección aleatoria</p>
+                <div class="code-block"><code>>>> import random
+>>> random.choice(['rock', 'papel', 'tijera'])
+'papel'
+>>> random.randint(1, 10)
+7</code></div>
+            </div>
+
+            <div class="note">
+                💡 <strong>Consejo:</strong> La biblioteca estándar de Python es muy extensa. Puedes explorarla en la
+                documentación oficial. Algunos módulos muy útiles son <span class="inline-code">collections</span>,
+                <span class="inline-code">itertools</span>, <span class="inline-code">pathlib</span> y <span
+                    class="inline-code">re</span>.
+            </div>
+        </section>
+
+        <footer>
+            <p>Tutorial interactivo basado en el <a href="https://docs.python.org/es/3/tutorial/" target="_blank"
+                    rel="noopener" style="color:#2563eb;">Tutorial oficial de Python</a> · Ejemplos prácticos para
+                empezar desde cero.</p>
+            <p style="margin-top:0.5rem;">Tutorial de Python para uso personal.</p>
+        </footer>
+    </div>
+</body>
+
+</html>
