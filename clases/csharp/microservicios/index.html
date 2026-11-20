@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microservicios en C# 5 (.NET Framework 4.5) / WPF y MySQL — Programación II</title>
+  <style>
+    :root {
+      --bg-page: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-elevated: #0b1120;
+      --bg-code: #090d16;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --success: #22c55e;
+      --border: #334155;
+      --radius: 10px;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: Consolas, "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding: 1.25rem;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #172554 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      margin-bottom: 0.65rem;
+    }
+
+    h1 {
+      font-size: 1.65rem;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+
+    .card,
+    .note-box,
+    .code-section {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.35rem;
+    }
+
+    p {
+      margin-bottom: 0.85rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    ol,
+    ul {
+      padding-left: 1.35rem;
+      margin-top: 0.45rem;
+    }
+
+    li {
+      margin-bottom: 0.6rem;
+    }
+
+    li:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      color: #e2e8f0;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background-color: rgba(15, 23, 42, 0.75);
+      color: #7dd3fc;
+      padding: 0.12rem 0.38rem;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    .note-box {
+      border-left: 4px solid var(--accent);
+      background-color: var(--bg-elevated);
+    }
+
+    .note-title {
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      color: #ffffff;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .code-wrapper {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--bg-code);
+    }
+
+    .code-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #111827;
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0.85rem;
+      gap: 0.5rem;
+    }
+
+    .file-label {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      background-color: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 0.35rem 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      background-color: #283548;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .copy-btn.copied {
+      background-color: rgba(34, 197, 94, 0.16);
+      border-color: var(--success);
+      color: #86efac;
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 1rem;
+      margin: 0;
+    }
+
+    pre code {
+      background: transparent;
+      color: #e2e8f0;
+      padding: 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      display: block;
+      white-space: pre;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0.75rem;
+      }
+
+      header,
+      .card,
+      .note-box,
+      .code-section {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.35rem;
+      }
+
+      pre code {
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Programación II · Visual Studio 2012 · C# 5 · .NET Framework 4.5</div>
+      <h1>Registro de Usuarios en WPF y MySQL con Arquitectura de Servicios</h1>
+      <p class="subtitle">Organización del código en servicios especializados utilizando clases públicas, <code>List&lt;T&gt;</code> y <code>Dictionary&lt;TKey, TValue&gt;</code> sobre la base de datos <code>EjercicioWPFDb</code>.</p>
+    </header>
+
+    <section class="card">
+      <p>En lugar de colocar toda la lógica de acceso a datos y validaciones dentro del código detrás de la ventana WPF (<code>MainWindow.xaml.cs</code>), el proyecto se divide en <strong>dos servicios</strong> alineados con las tablas <code>departamento</code>, <code>cargo</code> y <code>usuarios</code>:</p>
+      <ol>
+        <li><strong>Servicio de Cargos (<code>CargosService</code>):</strong> consulta los registros de <code>cargo</code> relacionados con <code>departamento</code>, construye una <code>List&lt;CargoItem&gt;</code> para alimentar el <code>ItemsSource</code> del <code>ComboBox</code> y mantiene un <code>Dictionary&lt;int, CargoItem&gt;</code> indexado por <code>Id</code> para consultar o validar cargos por clave.</li>
+        <li><strong>Servicio de Usuarios (<code>UsuariosService</code>):</strong> valida los campos del formulario (<code>Nickname</code>, <code>Password</code>, <code>Email</code> y <code>Role</code>), verifica que el cargo exista en el catálogo de cargos, utiliza un <code>Dictionary&lt;string, string&gt;</code> para identificar campos duplicados (<code>nickname</code> o <code>correo</code>) y ejecuta el <code>INSERT</code> empleando <code>SHA2(@password, 256)</code> en MySQL.</li>
+      </ol>
+    </section>
+
+    <aside class="note-box">
+      <div class="note-title">Consideraciones de entorno (.NET Framework 4.5 / Visual Studio 2012)</div>
+      <ul>
+        <li><strong>Referencia a MySQL:</strong> el proyecto debe apuntar a <strong>.NET Framework 4.5</strong>, tener referenciada una versión compatible de <code>MySql.Data.dll</code> y mantener alineada la plataforma de compilación (por ejemplo, <code>x86</code> o <code>AnyCPU</code>) con el conector instalado.</li>
+        <li><strong>Control de contraseña en WPF:</strong> si el formulario utiliza un control <code>PasswordBox</code> (por ejemplo, <code>pwdPassword</code>), la contraseña se obtiene mediante <code>pwdPassword.Password</code> y se limpia con <code>pwdPassword.Clear()</code>.</li>
+        <li><strong>Requisitos cubiertos:</strong> se conserva el uso de <code>MySql.Data.MySqlClient</code>, hashing con <code>SHA2(?, 256)</code> en el <code>INSERT</code>, población dinámica del <code>ComboBox</code> mediante <code>List&lt;T&gt;</code>, <code>DisplayMemberPath</code> y <code>SelectedValuePath</code>, y manejo de excepciones con <code>MessageBox</code>.</li>
+      </ul>
+    </aside>
+
+    <section class="code-section">
+      <div class="section-header">
+        <h2>1. Clases públicas de modelo y respuesta</h2>
+      </div>
+      <p class="section-desc">Estructuras públicas utilizadas para transportar datos del catálogo de cargos, la solicitud de registro y el resultado de cada operación.</p>
+      <div class="code-wrapper">
+        <div class="code-toolbar">
+          <span class="file-label">Modelos.cs</span>
+          <button type="button" class="copy-btn" data-target="code-modelos">Copiar código</button>
+        </div>
+        <pre><code id="code-modelos">using System;
+
+namespace SistemaUsuarios.Modelos
+{
+    public class CargoItem
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public int IdDepartamento { get; set; }
+        public int? IdCargoSuperior { get; set; }
+        public string EtiquetaCombo { get; set; }
+    }
+
+    public class NuevoUsuarioRequest
+    {
+        public string Nickname { get; set; }
+        public string Password { get; set; }
+        public string Correo { get; set; }
+        public int IdCargo { get; set; }
+    }
+
+    public class RespuestaServicio
+    {
+        public bool Exito { get; set; }
+        public string Mensaje { get; set; }
+        public int CodigoError { get; set; }
+    }
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="code-section">
+      <div class="section-header">
+        <h2>2. Servicio de Cargos (<code>List&lt;CargoItem&gt;</code> y <code>Dictionary&lt;int, CargoItem&gt;</code>)</h2>
+      </div>
+      <p class="section-desc">Recupera los cargos desde MySQL junto con el nombre del departamento, devuelve una lista para el <code>ComboBox</code> y almacena un diccionario por <code>Id</code>.</p>
+      <div class="code-wrapper">
+        <div class="code-toolbar">
+          <span class="file-label">CargosService.cs</span>
+          <button type="button" class="copy-btn" data-target="code-cargos">Copiar código</button>
+        </div>
+        <pre><code id="code-cargos">using System;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
+using SistemaUsuarios.Modelos;
+
+namespace SistemaUsuarios.Servicios
+{
+    public class CargosService
+    {
+        private readonly string _cadenaConexion;
+        private readonly Dictionary&lt;int, CargoItem&gt; _cargosPorId;
+
+        public CargosService(string cadenaConexion)
+        {
+            _cadenaConexion = cadenaConexion;
+            _cargosPorId = new Dictionary&lt;int, CargoItem&gt;();
+        }
+
+        public List&lt;CargoItem&gt; ObtenerListaCargos()
+        {
+            List&lt;CargoItem&gt; listaCargos = new List&lt;CargoItem&gt;();
+            _cargosPorId.Clear();
+
+            string sql = "SELECT c.id, c.nombre, c.id_departamento, c.id_cargo, d.nombre AS departamento_nombre " +
+                         "FROM cargo c " +
+                         "INNER JOIN departamento d ON c.id_departamento = d.id " +
+                         "ORDER BY c.nombre ASC;";
+
+            using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+            {
+                conexion.Open();
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            CargoItem item = new CargoItem();
+                            item.Id = Convert.ToInt32(reader["id"]);
+                            item.Nombre = reader["nombre"].ToString();
+                            item.IdDepartamento = Convert.ToInt32(reader["id_departamento"]);
+
+                            if (reader["id_cargo"] != DBNull.Value)
+                            {
+                                item.IdCargoSuperior = Convert.ToInt32(reader["id_cargo"]);
+                            }
+                            else
+                            {
+                                item.IdCargoSuperior = null;
+                            }
+
+                            string nombreDepto = reader["departamento_nombre"].ToString();
+                            item.EtiquetaCombo = item.Nombre + " (" + nombreDepto + ")";
+
+                            listaCargos.Add(item);
+
+                            if (!_cargosPorId.ContainsKey(item.Id))
+                            {
+                                _cargosPorId.Add(item.Id, item);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return listaCargos;
+        }
+
+        public bool ExisteCargo(int idCargo)
+        {
+            return _cargosPorId.ContainsKey(idCargo);
+        }
+
+        public CargoItem BuscarCargoPorId(int idCargo)
+        {
+            if (_cargosPorId.ContainsKey(idCargo))
+            {
+                return _cargosPorId[idCargo];
+            }
+            return null;
+        }
+    }
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="code-section">
+      <div class="section-header">
+        <h2>3. Servicio de Usuarios (validación, <code>Dictionary&lt;string, string&gt;</code> y <code>SHA2(?, 256)</code>)</h2>
+      </div>
+      <p class="section-desc">Valida la entrada, comprueba la existencia del cargo, inserta el usuario cifrando la contraseña con <code>SHA2(@password, 256)</code> y traduce errores de duplicidad mediante un diccionario.</p>
+      <div class="code-wrapper">
+        <div class="code-toolbar">
+          <span class="file-label">UsuariosService.cs</span>
+          <button type="button" class="copy-btn" data-target="code-usuarios">Copiar código</button>
+        </div>
+        <pre><code id="code-usuarios">using System;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
+using SistemaUsuarios.Modelos;
+
+namespace SistemaUsuarios.Servicios
+{
+    public class UsuariosService
+    {
+        private readonly string _cadenaConexion;
+        private readonly CargosService _cargosService;
+        private readonly Dictionary&lt;string, string&gt; _mensajesDuplicados;
+
+        public UsuariosService(string cadenaConexion, CargosService cargosService)
+        {
+            _cadenaConexion = cadenaConexion;
+            _cargosService = cargosService;
+
+            _mensajesDuplicados = new Dictionary&lt;string, string&gt;();
+            _mensajesDuplicados.Add("nickname", "El Nickname ingresado ya está registrado.");
+            _mensajesDuplicados.Add("correo", "El Email ingresado ya está registrado.");
+        }
+
+        public RespuestaServicio RegistrarUsuario(NuevoUsuarioRequest request)
+        {
+            RespuestaServicio respuesta = new RespuestaServicio();
+            respuesta.Exito = false;
+            respuesta.CodigoError = 0;
+
+            if (request == null)
+            {
+                respuesta.Mensaje = "Los datos del usuario son obligatorios.";
+                return respuesta;
+            }
+
+            string nickname = (request.Nickname ?? string.Empty).Trim();
+            string password = request.Password ?? string.Empty;
+            string correo = (request.Correo ?? string.Empty).Trim();
+
+            if (nickname == string.Empty || password == string.Empty || correo == string.Empty)
+            {
+                respuesta.Mensaje = "Debe completar Nickname, Password y Email.";
+                return respuesta;
+            }
+
+            if (!_cargosService.ExisteCargo(request.IdCargo))
+            {
+                respuesta.Mensaje = "Debe seleccionar un Role (cargo) válido.";
+                return respuesta;
+            }
+
+            string sql = "INSERT INTO usuarios (nickname, password_hash, correo, id_cargo) " +
+                         "VALUES (@nickname, SHA2(@password, 256), @correo, @id_cargo);";
+
+            try
+            {
+                using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+                {
+                    conexion.Open();
+                    using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@nickname", nickname);
+                        comando.Parameters.AddWithValue("@password", password);
+                        comando.Parameters.AddWithValue("@correo", correo);
+                        comando.Parameters.AddWithValue("@id_cargo", request.IdCargo);
+
+                        int filasAfectadas = comando.ExecuteNonQuery();
+
+                        if (filasAfectadas &gt; 0)
+                        {
+                            respuesta.Exito = true;
+                            respuesta.Mensaje = "Usuario registrado correctamente en la base de datos.";
+                        }
+                        else
+                        {
+                            respuesta.Mensaje = "No se pudo registrar el usuario.";
+                        }
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                respuesta.CodigoError = ex.Number;
+                respuesta.Mensaje = InterpretarErrorMySql(ex);
+            }
+            catch (Exception ex)
+            {
+                respuesta.Mensaje = "Error inesperado al registrar usuario: " + ex.Message;
+            }
+
+            return respuesta;
+        }
+
+        private string InterpretarErrorMySql(MySqlException ex)
+        {
+            if (ex.Number == 1062)
+            {
+                string detalle = ex.Message.ToLower();
+                foreach (KeyValuePair&lt;string, string&gt; entrada in _mensajesDuplicados)
+                {
+                    if (detalle.Contains(entrada.Key))
+                    {
+                        return entrada.Value;
+                    }
+                }
+                return "Ya existe un registro duplicado con ese Nickname o Email.";
+            }
+
+            return "Error de base de datos (" + ex.Number + "): " + ex.Message;
+        }
+    }
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="code-section">
+      <div class="section-header">
+        <h2>4. Ventana WPF (<code>MainWindow.xaml.cs</code> con <code>PasswordBox</code> en .NET Framework 4.5)</h2>
+      </div>
+      <p class="section-desc">Enlaza la lista de cargos al <code>ComboBox</code>, lee <code>pwdPassword.Password</code> y delega el registro a <code>UsuariosService</code>.</p>
+      <div class="code-wrapper">
+        <div class="code-toolbar">
+          <span class="file-label">MainWindow.xaml.cs</span>
+          <button type="button" class="copy-btn" data-target="code-mainwindow">Copiar código</button>
+        </div>
+        <pre><code id="code-mainwindow">using System;
+using System.Collections.Generic;
+using System.Windows;
+using SistemaUsuarios.Modelos;
+using SistemaUsuarios.Servicios;
+
+namespace SistemaUsuarios
+{
+    public partial class MainWindow : Window
+    {
+        private readonly string _conexion = "Server=127.0.0.1;Database=EjercicioWPFDb;Uid=root;Pwd=;";
+        private readonly CargosService _cargosService;
+        private readonly UsuariosService _usuariosService;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            _cargosService = new CargosService(_conexion);
+            _usuariosService = new UsuariosService(_conexion, _cargosService);
+            CargarComboRole();
+        }
+
+        private void CargarComboRole()
+        {
+            try
+            {
+                List&lt;CargoItem&gt; cargos = _cargosService.ObtenerListaCargos();
+                cmbRole.ItemsSource = cargos;
+                cmbRole.DisplayMemberPath = "EtiquetaCombo";
+                cmbRole.SelectedValuePath = "Id";
+
+                if (cargos.Count &gt; 0)
+                {
+                    cmbRole.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar roles: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnRegistrar_Click(object sender, RoutedEventArgs e)
+        {
+            int idCargoSeleccionado = 0;
+            if (cmbRole.SelectedValue != null)
+            {
+                idCargoSeleccionado = Convert.ToInt32(cmbRole.SelectedValue);
+            }
+
+            NuevoUsuarioRequest nuevoUsuario = new NuevoUsuarioRequest();
+            nuevoUsuario.Nickname = txtNickname.Text;
+            nuevoUsuario.Password = pwdPassword.Password;
+            nuevoUsuario.Correo = txtEmail.Text;
+            nuevoUsuario.IdCargo = idCargoSeleccionado;
+
+            RespuestaServicio resultado = _usuariosService.RegistrarUsuario(nuevoUsuario);
+
+            if (resultado.Exito)
+            {
+                MessageBox.Show(resultado.Mensaje, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                txtNickname.Clear();
+                pwdPassword.Clear();
+                txtEmail.Clear();
+            }
+            else
+            {
+                MessageBox.Show(resultado.Mensaje, "Atención", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+    }
+}</code></pre>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll(".copy-btn");
+
+      function copiarTextoFallback(texto, boton) {
+        var textarea = document.createElement("textarea");
+        textarea.value = texto;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          marcarCopiado(boton);
+        } catch (e) {
+          boton.textContent = "Error al copiar";
+        }
+        document.body.removeChild(textarea);
+      }
+
+      function marcarCopiado(boton) {
+        var textoOriginal = boton.getAttribute("data-label-original") || "Copiar código";
+        boton.setAttribute("data-label-original", textoOriginal);
+        boton.textContent = "¡Copiado!";
+        boton.classList.add("copied");
+
+        if (boton._timer) {
+          clearTimeout(boton._timer);
+        }
+
+        boton._timer = setTimeout(function () {
+          boton.textContent = textoOriginal;
+          boton.classList.remove("copied");
+        }, 1800);
+      }
+
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener("click", function () {
+          var targetId = this.getAttribute("data-target");
+          var codeEl = document.getElementById(targetId);
+          if (!codeEl) return;
+
+          var texto = codeEl.textContent;
+          var botonActual = this;
+
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            navigator.clipboard.writeText(texto).then(
+              function () {
+                marcarCopiado(botonActual);
+              },
+              function () {
+                copiarTextoFallback(texto, botonActual);
+              }
+            );
+          } else {
+            copiarTextoFallback(texto, botonActual);
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
