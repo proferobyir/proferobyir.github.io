@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Práctica: Interfaces Modernas tipo Dashboard en WPF (.NET Framework 4.5)</title>
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #0b1120;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --border-subtle: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.65;
+        }
+
+        /* Header Hero */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0284c7 100%);
+            padding: 3.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        header .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 1rem;
+            color: #e0f2fe;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            max-width: 850px;
+            margin: 0 auto 0.75rem;
+        }
+
+        header p {
+            color: #cbd5e1;
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Navigation TOC */
+        nav.toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        nav.toc h2 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent-cyan);
+            margin-bottom: 0.75rem;
+        }
+
+        nav.toc ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 0.5rem 1.5rem;
+        }
+
+        nav.toc a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav.toc a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2.section-title {
+            font-size: 1.55rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-subtle);
+            color: #ffffff;
+        }
+
+        h3 {
+            font-size: 1.18rem;
+            margin: 1.5rem 0 0.6rem;
+            color: #e2e8f0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        ul.clean-list {
+            margin: 0.5rem 0 1.25rem 1.5rem;
+            color: #cbd5e1;
+        }
+
+        ul.clean-list li {
+            margin-bottom: 0.45rem;
+        }
+
+        /* Callout Cards */
+        .callout {
+            background: rgba(30, 41, 59, 0.8);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 1.1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+
+        .callout.tip {
+            border-left-color: var(--success);
+        }
+
+        .callout.warn {
+            border-left-color: var(--warning);
+        }
+
+        .callout strong {
+            color: #ffffff;
+        }
+
+        /* Interactive Preview Box */
+        .preview-box {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .preview-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .mock-dashboard {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            min-height: 290px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .mock-sidebar {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 60%, #1d4ed8 100%);
+            padding: 1.2rem 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mock-sidebar .brand {
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0 0.6rem 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            margin-bottom: 0.4rem;
+        }
+
+        .mock-nav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 0.55rem 0.8rem;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mock-nav-btn:hover, .mock-nav-btn.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.85), rgba(6, 182, 212, 0.75));
+            border-color: rgba(255, 255, 255, 0.35);
+            color: #fff;
+        }
+
+        .mock-content {
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 1.25rem;
+        }
+
+        .mock-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid #cbd5e1;
+        }
+
+        .mock-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 0.85rem 0;
+            align-items: center;
+        }
+
+        .mock-input, .mock-select {
+            padding: 0.48rem 0.75rem;
+            border-radius: 8px;
+            border: 1.5px solid #94a3b8;
+            font-size: 0.85rem;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .mock-glass-btn {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.92), rgba(14, 165, 233, 0.88));
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 4px 10px rgba(37, 99, 235, 0.25);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .mock-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-top: 0.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .mock-table th {
+            background: linear-gradient(90deg, #1e293b, #1e3a8a);
+            color: #ffffff;
+            text-align: left;
+            padding: 0.5rem 0.7rem;
+        }
+
+        .mock-table td {
+            padding: 0.45rem 0.7rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .mock-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        /* Code Blocks */
+        .code-wrapper {
+            background: var(--bg-code);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            margin: 1rem 0 1.5rem;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #162033;
+            padding: 0.55rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.82rem;
+            color: #93c5fd;
+            font-family: Consolas, monospace;
+        }
+
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.45);
+            color: #e0f2fe;
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.4);
+        }
+
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 0.86rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        /* Tree Structure */
+        .folder-tree {
+            background: var(--bg-code);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            font-family: Consolas, monospace;
+            font-size: 0.9rem;
+            color: #a5f3fc;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        @media (max-width: 700px) {
+            .mock-dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <span class="badge">C# · WPF · .NET Framework 4.5</span>
+    <h1>Diseño de Interfaces Modernas tipo Dashboard en WPF</h1>
+    <p>Guía práctica de arquitectura visual, estilos corporativos con efecto vidrio/degradado, Diccionarios de Recursos y personalización de controles (Button, TextBox, ComboBox y DataGrid).</p>
+</header>
+
+<div class="container">
+
+    <nav class="toc">
+        <h2>Contenido del Manual</h2>
+        <ul>
+            <li><a href="#arquitectura">1. Arquitectura Dashboard: Window vs. UserControl</a></li>
+            <li><a href="#diccionarios">2. ¿Qué es un ResourceDictionary y cómo separarlo?</a></li>
+            <li><a href="#estilos">3. Estilos Modernos (Glass / Degradado Corporativo)</a></li>
+            <li><a href="#mainwindow">4. Ventana Principal (MainWindow.xaml)</a></li>
+            <li><a href="#vista">5. Vista Interna con Controles (ProductosView.xaml)</a></li>
+            <li><a href="#rendimiento">6. Consejos de Rendimiento en Hardware Modesto</a></li>
+        </ul>
+    </nav>
+
+    <!-- SECCIÓN 1 -->
+    <section id="arquitectura">
+        <h2 class="section-title">1. Arquitectura Dashboard: Window vs. UserControl</h2>
+        <p>Para construir una aplicación moderna con menú lateral izquierdo y contenido dinámico en el centro/derecha, no se abren múltiples ventanas flotantes. En su lugar se usa una única ventana base y vistas intercambiables:</p>
+        <ul class="clean-list">
+            <li><strong>Window (Ventana Principal):</strong> Es el contenedor maestro. Tiene el menú lateral izquierdo fijo y un contenedor central llamado <code>ContentControl</code>.</li>
+            <li><strong>UserControl (Control de Usuario):</strong> Es una pantalla parcial (el "relleno" o módulo). Cada opción del menú (Inicio, Clientes, Productos, Reportes) es un <code>UserControl</code> independiente que se carga dentro del <code>ContentControl</code>.</li>
+            <li><strong>DataGrid (La tabla de datos):</strong> El control estándar de WPF para mostrar tablas provenientes de listas o bases de datos (equivalente moderno al <code>DataGridView</code> de Windows Forms) se llama exactamente <strong><code>DataGrid</code></strong>.</li>
+        </ul>
+
+        <div class="preview-box">
+            <div class="preview-label">Vista Previa Conceptual del Resultado Final</div>
+            <div class="mock-dashboard">
+                <div class="mock-sidebar">
+                    <div class="brand">SISTEMA CORP</div>
+                    <button class="mock-nav-btn active" type="button">📦 Gestión de Productos</button>
+                    <button class="mock-nav-btn" type="button">👥 Clientes</button>
+                    <button class="mock-nav-btn" type="button">📊 Reportes</button>
+                </div>
+                <div class="mock-content">
+                    <div class="mock-card">
+                        <strong>Módulo de Productos (UserControl cargado al centro)</strong>
+                        <div class="mock-controls">
+                            <input class="mock-input" type="text" placeholder="Nombre del producto..." value="Monitor LED 24&quot;">
+                            <select class="mock-select">
+                                <option>Categoría: Hardware</option>
+                                <option>Categoría: Software</option>
+                            </select>
+                            <button class="mock-glass-btn" type="button">Guardar Registro</button>
+                        </div>
+                        <table class="mock-table">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PRD-001</td>
+                                    <td>Monitor LED 24"</td>
+                                    <td>Hardware</td>
+                                    <td>$145.00</td>
+                                </tr>
+                                <tr>
+                                    <td>PRD-002</td>
+                                    <td>Teclado Mecánico</td>
+                                    <td>Periféricos</td>
+                                    <td>$48.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 2 -->
+    <section id="diccionarios">
+        <h2 class="section-title">2. ¿Qué es un ResourceDictionary (Diccionario de Recursos)?</h2>
+        <p>Efectivamente, existe un archivo especial en WPF llamado <strong>Diccionario de Recursos (<code>ResourceDictionary</code>)</strong> con extensión <code>.xaml</code>. Funciona exactamente como una <strong>hoja de estilos CSS en desarrollo web</strong>: te permite definir colores, degradados y plantillas de controles en un archivo separado para reutilizarlos en toda la aplicación sin ensuciar el código de tus ventanas.</p>
+
+        <h3>¿Cómo crearlo en Visual Studio?</h3>
+        <ul class="clean-list">
+            <li>Haz clic derecho sobre tu proyecto (o crea una carpeta llamada <code>Styles</code>).</li>
+            <li>Selecciona <strong>Agregar &rarr; Nuevo elemento...</strong></li>
+            <li>Busca y elige <strong>Diccionario de recursos (WPF)</strong> y nómbralo <code>ModernStyles.xaml</code>.</li>
+        </ul>
+
+        <div class="folder-tree">
+            MiProyectoWPF/<br>
+            ├── App.xaml &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#94a3b8;">&lt;-- Aquí se enlaza el diccionario globalmente</span><br>
+            ├── MainWindow.xaml &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#94a3b8;">&lt;-- Ventana base con menú lateral</span><br>
+            ├── Styles/<br>
+            │ &nbsp;&nbsp;└── ModernStyles.xaml &nbsp;&nbsp;&nbsp;<span style="color:#94a3b8;">&lt;-- Todos los estilos (Botones, TextBox, ComboBox, DataGrid)</span><br>
+            └── Views/<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;└── ProductosView.xaml &nbsp;&nbsp;<span style="color:#94a3b8;">&lt;-- UserControl que carga en el centro</span>
+        </div>
+
+        <h3>Enlazar el Diccionario en <code>App.xaml</code></h3>
+        <p>Para que todas las ventanas y <code>UserControl</code> reconozcan automáticamente tus estilos modernos, registra el archivo en <code>App.xaml</code>:</p>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span>App.xaml</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar código</button>
+            </div>
+            <pre><code>&lt;Application x:Class="MiProyectoWPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml"&gt;
+    &lt;Application.Resources&gt;
+        &lt;ResourceDictionary&gt;
+            &lt;ResourceDictionary.MergedDictionaries&gt;
+                &lt;!-- Enlace a nuestro archivo externo de estilos --&gt;
+                &lt;ResourceDictionary Source="Styles/ModernStyles.xaml"/&gt;
+            &lt;/ResourceDictionary.MergedDictionaries&gt;
+        &lt;/ResourceDictionary&gt;
+    &lt;/Application.Resources&gt;
+&lt;/Application&gt;</code></pre>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 3 -->
+    <section id="estilos">
+        <h2 class="section-title">3. Estilos Modernos (Glass / Degradado Corporativo)</h2>
+        <p>En WPF el efecto tipo "vidrio" corporativo (<em>glassmorphism</em> ligero) se logra combinando <strong>degradados lineales (<code>LinearGradientBrush</code>)</strong>, un borde fino semitransparente en la parte superior e inferior, y esquinas redondeadas (<code>CornerRadius="8"</code>), evitando filtros pesados que consuman demasiada memoria o tarjeta gráfica.</p>
+
+        <div class="callout tip">
+            <strong>Truco clave:</strong> Si un <code>Style</code> tiene <code>TargetType="TextBox"</code> y <strong>NO</strong> tiene <code>x:Key</code>, WPF lo aplicará automáticamente a todos los <code>TextBox</code> del proyecto sin tener que escribir <code>Style="..."</code> en cada uno.
+        </div>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span>Styles/ModernStyles.xaml</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar código</button>
+            </div>
+            <pre><code>&lt;ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;
+
+    &lt;!-- ==================== PALETA DE DEGRADADOS ==================== --&gt;
+    &lt;LinearGradientBrush x:Key="SidebarGradient" StartPoint="0,0" EndPoint="0,1"&gt;
+        &lt;GradientStop Color="#0F172A" Offset="0.0"/&gt;
+        &lt;GradientStop Color="#1E293B" Offset="0.55"/&gt;
+        &lt;GradientStop Color="#1D4ED8" Offset="1.0"/&gt;
+    &lt;/LinearGradientBrush&gt;
+
+    &lt;!-- Degradado efecto vidrio azul corporativo --&gt;
+    &lt;LinearGradientBrush x:Key="GlassBlueGradient" StartPoint="0,0" EndPoint="1,1"&gt;
+        &lt;GradientStop Color="#E62563EB" Offset="0.0"/&gt;
+        &lt;GradientStop Color="#D90284C7" Offset="1.0"/&gt;
+    &lt;/LinearGradientBrush&gt;
+
+    &lt;LinearGradientBrush x:Key="GlassBlueHoverGradient" StartPoint="0,0" EndPoint="1,1"&gt;
+        &lt;GradientStop Color="#FF3B82F6" Offset="0.0"/&gt;
+        &lt;GradientStop Color="#FF0EA5E9" Offset="1.0"/&gt;
+    &lt;/LinearGradientBrush&gt;
+
+    &lt;!-- ==================== BOTÓN CORPORATIVO EFECTO VIDRIO ==================== --&gt;
+    &lt;Style x:Key="GlassButtonStyle" TargetType="Button"&gt;
+        &lt;Setter Property="Background" Value="{StaticResource GlassBlueGradient}"/&gt;
+        &lt;Setter Property="Foreground" Value="White"/&gt;
+        &lt;Setter Property="FontSize" Value="13"/&gt;
+        &lt;Setter Property="FontWeight" Value="SemiBold"/&gt;
+        &lt;Setter Property="Padding" Value="16,8"/&gt;
+        &lt;Setter Property="Height" Value="36"/&gt;
+        &lt;Setter Property="Cursor" Value="Hand"/&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="Button"&gt;
+                    &lt;Border x:Name="OuterBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="8"
+                            BorderBrush="#66FFFFFF"
+                            BorderThickness="1"&gt;
+                        &lt;Grid&gt;
+                            &lt;!-- Brillo superior sutil que simula reflejo de vidrio --&gt;
+                            &lt;Border CornerRadius="7,7,0,0" VerticalAlignment="Top" Height="16" IsHitTestVisible="False"&gt;
+                                &lt;Border.Background&gt;
+                                    &lt;LinearGradientBrush StartPoint="0,0" EndPoint="0,1"&gt;
+                                        &lt;GradientStop Color="#45FFFFFF" Offset="0"/&gt;
+                                        &lt;GradientStop Color="#00FFFFFF" Offset="1"/&gt;
+                                    &lt;/LinearGradientBrush&gt;
+                                &lt;/Border.Background&gt;
+                            &lt;/Border&gt;
+                            &lt;ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/&gt;
+                        &lt;/Grid&gt;
+                    &lt;/Border&gt;
+                    &lt;ControlTemplate.Triggers&gt;
+                        &lt;Trigger Property="IsMouseOver" Value="True"&gt;
+                            &lt;Setter TargetName="OuterBorder" Property="Background" Value="{StaticResource GlassBlueHoverGradient}"/&gt;
+                            &lt;Setter TargetName="OuterBorder" Property="BorderBrush" Value="#AAFFFFFF"/&gt;
+                        &lt;/Trigger&gt;
+                        &lt;Trigger Property="IsPressed" Value="True"&gt;
+                            &lt;Setter TargetName="OuterBorder" Property="Opacity" Value="0.85"/&gt;
+                        &lt;/Trigger&gt;
+                    &lt;/ControlTemplate.Triggers&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;
+
+    &lt;!-- ==================== BOTÓN DEL MENÚ LATERAL ==================== --&gt;
+    &lt;Style x:Key="MenuButtonStyle" TargetType="Button"&gt;
+        &lt;Setter Property="Background" Value="#14FFFFFF"/&gt;
+        &lt;Setter Property="Foreground" Value="#E2E8F0"/&gt;
+        &lt;Setter Property="FontSize" Value="14"/&gt;
+        &lt;Setter Property="FontWeight" Value="SemiBold"/&gt;
+        &lt;Setter Property="Height" Value="42"/&gt;
+        &lt;Setter Property="Margin" Value="12,5"/&gt;
+        &lt;Setter Property="Cursor" Value="Hand"/&gt;
+        &lt;Setter Property="HorizontalContentAlignment" Value="Left"/&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="Button"&gt;
+                    &lt;Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#26FFFFFF"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="14,0"&gt;
+                        &lt;ContentPresenter VerticalAlignment="Center"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/&gt;
+                    &lt;/Border&gt;
+                    &lt;ControlTemplate.Triggers&gt;
+                        &lt;Trigger Property="IsMouseOver" Value="True"&gt;
+                            &lt;Setter TargetName="Bd" Property="Background" Value="{StaticResource GlassBlueGradient}"/&gt;
+                            &lt;Setter TargetName="Bd" Property="BorderBrush" Value="#66FFFFFF"/&gt;
+                            &lt;Setter Property="Foreground" Value="White"/&gt;
+                        &lt;/Trigger&gt;
+                    &lt;/ControlTemplate.Triggers&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;
+
+    &lt;!-- ==================== TEXTBOX MODERNO REDONDEADO ==================== --&gt;
+    &lt;Style TargetType="TextBox"&gt;
+        &lt;Setter Property="Height" Value="36"/&gt;
+        &lt;Setter Property="Padding" Value="10,6"/&gt;
+        &lt;Setter Property="FontSize" Value="13"/&gt;
+        &lt;Setter Property="Foreground" Value="#0F172A"/&gt;
+        &lt;Setter Property="Background" Value="#F8FAFC"/&gt;
+        &lt;Setter Property="BorderBrush" Value="#CBD5E1"/&gt;
+        &lt;Setter Property="BorderThickness" Value="1.5"/&gt;
+        &lt;Setter Property="VerticalContentAlignment" Value="Center"/&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="TextBox"&gt;
+                    &lt;Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8"&gt;
+                        &lt;ScrollViewer x:Name="PART_ContentHost" Margin="2,0"/&gt;
+                    &lt;/Border&gt;
+                    &lt;ControlTemplate.Triggers&gt;
+                        &lt;Trigger Property="IsMouseOver" Value="True"&gt;
+                            &lt;Setter TargetName="Bd" Property="BorderBrush" Value="#64748B"/&gt;
+                        &lt;/Trigger&gt;
+                        &lt;Trigger Property="IsKeyboardFocused" Value="True"&gt;
+                            &lt;Setter TargetName="Bd" Property="BorderBrush" Value="#2563EB"/&gt;
+                            &lt;Setter TargetName="Bd" Property="Background" Value="White"/&gt;
+                        &lt;/Trigger&gt;
+                    &lt;/ControlTemplate.Triggers&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;
+
+    &lt;!-- ==================== COMBOBOX MODERNO REDONDEADO ==================== --&gt;
+    &lt;Style TargetType="ComboBox"&gt;
+        &lt;Setter Property="Height" Value="36"/&gt;
+        &lt;Setter Property="Padding" Value="10,6"/&gt;
+        &lt;Setter Property="FontSize" Value="13"/&gt;
+        &lt;Setter Property="Foreground" Value="#0F172A"/&gt;
+        &lt;Setter Property="Background" Value="#F8FAFC"/&gt;
+        &lt;Setter Property="BorderBrush" Value="#CBD5E1"/&gt;
+        &lt;Setter Property="BorderThickness" Value="1.5"/&gt;
+        &lt;Setter Property="VerticalContentAlignment" Value="Center"/&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="ComboBox"&gt;
+                    &lt;Grid&gt;
+                        &lt;Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"&gt;
+                            &lt;Grid&gt;
+                                &lt;Grid.ColumnDefinitions&gt;
+                                    &lt;ColumnDefinition Width="*"/&gt;
+                                    &lt;ColumnDefinition Width="30"/&gt;
+                                &lt;/Grid.ColumnDefinitions&gt;
+
+                                &lt;ContentPresenter Grid.Column="0"
+                                                  Margin="10,0,0,0"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"
+                                                  Content="{TemplateBinding SelectionBoxItem}"/&gt;
+
+                                &lt;!-- Flecha desplegable --&gt;
+                                &lt;Path Grid.Column="1"
+                                      Data="M 0 0 L 4 4 L 8 0 Z"
+                                      Fill="#475569"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/&gt;
+
+                                &lt;ToggleButton Grid.ColumnSpan="2"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Focusable="False"
+                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/&gt;
+                            &lt;/Grid&gt;
+                        &lt;/Border&gt;
+
+                        &lt;Popup IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom"
+                               AllowsTransparency="True"
+                               Focusable="False"&gt;
+                            &lt;Border Background="White"
+                                    BorderBrush="#CBD5E1"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    Margin="0,4,0,0"&gt;
+                                &lt;ScrollViewer MaxHeight="200"&gt;
+                                    &lt;ItemsPresenter/&gt;
+                                &lt;/ScrollViewer&gt;
+                            &lt;/Border&gt;
+                        &lt;/Popup&gt;
+                    &lt;/Grid&gt;
+                    &lt;ControlTemplate.Triggers&gt;
+                        &lt;Trigger Property="IsMouseOver" Value="True"&gt;
+                            &lt;Setter TargetName="Bd" Property="BorderBrush" Value="#2563EB"/&gt;
+                        &lt;/Trigger&gt;
+                    &lt;/ControlTemplate.Triggers&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;
+
+    &lt;!-- ==================== DATAGRID CORPORATIVO MODERNO ==================== --&gt;
+    &lt;Style TargetType="DataGrid"&gt;
+        &lt;Setter Property="Background" Value="White"/&gt;
+        &lt;Setter Property="BorderBrush" Value="#E2E8F0"/&gt;
+        &lt;Setter Property="BorderThickness" Value="1"/&gt;
+        &lt;Setter Property="RowBackground" Value="White"/&gt;
+        &lt;Setter Property="AlternatingRowBackground" Value="#F8FAFC"/&gt;
+        &lt;Setter Property="GridLinesVisibility" Value="Horizontal"/&gt;
+        &lt;Setter Property="HorizontalGridLinesBrush" Value="#E2E8F0"/&gt;
+        &lt;Setter Property="HeadersVisibility" Value="Column"/&gt;
+        &lt;Setter Property="AutoGenerateColumns" Value="False"/&gt;
+        &lt;Setter Property="CanUserAddRows" Value="False"/&gt;
+        &lt;Setter Property="RowHeight" Value="36"/&gt;
+        &lt;Setter Property="FontSize" Value="13"/&gt;
+        &lt;Setter Property="ColumnHeaderStyle"&gt;
+            &lt;Setter.Value&gt;
+                &lt;Style TargetType="DataGridColumnHeader"&gt;
+                    &lt;Setter Property="Background" Value="#1E293B"/&gt;
+                    &lt;Setter Property="Foreground" Value="White"/&gt;
+                    &lt;Setter Property="FontWeight" Value="SemiBold"/&gt;
+                    &lt;Setter Property="Padding" Value="12,10"/&gt;
+                    &lt;Setter Property="BorderThickness" Value="0,0,1,0"/&gt;
+                    &lt;Setter Property="BorderBrush" Value="#334155"/&gt;
+                &lt;/Style&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;
+
+&lt;/ResourceDictionary&gt;</code></pre>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 4 -->
+    <section id="mainwindow">
+        <h2 class="section-title">4. Ventana Principal (<code>MainWindow.xaml</code> y <code>.cs</code>)</h2>
+        <p>Esta ventana usa los recursos definidos en <code>ModernStyles.xaml</code> sin necesidad de repetir estilos largos dentro de la ventana.</p>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span>MainWindow.xaml</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar código</button>
+            </div>
+            <pre><code>&lt;Window x:Class="MiProyectoWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sistema Administrativo" Height="620" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#F1F5F9"&gt;
+
+    &lt;Grid&gt;
+        &lt;Grid.ColumnDefinitions&gt;
+            &lt;ColumnDefinition Width="235"/&gt;
+            &lt;ColumnDefinition Width="*"/&gt;
+        &lt;/Grid.ColumnDefinitions&gt;
+
+        &lt;!-- MENÚ LATERAL IZQUIERDO --&gt;
+        &lt;Border Grid.Column="0" Background="{StaticResource SidebarGradient}"&gt;
+            &lt;Grid&gt;
+                &lt;Grid.RowDefinitions&gt;
+                    &lt;RowDefinition Height="75"/&gt;
+                    &lt;RowDefinition Height="*"/&gt;
+                    &lt;RowDefinition Height="45"/&gt;
+                &lt;/Grid.RowDefinitions&gt;
+
+                &lt;TextBlock Grid.Row="0"
+                           Text="SISTEMA CORP"
+                           Foreground="White"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           Margin="20,0,0,0"/&gt;
+
+                &lt;StackPanel Grid.Row="1"&gt;
+                    &lt;Button Content="Productos" Style="{StaticResource MenuButtonStyle}" Click="BtnProductos_Click"/&gt;
+                    &lt;Button Content="Clientes" Style="{StaticResource MenuButtonStyle}" Click="BtnClientes_Click"/&gt;
+                    &lt;Button Content="Reportes" Style="{StaticResource MenuButtonStyle}" Click="BtnReportes_Click"/&gt;
+                &lt;/StackPanel&gt;
+
+                &lt;TextBlock Grid.Row="2"
+                           Text="WPF .NET 4.5"
+                           Foreground="#94A3B8"
+                           FontSize="11"
+                           VerticalAlignment="Center"
+                           Margin="20,0,0,0"/&gt;
+            &lt;/Grid&gt;
+        &lt;/Border&gt;
+
+        &lt;!-- CONTENEDOR DINÁMICO CENTRAL / DERECHO --&gt;
+        &lt;Grid Grid.Column="1" Margin="20"&gt;
+            &lt;ContentControl x:Name="ContenedorVistas"/&gt;
+        &lt;/Grid&gt;
+    &lt;/Grid&gt;
+&lt;/Window&gt;</code></pre>
+        </div>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span>MainWindow.xaml.cs</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar código</button>
+            </div>
+            <pre><code>using System.Windows;
+using MiProyectoWPF.Views;
+
+namespace MiProyectoWPF
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+            // Vista inicial por defecto
+            ContenedorVistas.Content = new ProductosView();
+        }
+
+        private void BtnProductos_Click(object sender, RoutedEventArgs e)
+        {
+            ContenedorVistas.Content = new ProductosView();
+        }
+
+        private void BtnClientes_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Aquí cargarías: ContenedorVistas.Content = new ClientesView();");
+        }
+
+        private void BtnReportes_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Aquí cargarías: ContenedorVistas.Content = new ReportesView();");
+        }
+    }
+}</code></pre>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 5 -->
+    <section id="vista">
+        <h2 class="section-title">5. Vista Interna (<code>UserControl</code>) usando todos los controles</h2>
+        <p>Observa qué limpio queda el XAML de la vista interna: los <code>TextBox</code>, <code>ComboBox</code> y <code>DataGrid</code> toman automáticamente el diseño moderno del diccionario, y a los botones les aplicamos <code>Style="{StaticResource GlassButtonStyle}"</code>.</p>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span>Views/ProductosView.xaml</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar código</button>
+            </div>
+            <pre><code>&lt;UserControl x:Class="MiProyectoWPF.Views.ProductosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent"&gt;
+
+    &lt;Border Background="White" CornerRadius="12" Padding="24" BorderBrush="#E2E8F0" BorderThickness="1"&gt;
+        &lt;Grid&gt;
+            &lt;Grid.RowDefinitions&gt;
+                &lt;RowDefinition Height="Auto"/&gt;
+                &lt;RowDefinition Height="Auto"/&gt;
+                &lt;RowDefinition Height="*"/&gt;
+            &lt;/Grid.RowDefinitions&gt;
+
+            &lt;!-- Título --&gt;
+            &lt;StackPanel Grid.Row="0" Margin="0,0,0,18"&gt;
+                &lt;TextBlock Text="Gestión de Productos" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/&gt;
+                &lt;TextBlock Text="Ejemplo de formulario moderno con TextBox, ComboBox, Botón Glass y DataGrid."
+                           FontSize="13" Foreground="#64748B"/&gt;
+            &lt;/StackPanel&gt;
+
+            &lt;!-- Formulario superior --&gt;
+            &lt;Grid Grid.Row="1" Margin="0,0,0,20"&gt;
+                &lt;Grid.ColumnDefinitions&gt;
+                    &lt;ColumnDefinition Width="2*"/&gt;
+                    &lt;ColumnDefinition Width="1.5*"/&gt;
+                    &lt;ColumnDefinition Width="1*"/&gt;
+                    &lt;ColumnDefinition Width="Auto"/&gt;
+                &lt;/Grid.ColumnDefinitions&gt;
+
+                &lt;StackPanel Grid.Column="0" Margin="0,0,12,0"&gt;
+                    &lt;TextBlock Text="Nombre del Producto" FontSize="12" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,4"/&gt;
+                    &lt;TextBox x:Name="txtNombre"/&gt;
+                &lt;/StackPanel&gt;
+
+                &lt;StackPanel Grid.Column="1" Margin="0,0,12,0"&gt;
+                    &lt;TextBlock Text="Categoría" FontSize="12" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,4"/&gt;
+                    &lt;ComboBox x:Name="cmbCategoria" SelectedIndex="0"&gt;
+                        &lt;ComboBoxItem Content="Hardware"/&gt;
+                        &lt;ComboBoxItem Content="Software"/&gt;
+                        &lt;ComboBoxItem Content="Redes"/&gt;
+                    &lt;/ComboBox&gt;
+                &lt;/StackPanel&gt;
+
+                &lt;StackPanel Grid.Column="2" Margin="0,0,12,0"&gt;
+                    &lt;TextBlock Text="Precio ($)" FontSize="12" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,4"/&gt;
+                    &lt;TextBox x:Name="txtPrecio"/&gt;
+                &lt;/StackPanel&gt;
+
+                &lt;Button Grid.Column="3"
+                        Content="Agregar"
+                        Style="{StaticResource GlassButtonStyle}"
+                        VerticalAlignment="Bottom"
+                        Click="BtnAgregar_Click"/&gt;
+            &lt;/Grid&gt;
+
+            &lt;!-- Tabla DataGrid --&gt;
+            &lt;DataGrid x:Name="dgProductos" Grid.Row="2"&gt;
+                &lt;DataGrid.Columns&gt;
+                    &lt;DataGridTextColumn Header="Producto" Binding="{Binding Nombre}" Width="2*"/&gt;
+                    &lt;DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="1.5*"/&gt;
+                    &lt;DataGridTextColumn Header="Precio ($)" Binding="{Binding Precio}" Width="1*"/&gt;
+                &lt;/DataGrid.Columns&gt;
+            &lt;/DataGrid&gt;
+        &lt;/Grid&gt;
+    &lt;/Border&gt;
+&lt;/UserControl&gt;</code></pre>
+        </div>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <span>Views/ProductosView.xaml.cs</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copiar código</button>
+            </div>
+            <pre><code>using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace MiProyectoWPF.Views
+{
+    public partial class ProductosView : UserControl
+    {
+        // ObservableCollection actualiza el DataGrid automáticamente al agregar elementos
+        private ObservableCollection&lt;Producto&gt; listaProductos = new ObservableCollection&lt;Producto&gt;();
+
+        public ProductosView()
+        {
+            InitializeComponent();
+            dgProductos.ItemsSource = listaProductos;
+
+            // Datos de prueba iniciales
+            listaProductos.Add(new Producto { Nombre = "Monitor LED 24"", Categoria = "Hardware", Precio = "145.00" });
+            listaProductos.Add(new Producto { Nombre = "Licencia Antivirus", Categoria = "Software", Precio = "35.00" });
+        }
+
+        private void BtnAgregar_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtPrecio.Text))
+            {
+                MessageBox.Show("Complete el nombre y el precio.", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string cat = (cmbCategoria.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            listaProductos.Add(new Producto
+            {
+                Nombre = txtNombre.Text.Trim(),
+                Categoria = cat,
+                Precio = txtPrecio.Text.Trim()
+            });
+
+            txtNombre.Clear();
+            txtPrecio.Clear();
+            txtNombre.Focus();
+        }
+    }
+
+    public class Producto
+    {
+        public string Nombre { get; set; }
+        public string Categoria { get; set; }
+        public string Precio { get; set; }
+    }
+}</code></pre>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 6 -->
+    <section id="rendimiento">
+        <h2 class="section-title">6. Consejos de Rendimiento en Equipos con Recursos Limitados</h2>
+        <div class="callout warn">
+            <strong>Importante para laboratorios con .NET Framework 4.5:</strong>
+            <ul class="clean-list" style="margin-top:0.5rem; margin-bottom:0;">
+                <li><strong>Evita <code>DropShadowEffect</code> y <code>BlurEffect</code>:</strong> Esos efectos obligan a WPF a renderizar por software si la GPU es básica, haciendo lenta la ventana. Los bordes finos (<code>BorderThickness="1"</code>) y degradados lineales son acelerados y muy livianos.</li>
+                <li><strong>Mantén los estilos en el <code>ResourceDictionary</code>:</strong> Evita definir <code>ControlTemplate</code> repetidos dentro de cada ventana; centralizarlos reduce consumo de memoria y facilita el mantenimiento.</li>
+                <li><strong>Usa <code>ObservableCollection&lt;T&gt;</code> para el <code>DataGrid</code>:</strong> Así evitas recargar toda la tabla cada vez que insertas o eliminas un registro.</li>
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    Manual de Referencia WPF (.NET Framework 4.5) · Listo para publicar en GitHub Pages como <code>index.html</code>
+</footer>
+
+<script>
+    function copyCode(button) {
+        const pre = button.closest('.code-wrapper').querySelector('pre');
+        const text = pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const original = button.innerText;
+            button.innerText = '¡Copiado!';
+            setTimeout(() => { button.innerText = original; }, 1800);
+        });
+    }
+</script>
+
+</body>
+</html>
