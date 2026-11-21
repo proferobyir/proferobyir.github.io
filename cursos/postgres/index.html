@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Completa de PostgreSQL: De Básico a Avanzado</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+            --border: #e2e8f0;
+            --accent: #dbeafe;
+            --badge-adv: #fef3c7;
+            --badge-adv-text: #b45309;
+            --badge-obj: #dcfce7;
+            --badge-obj-text: #15803d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Navegación Lateral */
+        nav {
+            width: 270px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1.25rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        nav h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        nav h3:first-child {
+            margin-top: 0;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav li {
+            margin-bottom: 0.35rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        nav a:hover {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        /* Contenido Principal */
+        main {
+            margin-left: 270px;
+            flex: 1;
+            padding: 2rem 2.5rem;
+            max-width: 960px;
+        }
+
+        header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-top: 5px solid var(--primary);
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        .section-divider {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: var(--accent);
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+
+        .badge.obj {
+            background: var(--badge-obj);
+            color: var(--badge-obj-text);
+        }
+
+        .badge.adv {
+            background: var(--badge-adv);
+            color: var(--badge-adv-text);
+        }
+
+        h2 {
+            font-size: 1.18rem;
+            color: #0f172a;
+        }
+
+        p {
+            margin-bottom: 0.85rem;
+            font-size: 0.95rem;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 0.88em;
+            color: #0f172a;
+        }
+
+        .code-wrapper {
+            position: relative;
+            margin-top: 0.5rem;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 5px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .note {
+            font-size: 0.86rem;
+            color: var(--muted);
+            margin-top: 0.75rem;
+            background: #f8fafc;
+            padding: 0.6rem 0.9rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin: 3rem 0 1rem;
+        }
+
+        @media (max-width: 820px) {
+            body {
+                flex-direction: column;
+            }
+
+            nav {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            main {
+                margin-left: 0;
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h3>1. Nivel Básico</h3>
+        <ul>
+            <li><a href="#conexion">Conexión y Bases de Datos</a></li>
+            <li><a href="#tablas">Tablas y Restricciones</a></li>
+            <li><a href="#crud">Operaciones CRUD</a></li>
+        </ul>
+
+        <h3>2. Nivel Intermedio</h3>
+        <ul>
+            <li><a href="#joins">Relaciones y JOINs</a></li>
+            <li><a href="#agregacion">Agregación y GROUP BY</a></li>
+            <li><a href="#indices">Índices (Indexes)</a></li>
+        </ul>
+
+        <h3>3. Objetos de PostgreSQL</h3>
+        <ul>
+            <li><a href="#esquemas">Esquemas (Schemas)</a></li>
+            <li><a href="#secuencias">Secuencias (Sequences)</a></li>
+            <li><a href="#tipos">Tipos Personalizados (ENUM)</a></li>
+            <li><a href="#vistas">Vistas (Views)</a></li>
+            <li><a href="#vistas-mat">Vistas Materializadas</a></li>
+            <li><a href="#funciones">Funciones (Functions)</a></li>
+            <li><a href="#procedimientos">Procedimientos (Procedures)</a></li>
+            <li><a href="#triggers">Disparadores (Triggers)</a></li>
+        </ul>
+
+        <h3>4. Nivel Avanzado</h3>
+        <ul>
+            <li><a href="#transacciones">Transacciones (ACID)</a></li>
+            <li><a href="#cte">CTEs y Window Functions</a></li>
+            <li><a href="#jsonb">Datos Semi-estructurados (JSONB)</a></li>
+            <li><a href="#roles">Roles y Permisos</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <header>
+            <h1>PostgreSQL de Básico a Avanzado</h1>
+            <p>Manual práctico desde consola (<strong>psql</strong>): comandos esenciales, arquitectura de objetos y
+                ejemplos listos para ejecutar.</p>
+        </header>
+
+        <!-- ==================== NIVEL BÁSICO ==================== -->
+        <div class="section-divider">1. Nivel Básico: Consola, Tablas y CRUD</div>
+
+        <section id="conexion" class="card">
+            <div class="card-header">
+                <span class="badge">Básico</span>
+                <h2>Conexión y Gestión de Bases de Datos</h2>
+            </div>
+            <p>Conéctate a <code>psql</code>, crea una base de datos y muévete hacia ella.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Desde la terminal del sistema operativo:
+psql -U postgres -h localhost -p 5432
+
+-- Dentro de psql:
+CREATE DATABASE empresa_db;
+\c empresa_db
+
+-- Metacomandos de inspección rápida:
+\l      -- Listar bases de datos
+\dt     -- Listar tablas
+\dn     -- Listar esquemas
+\dv     -- Listar vistas
+\df     -- Listar funciones
+\q      -- Salir</code></pre>
+            </div>
+        </section>
+
+        <section id="tablas" class="card">
+            <div class="card-header">
+                <span class="badge">Básico</span>
+                <h2>Creación de Tablas y Llaves Foráneas</h2>
+            </div>
+            <p>Define entidades relacionadas con tipos de datos estrictos y restricciones de integridad.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>CREATE TABLE departamentos (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(80) UNIQUE NOT NULL
+);
+
+CREATE TABLE empleados (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(120) UNIQUE NOT NULL,
+  salario NUMERIC(10, 2) CHECK (salario > 0),
+  departamento_id INT REFERENCES departamentos(id) ON DELETE SET NULL,
+  fecha_ingreso DATE DEFAULT CURRENT_DATE
+);</code></pre>
+            </div>
+        </section>
+
+        <section id="crud" class="card">
+            <div class="card-header">
+                <span class="badge">Básico</span>
+                <h2>Operaciones CRUD (Create, Read, Update, Delete)</h2>
+            </div>
+            <p>Manipulación fundamental de registros con retorno inmediato mediante <code>RETURNING</code>.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- CREATE
+INSERT INTO departamentos (nombre) VALUES ('Ingeniería'), ('Ventas');
+
+INSERT INTO empleados (nombre, email, salario, departamento_id) VALUES
+  ('Ana Torres', 'ana@empresa.com', 3200.00, 1),
+  ('Luis Pérez', 'luis@empresa.com', 2800.00, 1),
+  ('Carla Gómez', 'carla@empresa.com', 2500.00, 2)
+RETURNING id, nombre;
+
+-- READ
+SELECT id, nombre, salario FROM empleados WHERE salario >= 2800 ORDER BY salario DESC;
+
+-- UPDATE
+UPDATE empleados SET salario = salario * 1.10 WHERE id = 2 RETURNING nombre, salario;
+
+-- DELETE
+DELETE FROM empleados WHERE id = 3;</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== NIVEL INTERMEDIO ==================== -->
+        <div class="section-divider">2. Nivel Intermedio: Consultas Relacionales e Índices</div>
+
+        <section id="joins" class="card">
+            <div class="card-header">
+                <span class="badge">Intermedio</span>
+                <h2>Consultas Multitabla (JOINs)</h2>
+            </div>
+            <p>Combina registros entre tablas relacionadas.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- INNER JOIN: Solo empleados con departamento asignado
+SELECT e.nombre AS empleado, d.nombre AS departamento, e.salario
+FROM empleados e
+INNER JOIN departamentos d ON e.departamento_id = d.id;
+
+-- LEFT JOIN: Todos los departamentos, incluso si no tienen empleados
+SELECT d.nombre AS departamento, e.nombre AS empleado
+FROM departamentos d
+LEFT JOIN empleados e ON d.id = e.departamento_id;</code></pre>
+            </div>
+        </section>
+
+        <section id="agregacion" class="card">
+            <div class="card-header">
+                <span class="badge">Intermedio</span>
+                <h2>Agregación y Agrupamiento (GROUP BY / HAVING)</h2>
+            </div>
+            <p>Calcula métricas resumidas por grupo y filtra resultados agregados.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>SELECT
+  d.nombre AS departamento,
+  COUNT(e.id) AS total_empleados,
+  ROUND(AVG(e.salario), 2) AS salario_promedio,
+  SUM(e.salario) AS nomina_total
+FROM departamentos d
+LEFT JOIN empleados e ON d.id = e.departamento_id
+GROUP BY d.nombre
+HAVING COUNT(e.id) >= 1;</code></pre>
+            </div>
+        </section>
+
+        <section id="indices" class="card">
+            <div class="card-header">
+                <span class="badge">Intermedio</span>
+                <h2>Índices (Indexes)</h2>
+            </div>
+            <p>Aceleran las búsquedas y ordenamientos en columnas frecuentemente consultadas.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear índice B-Tree estándar
+CREATE INDEX idx_empleados_departamento ON empleados(departamento_id);
+
+-- Crear índice parcial (solo indexa registros que cumplen una condición)
+CREATE INDEX idx_salarios_altos ON empleados(salario) WHERE salario > 3000;
+
+-- Analizar el plan de ejecución de una consulta
+EXPLAIN ANALYZE SELECT * FROM empleados WHERE departamento_id = 1;</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== OBJETOS DE POSTGRESQL ==================== -->
+        <div class="section-divider">3. Objetos de PostgreSQL (Creación y Uso)</div>
+
+        <section id="esquemas" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Schema</span>
+                <h2>Esquemas (Namespaces lógicos)</h2>
+            </div>
+            <p>Permiten organizar tablas y objetos en grupos lógicos dentro de una misma base de datos (por defecto todo
+                se crea en public).</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear esquema
+CREATE SCHEMA auditoria;
+
+-- Crear tabla dentro del esquema
+CREATE TABLE auditoria.logs_acceso (
+  id SERIAL PRIMARY KEY,
+  usuario VARCHAR(50),
+  fecha TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Uso:
+INSERT INTO auditoria.logs_acceso (usuario) VALUES ('ana@empresa.com');
+SELECT * FROM auditoria.logs_acceso;</code></pre>
+            </div>
+        </section>
+
+        <section id="secuencias" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Sequence</span>
+                <h2>Secuencias (Sequences)</h2>
+            </div>
+            <p>Generadores de números únicos incrementales útiles para folios, facturas o códigos personalizados.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear secuencia que inicia en 1000 y avanza de 5 en 5
+CREATE SEQUENCE seq_factura START 1000 INCREMENT 5;
+
+-- Uso:
+SELECT nextval('seq_factura'); -- Devuelve 1000
+SELECT nextval('seq_factura'); -- Devuelve 1005
+SELECT currval('seq_factura'); -- Consulta el valor actual (1005)</code></pre>
+            </div>
+        </section>
+
+        <section id="tipos" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Type</span>
+                <h2>Tipos de Datos Personalizados (ENUM y Compuestos)</h2>
+            </div>
+            <p>Restringen valores permitidos a nivel de tipo de dato en toda la base de datos.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear tipo ENUM
+CREATE TYPE estado_pedido AS ENUM ('pendiente', 'procesando', 'enviado', 'entregado');
+
+-- Uso en una tabla:
+CREATE TABLE pedidos (
+  id SERIAL PRIMARY KEY,
+  codigo VARCHAR(20),
+  estado estado_pedido DEFAULT 'pendiente'
+);
+
+INSERT INTO pedidos (codigo, estado) VALUES ('PED-01', 'enviado');</code></pre>
+            </div>
+        </section>
+
+        <section id="vistas" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · View</span>
+                <h2>Vistas Estándar (Views)</h2>
+            </div>
+            <p>Consultas guardadas que actúan como tablas virtuales; no almacenan datos físicos, sino que ejecutan la
+                consulta al ser llamadas.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear o reemplazar vista
+CREATE OR REPLACE VIEW vw_directorio_empleados AS
+SELECT
+  e.id,
+  e.nombre AS empleado,
+  e.email,
+  COALESCE(d.nombre, 'Sin asignar') AS departamento
+FROM empleados e
+LEFT JOIN departamentos d ON e.departamento_id = d.id;
+
+-- Uso (se consulta exactamente igual que una tabla):
+SELECT * FROM vw_directorio_empleados WHERE departamento = 'Ingeniería';</code></pre>
+            </div>
+        </section>
+
+        <section id="vistas-mat" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Materialized View</span>
+                <h2>Vistas Materializadas (Materialized Views)</h2>
+            </div>
+            <p>Almacenan físicamente el resultado de una consulta pesada en disco para lecturas instantáneas. Deben
+                refrescarse manualmente.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear vista materializada
+CREATE MATERIALIZED VIEW mv_resumen_nomina AS
+SELECT
+  d.nombre AS departamento,
+  COUNT(e.id) AS empleados,
+  SUM(e.salario) AS total_salarios
+FROM departamentos d
+LEFT JOIN empleados e ON d.id = e.departamento_id
+GROUP BY d.nombre;
+
+-- Uso:
+SELECT * FROM mv_resumen_nomina;
+
+-- Actualizar datos cuando cambian las tablas base:
+REFRESH MATERIALIZED VIEW mv_resumen_nomina;</code></pre>
+            </div>
+        </section>
+
+        <section id="funciones" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Function</span>
+                <h2>Funciones (PL/pgSQL Functions)</h2>
+            </div>
+            <p>Encapsulan lógica reutilizable que recibe parámetros, realiza cálculos o consultas y devuelve un valor o
+                tabla.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear función para calcular bono anual (15%)
+CREATE OR REPLACE FUNCTION calcular_bono(p_salario NUMERIC, p_porcentaje NUMERIC DEFAULT 0.15)
+RETURNS NUMERIC AS $$
+BEGIN
+  RETURN ROUND(p_salario * p_porcentaje, 2);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Uso dentro de un SELECT:
+SELECT nombre, salario, calcular_bono(salario) AS bono FROM empleados;</code></pre>
+            </div>
+        </section>
+
+        <section id="procedimientos" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Procedure</span>
+                <h2>Procedimientos Almacenados (Stored Procedures)</h2>
+            </div>
+            <p>A diferencia de las funciones, no devuelven un valor directamente, se ejecutan con CALL y permiten
+                controlar transacciones (COMMIT / ROLLBACK).</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear procedimiento para aumentar salario por departamento
+CREATE OR REPLACE PROCEDURE aumentar_salario_depto(p_depto_id INT, p_incremento NUMERIC)
+LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE empleados
+  SET salario = salario + p_incremento
+  WHERE departamento_id = p_depto_id;
+  COMMIT;
+END;
+$$;
+
+-- Uso:
+CALL aumentar_salario_depto(1, 250.00);</code></pre>
+            </div>
+        </section>
+
+        <section id="triggers" class="card">
+            <div class="card-header">
+                <span class="badge obj">Objeto · Trigger</span>
+                <h2>Disparadores (Triggers)</h2>
+            </div>
+            <p>Ejecutan automáticamente una función especial antes (BEFORE) o después (AFTER) de un evento INSERT,
+                UPDATE o DELETE.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- 1. Crear tabla de historial
+CREATE TABLE historial_salarios (
+  id SERIAL PRIMARY KEY,
+  empleado_id INT,
+  salario_anterior NUMERIC,
+  salario_nuevo NUMERIC,
+  fecha_cambio TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Crear la función del trigger
+CREATE OR REPLACE FUNCTION registrar_cambio_salario()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.salario <> OLD.salario THEN
+    INSERT INTO historial_salarios (empleado_id, salario_anterior, salario_nuevo)
+    VALUES (OLD.id, OLD.salario, NEW.salario);
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 3. Vincular el trigger a la tabla empleados
+CREATE TRIGGER trg_auditar_salario
+AFTER UPDATE ON empleados
+FOR EACH ROW
+EXECUTE FUNCTION registrar_cambio_salario();
+
+-- Uso (se dispara solo al actualizar un salario):
+UPDATE empleados SET salario = 4000.00 WHERE id = 1;
+SELECT * FROM historial_salarios;</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== NIVEL AVANZADO ==================== -->
+        <div class="section-divider">4. Nivel Avanzado: Transacciones, Analítica, JSONB y Seguridad</div>
+
+        <section id="transacciones" class="card">
+            <div class="card-header">
+                <span class="badge adv">Avanzado</span>
+                <h2>Transacciones y Puntos de Guardado (Savepoints)</h2>
+            </div>
+            <p>Garantizan que un bloque de operaciones se ejecute por completo o se revierta sin dejar datos corruptos.
+            </p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>BEGIN;
+UPDATE empleados SET salario = salario - 200 WHERE id = 1;
+SAVEPOINT punto_seguro;
+
+-- Operación errónea o que deseamos deshacer parcialmente:
+DELETE FROM empleados WHERE id = 2;
+ROLLBACK TO SAVEPOINT punto_seguro;
+
+-- Confirmar los cambios válidos:
+COMMIT;</code></pre>
+            </div>
+        </section>
+
+        <section id="cte" class="card">
+            <div class="card-header">
+                <span class="badge adv">Avanzado</span>
+                <h2>CTEs (WITH) y Funciones de Ventana (Window Functions)</h2>
+            </div>
+            <p>Permiten escribir consultas complejas legibles y realizar rankings o cálculos sobre particiones sin
+                colapsar las filas.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>WITH ranking_salarios AS (
+  SELECT
+    e.nombre,
+    d.nombre AS departamento,
+    e.salario,
+    RANK() OVER (PARTITION BY d.nombre ORDER BY e.salario DESC) AS posicion
+  FROM empleados e
+  JOIN departamentos d ON e.departamento_id = d.id
+)
+SELECT * FROM ranking_salarios WHERE posicion = 1;</code></pre>
+            </div>
+        </section>
+
+        <section id="jsonb" class="card">
+            <div class="card-header">
+                <span class="badge adv">Avanzado</span>
+                <h2>Almacenamiento y Consulta de JSONB</h2>
+            </div>
+            <p>PostgreSQL permite almacenar documentos JSON binarios indexables y consultar sus claves directamente en
+                SQL.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>CREATE TABLE perfiles_tecnicos (
+  empleado_id INT PRIMARY KEY REFERENCES empleados(id),
+  habilidades JSONB
+);
+
+INSERT INTO perfiles_tecnicos VALUES
+  (1, '{"lenguajes": ["Python", "SQL"], "remoto": true, "experiencia": 5}');
+
+-- Consultar claves dentro del JSONB y crear índice GIN
+CREATE INDEX idx_habilidades_gin ON perfiles_tecnicos USING GIN (habilidades);
+
+SELECT empleado_id, habilidades->>'experiencia' AS anios
+FROM perfiles_tecnicos
+WHERE habilidades @> '{"remoto": true}';</code></pre>
+            </div>
+        </section>
+
+        <section id="roles" class="card">
+            <div class="card-header">
+                <span class="badge adv">Avanzado</span>
+                <h2>Administración de Roles y Permisos (DCL)</h2>
+            </div>
+            <p>Control granular de seguridad siguiendo el principio de mínimo privilegio.</p>
+            <div class="code-wrapper">
+                <button class="copy-btn" onclick="copiar(this)">Copiar</button>
+                <pre><code>-- Crear usuario de solo lectura
+CREATE ROLE analista_lectura WITH LOGIN PASSWORD 'ClaveSegura2026!';
+
+-- Otorgar acceso a la base de datos y permisos SELECT
+GRANT CONNECT ON DATABASE empresa_db TO analista_lectura;
+GRANT USAGE ON SCHEMA public TO analista_lectura;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO analista_lectura;
+
+-- Revocar permisos
+REVOKE INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public FROM analista_lectura;</code></pre>
+            </div>
+        </section>
+
+        <footer>
+            Guía de Referencia PostgreSQL · 100% autocontenida (HTML + CSS + JS nativo) · Lista para GitHub Pages
+        </footer>
+    </main>
+
+    <script>
+        function copiar(boton) {
+            const codigo = boton.nextElementSibling.innerText;
+            navigator.clipboard.writeText(codigo).then(() => {
+                const original = boton.innerText;
+                boton.innerText = "¡Copiado!";
+                setTimeout(() => {
+                    boton.innerText = original;
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+
+</html>
