@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 02: Consola, Excepciones y Condicionales en C# | Visual Studio 2026</title>
+
+    <style>
+        /* ---------- Reset & Base (Misma paleta y estética .NET / Visual Studio 2026) ---------- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #0e0e12;
+            --bg-secondary: #16161d;
+            --bg-card: #1c1c26;
+            --bg-card-hover: #232330;
+            --bg-code: #121218;
+            --border-subtle: #2a2a3a;
+
+            --accent-purple: #9b4f96;
+            --accent-violet: #7b5cf0;
+            --accent-cyan: #48dbfb;
+            --accent-green: #2ecc71;
+            --accent-red: #ff5e57;
+            --accent-yellow: #feca57;
+            --accent-gradient: linear-gradient(135deg, #7b5cf0 0%, #9b4f96 50%, #48dbfb 100%);
+
+            --text-primary: #f0f0f5;
+            --text-secondary: #a8a8b8;
+            --text-muted: #6c6c80;
+
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+
+            --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.35);
+            --shadow-glow: 0 0 40px rgba(123, 92, 240, 0.15);
+
+            --font-sans: "Segoe UI", system-ui, -apple-system, "Inter", sans-serif;
+            --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(123, 92, 240, 0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 100%, rgba(72, 219, 251, 0.08) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.65;
+            padding: 2rem 1.25rem 3.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ---------- Barra Superior y Navegación Rápida ---------- */
+        .top-bar {
+            width: 100%;
+            max-width: 980px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.25rem;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.65rem 1.1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .btn-back:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-violet);
+            transform: translateX(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .quick-nav a {
+            padding: 0.45rem 0.85rem;
+            font-size: 0.82rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .quick-nav a:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-cyan);
+            background: rgba(72, 219, 251, 0.08);
+        }
+
+        /* ---------- Encabezado ---------- */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 820px;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .badge-module {
+            display: inline-block;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(123, 92, 240, 0.15);
+            border: 1px solid rgba(123, 92, 240, 0.35);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            margin-bottom: 1rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.75rem, 4vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.02rem;
+        }
+
+        header p::before {
+            content: "// ";
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* ---------- Contenedor Principal y Tarjetas ---------- */
+        main {
+            width: 100%;
+            max-width: 980px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.25rem;
+        }
+
+        .topic-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .topic-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+            opacity: 0.85;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-num {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: rgba(123, 92, 240, 0.16);
+            border: 1px solid rgba(123, 92, 240, 0.35);
+            color: var(--accent-violet);
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.12rem;
+            color: var(--accent-cyan);
+            margin: 1.5rem 0 0.65rem;
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        code.inline {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            background: rgba(123, 92, 240, 0.14);
+            color: var(--accent-cyan);
+            padding: 0.15rem 0.45rem;
+            border-radius: 5px;
+            border: 1px solid rgba(123, 92, 240, 0.25);
+        }
+
+        /* ---------- Cajas de Nota / Alerta Didáctica ---------- */
+        .callout {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-violet);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        .callout.warning {
+            border-left-color: var(--accent-red);
+            background: rgba(255, 94, 87, 0.06);
+        }
+
+        .callout.tip {
+            border-left-color: var(--accent-cyan);
+            background: rgba(72, 219, 251, 0.06);
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+        }
+
+        /* ---------- Bloques de Código C# ---------- */
+        .code-wrapper {
+            background: var(--bg-code);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            margin: 1.1rem 0 1.4rem;
+            overflow: hidden;
+        }
+
+        .code-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.55rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .dots {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #2f2f42;
+        }
+
+        .dot:nth-child(1) {
+            background: #ff5f56;
+        }
+
+        .dot:nth-child(2) {
+            background: #ffbd2e;
+        }
+
+        .dot:nth-child(3) {
+            background: #27c93f;
+        }
+
+        .btn-copy {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        pre {
+            padding: 1.15rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: #e4e4ef;
+        }
+
+        /* Resaltado de sintaxis C# */
+        .kw {
+            color: #569cd6;
+            font-weight: 500;
+        }
+
+        /* palabras clave: int, string, if, else, try */
+        .ctrl {
+            color: #c586c0;
+        }
+
+        /* control: return, catch, finally */
+        .cls {
+            color: #4ec9b0;
+        }
+
+        /* clases: Console, Convert, FormatException */
+        .mtd {
+            color: #dcdcaa;
+        }
+
+        /* métodos: WriteLine, ReadLine, ToInt32 */
+        .str {
+            color: #ce9178;
+        }
+
+        /* cadenas de texto */
+        .num {
+            color: #b5cea8;
+        }
+
+        /* números */
+        .cmt {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* comentarios */
+
+        /* ---------- Tablas ---------- */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .val-true {
+            color: var(--accent-green);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .val-false {
+            color: var(--accent-red);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .row-highlight td {
+            background: rgba(123, 92, 240, 0.18) !important;
+            color: var(--text-primary);
+            border-top: 1px solid var(--accent-violet);
+            border-bottom: 1px solid var(--accent-violet);
+        }
+
+        /* ---------- Grid de Tarjetas Pequeñas ---------- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .mini-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+
+        .mini-card h4 {
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.98rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ---------- Simulador Interactivo de Tabla de la Verdad ---------- */
+        .simulator-box {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(123, 92, 240, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .sim-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .control-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 0.9rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .control-item label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .control-item input[type="number"] {
+            background: var(--bg-code);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .toggle-btn.is-true {
+            background: rgba(46, 204, 113, 0.16);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .toggle-btn.is-false {
+            background: rgba(255, 94, 87, 0.16);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .sim-output {
+            background: var(--bg-code);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 1.1rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .step-eval {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-bottom: 0.85rem;
+            align-items: center;
+        }
+
+        .pill {
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* ---------- Simulador Interactivo de Console.ReadLine + Excepciones ---------- */
+        .console-sim {
+            background: #09090d;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            font-family: var(--font-mono);
+            margin-top: 1.25rem;
+        }
+
+        .console-input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin: 0.75rem 0;
+        }
+
+        .console-input-row input {
+            flex: 1;
+            min-width: 180px;
+            background: #14141d;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 0.55rem 0.85rem;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        .btn-run {
+            background: var(--accent-violet);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.55rem 1.1rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-run:hover {
+            opacity: 0.9;
+        }
+
+        .console-screen {
+            background: #050508;
+            border: 1px solid #1f1f2e;
+            border-radius: 6px;
+            padding: 0.9rem;
+            font-size: 0.86rem;
+            min-height: 75px;
+            white-space: pre-wrap;
+        }
+
+        /* ---------- Animaciones ---------- */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            margin-top: 4rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            text-align: center;
+        }
+
+        footer::before {
+            content: "/* ";
+        }
+
+        footer::after {
+            content: " */";
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra superior con regreso al índice y navegación interna -->
+    <div class="top-bar">
+        <a href="./" class="btn-back" aria-label="Volver al índice principal">
+            <span>‹</span> Volver al Índice
+        </a>
+        <nav class="quick-nav" aria-label="Secciones de la clase">
+            <a href="#consola">01. Consola</a>
+            <a href="#excepciones">02. Excepciones</a>
+            <a href="#operadores">03. Operadores</a>
+            <a href="#condicionales">04. Condicionales</a>
+            <a href="#verdad">05. Tabla de Verdad</a>
+        </nav>
+    </div>
+
+    <header>
+        <div class="badge-module">Programación II · C# (.NET)</div>
+        <h1>Entrada/Salida, Excepciones y Lógica Condicional</h1>
+        <p>Guía práctica de fundamentos en consola · Visual Studio 2026</p>
+    </header>
+
+    <main>
+
+        <!-- =========================================================
+             SECCIÓN 1: Console.WriteLine y Console.ReadLine
+        ========================================================== -->
+        <section id="consola" class="topic-card">
+            <div class="section-header">
+                <span class="section-num">01</span>
+                <h2>Entrada y Salida en Consola: WriteLine, ReadLine y Convert.ToInt32</h2>
+            </div>
+
+            <p>
+                En aplicaciones de consola en C#, la clase <code class="inline">Console</code> (perteneciente al espacio
+                de nombres <code class="inline">System</code>) nos permite comunicarnos con el usuario mediante texto en
+                pantalla y lectura desde el teclado.
+            </p>
+
+            <div class="grid-2">
+                <div class="mini-card">
+                    <h4>📤 Console.WriteLine()</h4>
+                    <p style="margin-bottom:0; font-size:0.92rem;">
+                        Imprime un mensaje o valor en la consola y agrega automáticamente un <strong>salto de
+                            línea</strong> al final. Si deseas que el cursor se quede en la misma línea (ideal antes de
+                        pedir un dato), puedes usar <code class="inline">Console.Write()</code>.
+                    </p>
+                </div>
+                <div class="mini-card">
+                    <h4>📥 Console.ReadLine()</h4>
+                    <p style="margin-bottom:0; font-size:0.92rem;">
+                        Detiene la ejecución del programa hasta que el usuario escribe algo y presiona
+                        <strong>Enter</strong>. <strong>Siempre devuelve un dato de tipo <code
+                                class="inline">string</code></strong> (cadena de texto), incluso si el usuario escribió
+                        números.
+                    </p>
+                </div>
+            </div>
+
+            <h3>Lectura de cadenas (string) vs. Lectura de enteros (int)</h3>
+            <p>
+                Como <code class="inline">Console.ReadLine()</code> devuelve texto (<code class="inline">string</code>),
+                podemos guardarlo directamente en una variable <code class="inline">string</code>. Sin embargo, si
+                necesitamos realizar cálculos matemáticos con ese dato, debemos convertirlo explícitamente a entero
+                usando <code class="inline">Convert.ToInt32()</code>.
+            </p>
+
+            <div class="callout tip">
+                <span class="callout-title">// ¿Cómo funciona Convert.ToInt32(valor)?</span>
+                Toma la cadena de texto capturada por <code class="inline">Console.ReadLine()</code>, analiza sus
+                caracteres numéricos y los transforma en un entero de 32 bits (<code class="inline">int</code>) que ya
+                puede asignarse a una variable entera.
+            </div>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span
+                            style="margin-left:8px;">Program.cs · Captura de string e int</span></div>
+                    <button class="btn-copy" onclick="copyCode(this)">Copiar código</button>
+                </div>
+                <pre><code><span class="kw">using</span> System;
+
+<span class="kw">class</span> <span class="cls">Program</span>
+{
+    <span class="kw">static void</span> <span class="mtd">Main</span>()
+    {
+        <span class="cmt">// 1. Solicitud de un dato tipo string (texto)</span>
+        <span class="cls">Console</span>.<span class="mtd">Write</span>(<span class="str">"Ingrese su nombre completo: "</span>);
+        <span class="kw">string</span> nombre = <span class="cls">Console</span>.<span class="mtd">ReadLine</span>(); <span class="cmt">// Se asigna directo porque ReadLine devuelve string</span>
+
+        <span class="cmt">// 2. Solicitud de un dato tipo int (entero) usando Convert.ToInt32</span>
+        <span class="cls">Console</span>.<span class="mtd">Write</span>(<span class="str">"Ingrese su edad: "</span>);
+        <span class="kw">string</span> entradaEdad = <span class="cls">Console</span>.<span class="mtd">ReadLine</span>();       <span class="cmt">// Paso A: Leemos como texto</span>
+        <span class="kw">int</span> edad = <span class="cls">Convert</span>.<span class="mtd">ToInt32</span>(entradaEdad);        <span class="cmt">// Paso B: Convertimos a int y asignamos</span>
+
+        <span class="cmt">// También se puede hacer en una sola línea anidada:</span>
+        <span class="cls">Console</span>.<span class="mtd">Write</span>(<span class="str">"Ingrese su año de ingreso a la universidad: "</span>);
+        <span class="kw">int</span> anioIngreso = <span class="cls">Convert</span>.<span class="mtd">ToInt32</span>(<span class="cls">Console</span>.<span class="mtd">ReadLine</span>());
+
+        <span class="cmt">// Salida formateada con interpolación de cadenas ($)</span>
+        <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">$"\nHola, {nombre}. Tienes {edad} años y entraste en {anioIngreso}."</span>);
+        <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">$"En 5 años tendrás {edad + 5} años."</span>);
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SECCIÓN 2: Manejo de Excepciones
+        ========================================================== -->
+        <section id="excepciones" class="topic-card">
+            <div class="section-header">
+                <span class="section-num">02</span>
+                <h2>Manejo de Excepciones al Leer Enteros</h2>
+            </div>
+
+            <p>
+                ¿Qué ocurre si nuestro código ejecuta <code class="inline">Convert.ToInt32(Console.ReadLine())</code>
+                esperando un número, pero el usuario escribe la letra <strong>"A"</strong> o la palabra
+                <strong>"hola"</strong>?
+            </p>
+
+            <div class="callout warning">
+                <span class="callout-title">⚠ Error en tiempo de ejecución: System.FormatException</span>
+                El programa se detendrá abruptamente ("crasheará") lanzando una excepción <code
+                    class="inline">FormatException</code> ("La cadena de entrada no tiene el formato correcto"), porque
+                letras como <code>"abc"</code> no tienen representación numérica entera. Si escribe un número
+                gigantesco, lanzará <code class="inline">OverflowException</code>.
+            </div>
+
+            <h3>Método 1: Bloque try - catch (Captura de Excepciones)</h3>
+            <p>
+                Para evitar que el programa colapse, envolvemos el código riesgoso dentro de un bloque <code
+                    class="inline">try</code>. Si ocurre un error, C# salta inmediatamente al bloque <code
+                    class="inline">catch</code> correspondiente para mostrar un mensaje amigable al usuario.
+            </p>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span
+                            style="margin-left:8px;">ManejoExcepciones.cs · try-catch</span></div>
+                    <button class="btn-copy" onclick="copyCode(this)">Copiar código</button>
+                </div>
+                <pre><code><span class="kw">int</span> numero = <span class="num">0</span>;
+
+<span class="ctrl">try</span>
+{
+    <span class="cls">Console</span>.<span class="mtd">Write</span>(<span class="str">"Por favor, ingrese un número entero: "</span>);
+    numero = <span class="cls">Convert</span>.<span class="mtd">ToInt32</span>(<span class="cls">Console</span>.<span class="mtd">ReadLine</span>());
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">$"¡Excelente! Ingresaste el número {numero}."</span>);
+}
+<span class="ctrl">catch</span> (<span class="cls">FormatException</span>)
+{
+    <span class="cmt">// Se ejecuta si el usuario escribió letras, símbolos o dejó vacío</span>
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Error: Debes ingresar únicamente dígitos numéricos, no letras."</span>);
+}
+<span class="ctrl">catch</span> (<span class="cls">OverflowException</span>)
+{
+    <span class="cmt">// Se ejecuta si el número supera el límite de int (-2,147,483,648 a 2,147,483,647)</span>
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Error: El número ingresado es demasiado grande o demasiado pequeño."</span>);
+}
+<span class="ctrl">catch</span> (<span class="cls">Exception</span> ex)
+{
+    <span class="cmt">// Captura cualquier otro error inesperado</span>
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">$"Ocurrió un error inesperado: {ex.Message}"</span>);
+}</code></pre>
+            </div>
+
+            <h3>Método 2: Validación Preventiva con int.TryParse() (Buena Práctica)</h3>
+            <p>
+                En C# moderno, además de <code class="inline">try-catch</code>, se recomienda <code
+                    class="inline">int.TryParse()</code> cuando validamos entradas frecuentes del usuario. Este método
+                intenta convertir el texto y devuelve <code class="inline">true</code> si tuvo éxito (guardando el valor
+                en una variable <code class="inline">out</code>) o <code class="inline">false</code> si el usuario
+                ingresó letras, <strong>sin generar excepciones</strong>.
+            </p>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span
+                            style="margin-left:8px;">ValidacionSegura.cs · int.TryParse</span></div>
+                    <button class="btn-copy" onclick="copyCode(this)">Copiar código</button>
+                </div>
+                <pre><code><span class="cls">Console</span>.<span class="mtd">Write</span>(<span class="str">"Ingrese su nota (0 - 20): "</span>);
+<span class="kw">string</span> textoUsuario = <span class="cls">Console</span>.<span class="mtd">ReadLine</span>();
+
+<span class="kw">if</span> (<span class="kw">int</span>.<span class="mtd">TryParse</span>(textoUsuario, <span class="kw">out int</span> nota))
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">$"Nota válida registrada: {nota} pts."</span>);
+}
+<span class="kw">else</span>
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">$"'{textoUsuario}' no es un número entero válido."</span>);
+}</code></pre>
+            </div>
+
+            <!-- Mini Consola Interactiva -->
+            <div class="console-sim">
+                <div style="color: var(--accent-cyan); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                    &gt;_ Laboratorio Rápido: Prueba qué pasa con Convert.ToInt32() si ingresas letras o números
+                </div>
+                <div class="console-input-row">
+                    <input type="text" id="simConsoleInput"
+                        placeholder="Escribe un número (ej. 25) o una letra (ej. hola)..." value="hola">
+                    <button class="btn-run" onclick="runConsoleSim()">Ejecutar Convert.ToInt32()</button>
+                </div>
+                <div id="simConsoleOutput" class="console-screen">Presiona "Ejecutar" para simular la lectura de consola
+                    en C#...</div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SECCIÓN 3: Operadores Aritméticos, Relacionales y Lógicos
+        ========================================================== -->
+        <section id="operadores" class="topic-card">
+            <div class="section-header">
+                <span class="section-num">03</span>
+                <h2>Operadores Aritméticos, Relacionales y Lógicos en C#</h2>
+            </div>
+
+            <p>
+                Los operadores son símbolos especiales que le indican al compilador de C# que realice operaciones
+                matemáticas, comparaciones o evaluaciones lógicas sobre variables y valores.
+            </p>
+
+            <h3>A. Operadores Aritméticos</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operador</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Ejemplo (a = 10, b = 3)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline">+</code></td>
+                            <td>Suma</td>
+                            <td>Suma dos operandos (o concatena si son <code class="inline">string</code>).</td>
+                            <td><code class="inline">a + b</code> → <strong>13</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">-</code></td>
+                            <td>Resta</td>
+                            <td>Resta el segundo operando del primero.</td>
+                            <td><code class="inline">a - b</code> → <strong>7</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">*</code></td>
+                            <td>Multiplicación</td>
+                            <td>Multiplica ambos operandos.</td>
+                            <td><code class="inline">a * b</code> → <strong>30</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">/</code></td>
+                            <td>División</td>
+                            <td>Divide el primero entre el segundo. <strong>Nota:</strong> Entre dos <code
+                                    class="inline">int</code> trunca decimales.</td>
+                            <td><code class="inline">10 / 3</code> → <strong>3</strong> (10.0 / 3 → 3.33)</td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">%</code></td>
+                            <td>Módulo (Residuo)</td>
+                            <td>Devuelve el resto de una división entera. Muy útil para saber si un número es par (<code
+                                    class="inline">n % 2 == 0</code>).</td>
+                            <td><code class="inline">10 % 3</code> → <strong>1</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">++</code> / <code class="inline">--</code></td>
+                            <td>Incremento / Decremento</td>
+                            <td>Aumenta o disminuye en 1 el valor de una variable entera.</td>
+                            <td><code class="inline">a++</code> → <strong>11</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>B. Operadores Relacionales (de Comparación)</h3>
+            <p>Comparan dos valores y siempre devuelven un resultado booleano (<code class="inline">true</code> o <code
+                    class="inline">false</code>).</p>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operador</th>
+                            <th>Significado</th>
+                            <th>Ejemplo en C#</th>
+                            <th>Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline">==</code></td>
+                            <td>Igual a (¡cuidado! No confundir con <code class="inline">=</code> de asignación)</td>
+                            <td><code class="inline">5 == 5</code></td>
+                            <td><span class="val-true">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">!=</code></td>
+                            <td>Diferente de / Distinto a</td>
+                            <td><code class="inline">5 != 3</code></td>
+                            <td><span class="val-true">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">&gt;</code> y <code class="inline">&lt;</code></td>
+                            <td>Mayor que / Menor que</td>
+                            <td><code class="inline">10 &lt; 4</code></td>
+                            <td><span class="val-false">false</span></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">&gt;=</code> y <code class="inline">&lt;=</code></td>
+                            <td>Mayor o igual que / Menor o igual que</td>
+                            <td><code class="inline">18 &gt;= 18</code></td>
+                            <td><span class="val-true">true</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>C. Operadores Lógicos (Booleanos)</h3>
+            <p>Permiten combinar o invertir expresiones booleanas. En C# usan <strong>evaluación de
+                    cortocircuito</strong> (si el primer operando ya define el resultado, no evalúa el segundo).</p>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operador</th>
+                            <th>Nombre</th>
+                            <th>Regla de Evaluación</th>
+                            <th>Ejemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline">&amp;&amp;</code></td>
+                            <td>AND Lógico (Y)</td>
+                            <td>Devuelve <code class="inline">true</code> <strong>únicamente</strong> si ambas
+                                condiciones son verdaderas.</td>
+                            <td><code class="inline">(5 &gt; 2) &amp;&amp; (10 == 10)</code> → <span
+                                    class="val-true">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">||</code></td>
+                            <td>OR Lógico (O)</td>
+                            <td>Devuelve <code class="inline">true</code> si <strong>al menos una</strong> de las
+                                condiciones es verdadera.</td>
+                            <td><code class="inline">(5 &lt; 2) || (10 == 10)</code> → <span
+                                    class="val-true">true</span></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">!</code></td>
+                            <td>NOT Lógico (Negación)</td>
+                            <td>Invierte el valor lógico: convierte <code class="inline">true</code> en <code
+                                    class="inline">false</code> y viceversa.</td>
+                            <td><code class="inline">!(5 == 5)</code> → <span class="val-false">false</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SECCIÓN 4: Estructuras Condicionales
+        ========================================================== -->
+        <section id="condicionales" class="topic-card">
+            <div class="section-header">
+                <span class="section-num">04</span>
+                <h2>Estructuras Condicionales: if, else, else if y Anidamiento</h2>
+            </div>
+
+            <p>
+                Las estructuras condicionales permiten que nuestro programa tome decisiones y ejecute distintos bloques
+                de código dependiendo de si una expresión lógica se evalúa como <code class="inline">true</code> o <code
+                    class="inline">false</code>.
+            </p>
+
+            <h3>1. Condicional Simple (if) y Doble (if - else)</h3>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span
+                            style="margin-left:8px;">CondicionalSimpleDoble.cs</span></div>
+                    <button class="btn-copy" onclick="copyCode(this)">Copiar código</button>
+                </div>
+                <pre><code><span class="kw">int</span> temperatura = <span class="num">32</span>;
+
+<span class="cmt">// IF SIMPLE: Solo actúa si la condición es verdadera</span>
+<span class="kw">if</span> (temperatura &gt; <span class="num">30</span>)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Advertencia: Temperatura elevada."</span>);
+}
+
+<span class="cmt">// IF - ELSE: Define un camino alternativo si la condición es falsa</span>
+<span class="kw">int</span> numero = <span class="num">7</span>;
+<span class="kw">if</span> (numero % <span class="num">2</span> == <span class="num">0</span>)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"El número es PAR."</span>);
+}
+<span class="kw">else</span>
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"El número es IMPAR."</span>);
+}</code></pre>
+            </div>
+
+            <h3>2. Condicionales Encadenados (if - else if - else) y Anidados (if dentro de if)</h3>
+            <p>
+                Usamos <code class="inline">else if</code> cuando tenemos múltiples rangos mutuamente excluyentes (por
+                ejemplo, escalas de calificación). Por otro lado, los <strong>condicionales anidados</strong> ocurren
+                cuando colocamos una estructura <code class="inline">if</code> dentro del bloque de otro <code
+                    class="inline">if</code> o <code class="inline">else</code> para verificar requisitos secundarios.
+            </p>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span
+                            style="margin-left:8px;">ElseIfYAnidados.cs</span></div>
+                    <button class="btn-copy" onclick="copyCode(this)">Copiar código</button>
+                </div>
+                <pre><code><span class="kw">int</span> nota = <span class="num">18</span>;
+<span class="kw">bool</span> proyectoEntregado = <span class="kw">true</span>;
+
+<span class="cmt">// ESCALERA IF - ELSE IF - ELSE</span>
+<span class="kw">if</span> (nota &lt; <span class="num">0</span> || nota &gt; <span class="num">20</span>)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Nota fuera de rango."</span>);
+}
+<span class="kw">else if</span> (nota &gt;= <span class="num">10</span>)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Estado: APROBADO."</span>);
+
+    <span class="cmt">// CONDICIONAL ANIDADO: Solo se evalúa si el estudiante ya aprobó (nota >= 10)</span>
+    <span class="kw">if</span> (nota &gt;= <span class="num">18</span> &amp;&amp; proyectoEntregado)
+    {
+        <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Mención Honorífica: Excelencia Académica."</span>);
+    }
+    <span class="kw">else</span>
+    {
+        <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Aprobado sin mención honorífica."</span>);
+    }
+}
+<span class="kw">else</span>
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Estado: REPROBADO."</span>);
+}</code></pre>
+            </div>
+
+            <h3>3. Condiciones Compuestas con &&, || y Combinadas</h3>
+            <p>
+                Podemos unir varias condiciones en un solo <code class="inline">if</code> utilizando <code
+                    class="inline">&amp;&amp;</code> y <code class="inline">||</code>. Cuando se combinan ambos en una
+                misma expresión, <strong>el operador <code class="inline">&amp;&amp;</code> tiene mayor precedencia que
+                    <code class="inline">||</code></strong> (similar a la multiplicación frente a la suma en
+                matemáticas). Por ello, <strong>siempre usa paréntesis <code class="inline">( )</code></strong> para
+                dejar clara tu intención lógica.
+            </p>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span
+                            style="margin-left:8px;">CondicionesCombinadas.cs</span></div>
+                    <button class="btn-copy" onclick="copyCode(this)">Copiar código</button>
+                </div>
+                <pre><code><span class="kw">int</span> edad = <span class="num">16</span>;
+<span class="kw">bool</span> tieneEntrada = <span class="kw">false</span>;
+<span class="kw">bool</span> esVip = <span class="kw">true</span>;
+
+<span class="cmt">// Ejemplo 1: Uso de && (Ambas deben cumplirse)</span>
+<span class="kw">if</span> (edad &gt;= <span class="num">18</span> &amp;&amp; tieneEntrada)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Acceso estándar concedido."</span>);
+}
+
+<span class="cmt">// Ejemplo 2: Uso de || (Basta con que una sea verdadera)</span>
+<span class="kw">if</span> (tieneEntrada || esVip)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Puede pasar por taquilla."</span>);
+}
+
+<span class="cmt">// Ejemplo 3: Combinación de && y || con paréntesis</span>
+<span class="cmt">// Regla: Entra si (es mayor de edad Y tiene entrada) O si (es invitado VIP)</span>
+<span class="kw">if</span> ((edad &gt;= <span class="num">18</span> &amp;&amp; tieneEntrada) || esVip)
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"¡Bienvenido al evento!"</span>);
+}
+<span class="kw">else</span>
+{
+    <span class="cls">Console</span>.<span class="mtd">WriteLine</span>(<span class="str">"Acceso denegado."</span>);
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SECCIÓN 5: Contraste con la Tabla de la Verdad
+        ========================================================== -->
+        <section id="verdad" class="topic-card">
+            <div class="section-header">
+                <span class="section-num">05</span>
+                <h2>Contraste con la Tabla de la Verdad</h2>
+            </div>
+
+            <p>
+                La <strong>Tabla de la Verdad</strong> es la base matemática de la lógica proposicional que gobierna las
+                decisiones de C#. Nos permite predecir exactamente qué camino tomará un <code class="inline">if</code>
+                ante todas las combinaciones posibles de valores <code class="inline">true</code> (V) y <code
+                    class="inline">false</code> (F).
+            </p>
+
+            <div class="grid-2">
+                <!-- Tabla AND -->
+                <div class="table-responsive" style="margin:0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>A &amp;&amp; B (AND)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-true">true</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-false">false</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-false">false</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-false">false</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tabla OR -->
+                <div class="table-responsive" style="margin:0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>A || B (OR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-true">true</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-true">true</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-true">true</span></td>
+                                <td><span class="val-true">true</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-false">false</span></td>
+                                <td><span class="val-false">false</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Simulador Interactivo: Contraste de Expresión Combinada en C#</h3>
+            <p>
+                Modifica las variables del ejemplo <code
+                    class="inline">if ((edad &gt;= 18 &amp;&amp; tieneEntrada) || esVip)</code> y observa qué fila de la
+                tabla de la verdad se activa y cómo C# resuelve la condición paso a paso:
+            </p>
+
+            <div class="simulator-box">
+                <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-cyan);">
+                    Expresión evaluada: <span style="color:#fff;">(P &amp;&amp; Q) || R</span> &nbsp;donde&nbsp; P =
+                    (edad &gt;= 18), Q = tieneEntrada, R = esVip
+                </div>
+
+                <div class="sim-controls">
+                    <div class="control-item">
+                        <label for="simEdad">int edad =</label>
+                        <input type="number" id="simEdad" value="16" min="0" max="120" oninput="updateTruthSimulator()">
+                    </div>
+                    <div class="control-item">
+                        <label>bool tieneEntrada =</label>
+                        <button type="button" id="btnEntrada" class="toggle-btn is-false"
+                            onclick="toggleBool('entrada')">false</button>
+                    </div>
+                    <div class="control-item">
+                        <label>bool esVip =</label>
+                        <button type="button" id="btnVip" class="toggle-btn is-true"
+                            onclick="toggleBool('vip')">true</button>
+                    </div>
+                </div>
+
+                <div class="sim-output" id="simStepResult"></div>
+
+                <!-- Tabla de la verdad de 3 variables (8 combinaciones) -->
+                <div class="table-responsive" style="margin-top: 1.25rem; margin-bottom: 0;">
+                    <table id="combinedTruthTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>P: edad &gt;= 18</th>
+                                <th>Q: tieneEntrada</th>
+                                <th>R: esVip</th>
+                                <th>Sub-grupo (P &amp;&amp; Q)</th>
+                                <th>Resultado: (P &amp;&amp; Q) || R</th>
+                            </tr>
+                        </thead>
+                        <tbody id="truthTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>Profesor: Ing. Robyir Loreto</footer>
+
+    <script>
+        /* ---------- Copiar bloques de código ---------- */
+        function copyCode(button) {
+            const pre = button.closest('.code-wrapper').querySelector('pre');
+            const text = pre.innerText;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                const originalText = button.textContent;
+                button.textContent = '¡Copiado!';
+                button.style.borderColor = '#2ecc71';
+                button.style.color = '#2ecc71';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.borderColor = '';
+                    button.style.color = '';
+                }, 1800);
+            } catch (err) {
+                button.textContent = 'Error al copiar';
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        /* ---------- Laboratorio de Console.ReadLine + Convert.ToInt32 ---------- */
+        function runConsoleSim() {
+            const input = document.getElementById('simConsoleInput').value.trim();
+            const output = document.getElementById('simConsoleOutput');
+
+            if (input === '') {
+                output.innerHTML = `<span style="color: var(--accent-red);">[FormatException]</span> La entrada está vacía (""). Convert.ToInt32("") lanza FormatException.\n<span style="color: var(--text-secondary);">-> Bloque catch (FormatException) capturó el error sin cerrar la app.</span>`;
+                return;
+            }
+
+            // Validar si es un entero puro válido en C# (Int32)
+            if (/^[+-]?\d+$/.test(input)) {
+                const num = Number(input);
+                if (num < -2147483648 || num > 2147483647) {
+                    output.innerHTML = `<span style="color: var(--accent-red);">[OverflowException]</span> El valor ${input} supera el rango de Int32 (-2,147,483,648 a 2,147,483,647).\n<span style="color: var(--text-secondary);">-> Bloque catch (OverflowException) ejecutado correctamente.</span>`;
+                } else {
+                    output.innerHTML = `<span style="color: var(--accent-green);">[Éxito]</span> Console.ReadLine() leyó: "${input}" (string)\nConvert.ToInt32("${input}") asignó el entero: <strong>${num}</strong> (int)\nSalida: "¡Excelente! Ingresaste el número ${num}."`;
+                }
+            } else {
+                output.innerHTML = `<span style="color: var(--accent-red);">[System.FormatException]</span> La cadena "${input}" contiene caracteres no numéricos.\n<span style="color: var(--text-secondary);">-> Sin try-catch el programa colapsaría. Con try-catch se ejecuta: "Error: Debes ingresar únicamente dígitos numéricos, no letras."</span>`;
+            }
+        }
+
+        /* ---------- Simulador de Tabla de la Verdad Combinada ---------- */
+        const simState = {
+            entrada: false,
+            vip: true
+        };
+
+        function toggleBool(key) {
+            simState[key] = !simState[key];
+            const btn = key === 'entrada' ? document.getElementById('btnEntrada') : document.getElementById('btnVip');
+            btn.textContent = simState[key] ? 'true' : 'false';
+            btn.className = 'toggle-btn ' + (simState[key] ? 'is-true' : 'is-false');
+            updateTruthSimulator();
+        }
+
+        function formatBoolSpan(val) {
+            return val
+                ? '<span class="val-true">true</span>'
+                : '<span class="val-false">false</span>';
+        }
+
+        function updateTruthSimulator() {
+            const edadVal = parseInt(document.getElementById('simEdad').value, 10);
+            const edad = isNaN(edadVal) ? 0 : edadVal;
+
+            const P = edad >= 18;
+            const Q = simState.entrada;
+            const R = simState.vip;
+
+            const P_and_Q = P && Q;
+            const finalResult = P_and_Q || R;
+
+            // Actualizar explicación paso a paso
+            const stepBox = document.getElementById('simStepResult');
+            stepBox.innerHTML = `
+                <div class="step-eval">
+                    <span class="pill">P (edad ${edad} &gt;= 18): ${formatBoolSpan(P)}</span>
+                    <span class="pill">Q (tieneEntrada): ${formatBoolSpan(Q)}</span>
+                    <span class="pill">R (esVip): ${formatBoolSpan(R)}</span>
+                </div>
+                <div style="margin-bottom:0.4rem;">
+                    1° Paréntesis <code>(P &amp;&amp; Q)</code> → (${P} &amp;&amp; ${Q}) = ${formatBoolSpan(P_and_Q)}
+                </div>
+                <div style="margin-bottom:0.65rem;">
+                    2° Operación final <code>(${P_and_Q} || ${R})</code> = ${formatBoolSpan(finalResult)}
+                </div>
+                <div style="padding-top:0.6rem; border-top:1px solid var(--border-subtle); color: ${finalResult ? 'var(--accent-green)' : 'var(--accent-red)'};">
+                    <strong>Decisión del if:</strong> ${finalResult ? 'Entra al bloque IF → "¡Bienvenido al evento!"' : 'Entra al bloque ELSE → "Acceso denegado."'}
+                </div>
+            `;
+
+            // Renderizar las 8 filas de la tabla de la verdad y resaltar la activa
+            const tbody = document.getElementById('truthTableBody');
+            tbody.innerHTML = '';
+
+            const combinations = [
+                [true, true, true],
+                [true, true, false],
+                [true, false, true],
+                [true, false, false],
+                [false, true, true],
+                [false, true, false],
+                [false, false, true],
+                [false, false, false]
+            ];
+
+            combinations.forEach(([cP, cQ, cR], idx) => {
+                const subAnd = cP && cQ;
+                const totalOr = subAnd || cR;
+                const isActive = (cP === P && cQ === Q && cR === R);
+
+                const tr = document.createElement('tr');
+                if (isActive) tr.className = 'row-highlight';
+
+                tr.innerHTML = `
+                    <td style="font-family:var(--font-mono);">${idx + 1}${isActive ? ' ◀' : ''}</td>
+                    <td>${formatBoolSpan(cP)}</td>
+                    <td>${formatBoolSpan(cQ)}</td>
+                    <td>${formatBoolSpan(cR)}</td>
+                    <td>${formatBoolSpan(subAnd)}</td>
+                    <td>${formatBoolSpan(totalOr)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Inicializar simuladores al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            updateTruthSimulator();
+        });
+    </script>
+
+</body>
+
+</html>
