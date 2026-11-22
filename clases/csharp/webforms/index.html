@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guía Práctica: ASP.NET Web Forms (.NET 4.5) + MySQL + POO y Colecciones</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-alt: #273549;
+            --border: #334155;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-dark: #0284c7;
+            --success: #22c55e;
+            --code-bg: #0b1120;
+            --badge-bg: rgba(56, 189, 248, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 2.5rem 1.25rem;
+            text-align: center;
+        }
+
+        header .tag {
+            display: inline-block;
+            background: var(--badge-bg);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        header h1 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+
+        header p {
+            max-width: 760px;
+            margin: 0 auto;
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        nav.top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(15, 23, 42, 0.94);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.65rem 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        nav.top-nav .nav-inner {
+            max-width: 1040px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-start;
+        }
+
+        nav.top-nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.45rem;
+            transition: all 0.2s ease;
+        }
+
+        nav.top-nav a:hover {
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        main {
+            max-width: 1040px;
+            margin: 2rem auto;
+            padding: 0 1.25rem 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        section.step-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.9rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .step-number {
+            background: var(--accent-dark);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 0.5rem;
+        }
+
+        .step-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .explanation {
+            color: #cbd5e1;
+            margin-bottom: 1.15rem;
+        }
+
+        .explanation ul {
+            margin-top: 0.6rem;
+            padding-left: 1.35rem;
+        }
+
+        .explanation li {
+            margin-bottom: 0.35rem;
+        }
+
+        .note-box {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 0.85rem 1rem;
+            border-radius: 0.45rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.94rem;
+            color: #e2e8f0;
+        }
+
+        .code-wrapper {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.65rem;
+            overflow: hidden;
+            margin-top: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .code-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .code-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #162032;
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem 0.9rem;
+            gap: 0.5rem;
+        }
+
+        .file-label {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.83rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: var(--surface-alt);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 0.4rem;
+            padding: 0.32rem 0.72rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-dark);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: #052e16;
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.87rem;
+            line-height: 1.55;
+            color: #e2e8f0;
+            tab-size: 4;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        p code,
+        li code {
+            background: rgba(15, 23, 42, 0.75);
+            color: #7dd3fc;
+            padding: 0.12rem 0.38rem;
+            border-radius: 0.3rem;
+            font-size: 0.88em;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.88rem;
+            padding: 1.5rem 1rem 2.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 640px) {
+            section.step-card {
+                padding: 1.15rem;
+            }
+
+            pre {
+                font-size: 0.8rem;
+                padding: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <span class="tag">Programación II · C# (.NET Framework 4.5)</span>
+        <h1>ASP.NET Web Forms + MySQL con Clases Públicas, List y Dictionary</h1>
+        <p>Guía paso a paso para construir un sistema web con inicio de sesión, catálogo dinámico de productos, registro
+            de productos y registro de usuarios usando Bootstrap.</p>
+    </header>
+
+    <nav class="top-nav" aria-label="Navegación de pasos">
+        <div class="nav-inner">
+            <a href="#paso1">1. Base de Datos</a>
+            <a href="#paso2">2. Web.config</a>
+            <a href="#paso3">3. Clases (POO)</a>
+            <a href="#paso4">4. Login y Diccionario</a>
+            <a href="#paso5">5. Registro Usuarios</a>
+            <a href="#paso6">6. Dashboard y List&lt;T&gt;</a>
+            <a href="#paso7">7. Registro Productos</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <!-- PASO 1 -->
+        <section id="paso1" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 1</span>
+                <h2>Crear la Base de Datos y Tablas en MySQL</h2>
+            </div>
+            <div class="explanation">
+                <p>Antes de abrir Visual Studio, crea la base de datos <code>tienda_webforms</code> en MySQL con dos
+                    tablas:</p>
+                <ul>
+                    <li><code>usuarios</code>: almacena las credenciales para iniciar sesión y el rol
+                        (<code>admin</code> o <code>usuario</code>).</li>
+                    <li><code>productos</code>: guarda los artículos que se cargarán dinámicamente en el catálogo.</li>
+                </ul>
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">base_datos.sql</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>CREATE DATABASE IF NOT EXISTS tienda_webforms;
+USE tienda_webforms;
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    usuario VARCHAR(60) NOT NULL UNIQUE,
+    clave VARCHAR(100) NOT NULL,
+    rol VARCHAR(30) DEFAULT 'usuario'
+);
+
+CREATE TABLE productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(120) NOT NULL,
+    descripcion VARCHAR(255),
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL DEFAULT 0,
+    imagen_url VARCHAR(255)
+);
+
+-- Usuario inicial para pruebas en clase
+INSERT INTO usuarios (nombre, usuario, clave, rol)
+VALUES ('Administrador', 'admin', '1234', 'admin');
+
+-- Productos iniciales de ejemplo
+INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url)
+VALUES
+('Teclado Mecánico', 'Switch rojo retroiluminado USB', 45.00, 12, 'https://via.placeholder.com/400x220?text=Teclado'),
+('Mouse Inalámbrico', 'Sensor óptico 1600 DPI ergonómico', 18.50, 25, 'https://via.placeholder.com/400x220?text=Mouse'),
+('Monitor 24 Pulgadas', 'Panel IPS Full HD 75Hz', 149.99, 8, 'https://via.placeholder.com/400x220?text=Monitor');</code></pre>
+            </div>
+        </section>
+
+        <!-- PASO 2 -->
+        <section id="paso2" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 2</span>
+                <h2>Configurar el Proyecto Web Forms (.NET 4.5) y Web.config</h2>
+            </div>
+            <div class="explanation">
+                <p>En Visual Studio, crea un proyecto <strong>Aplicación web ASP.NET (.NET Framework 4.5)</strong> con
+                    plantilla <strong>Web Forms</strong> (o vacía y agregas los Web Forms).</p>
+                <ul>
+                    <li>Instala el paquete NuGet <code>MySql.Data</code> compatible con .NET Framework 4.5 (o agrega la
+                        referencia a <code>MySql.Data.dll</code>).</li>
+                    <li>Agrega la cadena de conexión en <code>Web.config</code> dentro de
+                        <code>&lt;configuration&gt;</code> para centralizar el acceso a MySQL.</li>
+                </ul>
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Web.config</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>&lt;configuration&gt;
+  &lt;connectionStrings&gt;
+    &lt;add name="MySqlConn"
+         connectionString="Server=localhost;Database=tienda_webforms;Uid=root;Pwd=;"
+         providerName="MySql.Data.MySqlClient" /&gt;
+  &lt;/connectionStrings&gt;
+
+  &lt;system.web&gt;
+    &lt;compilation debug="true" targetFramework="4.5" /&gt;
+    &lt;httpRuntime targetFramework="4.5" /&gt;
+  &lt;/system.web&gt;
+&lt;/configuration&gt;</code></pre>
+            </div>
+        </section>
+
+        <!-- PASO 3 -->
+        <section id="paso3" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 3</span>
+                <h2>Crear las Clases Públicas (Modelos POO)</h2>
+            </div>
+            <div class="explanation">
+                <p>Para aplicar Programación Orientada a Objetos vista en clase, crea una carpeta <code>Models</code> (o
+                    <code>App_Code</code> si es Sitio Web) y define dos clases públicas: <code>Usuario</code> y
+                    <code>Producto</code>. Estas clases representarán cada registro de MySQL como un objeto tipado en
+                    C#.</p>
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Models/Usuario.cs</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>using System;
+
+public class Usuario
+{
+    public int Id { get; set; }
+    public string Nombre { get; set; }
+    public string UsuarioLogin { get; set; }
+    public string Rol { get; set; }
+}</code></pre>
+            </div>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Models/Producto.cs</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>using System;
+
+public class Producto
+{
+    public int Id { get; set; }
+    public string Nombre { get; set; }
+    public string Descripcion { get; set; }
+    public decimal Precio { get; set; }
+    public int Stock { get; set; }
+    public string ImagenUrl { get; set; }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- PASO 4 -->
+        <section id="paso4" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 4</span>
+                <h2>Inicio de Sesión (Login.aspx) y Uso de Dictionary</h2>
+            </div>
+            <div class="explanation">
+                <p>Crea el formulario web <code>Login.aspx</code> con diseño Bootstrap. Al hacer clic en
+                    <strong>Ingresar</strong>, el código C# consulta MySQL usando parámetros seguros
+                    (<code>@usuario</code> y <code>@clave</code>). Si coincide, guarda el objeto <code>Usuario</code> en
+                    <code>Session</code> y redirige al <code>Dashboard.aspx</code>.</p>
+            </div>
+            <div class="note-box">
+                <strong>Concepto aplicado:</strong> En el code-behind usamos un
+                <code>Dictionary&lt;string, string&gt;</code> para validar y mapear mensajes o roles de forma rápida
+                mediante clave-valor.
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Login.aspx</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="TiendaWeb.Login" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head runat="server"&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+  &lt;title&gt;Iniciar Sesión&lt;/title&gt;
+  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" /&gt;
+&lt;/head&gt;
+&lt;body class="bg-light d-flex align-items-center vh-100"&gt;
+  &lt;form id="form1" runat="server" class="container"&gt;
+    &lt;div class="row justify-content-center"&gt;
+      &lt;div class="col-md-4"&gt;
+        &lt;div class="card shadow-sm"&gt;
+          &lt;div class="card-body p-4"&gt;
+            &lt;h4 class="card-title text-center mb-3"&gt;Acceso al Sistema&lt;/h4&gt;
+
+            &lt;asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="alert alert-danger py-2"&gt;
+              &lt;asp:Label ID="lblError" runat="server" /&gt;
+            &lt;/asp:Panel&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Usuario&lt;/label&gt;
+              &lt;asp:TextBox ID="txtUsuario" runat="server" CssClass="form-control" placeholder="Ej: admin" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Contraseña&lt;/label&gt;
+              &lt;asp:TextBox ID="txtClave" runat="server" TextMode="Password" CssClass="form-control" placeholder="••••" /&gt;
+            &lt;/div&gt;
+
+            &lt;asp:Button ID="btnIngresar" runat="server" Text="Iniciar Sesión" CssClass="btn btn-primary w-100 mb-2" OnClick="btnIngresar_Click" /&gt;
+            &lt;a href="RegistroUsuario.aspx" class="btn btn-outline-secondary w-100"&gt;Crear cuenta nueva&lt;/a&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Login.aspx.cs</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>using System;
+using System.Collections.Generic;
+using System.Configuration;
+using MySql.Data.MySqlClient;
+
+namespace TiendaWeb
+{
+    public partial class Login : System.Web.UI.Page
+    {
+        protected void btnIngresar_Click(object sender, EventArgs e)
+        {
+            Dictionary&lt;string, string&gt; mensajes = new Dictionary&lt;string, string&gt;
+            {
+                { "vacio", "Por favor, completa usuario y contraseña." },
+                { "invalido", "Usuario o contraseña incorrectos." }
+            };
+
+            string user = txtUsuario.Text.Trim();
+            string pass = txtClave.Text.Trim();
+
+            if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
+            {
+                MostrarError(mensajes["vacio"]);
+                return;
+            }
+
+            string connStr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = "SELECT id, nombre, usuario, rol FROM usuarios WHERE usuario = @usuario AND clave = @clave LIMIT 1";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@usuario", user);
+                    cmd.Parameters.AddWithValue("@clave", pass);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            Usuario usuarioActual = new Usuario
+                            {
+                                Id = Convert.ToInt32(reader["id"]),
+                                Nombre = reader["nombre"].ToString(),
+                                UsuarioLogin = reader["usuario"].ToString(),
+                                Rol = reader["rol"].ToString()
+                            };
+
+                            Session["UsuarioActual"] = usuarioActual;
+                            Response.Redirect("Dashboard.aspx");
+                        }
+                        else
+                        {
+                            MostrarError(mensajes["invalido"]);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MostrarError(string texto)
+        {
+            lblError.Text = texto;
+            pnlError.Visible = true;
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- PASO 5 -->
+        <section id="paso5" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 5</span>
+                <h2>Módulo de Registro de Usuarios (RegistroUsuario.aspx)</h2>
+            </div>
+            <div class="explanation">
+                <p>Esta página permite registrar nuevos usuarios en MySQL. También utiliza un
+                    <code>Dictionary&lt;string, string&gt;</code> para poblar la lista desplegable
+                    (<code>DropDownList</code>) de roles disponibles.</p>
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">RegistroUsuario.aspx</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RegistroUsuario.aspx.cs" Inherits="TiendaWeb.RegistroUsuario" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head runat="server"&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+  &lt;title&gt;Registro de Usuarios&lt;/title&gt;
+  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" /&gt;
+&lt;/head&gt;
+&lt;body class="bg-light"&gt;
+  &lt;form id="form1" runat="server" class="container py-5"&gt;
+    &lt;div class="row justify-content-center"&gt;
+      &lt;div class="col-md-5"&gt;
+        &lt;div class="card shadow-sm"&gt;
+          &lt;div class="card-body p-4"&gt;
+            &lt;h4 class="mb-3"&gt;Registrar Nuevo Usuario&lt;/h4&gt;
+
+            &lt;asp:Label ID="lblMensaje" runat="server" CssClass="d-block mb-3" /&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Nombre Completo&lt;/label&gt;
+              &lt;asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Nombre de Usuario&lt;/label&gt;
+              &lt;asp:TextBox ID="txtUsuario" runat="server" CssClass="form-control" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Contraseña&lt;/label&gt;
+              &lt;asp:TextBox ID="txtClave" runat="server" TextMode="Password" CssClass="form-control" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Rol del Sistema&lt;/label&gt;
+              &lt;asp:DropDownList ID="ddlRol" runat="server" CssClass="form-select" /&gt;
+            &lt;/div&gt;
+
+            &lt;asp:Button ID="btnGuardar" runat="server" Text="Guardar Usuario" CssClass="btn btn-success w-100 mb-2" OnClick="btnGuardar_Click" /&gt;
+            &lt;a href="Login.aspx" class="btn btn-link w-100"&gt;Volver al Inicio de Sesión&lt;/a&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">RegistroUsuario.aspx.cs</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>using System;
+using System.Collections.Generic;
+using System.Configuration;
+using MySql.Data.MySqlClient;
+
+namespace TiendaWeb
+{
+    public partial class RegistroUsuario : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                Dictionary&lt;string, string&gt; roles = new Dictionary&lt;string, string&gt;
+                {
+                    { "usuario", "Usuario Estándar" },
+                    { "admin", "Administrador" }
+                };
+
+                ddlRol.DataSource = roles;
+                ddlRol.DataTextField = "Value";
+                ddlRol.DataValueField = "Key";
+                ddlRol.DataBind();
+            }
+        }
+
+        protected void btnGuardar_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                string.IsNullOrWhiteSpace(txtUsuario.Text) ||
+                string.IsNullOrWhiteSpace(txtClave.Text))
+            {
+                lblMensaje.Text = "&lt;div class='alert alert-warning'&gt;Todos los campos son obligatorios.&lt;/div&gt;";
+                return;
+            }
+
+            string connStr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connStr))
+                {
+                    conn.Open();
+                    string sql = "INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (@nombre, @usuario, @clave, @rol)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@nombre", txtNombre.Text.Trim());
+                        cmd.Parameters.AddWithValue("@usuario", txtUsuario.Text.Trim());
+                        cmd.Parameters.AddWithValue("@clave", txtClave.Text.Trim());
+                        cmd.Parameters.AddWithValue("@rol", ddlRol.SelectedValue);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                lblMensaje.Text = "&lt;div class='alert alert-success'&gt;Usuario registrado correctamente.&lt;/div&gt;";
+                txtNombre.Text = "";
+                txtUsuario.Text = "";
+                txtClave.Text = "";
+            }
+            catch (MySqlException ex)
+            {
+                lblMensaje.Text = "&lt;div class='alert alert-danger'&gt;Error al registrar: " + ex.Message + "&lt;/div&gt;";
+            }
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- PASO 6 -->
+        <section id="paso6" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 6</span>
+                <h2>Dashboard y Catálogo Dinámico con List&lt;Producto&gt;</h2>
+            </div>
+            <div class="explanation">
+                <p>En <code>Dashboard.aspx</code> protegemos el acceso verificando que exista
+                    <code>Session["UsuarioActual"]</code>. Luego leemos los productos desde MySQL, los guardamos en una
+                    colección <code>List&lt;Producto&gt;</code> y los enlazamos a un control <code>Repeater</code> que
+                    dibuja las tarjetas (<code>card</code>) de Bootstrap.</p>
+            </div>
+            <div class="note-box">
+                <strong>Conceptos aplicados:</strong> <code>List&lt;Producto&gt;</code> para almacenar la lista de
+                objetos desde la base de datos y <code>Dictionary&lt;string, string&gt;</code> para traducir la clave
+                del rol en pantalla.
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Dashboard.aspx</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="TiendaWeb.Dashboard" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head runat="server"&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+  &lt;title&gt;Dashboard - Catálogo de Productos&lt;/title&gt;
+  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" /&gt;
+&lt;/head&gt;
+&lt;body class="bg-light"&gt;
+  &lt;form id="form1" runat="server"&gt;
+    &lt;!-- Menú de navegación Bootstrap --&gt;
+    &lt;nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4"&gt;
+      &lt;div class="container"&gt;
+        &lt;a class="navbar-brand" href="Dashboard.aspx"&gt;Mi Tienda .NET&lt;/a&gt;
+        &lt;div class="d-flex gap-2 align-items-center flex-wrap"&gt;
+          &lt;a href="RegistroProducto.aspx" class="btn btn-success btn-sm"&gt;+ Nuevo Producto&lt;/a&gt;
+          &lt;a href="RegistroUsuario.aspx" class="btn btn-outline-light btn-sm"&gt;+ Nuevo Usuario&lt;/a&gt;
+          &lt;asp:Button ID="btnSalir" runat="server" Text="Cerrar Sesión" CssClass="btn btn-danger btn-sm" OnClick="btnSalir_Click" /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;div class="container"&gt;
+      &lt;div class="alert alert-info d-flex justify-content-between align-items-center flex-wrap"&gt;
+        &lt;div&gt;
+          Bienvenido, &lt;strong&gt;&lt;asp:Label ID="lblBienvenida" runat="server" /&gt;&lt;/strong&gt;
+        &lt;/div&gt;
+        &lt;span class="badge bg-primary"&gt;&lt;asp:Label ID="lblRol" runat="server" /&gt;&lt;/span&gt;
+      &lt;/div&gt;
+
+      &lt;h3 class="mb-3"&gt;Catálogo de Productos&lt;/h3&gt;
+
+      &lt;div class="row"&gt;
+        &lt;asp:Repeater ID="rptProductos" runat="server"&gt;
+          &lt;ItemTemplate&gt;
+            &lt;div class="col-md-4 mb-4"&gt;
+              &lt;div class="card h-100 shadow-sm"&gt;
+                &lt;img src='&lt;%# Eval("ImagenUrl") %&gt;' class="card-img-top" alt="Producto" style="height:190px; object-fit:cover;" /&gt;
+                &lt;div class="card-body d-flex flex-column"&gt;
+                  &lt;h5 class="card-title"&gt;&lt;%# Eval("Nombre") %&gt;&lt;/h5&gt;
+                  &lt;p class="card-text text-muted flex-grow-1"&gt;&lt;%# Eval("Descripcion") %&gt;&lt;/p&gt;
+                  &lt;div class="d-flex justify-content-between align-items-center mt-2"&gt;
+                    &lt;span class="fs-5 fw-bold text-primary"&gt;$&lt;%# Eval("Precio", "{0:0.00}") %&gt;&lt;/span&gt;
+                    &lt;span class="badge bg-secondary"&gt;Stock: &lt;%# Eval("Stock") %&gt;&lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/ItemTemplate&gt;
+        &lt;/asp:Repeater&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">Dashboard.aspx.cs</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>using System;
+using System.Collections.Generic;
+using System.Configuration;
+using MySql.Data.MySqlClient;
+
+namespace TiendaWeb
+{
+    public partial class Dashboard : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["UsuarioActual"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
+
+            if (!IsPostBack)
+            {
+                Usuario user = (Usuario)Session["UsuarioActual"];
+                lblBienvenida.Text = user.Nombre;
+
+                Dictionary&lt;string, string&gt; etiquetasRol = new Dictionary&lt;string, string&gt;
+                {
+                    { "admin", "Administrador" },
+                    { "usuario", "Usuario Estándar" }
+                };
+
+                lblRol.Text = etiquetasRol.ContainsKey(user.Rol) ? etiquetasRol[user.Rol] : user.Rol;
+
+                CargarCatalogo();
+            }
+        }
+
+        private void CargarCatalogo()
+        {
+            string connStr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+            List&lt;Producto&gt; listaProductos = new List&lt;Producto&gt;();
+
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = "SELECT id, nombre, descripcion, precio, stock, imagen_url FROM productos ORDER BY id DESC";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Producto p = new Producto
+                        {
+                            Id = Convert.ToInt32(reader["id"]),
+                            Nombre = reader["nombre"].ToString(),
+                            Descripcion = reader["descripcion"].ToString(),
+                            Precio = Convert.ToDecimal(reader["precio"]),
+                            Stock = Convert.ToInt32(reader["stock"]),
+                            ImagenUrl = string.IsNullOrWhiteSpace(reader["imagen_url"].ToString())
+                                        ? "https://via.placeholder.com/400x220?text=Sin+Imagen"
+                                        : reader["imagen_url"].ToString()
+                        };
+
+                        listaProductos.Add(p);
+                    }
+                }
+            }
+
+            rptProductos.DataSource = listaProductos;
+            rptProductos.DataBind();
+        }
+
+        protected void btnSalir_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Response.Redirect("Login.aspx");
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- PASO 7 -->
+        <section id="paso7" class="step-card">
+            <div class="step-header">
+                <span class="step-number">Paso 7</span>
+                <h2>Módulo de Registro de Productos (RegistroProducto.aspx)</h2>
+            </div>
+            <div class="explanation">
+                <p>Finalmente, esta página permite agregar nuevos productos al catálogo. Al guardar, instancia un objeto
+                    <code>Producto</code> con los datos del formulario, valida precio y stock, y ejecuta el
+                    <code>INSERT</code> en MySQL.</p>
+            </div>
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">RegistroProducto.aspx</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RegistroProducto.aspx.cs" Inherits="TiendaWeb.RegistroProducto" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head runat="server"&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+  &lt;title&gt;Registrar Producto&lt;/title&gt;
+  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" /&gt;
+&lt;/head&gt;
+&lt;body class="bg-light"&gt;
+  &lt;form id="form1" runat="server" class="container py-5"&gt;
+    &lt;div class="row justify-content-center"&gt;
+      &lt;div class="col-md-6"&gt;
+        &lt;div class="card shadow-sm"&gt;
+          &lt;div class="card-body p-4"&gt;
+            &lt;h4 class="mb-3"&gt;Registrar Nuevo Producto&lt;/h4&gt;
+
+            &lt;asp:Label ID="lblEstado" runat="server" CssClass="d-block mb-3" /&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Nombre del Producto&lt;/label&gt;
+              &lt;asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;Descripción&lt;/label&gt;
+              &lt;asp:TextBox ID="txtDescripcion" runat="server" TextMode="MultiLine" Rows="2" CssClass="form-control" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="row"&gt;
+              &lt;div class="col-md-6 mb-3"&gt;
+                &lt;label class="form-label"&gt;Precio ($)&lt;/label&gt;
+                &lt;asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control" placeholder="0.00" /&gt;
+              &lt;/div&gt;
+              &lt;div class="col-md-6 mb-3"&gt;
+                &lt;label class="form-label"&gt;Stock&lt;/label&gt;
+                &lt;asp:TextBox ID="txtStock" runat="server" CssClass="form-control" placeholder="0" /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="mb-3"&gt;
+              &lt;label class="form-label"&gt;URL de Imagen (opcional)&lt;/label&gt;
+              &lt;asp:TextBox ID="txtImagen" runat="server" CssClass="form-control" placeholder="https://..." /&gt;
+            &lt;/div&gt;
+
+            &lt;asp:Button ID="btnRegistrar" runat="server" Text="Guardar Producto" CssClass="btn btn-primary w-100 mb-2" OnClick="btnRegistrar_Click" /&gt;
+            &lt;a href="Dashboard.aspx" class="btn btn-outline-secondary w-100"&gt;Volver al Catálogo&lt;/a&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+
+            <div class="code-wrapper">
+                <div class="code-toolbar">
+                    <span class="file-label">RegistroProducto.aspx.cs</span>
+                    <button type="button" class="copy-btn" onclick="copiarCodigo(this)">Copiar código</button>
+                </div>
+                <pre><code>using System;
+using System.Configuration;
+using MySql.Data.MySqlClient;
+
+namespace TiendaWeb
+{
+    public partial class RegistroProducto : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["UsuarioActual"] == null)
+            {
+                Response.Redirect("Login.aspx");
+            }
+        }
+
+        protected void btnRegistrar_Click(object sender, EventArgs e)
+        {
+            decimal precio;
+            int stock;
+
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                !decimal.TryParse(txtPrecio.Text.Trim(), out precio) ||
+                !int.TryParse(txtStock.Text.Trim(), out stock))
+            {
+                lblEstado.Text = "&lt;div class='alert alert-warning'&gt;Verifica el nombre, el precio y el stock numérico.&lt;/div&gt;";
+                return;
+            }
+
+            Producto nuevo = new Producto
+            {
+                Nombre = txtNombre.Text.Trim(),
+                Descripcion = txtDescripcion.Text.Trim(),
+                Precio = precio,
+                Stock = stock,
+                ImagenUrl = txtImagen.Text.Trim()
+            };
+
+            string connStr = ConfigurationManager.ConnectionStrings["MySqlConn"].ConnectionString;
+
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url)
+                               VALUES (@nombre, @descripcion, @precio, @stock, @imagen)";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@nombre", nuevo.Nombre);
+                    cmd.Parameters.AddWithValue("@descripcion", nuevo.Descripcion);
+                    cmd.Parameters.AddWithValue("@precio", nuevo.Precio);
+                    cmd.Parameters.AddWithValue("@stock", nuevo.Stock);
+                    cmd.Parameters.AddWithValue("@imagen", nuevo.ImagenUrl);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            lblEstado.Text = "&lt;div class='alert alert-success'&gt;Producto guardado en el catálogo.&lt;/div&gt;";
+            txtNombre.Text = "";
+            txtDescripcion.Text = "";
+            txtPrecio.Text = "";
+            txtStock.Text = "";
+            txtImagen.Text = "";
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        Material didáctico de apoyo · Programación II · ASP.NET Web Forms (.NET Framework 4.5) + MySQL
+    </footer>
+
+    <script>
+        function copiarCodigo(boton) {
+            const bloqueCode = boton.closest('.code-wrapper').querySelector('pre code');
+            const texto = bloqueCode.innerText;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(texto).then(function () {
+                    marcarCopiado(boton);
+                });
+            } else {
+                const areaTemp = document.createElement('textarea');
+                areaTemp.value = texto;
+                areaTemp.style.position = 'fixed';
+                areaTemp.style.left = '-9999px';
+                document.body.appendChild(areaTemp);
+                areaTemp.select();
+                document.execCommand('copy');
+                document.body.removeChild(areaTemp);
+                marcarCopiado(boton);
+            }
+        }
+
+        function marcarCopiado(boton) {
+            const textoOriginal = boton.textContent;
+            boton.textContent = '¡Copiado!';
+            boton.classList.add('copied');
+            setTimeout(function () {
+                boton.textContent = textoOriginal;
+                boton.classList.remove('copied');
+            }, 1800);
+        }
+    </script>
+</body>
+
+</html>
