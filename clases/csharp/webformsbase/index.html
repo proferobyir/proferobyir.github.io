@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Iniciación a ASP.NET Web Forms 4.5 (VS 2012)</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --fondo: #f7f8fa;
+            --texto: #1f2430;
+            --texto-suave: #5a6270;
+            --primario: #2f6fed;
+            --primario-oscuro: #1d4fb8;
+            --borde: #dde1e8;
+            --codigo-fondo: #1e2430;
+            --codigo-texto: #e6edf3;
+            --aviso: #fff4d6;
+            --aviso-borde: #e0a800;
+            --exito: #e3f6e8;
+            --exito-borde: #2e9e4f;
+            --peligro: #fde8e8;
+            --peligro-borde: #d64545;
+            --radio: 10px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--fondo);
+            color: var(--texto);
+            line-height: 1.65;
+            font-size: 17px;
+        }
+
+        .contenedor {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header.portada {
+            background: linear-gradient(135deg, var(--primario) 0%, var(--primario-oscuro) 100%);
+            color: #fff;
+            padding: 60px 20px 50px;
+            text-align: center;
+        }
+
+        header.portada h1 {
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            line-height: 1.2;
+            margin-bottom: 14px;
+        }
+
+        header.portada p {
+            font-size: clamp(1rem, 2.5vw, 1.15rem);
+            opacity: .92;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        main {
+            padding: 40px 0 80px;
+        }
+
+        nav.indice {
+            background: #fff;
+            border: 1px solid var(--borde);
+            border-radius: var(--radio);
+            padding: 24px 26px;
+            margin-bottom: 40px;
+        }
+
+        nav.indice h2 {
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            color: var(--primario-oscuro);
+        }
+
+        nav.indice ol {
+            padding-left: 20px;
+            display: grid;
+            gap: 6px;
+        }
+
+        nav.indice a {
+            color: var(--texto);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color .15s;
+        }
+
+        nav.indice a:hover {
+            border-color: var(--primario);
+            color: var(--primario-oscuro);
+        }
+
+        section.paso {
+            background: #fff;
+            border: 1px solid var(--borde);
+            border-radius: var(--radio);
+            padding: 30px 28px;
+            margin-bottom: 34px;
+            scroll-margin-top: 20px;
+        }
+
+        section.paso>h2 {
+            font-size: clamp(1.25rem, 3.5vw, 1.5rem);
+            color: var(--primario-oscuro);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .numero-paso {
+            display: inline-block;
+            background: var(--primario);
+            color: #fff;
+            font-size: .8rem;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        section.paso>p {
+            margin: 14px 0;
+        }
+
+        section.paso h3 {
+            font-size: 1.08rem;
+            margin: 26px 0 10px;
+            color: var(--texto);
+            border-left: 4px solid var(--primario);
+            padding-left: 10px;
+        }
+
+        pre {
+            background: var(--codigo-fondo);
+            color: var(--codigo-texto);
+            padding: 18px 20px;
+            border-radius: var(--radio);
+            overflow-x: auto;
+            font-size: 14.5px;
+            line-height: 1.55;
+            margin: 14px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        p code,
+        li code,
+        td code {
+            background: #eef1f6;
+            color: var(--primario-oscuro);
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: .9em;
+        }
+
+        .tabla-scroll {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .95rem;
+            min-width: 480px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--borde);
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eef1f6;
+            color: var(--primario-oscuro);
+        }
+
+        .caja {
+            border-radius: var(--radio);
+            padding: 16px 18px;
+            margin: 18px 0;
+            border-left: 5px solid;
+        }
+
+        .caja p {
+            margin: 6px 0;
+        }
+
+        .caja p:first-child {
+            margin-top: 0;
+        }
+
+        .caja p:last-child {
+            margin-bottom: 0;
+        }
+
+        .caja.aviso {
+            background: var(--aviso);
+            border-color: var(--aviso-borde);
+        }
+
+        .caja.exito {
+            background: var(--exito);
+            border-color: var(--exito-borde);
+        }
+
+        .caja.peligro {
+            background: var(--peligro);
+            border-color: var(--peligro-borde);
+        }
+
+        .explica {
+            background: #f0f5ff;
+            border: 1px dashed #b8cdf7;
+            border-radius: var(--radio);
+            padding: 14px 16px;
+            margin: 14px 0;
+            font-size: .95rem;
+        }
+
+        .explica strong {
+            color: var(--primario-oscuro);
+        }
+
+        ul.lista-simple,
+        ol.lista-simple {
+            padding-left: 24px;
+            margin: 10px 0;
+        }
+
+        ul.lista-simple li,
+        ol.lista-simple li {
+            margin: 6px 0;
+        }
+
+        a.volver-arriba {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: .85rem;
+            color: var(--texto-suave);
+            text-decoration: none;
+        }
+
+        a.volver-arriba:hover {
+            color: var(--primario);
+        }
+
+        footer.pie {
+            background: #1f2430;
+            color: #c9d1dc;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: .9rem;
+        }
+
+        footer.pie a {
+            color: #8fb4ff;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            section.paso {
+                padding: 22px 18px;
+            }
+
+            pre {
+                font-size: 13px;
+                padding: 14px;
+            }
+
+            header.portada {
+                padding: 44px 16px 38px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="portada">
+        <h1>Manual de Iniciación a ASP.NET Web Forms 4.5</h1>
+        <p>Desde cero, para quienes vienen de PHP. Con Visual Studio 2012. Sin base de datos: primero entiende la
+            lógica.</p>
+    </header>
+
+    <main class="contenedor">
+
+        <nav class="indice" aria-label="Índice del manual">
+            <h2>Contenido</h2>
+            <ol>
+                <li><a href="#requisitos">Requisitos y advertencia sobre Visual Studio 2012 y .NET 4.5</a></li>
+                <li><a href="#idea">La idea central: Web Forms vs. PHP</a></li>
+                <li><a href="#paso1">Crear el proyecto en Visual Studio 2012</a></li>
+                <li><a href="#paso2">Tu primer "Hola Mundo" (el momento "ajá")</a></li>
+                <li><a href="#paso3">El archivo de lógica (.aspx.cs)</a></li>
+                <li><a href="#paso4">La regla de oro: Page_Load vs. Click</a></li>
+                <li><a href="#paso5">Session: el equivalente a $_SESSION</a></li>
+                <li><a href="#paso6">List y Repeater: el equivalente a foreach</a></li>
+                <li><a href="#paso7">Qué NO enseñar el primer día</a></li>
+                <li><a href="#paso8">Plan de 3 horas (ajustado)</a></li>
+                <li><a href="#referencia">Referencia rápida de etiquetas y propiedades</a></li>
+            </ol>
+        </nav>
+
+        <!-- ===================== REQUISITOS ===================== -->
+        <section class="paso" id="requisitos">
+            <h2><span class="numero-paso">Importante</span> Requisitos y advertencia sobre Visual Studio 2012 y .NET 4.5
+            </h2>
+
+            <p>Este manual está escrito para <strong>Visual Studio 2012</strong> con <strong>.NET Framework
+                    4.5</strong>, que usa <strong>C# 5</strong>. Eso significa que <strong>hay características modernas
+                    de C# que NO puedes usar</strong> porque no compilan.</p>
+
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>¿Funciona en 4.5?</th>
+                            <th>Qué usar en su lugar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>$"Hola {nombre}"</code> (interpolación)</td>
+                            <td>❌ No (necesita C# 6)</td>
+                            <td><code>"Hola " + nombre</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>nameof(x)</code></td>
+                            <td>❌ No</td>
+                            <td>Escribir el nombre a mano: <code>"x"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>?.</code> (null-conditional)</td>
+                            <td>❌ No</td>
+                            <td><code>if (x != null) x.Algo</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>var</code></td>
+                            <td>✅ Sí</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>LINQ (<code>FirstOrDefault</code>, <code>Where</code>)</td>
+                            <td>✅ Sí</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><code>string.IsNullOrWhiteSpace</code></td>
+                            <td>✅ Sí</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="caja aviso">
+                <p><strong>Visual Studio 2012 y .NET 4.5:</strong> VS 2012 es la versión "nativa" para .NET 4.5. El
+                    desplegable de framework debería mostrar <strong>4.5</strong> sin problemas. Si por alguna razón no
+                    aparece (instalación incompleta del Multi-Targeting Pack), selecciona <strong>.NET Framework
+                        4</strong>: el código de este manual funciona igual.</p>
+            </div>
+
+            <div class="caja aviso">
+                <p><strong>¿"Nuevo Proyecto" o "Nuevo Sitio Web"?</strong> En VS 2012 puedes crear dos tipos:</p>
+                <p><strong>A. Nuevo Proyecto → Aplicación web ASP.NET</strong> (Web Application): genera archivo
+                    <code>.csproj</code> y usa <code>CodeBehind</code> en la directiva Page. <strong>Es la opción
+                        recomendada para este manual.</strong></p>
+                <p><strong>B. Nuevo Sitio Web → Sitio web ASP.NET vacío</strong> (Web Site): usa <code>CodeFile</code>
+                    en lugar de <code>CodeBehind</code>. Funciona igual, pero el código de ejemplo de este manual usa
+                    <code>CodeBehind</code>.</p>
+            </div>
+
+            <div class="caja exito">
+                <p><strong>Regla para los estudiantes:</strong> si algo no compila y el error menciona <code>$</code> o
+                    <code>nameof</code>, es porque están usando sintaxis de C# 6+ en un proyecto 4.5. Solución:
+                    concatenar con <code>+</code>.</p>
+            </div>
+            <a class="volver-arriba" href="#requisitos">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== IDEA CENTRAL ===================== -->
+        <section class="paso" id="idea">
+            <h2><span class="numero-paso">Antes</span> La idea central: Web Forms vs. PHP</h2>
+
+            <p>En PHP tú escribes HTML y dentro metes <code>&lt;?php echo $algo; ?&gt;</code>. En Web Forms el HTML que
+                ves en el archivo <code>.aspx</code> <strong>no es el HTML final</strong>. El servidor lee ese archivo,
+                ejecuta el código C# que tú escribiste aparte (el "code-behind"), y <strong>genera HTML nuevo</strong>
+                para el navegador.</p>
+
+            <div class="explica">
+                <p><strong>Analogía:</strong> el archivo <code>.aspx</code> es un <strong>molde</strong>; el archivo
+                    <code>.aspx.cs</code> son las <strong>instrucciones</strong> que dicen qué poner dentro del molde
+                    antes de entregarlo al navegador.</p>
+            </div>
+
+            <h3>Diferencias clave (para tu cabeza de PHP)</h3>
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>En PHP</th>
+                            <th>En ASP.NET Web Forms</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>¿Dónde va el HTML?</td>
+                            <td>En archivos <code>.php</code> mezclado con lógica.</td>
+                            <td>En archivos <code>.aspx</code> (solo interfaz).</td>
+                        </tr>
+                        <tr>
+                            <td>¿Dónde va la lógica?</td>
+                            <td>No aplica (usas PHP).</td>
+                            <td>En el archivo <code>.aspx.cs</code> (code-behind).</td>
+                        </tr>
+                        <tr>
+                            <td>¿Cómo muestro datos?</td>
+                            <td><code>echo $variable;</code></td>
+                            <td>Desde C#: <code>lblMensaje.Text = "Hola";</code></td>
+                        </tr>
+                        <tr>
+                            <td>¿Cómo capturo un clic?</td>
+                            <td><code>&lt;form method="post"&gt;</code> y revisas <code>$_POST</code>.</td>
+                            <td>El botón tiene <code>OnClick="btn_Click"</code>. Escribes un método C# para ese evento.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Estado de la página</td>
+                            <td>Se pierde en cada recarga (salvo sesiones).</td>
+                            <td>ASP.NET maneja el "ViewState" automáticamente para que los controles recuerden sus
+                                valores.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="caja aviso">
+                <p><strong>Idea para tus estudiantes:</strong> en Web Forms no "imprimes" HTML suelto. Llenas las
+                    propiedades de <strong>controles</strong> (textbox, label, botón) y el framework se encarga de
+                    generar el HTML final.</p>
+            </div>
+            <a class="volver-arriba" href="#idea">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 1 ===================== -->
+        <section class="paso" id="paso1">
+            <h2><span class="numero-paso">Paso 1</span> Crear el proyecto en Visual Studio 2012</h2>
+
+            <p>Vamos a crear una <strong>Aplicación web ASP.NET (.NET Framework 4.5)</strong> con plantilla <strong>Web
+                    Forms</strong>.</p>
+
+            <ol class="lista-simple">
+                <li>Abre Visual Studio 2012.</li>
+                <li>Menú <strong>Archivo → Nuevo → Proyecto</strong>.</li>
+                <li>En el panel izquierdo, despliega <strong>Visual C#</strong> y selecciona <strong>Web</strong>.</li>
+                <li>En el centro, elige <strong>Aplicación web ASP.NET</strong>.</li>
+                <li>En la parte superior de la ventana, en el desplegable de framework, selecciona <strong>.NET
+                        Framework 4.5</strong>.</li>
+                <li>Ponle nombre: <code>MiPrimeraApp</code>.</li>
+                <li>Clic en <strong>Aceptar</strong>.</li>
+                <li>En el diálogo de plantillas, elige <strong>Web Forms</strong> (o <strong>Vacío</strong> si quieres
+                    empezar de cero y agregar un Web Form después con <em>Proyecto → Agregar nuevo elemento → Formulario
+                        Web Forms</em>).</li>
+                <li>Clic en <strong>Aceptar</strong>.</li>
+            </ol>
+
+            <div class="caja aviso">
+                <p><strong>Si el desplegable no muestra 4.5:</strong> selecciona <strong>.NET Framework 4</strong>. El
+                    código del manual funciona exactamente igual. La diferencia entre 4 y 4.5 no afecta nada de lo que
+                    enseñamos hoy.</p>
+            </div>
+
+            <h3>Archivos que importan ahora</h3>
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Archivo</th>
+                            <th>Qué es (para tu cabeza de PHP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Default.aspx</code></td>
+                            <td>Tu "archivo PHP" pero <strong>solo con HTML y controles</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Default.aspx.cs</code></td>
+                            <td>Tu "lógica PHP" pero en C#.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Web.config</code></td>
+                            <td>Tu configuración (como <code>.htaccess</code> pero más ordenado).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="caja aviso">
+                <p><strong>No toques nada más.</strong> Ignora <code>Site.Master</code>, <code>Global.asax</code> y las
+                    carpetas raras. No las necesitas para empezar.</p>
+            </div>
+            <a class="volver-arriba" href="#paso1">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 2 ===================== -->
+        <section class="paso" id="paso2">
+            <h2><span class="numero-paso">Paso 2</span> Tu primer "Hola Mundo" (el momento "ajá")</h2>
+
+            <p>Abre <code>Default.aspx</code>. Verás HTML normal. <strong>Borra todo</strong> y escribe esto:</p>
+
+            <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="MiPrimeraApp.Default" %&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head runat="server"&gt;
+    &lt;title&gt;Mi primera app&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+        &lt;div&gt;
+            &lt;asp:TextBox ID="txtNombre" runat="server"&gt;&lt;/asp:TextBox&gt;
+            &lt;asp:Button ID="btnSaludar" runat="server" Text="Saludar" OnClick="btnSaludar_Click" /&gt;
+            &lt;br /&gt;&lt;br /&gt;
+            &lt;asp:Label ID="lblResultado" runat="server"&gt;&lt;/asp:Label&gt;
+        &lt;/div&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <div class="caja aviso">
+                <p><strong>Nota sobre la primera línea:</strong> si creaste el proyecto como <strong>Aplicación web
+                        ASP.NET</strong> (Proyecto), la directiva dirá <code>CodeBehind</code>. Si lo creaste como
+                    <strong>Sitio web ASP.NET</strong>, dirá <code>CodeFile</code>. En este manual usamos
+                    <code>CodeBehind</code>. Si ves <code>CodeFile</code>, no lo cambies: funciona igual.</p>
+            </div>
+
+            <h3>Explicación de cada etiqueta (lo que dirías en voz alta)</h3>
+
+            <div class="explica">
+                <p><strong><code>&lt;%@ Page ... %&gt;</code></strong>: la directiva de página. Le dice a ASP.NET qué
+                    lenguaje usamos (<code>Language="C#"</code>), qué archivo tiene la lógica
+                    (<code>CodeBehind="Default.aspx.cs"</code>) y cuál es el nombre completo de la clase
+                    (<code>Inherits="MiPrimeraApp.Default"</code>). <strong>Debe coincidir exactamente con el namespace
+                        y la clase del archivo .cs</strong>, o tendrás errores.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>&lt;form id="form1" runat="server"&gt;</code></strong>: el formulario que envuelve
+                    todo. En PHP tú escribes <code>&lt;form method="post"&gt;</code>; aquí <code>runat="server"</code>
+                    hace que ASP.NET maneje el POST automáticamente. <strong>Sin este <code>runat="server"</code>, los
+                        controles no funcionan.</strong></p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>&lt;asp:TextBox ID="txtNombre" runat="server"&gt;</code></strong>: un control de
+                    servidor. Se convierte en un <code>&lt;input type="text"&gt;</code> en el navegador. El
+                    <code>ID</code> es el nombre con el que lo llamas desde C# (como el <code>name</code> de un input en
+                    PHP, pero más poderoso).</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>&lt;asp:Button ID="btnSaludar" Text="Saludar" OnClick="btnSaludar_Click" /&gt;</code></strong>:
+                    el botón. <code>Text</code> es el texto visible. <code>OnClick="btnSaludar_Click"</code> le dice a
+                    ASP.NET qué método C# ejecutar cuando el usuario haga clic. <strong>Esto reemplaza tu
+                        <code>if(isset($_POST['btn']))</code>.</strong></p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>&lt;asp:Label ID="lblResultado" runat="server"&gt;</code></strong>: un espacio
+                    reservado para texto. Se convierte en un <code>&lt;span&gt;</code>. Tú lo llenas desde C# con
+                    <code>lblResultado.Text = "...";</code>. Es tu "echo" pero dentro de un control.</p>
+            </div>
+
+            <div class="caja exito">
+                <p><strong>Las tres cosas nuevas que deben memorizar:</strong></p>
+                <p>1. <code>runat="server"</code>: le dice a ASP.NET "procesa esto tú, no lo mandes directo".</p>
+                <p>2. <code>ID="..."</code>: el nombre con el que llamas al control desde C#.</p>
+                <p>3. <code>OnClick="..."</code>: el método C# que se ejecuta al hacer clic.</p>
+            </div>
+            <a class="volver-arriba" href="#paso2">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 3 ===================== -->
+        <section class="paso" id="paso3">
+            <h2><span class="numero-paso">Paso 3</span> El archivo de lógica (.aspx.cs)</h2>
+
+            <p>Abre <code>Default.aspx.cs</code>. Verás algo así:</p>
+
+            <pre><code>using System;
+
+namespace MiPrimeraApp
+{
+    public partial class Default : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // Esto se ejecuta CADA VEZ que carga la página
+        }
+
+        protected void btnSaludar_Click(object sender, EventArgs e)
+        {
+            // Esto se ejecuta SOLO cuando el usuario hace clic en el botón
+        }
+    }
+}</code></pre>
+
+            <h3>Explicación de cada parte</h3>
+
+            <div class="explica">
+                <p><strong><code>namespace MiPrimeraApp</code></strong>: el espacio de nombres. Agrupa las clases del
+                    proyecto. <strong>Debe coincidir con el <code>Inherits</code> del .aspx.</strong></p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>public partial class Default : System.Web.UI.Page</code></strong>: tu página es una
+                    clase. <code>partial</code> significa que está partida en dos archivos (el .aspx y el .aspx.cs).
+                    Hereda de <code>Page</code>, que es la clase base de toda página Web Forms.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>Page_Load(object sender, EventArgs e)</code></strong>: el evento que se ejecuta al
+                    cargar la página. Es como el <code>&lt;?php</code> que se ejecuta al inicio de cada petición.
+                    <strong>Aquí NO va la lógica del botón.</strong></p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>btnSaludar_Click(object sender, EventArgs e)</code></strong>: el método que se ejecuta
+                    al hacer clic en el botón. El nombre debe coincidir con el <code>OnClick</code> del .aspx.
+                    <code>sender</code> es el botón que disparó el evento; <code>e</code> son datos extra (normalmente
+                    no los usas).</p>
+            </div>
+
+            <h3>Tu primer código funcional (¡sin interpolación!)</h3>
+            <p>Dentro de <code>btnSaludar_Click</code>, escribe:</p>
+
+            <pre><code>string nombre = txtNombre.Text;
+lblResultado.Text = "Hola, " + nombre + ". ¡Esto es ASP.NET!";</code></pre>
+
+            <div class="caja peligro">
+                <p><strong>Ojo con C# 5 (4.5):</strong> NO uses <code>$"Hola, {nombre}"</code>. Eso es C# 6 y no compila
+                    en 4.5. Usa concatenación con <code>+</code>, como en el ejemplo.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>txtNombre.Text</code></strong>: lees el texto que el usuario escribió. Es como leer
+                    <code>$_POST['txtNombre']</code> pero <strong>sin formulario POST explícito</strong>: ASP.NET ya lo
+                    hizo por ti.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>lblResultado.Text = "..."</code></strong>: es como hacer <code>echo</code> pero dentro
+                    de un control específico. No imprimes HTML suelto; llenas un espacio reservado.</p>
+            </div>
+
+            <p>Presiona <strong>F5</strong>. Escribe tu nombre, haz clic. Funciona.</p>
+            <a class="volver-arriba" href="#paso3">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 4 ===================== -->
+        <section class="paso" id="paso4">
+            <h2><span class="numero-paso">Paso 4</span> La regla de oro: Page_Load vs. Click</h2>
+
+            <p>Tus estudiantes van a querer hacer esto (venir de PHP):</p>
+
+            <pre><code>protected void Page_Load(object sender, EventArgs e)
+{
+    // MAL: esto se ejecuta en CADA clic
+    lblResultado.Text = "Hola, " + txtNombre.Text;
+}</code></pre>
+
+            <div class="caja peligro">
+                <p><strong>Por qué está mal:</strong> <code>Page_Load</code> se ejecuta en <strong>cada</strong>
+                    petición, incluso antes de que el botón haga su trabajo. Si pones código ahí, el label se llena
+                    antes del clic y luego el clic lo pisa (o peor, se ejecuta con datos viejos).</p>
+            </div>
+
+            <div class="caja aviso">
+                <p><strong>La regla de oro para el pizarrón:</strong></p>
+                <p><strong><code>Page_Load</code></strong> → para preparar cosas la <strong>primera vez</strong> (cargar
+                    una lista, mostrar un mensaje de bienvenida).</p>
+                <p><strong><code>btn_Click</code></strong> → para <strong>responder a un clic</strong>.</p>
+            </div>
+
+            <h3>Cómo evitar que Page_Load se ejecute en cada clic</h3>
+            <p>Se usa <code>IsPostBack</code>:</p>
+
+            <pre><code>protected void Page_Load(object sender, EventArgs e)
+{
+    if (!IsPostBack)
+    {
+        // Esto SOLO se ejecuta la primera vez que se carga la página
+        // NO se ejecuta cuando el usuario hace clic
+    }
+}</code></pre>
+
+            <div class="explica">
+                <p><strong><code>IsPostBack</code></strong>: significa "¿el usuario ya interactuó con la página?". Si es
+                    <code>false</code>, es la primera vez. El signo <code>!</code> significa "NO". Entonces
+                    <code>if (!IsPostBack)</code> se lee: "si NO es una recarga por interacción, haz esto".</p>
+            </div>
+            <a class="volver-arriba" href="#paso4">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 5 ===================== -->
+        <section class="paso" id="paso5">
+            <h2><span class="numero-paso">Paso 5</span> Session: el equivalente a $_SESSION</h2>
+
+            <p>En PHP harías <code>$_SESSION['usuario'] = $usuario;</code>. En Web Forms es <strong>casi
+                    idéntico</strong>:</p>
+
+            <pre><code>Session["UsuarioActual"] = "admin";                // Guardar
+string user = Session["UsuarioActual"].ToString();  // Leer
+Session.Clear();                                    // Borrar todo</code></pre>
+
+            <h3>Cómo proteger una página (que no entre sin login)</h3>
+
+            <pre><code>protected void Page_Load(object sender, EventArgs e)
+{
+    if (Session["UsuarioActual"] == null)
+    {
+        Response.Redirect("Login.aspx"); // Como header("Location: ...") en PHP
+        return;
+    }
+}</code></pre>
+
+            <div class="caja exito">
+                <p><strong>Nada más.</strong> No hay magia negra. Si la sesión está vacía, redirige al login. Si no,
+                    deja pasar.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>Session["clave"]</code></strong>: guarda datos por usuario mientras navega. Es
+                    exactamente <code>$_SESSION['clave']</code> en PHP.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>Response.Redirect("archivo.aspx")</code></strong>: redirige al navegador a otra página.
+                    Es <code>header("Location: archivo.php")</code> en PHP. <strong>Ojo:</strong> después de un
+                    <code>Redirect</code> el código sigue ejecutándose un poco; por eso se pone <code>return;</code>
+                    después.</p>
+            </div>
+            <a class="volver-arriba" href="#paso5">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 6 ===================== -->
+        <section class="paso" id="paso6">
+            <h2><span class="numero-paso">Paso 6</span> List y Repeater: el equivalente a foreach</h2>
+
+            <p>En PHP harías <code>foreach($productos as $p)</code>. En C# usas <code>List&lt;T&gt;</code> y un control
+                llamado <code>Repeater</code> (que es como un <code>foreach</code> que pinta HTML).</p>
+
+            <h3>En el .aspx</h3>
+            <pre><code>&lt;asp:Repeater ID="rptProductos" runat="server"&gt;
+    &lt;ItemTemplate&gt;
+        &lt;div&gt;
+            &lt;h3&gt;&lt;%# Eval("Nombre") %&gt;&lt;/h3&gt;
+            &lt;p&gt;Precio: $&lt;%# Eval("Precio") %&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/ItemTemplate&gt;
+&lt;/asp:Repeater&gt;</code></pre>
+
+            <h3>En el .cs</h3>
+            <pre><code>// Simulamos datos (mañana serán de MySQL)
+List&lt;Producto&gt; lista = new List&lt;Producto&gt;();
+lista.Add(new Producto { Nombre = "Teclado", Precio = 45 });
+lista.Add(new Producto { Nombre = "Mouse", Precio = 18 });
+
+rptProductos.DataSource = lista;
+rptProductos.DataBind();</code></pre>
+
+            <div class="explica">
+                <p><strong><code>List&lt;Producto&gt;</code></strong>: una lista tipada de objetos
+                    <code>Producto</code>. Es como un array de PHP pero donde cada elemento es un objeto con
+                    propiedades.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>&lt;ItemTemplate&gt;</code></strong>: la plantilla que se repite por cada elemento de
+                    la lista. Dentro usas <code>&lt;%# Eval("Nombre") %&gt;</code> para acceder a las propiedades.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>Eval("Nombre")</code></strong>: es como <code>$p['Nombre']</code> dentro del bucle.
+                    Toma la propiedad del objeto actual.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>DataSource = lista</code></strong>: le dices al Repeater de dónde sacar los datos.</p>
+            </div>
+
+            <div class="explica">
+                <p><strong><code>DataBind()</code></strong>: "ahora sí, pinta". Sin esta línea, el Repeater no dibuja
+                    nada.</p>
+            </div>
+
+            <div class="caja aviso">
+                <p><strong>Analogía:</strong> <code>Repeater</code> es un <code>foreach</code> que escribe HTML. Le das
+                    una lista con <code>DataSource</code>, le dices <code>DataBind()</code> (que significa "ahora sí,
+                    pinta"), y él recorre la lista.</p>
+            </div>
+            <a class="volver-arriba" href="#paso6">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 7 ===================== -->
+        <section class="paso" id="paso7">
+            <h2><span class="numero-paso">Paso 7</span> Qué NO enseñar el primer día</h2>
+
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No enseñes</th>
+                            <th>Por qué</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Conexión a MySQL</td>
+                            <td>Primero que entiendan que los datos pueden venir de una <code>List</code> en memoria. La
+                                BD es solo <strong>otro origen</strong> de esa lista.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Dictionary</code></td>
+                            <td>Es útil pero no es esencial para el primer día. Confunde. Déjalo para cuando dominen
+                                <code>List</code>.</td>
+                        </tr>
+                        <tr>
+                            <td>Clases <code>Usuario</code> y <code>Producto</code> complejas</td>
+                            <td>Puedes usar <code>List&lt;string&gt;</code> o incluso arrays paralelos el primer día.
+                                Las clases son un tema aparte de POO.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Web.config</code> con cadenas de conexión</td>
+                            <td>Mañana no hay base de datos. No lo menciones.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a class="volver-arriba" href="#paso7">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== PASO 8 ===================== -->
+        <section class="paso" id="paso8">
+            <h2><span class="numero-paso">Paso 8</span> Plan de 3 horas (ajustado)</h2>
+
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Minuto</th>
+                            <th>Actividad</th>
+                            <th>Qué hacen ellos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0-15</td>
+                            <td>Crear proyecto en Visual Studio 2012</td>
+                            <td>Solo clics, tú proyectas</td>
+                        </tr>
+                        <tr>
+                            <td>15-45</td>
+                            <td>Paso 2 y 3: Hola Mundo</td>
+                            <td>Copian el HTML y el C#, presionan F5. <strong>Debe funcionar en los primeros 30
+                                    min.</strong></td>
+                        </tr>
+                        <tr>
+                            <td>45-60</td>
+                            <td>Romper a propósito: mover el código del clic a <code>Page_Load</code></td>
+                            <td>Ven el error con sus propios ojos. <strong>Esto es lo que recordarán.</strong></td>
+                        </tr>
+                        <tr>
+                            <td>60-75</td>
+                            <td>Receso</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>75-120</td>
+                            <td>Paso 4: <code>IsPostBack</code> + Paso 5: <code>Session</code></td>
+                            <td>Agregan un "login falso" que guarda un string en Session y redirige a otra página.</td>
+                        </tr>
+                        <tr>
+                            <td>120-165</td>
+                            <td>Paso 6: <code>List&lt;T&gt;</code> + <code>Repeater</code> con 3 productos quemados</td>
+                            <td>Copian, cambian los datos por los suyos.</td>
+                        </tr>
+                        <tr>
+                            <td>165-180</td>
+                            <td>Cierre: "¿Qué falta para que esto sea una tienda real?"</td>
+                            <td>Respuesta: "que los datos se guarden aunque cierre Visual Studio" → mañana: MySQL.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a class="volver-arriba" href="#paso8">↑ Volver al índice</a>
+        </section>
+
+        <!-- ===================== REFERENCIA ===================== -->
+        <section class="paso" id="referencia">
+            <h2><span class="numero-paso">Referencia</span> Etiquetas y propiedades usadas en este manual</h2>
+
+            <h3>Directiva de página</h3>
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Elemento</th>
+                            <th>Qué hace</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>&lt;%@ Page Language="C#" %&gt;</code></td>
+                            <td>Indica que el lenguaje del code-behind es C#.</td>
+                        </tr>
+                        <tr>
+                            <td><code>AutoEventWireup="true"</code></td>
+                            <td>Conecta automáticamente eventos como <code>Page_Load</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>CodeBehind="archivo.aspx.cs"</code></td>
+                            <td>Nombre del archivo de lógica (en Web Application).</td>
+                        </tr>
+                        <tr>
+                            <td><code>Inherits="Namespace.Clase"</code></td>
+                            <td>Nombre completo de la clase del code-behind.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Controles de servidor</h3>
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Control</th>
+                            <th>Se convierte en</th>
+                            <th>Propiedad clave</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>&lt;asp:TextBox&gt;</code></td>
+                            <td><code>&lt;input type="text"&gt;</code></td>
+                            <td><code>.Text</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;asp:Button&gt;</code></td>
+                            <td><code>&lt;input type="submit"&gt;</code></td>
+                            <td><code>OnClick</code>, <code>Text</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;asp:Label&gt;</code></td>
+                            <td><code>&lt;span&gt;</code></td>
+                            <td><code>.Text</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;asp:Repeater&gt;</code></td>
+                            <td>Lista repetida de HTML</td>
+                            <td><code>DataSource</code>, <code>DataBind()</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;asp:Panel&gt;</code></td>
+                            <td><code>&lt;div&gt;</code></td>
+                            <td><code>.Visible</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Propiedades y métodos clave</h3>
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Elemento</th>
+                            <th>Qué hace</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>runat="server"</code></td>
+                            <td>Indica que el control se procesa en el servidor.</td>
+                        </tr>
+                        <tr>
+                            <td><code>ID="..."</code></td>
+                            <td>Nombre del control para accederlo desde C#.</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsPostBack</code></td>
+                            <td><code>true</code> si la página viene de una interacción del usuario.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Session["clave"]</code></td>
+                            <td>Guarda datos por usuario (como <code>$_SESSION</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>Response.Redirect("...")</code></td>
+                            <td>Redirige a otra página (como <code>header("Location: ...")</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>Eval("Propiedad")</code></td>
+                            <td>Accede a una propiedad del objeto actual en un Repeater.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a class="volver-arriba" href="#referencia">↑ Volver al índice</a>
+        </section>
+
+    </main>
+
+    <footer class="pie">
+        <p>Manual de Iniciación a ASP.NET Web Forms 4.5 · Visual Studio 2012 · Profesor: Ing.Robyir Loreto</p>
+    </footer>
+
+</body>
+
+</html>
