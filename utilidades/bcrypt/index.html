@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Profesor Robyir Loreto">
+    <title>Generador Hash bcrypt</title>
+
+    <!-- Librería bcryptjs para ejecutar el algoritmo en el cliente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0b1120;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            font-size: 1.05rem;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-toggle {
+            position: absolute;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            background-color: var(--accent);
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            margin-top: 1.75rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .result-box.active {
+            display: block;
+        }
+
+        .hash-output {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem;
+            color: var(--success);
+            word-break: break-all;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            user-select: all;
+        }
+
+        .btn-copy {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--accent);
+            color: #0f172a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+        <h1>Generador Hash bcrypt</h1>
+        <p class="subtitle">Convierte texto plano en un hash seguro con sal aleatoria.</p>
+
+        <form id="bcryptForm">
+            <div class="form-group">
+                <label for="txtKey">Ingresa la clave a encriptar</label>
+                <div class="input-wrapper">
+                    <input type="password" id="txtKey" name="txtKey" placeholder="Escribe la contraseña..." required
+                        autocomplete="off">
+                    <button type="button" class="btn-toggle" id="btnTogglePass">Mostrar</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="saltRounds">Rondas de costo (Salt Rounds)</label>
+                <select id="saltRounds" name="saltRounds">
+                    <option value="8">8 rondas (Más rápido)</option>
+                    <option value="10" selected>10 rondas (Estándar recomendado)</option>
+                    <option value="12">12 rondas (Mayor seguridad)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btnGenerate">Generar Hash</button>
+        </form>
+
+        <section class="result-box" id="resultBox">
+            <label>Hash bcrypt resultante:</label>
+            <div class="hash-output" id="hashOutput"></div>
+            <button type="button" class="btn-copy" id="btnCopy">Copiar Hash al portapapeles</button>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('bcryptForm');
+            const txtKey = document.getElementById('txtKey');
+            const saltRounds = document.getElementById('saltRounds');
+            const btnGenerate = document.getElementById('btnGenerate');
+            const btnTogglePass = document.getElementById('btnTogglePass');
+            const resultBox = document.getElementById('resultBox');
+            const hashOutput = document.getElementById('hashOutput');
+            const btnCopy = document.getElementById('btnCopy');
+
+            // Alternar visibilidad de la contraseña
+            btnTogglePass.addEventListener('click', () => {
+                const isPassword = txtKey.type === 'password';
+                txtKey.type = isPassword ? 'text' : 'password';
+                btnTogglePass.textContent = isPassword ? 'Ocultar' : 'Mostrar';
+            });
+
+            // Procesar el formulario
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const plainText = txtKey.value;
+                const rounds = parseInt(saltRounds.value, 10);
+
+                if (!plainText) return;
+
+                // Deshabilitar botón mientras se procesa (especialmente útil con 12+ rondas)
+                btnGenerate.disabled = true;
+                btnGenerate.textContent = 'Procesando...';
+
+                // Uso de dcodeIO.bcrypt cargado desde bcryptjs
+                const bcrypt = dcodeIO.bcrypt;
+
+                bcrypt.genSalt(rounds, (err, salt) => {
+                    if (err) {
+                        alert('Error generando la sal: ' + err);
+                        resetButton();
+                        return;
+                    }
+
+                    bcrypt.hash(plainText, salt, (err, hash) => {
+                        if (err) {
+                            alert('Error encriptando la clave: ' + err);
+                            resetButton();
+                            return;
+                        }
+
+                        hashOutput.textContent = hash;
+                        resultBox.classList.add('active');
+                        resetButton();
+                    });
+                });
+            });
+
+            function resetButton() {
+                btnGenerate.disabled = false;
+                btnGenerate.textContent = 'Generar Hash';
+            }
+
+            // Copiar al portapapeles
+            btnCopy.addEventListener('click', () => {
+                const hashText = hashOutput.textContent;
+                if (!hashText) return;
+
+                navigator.clipboard.writeText(hashText).then(() => {
+                    const originalText = btnCopy.textContent;
+                    btnCopy.textContent = '¡Copiado!';
+                    setTimeout(() => {
+                        btnCopy.textContent = originalText;
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
