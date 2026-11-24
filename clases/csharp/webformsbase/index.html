@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Profesor Robyir Loreto" />
-    <title>Manual ASP.NET Web Forms: Session, CSS, Bootstrap 5.3 Offline, JS y Data Binding</title>
+    <title>Manual ASP.NET Web Forms: Controles Repetitivos, Eval, Session y Bootstrap 5.3 Offline</title>
     <style>
         :root {
             --bg-page: #0f1318;
@@ -272,34 +272,38 @@
                 <li><a href="#sec-2">2. Incluir CSS</a></li>
                 <li><a href="#sec-2b">2.1 Bootstrap 5.3 Offline</a></li>
                 <li><a href="#sec-3">3. Incluir JavaScript</a></li>
-                <li><a href="#sec-4">4. Data Binding</a></li>
+                <li><a href="#sec-4">4. Controles repetitivos y Eval</a></li>
                 <li><a href="#sec-5">5. Two-Way Data Binding</a></li>
-                <li><a href="#sec-6">6. Recorrer listas en .aspx</a></li>
+                <li><a href="#sec-6">6. Ejemplos de controles</a></li>
                 <li><a href="#sec-7">7. Errores comunes</a></li>
             </ul>
         </aside>
 
         <main class="main-content">
             <header class="page-header">
-                <h1>Manual de ASP.NET Web Forms: Session, CSS, Bootstrap 5.3 Offline, JS y Data Binding</h1>
-                <p>Guía práctica paso a paso para trabajar con variables de <code class="inline">Session</code>, clases
-                    públicas (<code class="inline">public</code>) y listas (<code class="inline">List&lt;T&gt;</code>)
-                    en archivos <code class="inline">.aspx</code> y <code class="inline">.aspx.cs</code>.</p>
+                <h1>Manual de ASP.NET Web Forms: Controles Repetitivos, &lt;%# Eval %&gt;, Session y Bootstrap 5.3
+                    Offline</h1>
+                <p>Guía práctica paso a paso con controles de servidor repetitivos (<code
+                        class="inline">&lt;asp:Repeater&gt;</code>, <code class="inline">&lt;asp:DataList&gt;</code>,
+                    <code class="inline">&lt;asp:ListView&gt;</code>), <code
+                        class="inline">&lt;%# Eval(...) %&gt;</code>, <code class="inline">Session</code>, clases
+                    públicas (<code class="inline">public</code>) y listas (<code class="inline">List&lt;T&gt;</code>).
+                </p>
                 <div class="badges">
                     <span class="badge">.NET Framework 4.5</span>
                     <span class="badge">Visual Studio 2012</span>
                     <span class="badge">C# 5</span>
-                    <span class="badge">Variables de Session</span>
+                    <span class="badge">&lt;asp:Repeater&gt; / DataList / ListView</span>
+                    <span class="badge">&lt;%# Eval(...) %&gt;</span>
                     <span class="badge">Bootstrap 5.3 Offline</span>
-                    <span class="badge">Clases Públicas y List&lt;T&gt;</span>
                 </div>
             </header>
 
             <section id="sec-1">
                 <h2>1. Estructura base y nuestra clase pública de ejemplo</h2>
-                <p>Para que todos los ejemplos de este manual funcionen de forma coherente, trabajaremos con una clase
-                    pública <code class="inline">Producto</code> dentro del <em>namespace</em> <code
-                        class="inline">WebApplication1</code>, utilizando campos públicos y constructores sencillos.</p>
+                <p>Trabajaremos con una clase pública <code class="inline">Producto</code> dentro del <em>namespace</em>
+                    <code class="inline">WebApplication1</code>, utilizando campos públicos y constructores sencillos.
+                </p>
 
                 <div class="code-box">
                     <div class="code-header">
@@ -331,427 +335,116 @@ namespace WebApplication1
                 </div>
 
                 <div class="note">
-                    <strong>Nota de clase:</strong> En C# 5 dentro de Visual Studio 2012, declarar los campos como <code
-                        class="inline">public</code> permite leerlos y modificarlos directamente (<code
-                        class="inline">p.Nombre</code>, <code class="inline">p.Precio</code>) tanto en el código detrás
-                    (<code class="inline">.aspx.cs</code>) como en la vista (<code class="inline">.aspx</code>).
+                    <strong>Nota de clase:</strong> En C# 5 dentro de Visual Studio 2012, mantener los campos como <code
+                        class="inline">public</code> permite acceder a ellos desde el código detrás (<code
+                        class="inline">.aspx.cs</code>) y mediante <code class="inline">Eval("NombreCampo")</code>
+                    dentro de las plantillas de controles repetitivos en <code class="inline">.aspx</code>.
                 </div>
             </section>
 
             <section id="sec-1b">
                 <h2>1.1 Qué son las variables de Session, cómo crearlas y eliminarlas</h2>
-                <p>En ASP.NET Web Forms, cada vez que ocurre una recarga o un <em>postback</em> (por ejemplo, al pulsar
-                    un botón), la clase de la página se vuelve a instanciar y las variables locales o de instancia
-                    normales se reinician.</p>
-                <p>Una <strong>variable de Session</strong> (<code class="inline">Session["clave"]</code>) es un espacio
-                    de memoria en el servidor asociado a un visitante/navegador mientras dura su sesión activa. Permite
-                    conservar datos (textos, números, objetos o listas como <code
-                        class="inline">List&lt;Producto&gt;</code>) entre <em>postbacks</em> y entre distintas páginas
-                    <code class="inline">.aspx</code> del mismo sitio.</p>
+                <p>En ASP.NET Web Forms, cada <em>postback</em> crea una nueva instancia de la página y reinicia las
+                    variables normales de instancia. Una <strong>variable de Session</strong> (<code
+                        class="inline">Session["clave"]</code>) conserva datos en memoria del servidor para la sesión
+                    del usuario entre <em>postbacks</em> y páginas <code class="inline">.aspx</code>.</p>
 
-                <h3>¿Cómo crear o actualizar una variable de Session?</h3>
-                <p>Se crea asignándole un valor mediante una clave de tipo <code class="inline">string</code>. Si la
-                    clave no existe, se crea; si ya existe, se sobrescribe su valor. Como <code
-                        class="inline">Session</code> almacena referencias de tipo <code class="inline">object</code>,
-                    al recuperarla debes hacer <em>casting</em> al tipo correspondiente.</p>
+                <h3>Crear, leer y actualizar variables de Session</h3>
                 <div class="code-box">
                     <div class="code-header">
                         <span>Crear, leer y actualizar Session en C#</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>// 1. Crear variables de Session
+                    <pre><code>// Crear variables de Session
 Session["usuario_activo"] = "Carlos Pérez";
-Session["intentos"] = 0;
+Session["productos"] = new List&lt;Producto&gt;();
 
-List&lt;Producto&gt; carrito = new List&lt;Producto&gt;();
-Session["productos"] = carrito;
-
-// 2. Leer variables de Session (verificando null primero)
-if (Session["usuario_activo"] != null)
-{
-    string nombreUsuario = (string)Session["usuario_activo"];
-}
-
+// Leer y hacer casting (verificando null)
 if (Session["productos"] != null)
 {
     List&lt;Producto&gt; listaActual = (List&lt;Producto&gt;)Session["productos"];
 }</code></pre>
                 </div>
 
-                <h3>¿Cómo eliminar variables de Session?</h3>
-                <p>Dependiendo de lo que necesites limpiar, existen tres formas habituales:</p>
+                <h3>Eliminar variables de Session</h3>
                 <ul>
                     <li><code class="inline">Session.Remove("clave")</code>: elimina <strong>una sola variable</strong>
-                        específica por su nombre de clave.</li>
-                    <li><code class="inline">Session.Clear()</code>: elimina <strong>todas las variables</strong>
-                        guardadas en la sesión actual, pero mantiene el objeto de sesión activo.</li>
-                    <li><code class="inline">Session.Abandon()</code>: finaliza y destruye por completo la sesión actual
-                        del usuario (se usa típicamente al cerrar sesión / <em>logout</em>).</li>
+                        específica por su clave.</li>
+                    <li><code class="inline">Session.Clear()</code>: elimina <strong>todas las variables</strong> de la
+                        sesión actual manteniendo la sesión abierta.</li>
+                    <li><code class="inline">Session.Abandon()</code>: finaliza por completo la sesión actual (habitual
+                        al cerrar sesión).</li>
                 </ul>
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Eliminar una variable, limpiar todas o cerrar sesión</span>
+                        <span>Session.Remove, Session.Clear y Session.Abandon</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>// Eliminar solo la variable "productos"
-Session.Remove("productos");
-
-// Vaciar todas las variables de la sesión actual
-Session.Clear();
-
-// Destruir toda la sesión (por ejemplo, al salir del sistema)
-Session.Abandon();</code></pre>
-                </div>
-
-                <h3>Ejemplo completo: Crear, agregar, eliminar una variable y limpiar Session</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>SessionDemo.aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SessionDemo.aspx.cs" Inherits="WebApplication1.SessionDemo" %&gt;
-
-&lt;!DOCTYPE html&gt;
-&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head runat="server"&gt;
-    &lt;title&gt;Ejemplo de Variables de Session&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;form id="form1" runat="server"&gt;
-        &lt;h3&gt;Control de Variables de Session&lt;/h3&gt;
-
-        &lt;asp:Label runat="server" Text="Código:" /&gt;
-        &lt;asp:TextBox ID="txtCodigo" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
-
-        &lt;asp:Label runat="server" Text="Nombre:" /&gt;
-        &lt;asp:TextBox ID="txtNombre" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
-
-        &lt;asp:Label runat="server" Text="Precio:" /&gt;
-        &lt;asp:TextBox ID="txtPrecio" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
-
-        &lt;asp:Button ID="btnAgregar" runat="server" Text="Crear / Agregar a Session" OnClick="btnAgregar_Click" /&gt;
-        &lt;asp:Button ID="btnEliminarLista" runat="server" Text="Eliminar 'productos' (Remove)" OnClick="btnEliminarLista_Click" /&gt;
-        &lt;asp:Button ID="btnLimpiarTodo" runat="server" Text="Limpiar Todo (Clear)" OnClick="btnLimpiarTodo_Click" /&gt;
-
-        &lt;br /&gt;&lt;br /&gt;
-        &lt;asp:Label ID="lblMensaje" runat="server" Text="" /&gt;
-
-        &lt;h4&gt;Contenido actual de Session["productos"]:&lt;/h4&gt;
-        &lt;%
-            if (Session["productos"] != null)
-            {
-                System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
-                    (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-
-                foreach (WebApplication1.Producto p in lista)
-                {
-        %&gt;
-                    &lt;p&gt;&lt;%= p.Codigo %&gt; - &lt;%= p.Nombre %&gt; - $&lt;%= p.Precio.ToString("0.00") %&gt;&lt;/p&gt;
-        &lt;%
-                }
-            }
-            else
-            {
-        %&gt;
-                &lt;p&gt;La variable Session["productos"] no existe o fue eliminada.&lt;/p&gt;
-        &lt;%
-            }
-        %&gt;
-    &lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                </div>
-
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>SessionDemo.aspx.cs</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>using System;
-using System.Collections.Generic;
-using System.Web.UI;
-
-namespace WebApplication1
-{
-    public partial class SessionDemo : System.Web.UI.Page
-    {
-        protected void Page_Load(object sender, EventArgs e)
-        {
-        }
-
-        protected void btnAgregar_Click(object sender, EventArgs e)
-        {
-            List&lt;Producto&gt; lista;
-
-            if (Session["productos"] == null)
-            {
-                lista = new List&lt;Producto&gt;();
-            }
-            else
-            {
-                lista = (List&lt;Producto&gt;)Session["productos"];
-            }
-
-            string cod = txtCodigo.Text.Trim();
-            string nom = txtNombre.Text.Trim();
-            double precio = 0;
-            double.TryParse(txtPrecio.Text.Trim(), out precio);
-
-            Producto nuevo = new Producto(cod, nom, precio);
-            lista.Add(nuevo);
-
-            // Guardar o actualizar la variable de Session
-            Session["productos"] = lista;
-            Session["ultimo_codigo"] = cod;
-
-            lblMensaje.Text = "Producto guardado en Session[\"productos\"].";
-        }
-
-        protected void btnEliminarLista_Click(object sender, EventArgs e)
-        {
-            // Elimina únicamente la variable "productos"
-            Session.Remove("productos");
-            lblMensaje.Text = "Se eliminó Session[\"productos\"] con Session.Remove().";
-        }
-
-        protected void btnLimpiarTodo_Click(object sender, EventArgs e)
-        {
-            // Elimina todas las variables de Session actuales
-            Session.Clear();
-            lblMensaje.Text = "Se limpiaron todas las variables de Session con Session.Clear().";
-        }
-    }
-}</code></pre>
+                    <pre><code>Session.Remove("productos"); // Elimina solo "productos"
+Session.Clear();              // Elimina todas las claves de la sesión
+Session.Abandon();            // Finaliza toda la sesión</code></pre>
                 </div>
             </section>
 
             <section id="sec-2">
                 <h2>2. Cómo incluir CSS en ASP.NET Web Forms</h2>
-                <p>En un archivo <code class="inline">.aspx</code> puedes aplicar estilos mediante reglas embebidas,
-                    hojas de estilo externas o asignando clases desde C#.</p>
-
-                <h3>Paso 1: CSS embebido dentro de &lt;head&gt;</h3>
-                <p>Es práctico para pruebas rápidas o una sola página de laboratorio.</p>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>CSS embebido en .aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;head runat="server"&gt;
-    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;
-    &lt;title&gt;Catálogo en Web Forms&lt;/title&gt;
-    &lt;style type="text/css"&gt;
-        .tarjeta {
-            border: 1px solid #333333;
-            padding: 10px;
-            margin-bottom: 8px;
-            font-family: Arial, sans-serif;
-        }
-
-        .destacado {
-            background-color: #f4f4f4;
-            font-weight: bold;
-        }
-    &lt;/style&gt;
-&lt;/head&gt;</code></pre>
-                </div>
-
-                <h3>Paso 2: Archivo CSS externo con ResolveUrl</h3>
-                <p>Crea una carpeta <code class="inline">Estilos</code> en el proyecto y agrega <code
-                        class="inline">site.css</code>. Luego enlázala con <code
-                        class="inline">ResolveUrl("~/...")</code> para mantener rutas válidas.</p>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Estilos/site.css</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>.contenedor {
-    max-width: 700px;
-    margin: 20px auto;
-    font-family: Arial, sans-serif;
-}
-
-.fila-item {
-    border-bottom: 1px solid #cccccc;
-    padding: 6px 0;
-}</code></pre>
-                </div>
+                <p>Puedes aplicar estilos en <code class="inline">.aspx</code> mediante CSS embebido, archivos externos
+                    con <code class="inline">ResolveUrl("~/...")</code> o asignando <code class="inline">CssClass</code>
+                    desde C#.</p>
 
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Enlace en .aspx</span>
+                        <span>CSS embebido, enlace externo y CssClass desde C#</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>&lt;link href='&lt;%= ResolveUrl("~/Estilos/site.css") %&gt;' rel="stylesheet" type="text/css" /&gt;</code></pre>
-                </div>
+                    <pre><code>&lt;!-- En &lt;head runat="server"&gt; --&gt;
+&lt;link href='&lt;%= ResolveUrl("~/Estilos/site.css") %&gt;' rel="stylesheet" type="text/css" /&gt;
 
-                <h3>Paso 3: Aplicar clase CSS desde C# con CssClass</h3>
-                <p>En controles de servidor de ASP.NET (<code class="inline">TextBox</code>, <code
-                        class="inline">Button</code>, <code class="inline">Panel</code>, <code
-                        class="inline">Label</code>), puedes asignar clases desde el código detrás.</p>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Asignación desde C#</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>protected void Page_Load(object sender, EventArgs e)
+&lt;!-- En C# (.aspx.cs) --&gt;
+protected void Page_Load(object sender, EventArgs e)
 {
-    txtCodigo.CssClass = "tarjeta";
-    btnGuardar.CssClass = "tarjeta destacado";
+    txtCodigo.CssClass = "form-control";
+    btnGuardar.CssClass = "btn btn-primary";
 }</code></pre>
                 </div>
             </section>
 
             <section id="sec-2b">
                 <h2>2.1 Cómo incluir Bootstrap compilado versión 5.3 de forma offline</h2>
-                <p>Para trabajar en laboratorios sin internet o evitar depender de redes externas (CDN), descarga el
-                    paquete compilado de <strong>Bootstrap 5.3</strong> (<em>Compiled CSS and JS</em>) y copia los
-                    archivos locales dentro de tu proyecto de Visual Studio.</p>
+                <p>Copia los archivos compilados locales de <strong>Bootstrap 5.3</strong> (por ejemplo <code
+                        class="inline">Content/bootstrap.min.css</code> y <code
+                        class="inline">Scripts/bootstrap.bundle.min.js</code>) dentro de tu proyecto y enlázalos con
+                    <code class="inline">ResolveUrl("~/...")</code>.</p>
 
-                <h3>Paso 1: Estructura de carpetas local recomendada</h3>
-                <p>Dentro de tu proyecto <code class="inline">WebApplication1</code>, crea carpetas locales con los
-                    archivos compilados:</p>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Estructura de archivos locales</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>WebApplication1/
-├── Content/
-│   ├── bootstrap.min.css
-│   └── bootstrap.min.css.map
-├── Scripts/
-│   ├── bootstrap.bundle.min.js
-│   └── bootstrap.bundle.min.js.map
-└── Default.aspx</code></pre>
-                </div>
-
-                <div class="note">
-                    <strong>Importante:</strong> Usa <code class="inline">bootstrap.bundle.min.js</code> (que ya incluye
-                    Popper) y evita enlazar archivos <code class="inline">.map</code> directamente en etiquetas <code
-                        class="inline">&lt;link&gt;</code> o <code class="inline">&lt;script&gt;</code>; el navegador
-                    los solicita automáticamente solo si abre las herramientas de desarrollador.
-                </div>
-
-                <h3>Paso 2: Vincular Bootstrap 5.3 offline en el archivo .aspx</h3>
-                <p>Usa <code class="inline">ResolveUrl("~/...")</code> para referenciar los archivos compilados locales
-                    en <code class="inline">&lt;head&gt;</code> y al cierre de <code class="inline">&lt;body&gt;</code>.
-                </p>
                 <div class="code-box">
                     <div class="code-header">
                         <span>Inclusión de Bootstrap 5.3 Offline en .aspx</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebApplication1.Default" %&gt;
-
-&lt;!DOCTYPE html&gt;
-&lt;html lang="es" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head runat="server"&gt;
-    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;
+                    <pre><code>&lt;head runat="server"&gt;
+    &lt;meta charset="utf-8" /&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
     &lt;title&gt;Web Forms con Bootstrap 5.3 Offline&lt;/title&gt;
-
-    &lt;!-- CSS compilado de Bootstrap 5.3 (local) --&gt;
     &lt;link href='&lt;%= ResolveUrl("~/Content/bootstrap.min.css") %&gt;' rel="stylesheet" type="text/css" /&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;form id="form1" runat="server" class="container py-4"&gt;
-        &lt;h2 class="mb-3"&gt;Registro de Productos&lt;/h2&gt;
-
-        &lt;div class="mb-3"&gt;
-            &lt;asp:Label runat="server" AssociatedControlID="txtNombre" CssClass="form-label" Text="Nombre:" /&gt;
-            &lt;asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" /&gt;
-        &lt;/div&gt;
-
-        &lt;div class="mb-3"&gt;
-            &lt;asp:Label runat="server" AssociatedControlID="txtPrecio" CssClass="form-label" Text="Precio:" /&gt;
-            &lt;asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control" /&gt;
-        &lt;/div&gt;
-
-        &lt;asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" /&gt;
+        &lt;!-- Controles ASP.NET con clases Bootstrap 5.3 --&gt;
     &lt;/form&gt;
-
-    &lt;!-- JS Bundle compilado de Bootstrap 5.3 (local, incluye Popper) --&gt;
     &lt;script src='&lt;%= ResolveUrl("~/Scripts/bootstrap.bundle.min.js") %&gt;' type="text/javascript"&gt;&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                </div>
-
-                <h3>Paso 3: Combinar Bootstrap 5.3 offline al recorrer una List&lt;Producto&gt;</h3>
-                <p>Al imprimir la lista en <code class="inline">.aspx</code>, puedes aplicar clases de tablas de
-                    Bootstrap 5.3 (<code class="inline">table</code>, <code class="inline">table-striped</code>, <code
-                        class="inline">table-bordered</code>).</p>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Tabla Bootstrap 5.3 con foreach en .aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;%
-    if (Session["productos"] != null)
-    {
-        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
-            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-%&gt;
-        &lt;div class="table-responsive mt-4"&gt;
-            &lt;table class="table table-striped table-bordered"&gt;
-                &lt;thead&gt;
-                    &lt;tr&gt;
-                        &lt;th&gt;Código&lt;/th&gt;
-                        &lt;th&gt;Nombre&lt;/th&gt;
-                        &lt;th&gt;Precio&lt;/th&gt;
-                    &lt;/tr&gt;
-                &lt;/thead&gt;
-                &lt;tbody&gt;
-&lt;%
-        foreach (WebApplication1.Producto p in lista)
-        {
-%&gt;
-                    &lt;tr&gt;
-                        &lt;td&gt;&lt;%= p.Codigo %&gt;&lt;/td&gt;
-                        &lt;td&gt;&lt;%= p.Nombre %&gt;&lt;/td&gt;
-                        &lt;td&gt;$&lt;%= p.Precio.ToString("0.00") %&gt;&lt;/td&gt;
-                    &lt;/tr&gt;
-&lt;%
-        }
-%&gt;
-                &lt;/tbody&gt;
-            &lt;/table&gt;
-        &lt;/div&gt;
-&lt;%
-    }
-%&gt;</code></pre>
+&lt;/body&gt;</code></pre>
                 </div>
             </section>
 
             <section id="sec-3">
                 <h2>3. Cómo incluir y usar JavaScript en ASP.NET Web Forms</h2>
-                <p>Al trabajar con controles que tienen <code class="inline">runat="server"</code>, ASP.NET genera un ID
-                    en el HTML final. Usar <code class="inline">ClientIDMode="Static"</code> facilita localizar el
-                    elemento desde JavaScript con <code class="inline">document.getElementById</code>.</p>
-
-                <h3>Paso 1: Archivo JavaScript externo</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Scripts/validaciones.js</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>function confirmarLimpieza() {
-    return confirm("¿Deseas limpiar los campos del formulario?");
-}</code></pre>
-                </div>
+                <p>Usa <code class="inline">ClientIDMode="Static"</code> en los controles de servidor cuando necesites
+                    leerlos fácilmente desde JavaScript con <code class="inline">document.getElementById</code>, o
+                    dispara scripts desde C# con <code class="inline">ScriptManager.RegisterStartupScript</code>.</p>
 
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Inclusión en .aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;script src='&lt;%= ResolveUrl("~/Scripts/validaciones.js") %&gt;' type="text/javascript"&gt;&lt;/script&gt;</code></pre>
-                </div>
-
-                <h3>Paso 2: Leer un TextBox de servidor desde JavaScript</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>ClientIDMode="Static" en .aspx</span>
+                        <span>ClientIDMode="Static" y función JS</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
                     <pre><code>&lt;asp:TextBox ID="txtNombre" runat="server" ClientIDMode="Static" /&gt;
@@ -764,34 +457,108 @@ namespace WebApplication1
     }
 &lt;/script&gt;</code></pre>
                 </div>
-
-                <h3>Paso 3: Disparar JavaScript desde C# tras un evento</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>RegisterStartupScript en .aspx.cs</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>protected void btnGuardar_Click(object sender, EventArgs e)
-{
-    string script = "alert('Registro guardado correctamente.');";
-    ScriptManager.RegisterStartupScript(this, this.GetType(), "MsgGuardado", script, true);
-}</code></pre>
-                </div>
             </section>
 
             <section id="sec-4">
-                <h2>4. Data Binding en ASP.NET Web Forms (paso a paso)</h2>
-                <p>El <strong>data binding</strong> consiste en llevar datos desde una estructura en C# (como <code
-                        class="inline">List&lt;Producto&gt;</code>) hacia la interfaz web para visualizarlos o
-                    enlazarlos.</p>
+                <h2>4. Controles repetitivos de ASP.NET y qué hace &lt;%# Eval %&gt;</h2>
+                <p>ASP.NET Web Forms cuenta con controles repetitivos basados en plantillas que recorren automáticamente
+                    una colección (como <code class="inline">List&lt;Producto&gt;</code>) cuando llamas a <code
+                        class="inline">.DataBind()</code> desde C#.</p>
 
-                <h3>Enfoque A: Recorrer una List&lt;Producto&gt; en el .aspx con &lt;% ... %&gt; y &lt;%= ... %&gt;</h3>
-                <p>Este enfoque es directo y claro para mostrar campos públicos de objetos almacenados en <code
-                        class="inline">Session</code>.</p>
+                <h3>¿Qué hace &lt;%# Eval("...") %&gt;?</h3>
+                <p>La sintaxis <code class="inline">&lt;%# ... %&gt;</code> es una <strong>expresión de enlace de
+                        datos</strong>. Al ejecutarse <code class="inline">DataBind()</code> en el control repetitivo,
+                    <code class="inline">Eval("NombreCampo")</code> toma el objeto actual de la lista y obtiene el valor
+                    del campo público indicado (por ejemplo <code class="inline">Codigo</code>, <code
+                        class="inline">Nombre</code> o <code class="inline">Precio</code>).</p>
+                <ul>
+                    <li><code class="inline">&lt;%# Eval("Nombre") %&gt;</code>: imprime el valor del campo <code
+                            class="inline">Nombre</code> del elemento actual.</li>
+                    <li><code class="inline">&lt;%# Eval("Precio", "{0:0.00}") %&gt;</code>: imprime el campo <code
+                            class="inline">Precio</code> formateado a dos decimales.</li>
+                </ul>
+
+                <h3>¿Qué hace cada control repetitivo?</h3>
+                <ul>
+                    <li><strong><code class="inline">&lt;asp:Repeater&gt;</code>:</strong> Pinta exactamente el HTML que
+                        escribas dentro de sus plantillas sin agregar etiquetas extra. Sus plantillas principales son:
+                        <ul>
+                            <li><code class="inline">&lt;HeaderTemplate&gt;</code>: se renderiza una sola vez al inicio
+                                (por ejemplo, apertura de <code class="inline">&lt;table&gt;</code> y encabezados).</li>
+                            <li><code class="inline">&lt;ItemTemplate&gt;</code>: se repite una vez por cada elemento de
+                                la lista.</li>
+                            <li><code class="inline">&lt;AlternatingItemTemplate&gt;</code>: opcional; aplica diseño
+                                alterno en filas pares/impares.</li>
+                            <li><code class="inline">&lt;SeparatorTemplate&gt;</code>: opcional; coloca un separador
+                                entre elementos consecutivos.</li>
+                            <li><code class="inline">&lt;FooterTemplate&gt;</code>: se renderiza una sola vez al final
+                                (por ejemplo, cierre <code class="inline">&lt;/table&gt;</code>).</li>
+                        </ul>
+                    </li>
+                    <li><strong><code class="inline">&lt;asp:DataList&gt;</code>:</strong> Organiza los elementos
+                        repetidos (por defecto en una tabla HTML) y permite configurar <code
+                            class="inline">RepeatColumns</code> (cantidad de columnas por fila) y <code
+                            class="inline">RepeatDirection</code> (<code class="inline">Horizontal</code> o <code
+                            class="inline">Vertical</code>).</li>
+                    <li><strong><code class="inline">&lt;asp:ListView&gt;</code>:</strong> Usa <code
+                            class="inline">&lt;LayoutTemplate&gt;</code> con un marcador <code
+                            class="inline">itemPlaceholder</code> para definir el contenedor, <code
+                            class="inline">&lt;ItemTemplate&gt;</code> para cada fila/tarjeta y <code
+                            class="inline">&lt;EmptyDataTemplate&gt;</code> para mostrar un mensaje automático cuando la
+                        lista está vacía.</li>
+                </ul>
+
+                <h3>Ejemplo completo con &lt;asp:Repeater&gt; y &lt;%# Eval(...) %&gt;</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Default.aspx (&lt;asp:Repeater&gt; con HeaderTemplate, ItemTemplate y
+                            FooterTemplate)</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebApplication1.Default" %&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;title&gt;Repeater y Eval en ASP.NET&lt;/title&gt;
+    &lt;link href='&lt;%= ResolveUrl("~/Content/bootstrap.min.css") %&gt;' rel="stylesheet" type="text/css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server" class="container py-4"&gt;
+        &lt;h3 class="mb-3"&gt;Listado con &amp;lt;asp:Repeater&amp;gt;&lt;/h3&gt;
+
+        &lt;asp:Repeater ID="rptProductos" runat="server"&gt;
+            &lt;HeaderTemplate&gt;
+                &lt;table class="table table-bordered table-striped"&gt;
+                    &lt;thead&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;Código&lt;/th&gt;
+                            &lt;th&gt;Nombre&lt;/th&gt;
+                            &lt;th&gt;Precio&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+                    &lt;tbody&gt;
+            &lt;/HeaderTemplate&gt;
+            &lt;ItemTemplate&gt;
+                        &lt;tr&gt;
+                            &lt;td&gt;&lt;%# Eval("Codigo") %&gt;&lt;/td&gt;
+                            &lt;td&gt;&lt;%# Eval("Nombre") %&gt;&lt;/td&gt;
+                            &lt;td&gt;$&lt;%# Eval("Precio", "{0:0.00}") %&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+            &lt;/ItemTemplate&gt;
+            &lt;FooterTemplate&gt;
+                    &lt;/tbody&gt;
+                &lt;/table&gt;
+            &lt;/FooterTemplate&gt;
+        &lt;/asp:Repeater&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
 
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Default.aspx.cs</span>
+                        <span>Default.aspx.cs (enlazando la lista con DataSource y DataBind)</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
                     <pre><code>using System;
@@ -809,91 +576,13 @@ namespace WebApplication1
                 List&lt;Producto&gt; lista = new List&lt;Producto&gt;();
                 lista.Add(new Producto("P01", "Teclado USB", 15.0));
                 lista.Add(new Producto("P02", "Mouse Óptico", 8.5));
-                lista.Add(new Producto("P03", "Cable HDMI", 6.0));
 
                 Session["productos"] = lista;
+
+                rptProductos.DataSource = lista;
+                rptProductos.DataBind();
             }
         }
-    }
-}</code></pre>
-                </div>
-
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Default.aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebApplication1.Default" %&gt;
-
-&lt;!DOCTYPE html&gt;
-&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head runat="server"&gt;
-    &lt;title&gt;Recorrer Lista en ASPX&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;form id="form1" runat="server"&gt;
-        &lt;h3&gt;Listado de Productos&lt;/h3&gt;
-
-        &lt;%
-            if (Session["productos"] != null)
-            {
-                System.Collections.Generic.List&lt;WebApplication1.Producto&gt; productos =
-                    (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-
-                if (productos.Count == 0)
-                {
-        %&gt;
-                    &lt;p&gt;No hay productos registrados.&lt;/p&gt;
-        &lt;%
-                }
-                else
-                {
-        %&gt;
-                    &lt;table border="1" cellpadding="6" cellspacing="0"&gt;
-                        &lt;tr&gt;
-                            &lt;th&gt;Código&lt;/th&gt;
-                            &lt;th&gt;Nombre&lt;/th&gt;
-                            &lt;th&gt;Precio&lt;/th&gt;
-                        &lt;/tr&gt;
-        &lt;%
-                    foreach (WebApplication1.Producto p in productos)
-                    {
-        %&gt;
-                        &lt;tr&gt;
-                            &lt;td&gt;&lt;%= p.Codigo %&gt;&lt;/td&gt;
-                            &lt;td&gt;&lt;%= p.Nombre %&gt;&lt;/td&gt;
-                            &lt;td&gt;$&lt;%= p.Precio.ToString("0.00") %&gt;&lt;/td&gt;
-                        &lt;/tr&gt;
-        &lt;%
-                    }
-        %&gt;
-                    &lt;/table&gt;
-        &lt;%
-                }
-            }
-        %&gt;
-    &lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                </div>
-
-                <h3>Enfoque B: Enlazar controles con .DataSource y .DataBind()</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Enlace de lista simple en Page_Load</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>protected void Page_Load(object sender, EventArgs e)
-{
-    if (!IsPostBack)
-    {
-        List&lt;string&gt; categorias = new List&lt;string&gt;();
-        categorias.Add("Periféricos");
-        categorias.Add("Cables");
-        categorias.Add("Almacenamiento");
-
-        ddlCategorias.DataSource = categorias;
-        ddlCategorias.DataBind();
     }
 }</code></pre>
                 </div>
@@ -901,289 +590,172 @@ namespace WebApplication1
 
             <section id="sec-5">
                 <h2>5. Two-Way Data Binding (Flujo de ida y vuelta)</h2>
-                <p>El <strong>two-way data binding</strong> implica cargar datos hacia los controles de la vista (ida)
-                    y, tras la edición del usuario y el <em>postback</em>, capturar los cambios para actualizar el
-                    objeto y la lista en memoria (vuelta).</p>
-
-                <h3>Método 1: Two-Way Binding explícito con Session y List&lt;Producto&gt;</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Editar.aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Editar.aspx.cs" Inherits="WebApplication1.Editar" %&gt;
-
-&lt;!DOCTYPE html&gt;
-&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head runat="server"&gt;
-    &lt;title&gt;Two-Way Binding Paso a Paso&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;form id="form1" runat="server"&gt;
-        &lt;h3&gt;Editar Producto (Ida y Vuelta)&lt;/h3&gt;
-
-        &lt;asp:Label runat="server" Text="Código:" /&gt;
-        &lt;asp:TextBox ID="txtCodigo" runat="server" ReadOnly="true" /&gt;&lt;br /&gt;&lt;br /&gt;
-
-        &lt;asp:Label runat="server" Text="Nombre:" /&gt;
-        &lt;asp:TextBox ID="txtNombre" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
-
-        &lt;asp:Label runat="server" Text="Precio:" /&gt;
-        &lt;asp:TextBox ID="txtPrecio" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
-
-        &lt;asp:Button ID="btnCargar" runat="server" Text="Cargar P01" OnClick="btnCargar_Click" /&gt;
-        &lt;asp:Button ID="btnActualizar" runat="server" Text="Guardar Cambios" OnClick="btnActualizar_Click" /&gt;
-
-        &lt;br /&gt;&lt;br /&gt;
-        &lt;asp:Label ID="lblEstado" runat="server" Text="" /&gt;
-
-        &lt;h4&gt;Lista Actualizada:&lt;/h4&gt;
-        &lt;%
-            if (Session["productos"] != null)
-            {
-                System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
-                    (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-
-                foreach (WebApplication1.Producto item in lista)
-                {
-        %&gt;
-                    &lt;p&gt;&lt;%= item.Codigo %&gt; | &lt;%= item.Nombre %&gt; | $&lt;%= item.Precio.ToString("0.00") %&gt;&lt;/p&gt;
-        &lt;%
-                }
-            }
-        %&gt;
-    &lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                </div>
+                <p>En Web Forms, el <strong>two-way data binding</strong> consiste en cargar valores hacia los controles
+                    de edición (ida) y, al enviar el formulario, capturar los cambios del usuario para actualizar el
+                    objeto y la lista en <code class="inline">Session</code> y volver a enlazar el control repetitivo
+                    (vuelta).</p>
 
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Editar.aspx.cs</span>
+                        <span>Ida y Vuelta + refrescar &lt;asp:Repeater&gt;</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>using System;
-using System.Collections.Generic;
-using System.Web.UI;
-
-namespace WebApplication1
+                    <pre><code>// IDA: cargar datos hacia los controles
+protected void btnCargar_Click(object sender, EventArgs e)
 {
-    public partial class Editar : System.Web.UI.Page
+    if (Session["productos"] == null) return;
+
+    List&lt;Producto&gt; lista = (List&lt;Producto&gt;)Session["productos"];
+    foreach (Producto p in lista)
     {
-        protected void Page_Load(object sender, EventArgs e)
+        if (p.Codigo == txtCodigo.Text.Trim())
         {
-            if (!IsPostBack &amp;&amp; Session["productos"] == null)
-            {
-                List&lt;Producto&gt; inicial = new List&lt;Producto&gt;();
-                inicial.Add(new Producto("P01", "Teclado USB", 15.0));
-                inicial.Add(new Producto("P02", "Mouse Óptico", 8.5));
-                Session["productos"] = inicial;
-            }
-        }
-
-        // IDA: de la lista hacia los TextBox
-        protected void btnCargar_Click(object sender, EventArgs e)
-        {
-            List&lt;Producto&gt; lista = (List&lt;Producto&gt;)Session["productos"];
-
-            foreach (Producto p in lista)
-            {
-                if (p.Codigo == "P01")
-                {
-                    txtCodigo.Text = p.Codigo;
-                    txtNombre.Text = p.Nombre;
-                    txtPrecio.Text = p.Precio.ToString();
-                    lblEstado.Text = "Producto P01 cargado en el formulario.";
-                    break;
-                }
-            }
-        }
-
-        // VUELTA: de los TextBox hacia el objeto y la lista
-        protected void btnActualizar_Click(object sender, EventArgs e)
-        {
-            if (Session["productos"] == null)
-            {
-                return;
-            }
-
-            List&lt;Producto&gt; lista = (List&lt;Producto&gt;)Session["productos"];
-            string codBuscado = txtCodigo.Text.Trim();
-
-            foreach (Producto p in lista)
-            {
-                if (p.Codigo == codBuscado)
-                {
-                    p.Nombre = txtNombre.Text.Trim();
-
-                    double nuevoPrecio = 0;
-                    if (double.TryParse(txtPrecio.Text.Trim(), out nuevoPrecio))
-                    {
-                        p.Precio = nuevoPrecio;
-                    }
-
-                    lblEstado.Text = "Cambios guardados en la lista.";
-                    break;
-                }
-            }
-
-            Session["productos"] = lista;
+            txtNombre.Text = p.Nombre;
+            txtPrecio.Text = p.Precio.ToString();
+            break;
         }
     }
-}</code></pre>
-                </div>
+}
 
-                <h3>Método 2: Model Binding en .NET 4.5 (ItemType y BindItem)</h3>
-                <p>.NET Framework 4.5 incorpora enlace a modelos mediante <code class="inline">ItemType</code>, <code
-                        class="inline">SelectMethod</code>, <code class="inline">UpdateMethod</code> y <code
-                        class="inline">BindItem</code>.</p>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>FormView con BindItem en .NET 4.5</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;asp:FormView ID="fvProducto" runat="server"
-    ItemType="WebApplication1.Producto"
-    SelectMethod="ObtenerProducto"
-    UpdateMethod="ActualizarProducto"
-    DefaultMode="Edit"&gt;
-    &lt;EditItemTemplate&gt;
-        Código: &lt;asp:Label ID="lblCod" runat="server" Text='&lt;%# Item.Codigo %&gt;' /&gt;&lt;br /&gt;
-        Nombre: &lt;asp:TextBox ID="txtNom" runat="server" Text='&lt;%# BindItem.Nombre %&gt;' /&gt;&lt;br /&gt;
-        Precio: &lt;asp:TextBox ID="txtPre" runat="server" Text='&lt;%# BindItem.Precio %&gt;' /&gt;&lt;br /&gt;
-        &lt;asp:Button ID="btnUpdate" runat="server" CommandName="Update" Text="Actualizar" /&gt;
-    &lt;/EditItemTemplate&gt;
-&lt;/asp:FormView&gt;</code></pre>
+// VUELTA: guardar cambios en la lista y refrescar el Repeater
+protected void btnActualizar_Click(object sender, EventArgs e)
+{
+    if (Session["productos"] == null) return;
+
+    List&lt;Producto&gt; lista = (List&lt;Producto&gt;)Session["productos"];
+    foreach (Producto p in lista)
+    {
+        if (p.Codigo == txtCodigo.Text.Trim())
+        {
+            p.Nombre = txtNombre.Text.Trim();
+            double nuevoPrecio = 0;
+            if (double.TryParse(txtPrecio.Text.Trim(), out nuevoPrecio))
+            {
+                p.Precio = nuevoPrecio;
+            }
+            break;
+        }
+    }
+
+    Session["productos"] = lista;
+    rptProductos.DataSource = lista;
+    rptProductos.DataBind();
+}</code></pre>
                 </div>
             </section>
 
             <section id="sec-6">
-                <h2>6. Ejemplos adicionales recorriendo listas en archivos .aspx</h2>
+                <h2>6. Ejemplos con &lt;asp:DataList&gt;, &lt;asp:ListView&gt; y OnItemCommand</h2>
 
-                <h3>Ejemplo 1: Filtrar elementos con condicional if dentro de foreach</h3>
+                <h3>Ejemplo 1: &lt;asp:DataList&gt; con varias columnas (RepeatColumns)</h3>
+                <p><strong>&lt;asp:DataList&gt;</strong> distribuye los elementos en una tabla según <code
+                        class="inline">RepeatColumns</code> y <code class="inline">RepeatDirection</code>, usando <code
+                        class="inline">&lt;%# Eval(...) %&gt;</code> dentro de <code
+                        class="inline">&lt;ItemTemplate&gt;</code>.</p>
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Filtrado por precio en .aspx</span>
+                        <span>&lt;asp:DataList&gt; en 2 columnas</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>&lt;%
-    if (Session["productos"] != null)
-    {
-        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
-            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-
-        double precioMinimo = 10.0;
-%&gt;
-        &lt;h4&gt;Productos con precio mayor a $&lt;%= precioMinimo.ToString("0.00") %&gt;&lt;/h4&gt;
-        &lt;ul&gt;
-&lt;%
-        foreach (WebApplication1.Producto item in lista)
-        {
-            if (item.Precio &gt; precioMinimo)
-            {
-%&gt;
-                &lt;li&gt;&lt;strong&gt;&lt;%= item.Nombre %&gt;&lt;/strong&gt; — $&lt;%= item.Precio.ToString("0.00") %&gt;&lt;/li&gt;
-&lt;%
-            }
-        }
-%&gt;
-        &lt;/ul&gt;
-&lt;%
-    }
-%&gt;</code></pre>
-                </div>
-
-                <h3>Ejemplo 2: Acumular un total durante el recorrido</h3>
-                <div class="code-box">
-                    <div class="code-header">
-                        <span>Total acumulado en .aspx</span>
-                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
-                    </div>
-                    <pre><code>&lt;%
-    if (Session["productos"] != null)
-    {
-        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
-            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-
-        double totalGeneral = 0;
-%&gt;
-        &lt;div&gt;
-&lt;%
-        foreach (WebApplication1.Producto item in lista)
-        {
-            totalGeneral = totalGeneral + item.Precio;
-%&gt;
-            &lt;div class="fila-item"&gt;
-                &lt;span&gt;[&lt;%= item.Codigo %&gt;]&lt;/span&gt;
-                &lt;span&gt;&lt;%= item.Nombre %&gt;&lt;/span&gt;
-                &lt;span&gt;$&lt;%= item.Precio.ToString("0.00") %&gt;&lt;/span&gt;
-            &lt;/div&gt;
-&lt;%
-        }
-%&gt;
-            &lt;p&gt;&lt;strong&gt;Total acumulado: $&lt;%= totalGeneral.ToString("0.00") %&gt;&lt;/strong&gt;&lt;/p&gt;
+                    <pre><code>&lt;asp:DataList ID="dlProductos" runat="server" RepeatColumns="2" RepeatDirection="Horizontal" CellPadding="8"&gt;
+    &lt;ItemTemplate&gt;
+        &lt;div class="border p-2"&gt;
+            &lt;strong&gt;&lt;%# Eval("Nombre") %&gt;&lt;/strong&gt;&lt;br /&gt;
+            &lt;span&gt;Código: &lt;%# Eval("Codigo") %&gt;&lt;/span&gt;&lt;br /&gt;
+            &lt;span&gt;Precio: $&lt;%# Eval("Precio", "{0:0.00}") %&gt;&lt;/span&gt;
         &lt;/div&gt;
-&lt;%
-    }
-%&gt;</code></pre>
+    &lt;/ItemTemplate&gt;
+&lt;/asp:DataList&gt;</code></pre>
                 </div>
 
-                <h3>Ejemplo 3: Recorrer con ciclo for para numerar filas</h3>
+                <h3>Ejemplo 2: &lt;asp:ListView&gt; con LayoutTemplate, itemPlaceholder y EmptyDataTemplate</h3>
+                <p><strong>&lt;asp:ListView&gt;</strong> separa la estructura del contenedor (<code
+                        class="inline">&lt;LayoutTemplate&gt;</code>) de cada elemento (<code
+                        class="inline">&lt;ItemTemplate&gt;</code>) y permite mostrar <code
+                        class="inline">&lt;EmptyDataTemplate&gt;</code> cuando no hay registros.</p>
                 <div class="code-box">
                     <div class="code-header">
-                        <span>Recorrido con índice for en .aspx</span>
+                        <span>&lt;asp:ListView&gt; con plantilla vacía</span>
                         <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
                     </div>
-                    <pre><code>&lt;%
-    if (Session["productos"] != null)
-    {
-        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
-            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
-%&gt;
-        &lt;table border="1" cellpadding="5" cellspacing="0"&gt;
+                    <pre><code>&lt;asp:ListView ID="lvProductos" runat="server"&gt;
+    &lt;LayoutTemplate&gt;
+        &lt;table class="table table-bordered"&gt;
+            &lt;thead&gt;
+                &lt;tr&gt;
+                    &lt;th&gt;Código&lt;/th&gt;
+                    &lt;th&gt;Nombre&lt;/th&gt;
+                    &lt;th&gt;Precio&lt;/th&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+                &lt;tr id="itemPlaceholder" runat="server"&gt;&lt;/tr&gt;
+            &lt;/tbody&gt;
+        &lt;/table&gt;
+    &lt;/LayoutTemplate&gt;
+    &lt;ItemTemplate&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;%# Eval("Codigo") %&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;%# Eval("Nombre") %&gt;&lt;/td&gt;
+            &lt;td&gt;$&lt;%# Eval("Precio", "{0:0.00}") %&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/ItemTemplate&gt;
+    &lt;EmptyDataTemplate&gt;
+        &lt;div class="alert alert-secondary"&gt;No hay productos para mostrar.&lt;/div&gt;
+    &lt;/EmptyDataTemplate&gt;
+&lt;/asp:ListView&gt;</code></pre>
+                </div>
+
+                <h3>Ejemplo 3: Botón por fila en &lt;asp:Repeater&gt; con OnItemCommand</h3>
+                <p>Al colocar un botón dentro de <code class="inline">&lt;ItemTemplate&gt;</code> con <code
+                        class="inline">CommandName</code> y <code
+                        class="inline">CommandArgument='&lt;%# Eval("Codigo") %&gt;'</code>, el evento <code
+                        class="inline">OnItemCommand</code> recibe qué fila disparó la acción.</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>OnItemCommand en &lt;asp:Repeater&gt;</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;asp:Repeater ID="rptAcciones" runat="server" OnItemCommand="rptAcciones_ItemCommand"&gt;
+    &lt;HeaderTemplate&gt;
+        &lt;table class="table table-bordered"&gt;
             &lt;tr&gt;
-                &lt;th&gt;#&lt;/th&gt;
                 &lt;th&gt;Código&lt;/th&gt;
                 &lt;th&gt;Nombre&lt;/th&gt;
-                &lt;th&gt;Precio&lt;/th&gt;
+                &lt;th&gt;Acción&lt;/th&gt;
             &lt;/tr&gt;
-&lt;%
-        for (int i = 0; i &lt; lista.Count; i++)
-        {
-            WebApplication1.Producto actual = lista[i];
-%&gt;
+    &lt;/HeaderTemplate&gt;
+    &lt;ItemTemplate&gt;
             &lt;tr&gt;
-                &lt;td&gt;&lt;%= i + 1 %&gt;&lt;/td&gt;
-                &lt;td&gt;&lt;%= actual.Codigo %&gt;&lt;/td&gt;
-                &lt;td&gt;&lt;%= actual.Nombre %&gt;&lt;/td&gt;
-                &lt;td&gt;$&lt;%= actual.Precio.ToString("0.00") %&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;%# Eval("Codigo") %&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;%# Eval("Nombre") %&gt;&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;asp:Button ID="btnQuitar" runat="server"
+                        Text="Quitar"
+                        CssClass="btn btn-sm btn-danger"
+                        CommandName="Eliminar"
+                        CommandArgument='&lt;%# Eval("Codigo") %&gt;' /&gt;
+                &lt;/td&gt;
             &lt;/tr&gt;
-&lt;%
-        }
-%&gt;
+    &lt;/ItemTemplate&gt;
+    &lt;FooterTemplate&gt;
         &lt;/table&gt;
-&lt;%
-    }
-%&gt;</code></pre>
+    &lt;/FooterTemplate&gt;
+&lt;/asp:Repeater&gt;</code></pre>
                 </div>
             </section>
 
             <section id="sec-7">
                 <h2>7. Checklist rápido de errores comunes en clase</h2>
                 <ul>
-                    <li><strong>Mayúsculas y minúsculas en Session:</strong> Usar <code
-                            class="inline">"productos"</code> en un archivo y <code class="inline">"Productos"</code> en
-                        otro provoca que no se encuentre la clave.</li>
-                    <li><strong>Falta de !IsPostBack:</strong> Inicializar o vaciar la lista en <code
-                            class="inline">Page_Load</code> sin comprobar <code class="inline">if (!IsPostBack)</code>
-                        borra datos en cada clic de botón.</li>
-                    <li><strong>No actualizar Session tras modificar:</strong> Al agregar o editar elementos en una
-                        lista guardada en <code class="inline">Session</code>, mantén la referencia actualizada en la
-                        clave correspondiente.</li>
-                    <li><strong>Nombre completo o Import en .aspx:</strong> Dentro de bloques <code
-                            class="inline">&lt;% ... %&gt;</code>, usa nombres completos como <code
-                            class="inline">System.Collections.Generic.List&lt;WebApplication1.Producto&gt;</code> o
-                        declara la directiva <code class="inline">&lt;%@ Import Namespace="..." %&gt;</code>.</li>
+                    <li><strong>Olvidar DataBind():</strong> Asignar <code class="inline">.DataSource</code> no
+                        actualiza la vista hasta llamar a <code class="inline">.DataBind()</code>.</li>
+                    <li><strong>Nombre exacto en Eval("..."):</strong> Debe coincidir con el nombre del campo público de
+                        la clase.</li>
+                    <li><strong>Consistencia en la clave de Session:</strong> Usar siempre la misma clave (por ejemplo
+                        <code class="inline">"productos"</code>).</li>
+                    <li><strong>Proteger con !IsPostBack:</strong> Evita sobrescribir datos iniciales en cada
+                        <em>postback</em>.</li>
                 </ul>
             </section>
         </main>
