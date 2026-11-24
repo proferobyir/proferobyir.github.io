@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Profesor Robyir Loreto" />
-    <title>Manual ASP.NET Web Forms: PostBack, Repeater, Eval, Session y Bootstrap 5.3 Offline</title>
+    <title>Manual ASP.NET Web Forms: Tabla de Funciones, PostBack, Repeater, Session y Bootstrap 5.3 Offline</title>
     <style>
         :root {
             --bg-page: #0f1318;
@@ -192,6 +192,39 @@
             margin-bottom: 0.45rem;
         }
 
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1.25rem 0 1.75rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            background-color: var(--bg-card);
+        }
+
+        table.ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        table.ref-table th,
+        table.ref-table td {
+            padding: 0.75rem 0.9rem;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: top;
+        }
+
+        table.ref-table th {
+            background-color: #141920;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        table.ref-table tr:last-child td {
+            border-bottom: none;
+        }
+
         .note {
             background-color: var(--bg-card);
             border-left: 4px solid var(--accent);
@@ -269,6 +302,7 @@
             <p class="brand-meta">Profesor Robyir Loreto · .NET 4.5 / VS 2012 / C# 5</p>
             <ul class="nav-list">
                 <li><a href="#sec-0">0. ¿Qué es un PostBack?</a></li>
+                <li><a href="#sec-0b">0.1 Funciones frecuentes</a></li>
                 <li><a href="#sec-1">1. Clase pública base</a></li>
                 <li><a href="#sec-1b">1.1 Variables de Session</a></li>
                 <li><a href="#sec-2">2. Incluir CSS</a></li>
@@ -283,10 +317,10 @@
 
         <main class="main-content">
             <header class="page-header">
-                <h1>Manual de ASP.NET Web Forms: PostBack, Controles Repetitivos, &lt;%# Eval %&gt;, Session y Bootstrap
-                    5.3 Offline</h1>
-                <p>Guía práctica paso a paso sobre el ciclo de <strong>PostBack</strong>, controles de servidor
-                    repetitivos (<code class="inline">&lt;asp:Repeater&gt;</code>, <code
+                <h1>Manual de ASP.NET Web Forms: Tabla de Funciones, PostBack, Controles Repetitivos, &lt;%# Eval %&gt;,
+                    Session y Bootstrap 5.3 Offline</h1>
+                <p>Guía práctica paso a paso con tabla de referencia previa, ciclo de <strong>PostBack</strong>,
+                    controles repetitivos (<code class="inline">&lt;asp:Repeater&gt;</code>, <code
                         class="inline">&lt;asp:DataList&gt;</code>, <code class="inline">&lt;asp:ListView&gt;</code>),
                     <code class="inline">&lt;%# Eval(...) %&gt;</code>, <code class="inline">Session</code>, clases
                     públicas (<code class="inline">public</code>) y listas (<code class="inline">List&lt;T&gt;</code>).
@@ -295,8 +329,8 @@
                     <span class="badge">.NET Framework 4.5</span>
                     <span class="badge">Visual Studio 2012</span>
                     <span class="badge">C# 5</span>
+                    <span class="badge">Tabla de Referencia</span>
                     <span class="badge">PostBack &amp; IsPostBack</span>
-                    <span class="badge">&lt;asp:Repeater&gt; / DataList / ListView</span>
                     <span class="badge">Bootstrap 5.3 Offline</span>
                 </div>
             </header>
@@ -347,6 +381,98 @@
         lblMensaje.Text = "Bienvenido. Carga inicial completada.";
     }
 }</code></pre>
+                </div>
+            </section>
+
+            <section id="sec-0b">
+                <h2>0.1 Tabla de funciones y propiedades más frecuentes antes de usarlas</h2>
+                <p>Antes de avanzar a los ejemplos de código, consulta esta tabla con los miembros y funciones que
+                    usaremos con mayor frecuencia en ASP.NET Web Forms (`.NET Framework 4.5` / `C# 5`):</p>
+
+                <div class="table-wrap">
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Elemento / Función</th>
+                                <th>Dónde se usa</th>
+                                <th>¿Qué hace?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code class="inline">IsPostBack</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Propiedad booleana (<code class="inline">bool</code>). Vale <code
+                                        class="inline">false</code> en la primera carga de la página y <code
+                                        class="inline">true</code> cuando la página se recarga por un <em>postback</em>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">DataBind()</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Método que enlaza los datos asignados en <code class="inline">DataSource</code> y
+                                    evalúa las expresiones <code class="inline">&lt;%# ... %&gt;</code> dentro del
+                                    control repetitivo.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">Eval("Campo")</code></td>
+                                <td>Vista (<code class="inline">.aspx</code>)</td>
+                                <td>Expresión de enlace de datos dentro de <code
+                                        class="inline">&lt;%# Eval("Nombre") %&gt;</code> que lee el valor del campo o
+                                    propiedad del elemento actual al ejecutar <code class="inline">DataBind()</code>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">ResolveUrl("~/ruta")</code></td>
+                                <td>Vista (<code class="inline">.aspx</code>)</td>
+                                <td>Convierte una ruta relativa de la aplicación (como <code
+                                        class="inline">~/Content/bootstrap.min.css</code>) en una ruta válida para el
+                                    navegador.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">Session["clave"]</code></td>
+                                <td>C# y Vista</td>
+                                <td>Accede, crea o actualiza una variable almacenada en la sesión del usuario en el
+                                    servidor mientras dure su sesión.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">Session.Remove("clave")</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Elimina una sola variable específica de la sesión actual conservando las demás.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">Session.Clear()</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Elimina todas las variables guardadas en la sesión actual sin destruir el objeto de
+                                    sesión.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">Session.Abandon()</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Finaliza y destruye por completo la sesión actual del usuario.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">ClientIDMode="Static"</code></td>
+                                <td>Vista (<code class="inline">.aspx</code>)</td>
+                                <td>Atributo en controles <code class="inline">runat="server"</code> para mantener
+                                    exactamente el mismo <code class="inline">id</code> en HTML y consultarlo fácil
+                                    desde JavaScript.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">RegisterStartupScript(...)</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Registra y ejecuta un bloque de JavaScript en el navegador al terminar de procesar
+                                    un <em>postback</em> en el servidor.</td>
+                            </tr>
+                            <tr>
+                                <td><code class="inline">double.TryParse(...)</code></td>
+                                <td>C# (<code class="inline">.aspx.cs</code>)</td>
+                                <td>Intenta convertir un texto (<code class="inline">string</code>) a número <code
+                                        class="inline">double</code> de forma segura sin lanzar excepción si el usuario
+                                    escribe letras.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
