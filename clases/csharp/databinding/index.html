@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Paso a Paso: Data Binding en ASP.NET Web Forms 4.5 (C# 5.0)</title>
+    <style>
+        :root { --primary: #2563eb; --dark: #0f172a; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b; --border: #e2e8f0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 50px; }
+        header { background: linear-gradient(135deg, var(--dark), #1e3a8a); color: #fff; padding: 32px 20px; text-align: center; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 8px; }
+        header h1 { font-size: 1.9rem; margin-bottom: 6px; }
+        .container { max-width: 920px; margin: 20px auto; padding: 0 16px; }
+        .nav { display: flex; flex-wrap: wrap; gap: 6px; background: var(--card); padding: 10px; border-radius: 10px; border: 1px solid var(--border); position: sticky; top: 8px; z-index: 10; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .nav a { text-decoration: none; color: var(--muted); font-size: 0.85rem; font-weight: 600; padding: 5px 10px; border-radius: 6px; }
+        .nav a:hover { background: #eff6ff; color: var(--primary); }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .num { background: var(--primary); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        h2 { font-size: 1.25rem; color: var(--dark); }
+        p, ol { margin-bottom: 12px; }
+        ol { margin-left: 20px; }
+        .note { padding: 12px 15px; border-radius: 8px; margin: 12px 0; border-left: 4px solid var(--primary); background: #eff6ff; color: #1e3a8a; font-size: 0.92rem; }
+        .code-box { background: #1e1e1e; border-radius: 8px; margin: 12px 0; overflow: hidden; }
+        .code-top { background: #2d2d2d; color: #ccc; padding: 6px 14px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; font-family: Consolas, monospace; }
+        .btn-copy { background: #444; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; }
+        .btn-copy:hover { background: var(--primary); }
+        pre { padding: 14px; overflow-x: auto; color: #d4d4d4; font-family: Consolas, monospace; font-size: 0.87rem; line-height: 1.45; }
+        .kw { color: #569cd6; } .tp { color: #4ec9b0; } .st { color: #ce9178; } .cm { color: #6a9955; } .sv { color: #dcdcaa; background: rgba(255,255,0,0.12); padding: 1px 3px; border-radius: 3px; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; }
+        th { background: #f1f5f9; }
+        code.in { background: #e2e8f0; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.88em; color: #be185d; }
+        .sim { border: 2px dashed #94a3b8; border-radius: 10px; padding: 16px; background: #f1f5f9; }
+        .sim-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+        @media (max-width: 768px) { .sim-grid { grid-template-columns: 1fr; } }
+        .panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+        .panel h4 { font-size: 0.92rem; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 2px solid var(--primary); color: var(--primary); }
+        .btns { display: flex; flex-direction: column; gap: 8px; }
+        .btn-sim { background: var(--primary); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.84rem; }
+        .btn-sim.ida { background: #7c3aed; }
+        .inp { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin: 4px 0 10px; }
+        .log { margin-top: 12px; background: #0f172a; color: #38bdf8; padding: 10px; border-radius: 6px; font-family: Consolas, monospace; font-size: 0.83rem; }
+        .chk-list { list-style: none; }
+        .chk-list li { padding: 9px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; display: flex; gap: 10px; cursor: pointer; }
+        .done { text-decoration: line-through; color: var(--muted); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="badge">Visual Studio 2012 &bull; .NET Framework 4.5 &bull; C# 5.0 &bull; ASP.NET Web Forms</div>
+    <h1>Tutorial Paso a Paso: Data Binding y Two-Way Data Binding</h1>
+    <p>Conecta objetos de C# con controles visuales en <code>.aspx</code> usando Model Binding fuertemente tipado.</p>
+</header>
+ 
+<div class="container">
+    <nav class="nav">
+        <a href="#s0">0. Concepto</a>
+        <a href="#s1">1. Proyecto VS 2012</a>
+        <a href="#s2">2. Modelo C#</a>
+        <a href="#s3">3. One-Way (.aspx)</a>
+        <a href="#s4">4. Two-Way (.aspx)</a>
+        <a href="#s5">5. Code-Behind (.cs)</a>
+        <a href="#s6">6. Simulador</a>
+        <a href="#s7">7. Checklist</a>
+    </nav>
+
+    <section id="s0" class="card">
+        <div class="card-head"><div class="num">0</div><h2>One-Way vs. Two-Way Data Binding en Web Forms</h2></div>
+        <p>En <strong>ASP.NET Web Forms</strong>, el código C# se ejecuta en el servidor y el HTML en el navegador. El Data Binding conecta ambos lados:</p>
+        <table>
+            <thead>
+                <tr><th>Tipo</th><th>Dirección</th><th>Sintaxis (.NET 4.5)</th><th>Uso habitual</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>One-Way</strong> (1 vía)</td><td>C# &rarr; HTML</td><td><code class="in">&lt;%#: Item.Propiedad %&gt;</code></td><td>Mostrar datos de solo lectura (ej. <code>Label</code>).</td></tr>
+                <tr><td><strong>Two-Way</strong> (2 vías)</td><td>C# &harr; HTML</td><td><code class="in">&lt;%#: BindItem.Propiedad %&gt;</code></td><td>Cargar datos en un <code>TextBox</code> y recoger cambios al guardar.</td></tr>
+            </tbody>
+        </table>
+        <div class="note"><strong>Novedad de .NET 4.5 (VS 2012):</strong> A diferencia del antiguo <code>Eval("Nombre")</code> y <code>Bind("Nombre")</code>, usar <code>Item</code> y <code>BindItem</code> te da IntelliSense y validación de tipos al compilar.</div>
+    </section>
+
+    <section id="s1" class="card">
+        <div class="card-head"><div class="num">1</div><h2>Crear el proyecto en Visual Studio 2012</h2></div>
+        <ol>
+            <li>Abre <strong>Visual Studio 2012</strong> &rarr; <strong>Archivo &rarr; Nuevo &rarr; Proyecto...</strong></li>
+            <li>En la parte superior selecciona <strong>.NET Framework 4.5</strong>.</li>
+            <li>Elige <strong>Visual C# &rarr; Web &rarr; Aplicación web vacía de ASP.NET</strong> y llámala <code>DemoDataBinding</code>.</li>
+            <li>Clic derecho en el proyecto &rarr; <strong>Agregar &rarr; Nuevo elemento &rarr; Formulario Web Forms</strong> llamado <code>RegistroProducto.aspx</code>.</li>
+        </ol>
+    </section>
+
+    <section id="s2" class="card">
+        <div class="card-head"><div class="num">2</div><h2>Crear la Clase Modelo en C# 5.0</h2></div>
+        <p>En Web Forms <strong>no necesitas implementar <code>INotifyPropertyChanged</code></strong>. Agrega una clase llamada <code>Producto.cs</code>:</p>
+        <div class="code-box">
+            <div class="code-top"><span>Producto.cs</span><button class="btn-copy" onclick="copiar('c1')">Copiar</button></div>
+            <pre id="c1"><span class="kw">using</span> System;
+<span class="kw">using</span> System.ComponentModel.DataAnnotations;
+
+<span class="kw">namespace</span> DemoDataBinding
+{
+    <span class="kw">public class</span> <span class="tp">Producto</span>
+    {
+        <span class="kw">public int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        [Required(ErrorMessage = <span class="st">"El nombre es obligatorio"</span>)]
+        <span class="kw">public string</span> Nombre { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        <span class="kw">public decimal</span> Precio { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+        <span class="kw">public bool</span> Disponible { <span class="kw">get</span>; <span class="kw">set</span>; }
+    }
+}</pre>
+        </div>
+    </section>
+
+    <section id="s3" class="card">
+        <div class="card-head"><div class="num">3</div><h2>Ejemplo 1: One-Way Data Binding (Solo Lectura)</h2></div>
+        <p>El atributo <code class="in">ItemType="DemoDataBinding.Producto"</code> activa el enlace fuertemente tipado dentro de un <code>FormView</code>:</p>
+        <div class="code-box">
+            <div class="code-top"><span>Vista One-Way (.aspx)</span><button class="btn-copy" onclick="copiar('c2')">Copiar</button></div>
+            <pre id="c2">&lt;asp:FormView ID="fvLectura" runat="server"
+    ItemType="DemoDataBinding.Producto"
+    SelectMethod="ObtenerProducto"&gt;
+
+    &lt;ItemTemplate&gt;
+        &lt;h3&gt;Producto #<span class="sv">&lt;%#: Item.Id %&gt;</span>&lt;/h3&gt;
+        &lt;p&gt;Nombre: <span class="sv">&lt;%#: Item.Nombre %&gt;</span>&lt;/p&gt;
+        &lt;p&gt;Precio: $<span class="sv">&lt;%#: Item.Precio %&gt;</span>&lt;/p&gt;
+    &lt;/ItemTemplate&gt;
+
+&lt;/asp:FormView&gt;</pre>
+        </div>
+    </section>
+
+    <section id="s4" class="card">
+        <div class="card-head"><div class="num">4</div><h2>Ejemplo 2: Two-Way Data Binding (Edición completa)</h2></div>
+        <p>Configura <code class="in">DefaultMode="Edit"</code>, <code class="in">UpdateMethod="ActualizarProducto"</code> y usa <code class="in">&lt;%#: BindItem.Propiedad %&gt;</code>:</p>
+        <div class="code-box">
+            <div class="code-top"><span>RegistroProducto.aspx</span><button class="btn-copy" onclick="copiar('c3')">Copiar</button></div>
+            <pre id="c3">&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RegistroProducto.aspx.cs" Inherits="DemoDataBinding.RegistroProducto" %&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+        &lt;asp:FormView ID="fvProducto" runat="server"
+            ItemType="DemoDataBinding.Producto"
+            DataKeyNames="Id"
+            DefaultMode="Edit"
+            SelectMethod="ObtenerProducto"
+            UpdateMethod="ActualizarProducto"&gt;
+
+            &lt;EditItemTemplate&gt;
+                &lt;h3&gt;Editando ID: <span class="sv">&lt;%#: Item.Id %&gt;</span>&lt;/h3&gt;
+                &lt;div&gt;Nombre: &lt;asp:TextBox ID="txtNombre" runat="server" Text='<span class="sv">&lt;%#: BindItem.Nombre %&gt;</span>' /&gt;&lt;/div&gt;
+                &lt;div&gt;Precio: &lt;asp:TextBox ID="txtPrecio" runat="server" Text='<span class="sv">&lt;%#: BindItem.Precio %&gt;</span>' /&gt;&lt;/div&gt;
+                &lt;div&gt;Disponible: &lt;asp:CheckBox ID="chkDisponible" runat="server" Checked='<span class="sv">&lt;%#: BindItem.Disponible %&gt;</span>' /&gt;&lt;/div&gt;
+                &lt;asp:Button ID="btnGuardar" runat="server" CommandName="Update" Text="Guardar" /&gt;
+            &lt;/EditItemTemplate&gt;
+        &lt;/asp:FormView&gt;
+
+        &lt;br /&gt;
+        &lt;asp:Label ID="lblResultado" runat="server" ForeColor="Green" /&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+        </div>
+    </section>
+
+    <section id="s5" class="card">
+        <div class="card-head"><div class="num">5</div><h2>Programar el Code-Behind en C# 5.0 (<code>.aspx.cs</code>)</h2></div>
+        <p>No necesitas <code>Page_Load</code> ni llamar a <code>DataBind()</code>. <code>TryUpdateModel()</code> recoge los datos de vuelta:</p>
+        <div class="code-box">
+            <div class="code-top"><span>RegistroProducto.aspx.cs</span><button class="btn-copy" onclick="copiar('c4')">Copiar</button></div>
+            <pre id="c4"><span class="kw">using</span> System;
+<span class="kw">using</span> System.Web.UI;
+
+<span class="kw">namespace</span> DemoDataBinding
+{
+    <span class="kw">public partial class</span> <span class="tp">RegistroProducto</span> : <span class="tp">Page</span>
+    {
+        <span class="kw">private static</span> <span class="tp">Producto</span> _productoEnBD = <span class="kw">new</span> <span class="tp">Producto</span>
+        {
+            Id = 101,
+            Nombre = <span class="st">"Teclado Mecánico"</span>,
+            Precio = 75.50m,
+            Disponible = <span class="kw">true</span>
+        };
+
+        <span class="cm">// IDA (C# -&gt; HTML)</span>
+        <span class="kw">public</span> <span class="tp">Producto</span> ObtenerProducto()
+        {
+            <span class="kw">return</span> _productoEnBD;
+        }
+
+        <span class="cm">// VUELTA (HTML -&gt; C#)</span>
+        <span class="kw">public void</span> ActualizarProducto(<span class="kw">int</span> id)
+        {
+            <span class="tp">Producto</span> itemActualizado = <span class="kw">new</span> <span class="tp">Producto</span> { Id = id };
+            TryUpdateModel(itemActualizado);
+
+            <span class="kw">if</span> (ModelState.IsValid)
+            {
+                _productoEnBD.Nombre = itemActualizado.Nombre;
+                _productoEnBD.Precio = itemActualizado.Precio;
+                _productoEnBD.Disponible = itemActualizado.Disponible;
+
+                lblResultado.Text = <span class="kw">string</span>.Format(
+                    <span class="st">"¡Guardado! {0} - ${1}"</span>,
+                    _productoEnBD.Nombre,
+                    _productoEnBD.Precio
+                );
+            }
+        }
+    }
+}</pre>
+        </div>
+    </section>
+
+    <section id="s6" class="card">
+        <div class="card-head"><div class="num">6</div><h2>Laboratorio Interactivo: Prueba el ciclo Ida y Vuelta</h2></div>
+        <div class="sim">
+            <div class="sim-grid">
+                <div class="panel">
+                    <h4>Servidor (Objeto C#)</h4>
+                    <pre style="background:#f8fafc; color:#1e293b; border:1px solid #e2e8f0; border-radius:6px; font-size:0.83rem;">Producto _productoEnBD = new Producto {
+    Id = 101,
+    Nombre = "<span id="srv-nom" style="color:#059669; font-weight:bold;">Teclado Mecánico</span>",
+    Precio = <span id="srv-pre" style="color:#059669; font-weight:bold;">75.50</span>m,
+    Disponible = <span id="srv-dis" style="color:#059669; font-weight:bold;">true</span>
+};</pre>
+                </div>
+
+                <div class="btns">
+                    <button class="btn-sim ida" onclick="ida()">1. Cargar (GET) &rarr;<br><small>SelectMethod</small></button>
+                    <button class="btn-sim" onclick="vuelta()">&larr; 2. Guardar (POST)<br><small>TryUpdateModel</small></button>
+                </div>
+
+                <div class="panel" id="browser-panel">
+                    <h4>Navegador (Controles .aspx)</h4>
+                </div>
+            </div>
+            <div class="log" id="sim-log">&gt; Listo. Modifica los campos de la derecha y pulsa "2. Guardar (POST)" para actualizar el objeto C#.</div>
+        </div>
+    </section>
+
+    <section id="s7" class="card">
+        <div class="card-head"><div class="num">7</div><h2>Checklist de Errores Comunes en VS 2012</h2></div>
+        <ul class="chk-list">
+            <li onclick="marcar(this)"><span class="chk-box">[ ]</span> <span><strong>Comillas simples externas:</strong> Usa comillas simples alrededor de la expresión: <code>Text='&lt;%#: BindItem.Nombre %&gt;'</code>.</span></li>
+            <li onclick="marcar(this)"><span class="chk-box">[ ]</span> <span><strong>ItemType con Namespace:</strong> Incluye el namespace completo (ej. <code>ItemType="DemoDataBinding.Producto"</code>).</span></li>
+            <li onclick="marcar(this)"><span class="chk-box">[ ]</span> <span><strong>CommandName exacto:</strong> El botón de guardar debe tener <code>CommandName="Update"</code>.</span></li>
+            <li onclick="marcar(this)"><span class="chk-box">[ ]</span> <span><strong>Controles sueltos:</strong> Fuera de un <code>FormView</code> o <code>GridView</code>, Web Forms no soporta <code>BindItem</code>; asigna <code>.Text</code> manualmente dentro de <code>if (!IsPostBack)</code>.</span></li>
+        </ul>
+    </section>
+</div>
+
+<script>
+    // Inicializar controles del navegador dinámicamente
+    (function iniciarSimulador() {
+        var panel = document.getElementById("browser-panel");
+        panel.innerHTML +=
+            '<label style="font-size:0.84rem; font-weight:600;">txtNombre (<code>BindItem.Nombre</code>):</label>' +
+            '<input type="text" id="ui-nom" class="inp" value="Teclado Mecánico">' +
+            '<label style="font-size:0.84rem; font-weight:600;">txtPrecio (<code>BindItem.Precio</code>):</label>' +
+            '<input type="number" step="0.01" id="ui-pre" class="inp" value="75.50">' +
+            '<label style="font-size:0.84rem; font-weight:600;">' +
+            '<input type="checkbox" id="ui-dis" checked> chkDisponible (<code>BindItem.Disponible</code>)</label>';
+    })();
+
+    function copiar(id) {
+        var texto = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(texto).then(function() {
+            alert("¡Código copiado al portapapeles!");
+        });
+    }
+
+    var bd = { nombre: "Teclado Mecánico", precio: 75.50, disponible: true };
+
+    function ida() {
+        document.getElementById("ui-nom").value = bd.nombre;
+        document.getElementById("ui-pre").value = bd.precio.toFixed(2);
+        document.getElementById("ui-dis").checked = bd.disponible;
+        var log = document.getElementById("sim-log");
+        log.style.color = "#38bdf8";
+        log.innerText = "> [GET] ObtenerProducto() ejecutado: datos copiados desde C# al HTML.";
+    }
+
+    function vuelta() {
+        var nom = document.getElementById("ui-nom").value.trim();
+        var pre = parseFloat(document.getElementById("ui-pre").value);
+        var dis = document.getElementById("ui-dis").checked;
+        var log = document.getElementById("sim-log");
+
+        if (!nom) {
+            log.style.color = "#f87171";
+            log.innerText = "> [ERROR] ModelState.IsValid = false: el atributo [Required] impidió guardar un nombre vacío.";
+            return;
+        }
+        if (isNaN(pre)) pre = 0;
+
+        bd.nombre = nom;
+        bd.precio = pre;
+        bd.disponible = dis;
+
+        document.getElementById("srv-nom").innerText = bd.nombre;
+        document.getElementById("srv-pre").innerText = bd.precio.toFixed(2);
+        document.getElementById("srv-dis").innerText = bd.disponible;
+
+        log.style.color = "#34d399";
+        log.innerText = "> [POST] TryUpdateModel() ejecutado: valores HTML guardados en el objeto C#.";
+    }
+
+    function marcar(li) {
+        var box = li.querySelector(".chk-box");
+        var spn = li.querySelectorAll("span")[1];
+        var marcado = spn.classList.toggle("done");
+        box.innerText = marcado ? "[✓]" : "[ ]";
+    }
+</script>
+</body>
+</html>
+
