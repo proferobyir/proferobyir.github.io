@@ -2,34 +2,25 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASP.NET Web Forms 4.5 — Manual directo</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Profesor Robyir Loreto" />
+    <title>Manual ASP.NET Web Forms: Session, CSS, Bootstrap 5.3 Offline, JS y Data Binding</title>
     <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg-page: #0f1318;
+            --bg-surface: #171c23;
+            --bg-card: #1d242d;
+            --bg-code: #0b0e12;
+            --border-subtle: #2b3542;
+            --text-main: #eef2f6;
+            --text-muted: #b0bccb;
+            --accent: #4ea8de;
+            --accent-soft: rgba(78, 168, 222, 0.14);
         }
 
-        :root {
-            --fondo: #f7f8fa;
-            --texto: #1f2430;
-            --suave: #5a6270;
-            --azul: #2f6fed;
-            --azul-oscuro: #1d4fb8;
-            --borde: #dde1e8;
-            --codigo: #1e2430;
-            --codigo-texto: #e6edf3;
-            --aviso: #fff4d6;
-            --aviso-b: #e0a800;
-            --ok: #e3f6e8;
-            --ok-b: #2e9e4f;
-            --mal: #fde8e8;
-            --mal-b: #d64545;
-            --radio: 10px;
+        * {
+            box-sizing: border-box;
         }
 
         html {
@@ -37,880 +28,1186 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--fondo);
-            color: var(--texto);
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 18px;
             line-height: 1.65;
-            font-size: 17px;
+            background-color: var(--bg-page);
+            color: var(--text-main);
         }
 
-        .contenedor {
-            max-width: 880px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--azul) 0%, var(--azul-oscuro) 100%);
-            color: #fff;
-            padding: 56px 20px 46px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: clamp(1.5rem, 5vw, 2.2rem);
-            line-height: 1.2;
-            margin-bottom: 12px;
-        }
-
-        header p {
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
-            opacity: .92;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        main {
-            padding: 36px 0 80px;
-        }
-
-        nav.indice {
-            background: #fff;
-            border: 1px solid var(--borde);
-            border-radius: var(--radio);
-            padding: 22px 24px;
-            margin-bottom: 36px;
-        }
-
-        nav.indice h2 {
-            font-size: 1rem;
-            margin-bottom: 12px;
-            color: var(--azul-oscuro);
-        }
-
-        nav.indice ol {
-            padding-left: 20px;
-            display: grid;
-            gap: 5px;
-        }
-
-        nav.indice a {
-            color: var(--texto);
+        a {
+            color: var(--accent);
             text-decoration: none;
         }
 
-        nav.indice a:hover {
-            color: var(--azul-oscuro);
+        a:hover {
             text-decoration: underline;
         }
 
-        section {
-            background: #fff;
-            border: 1px solid var(--borde);
-            border-radius: var(--radio);
-            padding: 28px 26px;
-            margin-bottom: 30px;
-            scroll-margin-top: 16px;
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
         }
 
-        section>h2 {
-            font-size: clamp(1.2rem, 3.5vw, 1.4rem);
-            color: var(--azul-oscuro);
-            margin-bottom: 14px;
+        @media (min-width: 900px) {
+            .layout {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
+        .sidebar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1.25rem;
+        }
+
+        @media (min-width: 900px) {
+            .sidebar {
+                border-bottom: none;
+                border-right: 1px solid var(--border-subtle);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+            }
+        }
+
+        .brand-title {
+            margin: 0 0 0.35rem;
+            font-size: 1.15rem;
+            color: #ffffff;
+        }
+
+        .brand-meta {
+            margin: 0 0 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
             display: flex;
-            align-items: baseline;
-            gap: 10px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.35rem;
         }
 
-        .num {
-            display: inline-block;
-            background: var(--azul);
-            color: #fff;
-            font-size: .75rem;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-weight: 600;
-            white-space: nowrap;
+        .nav-list a {
+            display: block;
+            padding: 0.45rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-main);
         }
 
-        section h3 {
-            font-size: 1.05rem;
-            margin: 24px 0 8px;
-            border-left: 4px solid var(--azul);
-            padding-left: 10px;
-        }
-
-        p {
-            margin: 12px 0;
-        }
-
-        pre {
-            background: var(--codigo);
-            color: var(--codigo-texto);
-            padding: 16px 18px;
-            border-radius: var(--radio);
-            overflow-x: auto;
-            font-size: 14.5px;
-            line-height: 1.55;
-            margin: 12px 0;
-        }
-
-        code {
-            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
-        }
-
-        p code,
-        li code,
-        td code {
-            background: #eef1f6;
-            color: var(--azul-oscuro);
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-size: .9em;
-        }
-
-        .scroll {
-            overflow-x: auto;
-            margin: 14px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .94rem;
-            min-width: 460px;
-        }
-
-        th,
-        td {
-            border: 1px solid var(--borde);
-            padding: 9px 11px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        th {
-            background: #eef1f6;
-            color: var(--azul-oscuro);
-        }
-
-        .caja {
-            border-radius: var(--radio);
-            padding: 14px 16px;
-            margin: 16px 0;
-            border-left: 5px solid;
-        }
-
-        .caja p {
-            margin: 5px 0;
-        }
-
-        .caja p:first-child {
-            margin-top: 0;
-        }
-
-        .caja p:last-child {
-            margin-bottom: 0;
-        }
-
-        .caja.aviso {
-            background: var(--aviso);
-            border-color: var(--aviso-b);
-        }
-
-        .caja.ok {
-            background: var(--ok);
-            border-color: var(--ok-b);
-        }
-
-        .caja.mal {
-            background: var(--mal);
-            border-color: var(--mal-b);
-        }
-
-        .nota {
-            background: #f0f5ff;
-            border: 1px dashed #b8cdf7;
-            border-radius: var(--radio);
-            padding: 12px 15px;
-            margin: 12px 0;
-            font-size: .94rem;
-        }
-
-        .nota strong {
-            color: var(--azul-oscuro);
-        }
-
-        ul.lista,
-        ol.lista {
-            padding-left: 22px;
-            margin: 8px 0;
-        }
-
-        ul.lista li,
-        ol.lista li {
-            margin: 5px 0;
-        }
-
-        a.arriba {
-            display: inline-block;
-            margin-top: 12px;
-            font-size: .85rem;
-            color: var(--suave);
+        .nav-list a:hover {
+            background-color: var(--accent-soft);
             text-decoration: none;
         }
 
-        a.arriba:hover {
-            color: var(--azul);
+        .main-content {
+            padding: 1.5rem 1.25rem 3.5rem;
+            max-width: 960px;
+            width: 100%;
+            margin: 0 auto;
         }
 
-        footer {
-            background: #1f2430;
-            color: #c9d1dc;
-            text-align: center;
-            padding: 26px 20px;
-            font-size: .88rem;
+        @media (min-width: 768px) {
+            .main-content {
+                padding: 2rem 2.5rem 4rem;
+            }
         }
 
-        @media (max-width: 600px) {
-            body {
-                font-size: 16px;
-            }
+        header.page-header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-            section {
-                padding: 20px 16px;
-            }
+        header.page-header h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.75rem;
+            line-height: 1.25;
+            color: #ffffff;
+        }
 
-            pre {
-                font-size: 13px;
-                padding: 13px;
+        @media (min-width: 768px) {
+            header.page-header h1 {
+                font-size: 2.15rem;
             }
+        }
 
-            header {
-                padding: 40px 16px 34px;
-            }
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.85rem;
+        }
+
+        .badge {
+            background-color: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(78, 168, 222, 0.35);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        section {
+            margin-bottom: 2.75rem;
+        }
+
+        h2 {
+            font-size: 1.45rem;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.4rem;
+            margin: 0 0 1rem;
+        }
+
+        h3 {
+            font-size: 1.18rem;
+            color: var(--accent);
+            margin: 1.5rem 0 0.6rem;
+        }
+
+        p {
+            margin: 0 0 1rem;
+            color: var(--text-main);
+        }
+
+        ul {
+            margin: 0 0 1.25rem;
+            padding-left: 1.35rem;
+        }
+
+        li {
+            margin-bottom: 0.45rem;
+        }
+
+        .note {
+            background-color: var(--bg-card);
+            border-left: 4px solid var(--accent);
+            padding: 0.9rem 1.1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.15rem 0;
+            color: var(--text-muted);
+            font-size: 0.98rem;
+        }
+
+        .note strong {
+            color: #ffffff;
+        }
+
+        .code-box {
+            background-color: var(--bg-code);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            margin: 1rem 0 1.4rem;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #141920;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.5rem 0.85rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: 5px;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: #e6edf3;
+        }
+
+        code.inline {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.9em;
+            background-color: var(--bg-code);
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            color: #9cdcfe;
         }
     </style>
 </head>
 
 <body>
-
-    <header>
-        <h1>ASP.NET Web Forms 4.5</h1>
-        <p>Qué es un archivo .aspx, qué se le agrega al HTML y qué significa cada cosa.</p>
-    </header>
-
-    <main class="contenedor">
-
-        <nav class="indice">
-            <h2>Contenido</h2>
-            <ol>
-                <li><a href="#que-es">Qué es un archivo .aspx</a></li>
-                <li><a href="#proyecto">Crear el proyecto (VS 2012, .NET 4.5)</a></li>
-                <li><a href="#anatomia">Anatomía de un .aspx: qué se le agrega al HTML</a></li>
-                <li><a href="#controles">Los controles de servidor (asp:)</a></li>
-                <li><a href="#codebehind">El archivo .aspx.cs (la lógica)</a></li>
-                <li><a href="#eventos">Page_Load vs. Click</a></li>
-                <li><a href="#session">Session</a></li>
-                <li><a href="#list">List y Repeater</a></li>
-                <li><a href="#errores">Errores comunes en 4.5</a></li>
-                <li><a href="#referencia">Referencia rápida</a></li>
-            </ol>
-        </nav>
-
-        <!-- 1 -->
-        <section id="que-es">
-            <h2><span class="num">1</span> Qué es un archivo .aspx</h2>
-
-            <p>Un archivo <code>.aspx</code> es <strong>HTML con etiquetas especiales</strong> que el servidor procesa
-                antes de enviarlo al navegador. El navegador nunca ve el <code>.aspx</code>: ve el HTML resultante.</p>
-
-            <p>Esos archivos van acompañados de un archivo <code>.aspx.cs</code> (C#) donde va la lógica. El
-                <code>.aspx</code> es la vista; el <code>.aspx.cs</code> es el código.
-            </p>
-
-            <div class="nota">
-                <p><strong>En una frase:</strong> el <code>.aspx</code> es un molde con HTML y huecos; el
-                    <code>.aspx.cs</code> llena esos huecos antes de entregar la página.
-                </p>
-            </div>
-
-            <h3>Lo que NO es un .aspx</h3>
-            <ul class="lista">
-                <li>No es un HTML normal: el servidor lo transforma antes de enviarlo.</li>
-                <li>No es un archivo que el navegador pueda abrir directamente.</li>
-                <li>No lleva la lógica: esa va en el <code>.aspx.cs</code>.</li>
+    <div class="layout">
+        <aside class="sidebar">
+            <p class="brand-title">ASP.NET Web Forms</p>
+            <p class="brand-meta">Profesor Robyir Loreto · .NET 4.5 / VS 2012 / C# 5</p>
+            <ul class="nav-list">
+                <li><a href="#sec-1">1. Clase pública base</a></li>
+                <li><a href="#sec-1b">1.1 Variables de Session</a></li>
+                <li><a href="#sec-2">2. Incluir CSS</a></li>
+                <li><a href="#sec-2b">2.1 Bootstrap 5.3 Offline</a></li>
+                <li><a href="#sec-3">3. Incluir JavaScript</a></li>
+                <li><a href="#sec-4">4. Data Binding</a></li>
+                <li><a href="#sec-5">5. Two-Way Data Binding</a></li>
+                <li><a href="#sec-6">6. Recorrer listas en .aspx</a></li>
+                <li><a href="#sec-7">7. Errores comunes</a></li>
             </ul>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+        </aside>
 
-        <!-- 2 -->
-        <section id="proyecto">
-            <h2><span class="num">2</span> Crear el proyecto (VS 2012, .NET 4.5)</h2>
+        <main class="main-content">
+            <header class="page-header">
+                <h1>Manual de ASP.NET Web Forms: Session, CSS, Bootstrap 5.3 Offline, JS y Data Binding</h1>
+                <p>Guía práctica paso a paso para trabajar con variables de <code class="inline">Session</code>, clases
+                    públicas (<code class="inline">public</code>) y listas (<code class="inline">List&lt;T&gt;</code>)
+                    en archivos <code class="inline">.aspx</code> y <code class="inline">.aspx.cs</code>.</p>
+                <div class="badges">
+                    <span class="badge">.NET Framework 4.5</span>
+                    <span class="badge">Visual Studio 2012</span>
+                    <span class="badge">C# 5</span>
+                    <span class="badge">Variables de Session</span>
+                    <span class="badge">Bootstrap 5.3 Offline</span>
+                    <span class="badge">Clases Públicas y List&lt;T&gt;</span>
+                </div>
+            </header>
 
-            <ol class="lista">
-                <li>Abrir Visual Studio 2012.</li>
-                <li><strong>Archivo → Nuevo → Proyecto</strong>.</li>
-                <li>Panel izquierdo: <strong>Visual C# → Web</strong>.</li>
-                <li>Centro: <strong>Aplicación web ASP.NET</strong>.</li>
-                <li>Arriba: framework <strong>.NET Framework 4.5</strong> (si no aparece, elige 4.0; el código funciona
-                    igual).</li>
-                <li>Nombre: <code>MiPrimeraApp</code>. Aceptar.</li>
-                <li>Plantilla: <strong>Web Forms</strong> (o Vacío y luego agregas un Formulario Web Forms).</li>
-            </ol>
+            <section id="sec-1">
+                <h2>1. Estructura base y nuestra clase pública de ejemplo</h2>
+                <p>Para que todos los ejemplos de este manual funcionen de forma coherente, trabajaremos con una clase
+                    pública <code class="inline">Producto</code> dentro del <em>namespace</em> <code
+                        class="inline">WebApplication1</code>, utilizando campos públicos y constructores sencillos.</p>
 
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Archivo</th>
-                            <th>Qué es</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>Default.aspx</code></td>
-                            <td>La vista: HTML + etiquetas especiales.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Default.aspx.cs</code></td>
-                            <td>La lógica en C#.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Web.config</code></td>
-                            <td>Configuración del proyecto.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Producto.cs</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>using System;
 
-        <!-- 3 -->
-        <section id="anatomia">
-            <h2><span class="num">3</span> Anatomía de un .aspx: qué se le agrega al HTML</h2>
+namespace WebApplication1
+{
+    public class Producto
+    {
+        public string Codigo;
+        public string Nombre;
+        public double Precio;
 
-            <p>Este es un <code>.aspx</code> completo y mínimo:</p>
+        public Producto()
+        {
+        }
 
-            <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="MiPrimeraApp.Default" %&gt;
+        public Producto(string codigo, string nombre, double precio)
+        {
+            Codigo = codigo;
+            Nombre = nombre;
+            Precio = precio;
+        }
+    }
+}</code></pre>
+                </div>
+
+                <div class="note">
+                    <strong>Nota de clase:</strong> En C# 5 dentro de Visual Studio 2012, declarar los campos como <code
+                        class="inline">public</code> permite leerlos y modificarlos directamente (<code
+                        class="inline">p.Nombre</code>, <code class="inline">p.Precio</code>) tanto en el código detrás
+                    (<code class="inline">.aspx.cs</code>) como en la vista (<code class="inline">.aspx</code>).
+                </div>
+            </section>
+
+            <section id="sec-1b">
+                <h2>1.1 Qué son las variables de Session, cómo crearlas y eliminarlas</h2>
+                <p>En ASP.NET Web Forms, cada vez que ocurre una recarga o un <em>postback</em> (por ejemplo, al pulsar
+                    un botón), la clase de la página se vuelve a instanciar y las variables locales o de instancia
+                    normales se reinician.</p>
+                <p>Una <strong>variable de Session</strong> (<code class="inline">Session["clave"]</code>) es un espacio
+                    de memoria en el servidor asociado a un visitante/navegador mientras dura su sesión activa. Permite
+                    conservar datos (textos, números, objetos o listas como <code
+                        class="inline">List&lt;Producto&gt;</code>) entre <em>postbacks</em> y entre distintas páginas
+                    <code class="inline">.aspx</code> del mismo sitio.</p>
+
+                <h3>¿Cómo crear o actualizar una variable de Session?</h3>
+                <p>Se crea asignándole un valor mediante una clave de tipo <code class="inline">string</code>. Si la
+                    clave no existe, se crea; si ya existe, se sobrescribe su valor. Como <code
+                        class="inline">Session</code> almacena referencias de tipo <code class="inline">object</code>,
+                    al recuperarla debes hacer <em>casting</em> al tipo correspondiente.</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Crear, leer y actualizar Session en C#</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>// 1. Crear variables de Session
+Session["usuario_activo"] = "Carlos Pérez";
+Session["intentos"] = 0;
+
+List&lt;Producto&gt; carrito = new List&lt;Producto&gt;();
+Session["productos"] = carrito;
+
+// 2. Leer variables de Session (verificando null primero)
+if (Session["usuario_activo"] != null)
+{
+    string nombreUsuario = (string)Session["usuario_activo"];
+}
+
+if (Session["productos"] != null)
+{
+    List&lt;Producto&gt; listaActual = (List&lt;Producto&gt;)Session["productos"];
+}</code></pre>
+                </div>
+
+                <h3>¿Cómo eliminar variables de Session?</h3>
+                <p>Dependiendo de lo que necesites limpiar, existen tres formas habituales:</p>
+                <ul>
+                    <li><code class="inline">Session.Remove("clave")</code>: elimina <strong>una sola variable</strong>
+                        específica por su nombre de clave.</li>
+                    <li><code class="inline">Session.Clear()</code>: elimina <strong>todas las variables</strong>
+                        guardadas en la sesión actual, pero mantiene el objeto de sesión activo.</li>
+                    <li><code class="inline">Session.Abandon()</code>: finaliza y destruye por completo la sesión actual
+                        del usuario (se usa típicamente al cerrar sesión / <em>logout</em>).</li>
+                </ul>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Eliminar una variable, limpiar todas o cerrar sesión</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>// Eliminar solo la variable "productos"
+Session.Remove("productos");
+
+// Vaciar todas las variables de la sesión actual
+Session.Clear();
+
+// Destruir toda la sesión (por ejemplo, al salir del sistema)
+Session.Abandon();</code></pre>
+                </div>
+
+                <h3>Ejemplo completo: Crear, agregar, eliminar una variable y limpiar Session</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>SessionDemo.aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SessionDemo.aspx.cs" Inherits="WebApplication1.SessionDemo" %&gt;
 
 &lt;!DOCTYPE html&gt;
-&lt;html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
 &lt;head runat="server"&gt;
-    &lt;title&gt;Mi primera app&lt;/title&gt;
+    &lt;title&gt;Ejemplo de Variables de Session&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;form id="form1" runat="server"&gt;
-        &lt;div&gt;
-            &lt;asp:TextBox ID="txtNombre" runat="server"&gt;&lt;/asp:TextBox&gt;
-            &lt;asp:Button ID="btnSaludar" runat="server" Text="Saludar" OnClick="btnSaludar_Click" /&gt;
-            &lt;br /&gt;&lt;br /&gt;
-            &lt;asp:Label ID="lblResultado" runat="server"&gt;&lt;/asp:Label&gt;
-        &lt;/div&gt;
+        &lt;h3&gt;Control de Variables de Session&lt;/h3&gt;
+
+        &lt;asp:Label runat="server" Text="Código:" /&gt;
+        &lt;asp:TextBox ID="txtCodigo" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
+
+        &lt;asp:Label runat="server" Text="Nombre:" /&gt;
+        &lt;asp:TextBox ID="txtNombre" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
+
+        &lt;asp:Label runat="server" Text="Precio:" /&gt;
+        &lt;asp:TextBox ID="txtPrecio" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
+
+        &lt;asp:Button ID="btnAgregar" runat="server" Text="Crear / Agregar a Session" OnClick="btnAgregar_Click" /&gt;
+        &lt;asp:Button ID="btnEliminarLista" runat="server" Text="Eliminar 'productos' (Remove)" OnClick="btnEliminarLista_Click" /&gt;
+        &lt;asp:Button ID="btnLimpiarTodo" runat="server" Text="Limpiar Todo (Clear)" OnClick="btnLimpiarTodo_Click" /&gt;
+
+        &lt;br /&gt;&lt;br /&gt;
+        &lt;asp:Label ID="lblMensaje" runat="server" Text="" /&gt;
+
+        &lt;h4&gt;Contenido actual de Session["productos"]:&lt;/h4&gt;
+        &lt;%
+            if (Session["productos"] != null)
+            {
+                System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
+                    (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
+
+                foreach (WebApplication1.Producto p in lista)
+                {
+        %&gt;
+                    &lt;p&gt;&lt;%= p.Codigo %&gt; - &lt;%= p.Nombre %&gt; - $&lt;%= p.Precio.ToString("0.00") %&gt;&lt;/p&gt;
+        &lt;%
+                }
+            }
+            else
+            {
+        %&gt;
+                &lt;p&gt;La variable Session["productos"] no existe o fue eliminada.&lt;/p&gt;
+        &lt;%
+            }
+        %&gt;
     &lt;/form&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
+                </div>
 
-            <p>Frente a un HTML normal, aquí hay <strong>cuatro cosas nuevas</strong>:</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>SessionDemo.aspx.cs</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>using System;
+using System.Collections.Generic;
+using System.Web.UI;
 
-            <h3>1. La directiva <code>&lt;%@ Page %&gt;</code></h3>
-            <p>Va en la primera línea. No es HTML: es una instrucción para el servidor.</p>
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Atributo</th>
-                            <th>Qué significa</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>Language="C#"</code></td>
-                            <td>El código del <code>.aspx.cs</code> está en C#.</td>
-                        </tr>
-                        <tr>
-                            <td><code>AutoEventWireup="true"</code></td>
-                            <td>Conecta solo los eventos como <code>Page_Load</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>CodeBehind="..."</code></td>
-                            <td>Nombre del archivo de lógica asociado.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Inherits="..."</code></td>
-                            <td>Namespace + clase del <code>.aspx.cs</code>. Debe coincidir exactamente.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+namespace WebApplication1
+{
+    public partial class SessionDemo : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+        }
 
-            <h3>2. El atributo <code>runat="server"</code></h3>
-            <p>Es la clave de todo. Le dice al servidor: <strong>"procesa esta etiqueta antes de enviarla"</strong>. Sin
-                <code>runat="server"</code>, la etiqueta es HTML normal y el servidor la ignora.
-            </p>
-            <ul class="lista">
-                <li>En <code>&lt;head runat="server"&gt;</code>: permite modificar el título desde C#.</li>
-                <li>En <code>&lt;form runat="server"&gt;</code>: obligatorio para que funcionen los controles. Solo
-                    puede haber un formulario con <code>runat="server"</code> por página.</li>
-                <li>En <code>&lt;asp:...&gt;</code>: todos los controles de servidor lo llevan.</li>
-            </ul>
+        protected void btnAgregar_Click(object sender, EventArgs e)
+        {
+            List&lt;Producto&gt; lista;
 
-            <h3>3. Los controles <code>&lt;asp:...&gt;</code></h3>
-            <p>Son etiquetas que <strong>no son HTML</strong>. El servidor las convierte en HTML real antes de enviarlo.
-                Se explican en la sección 4.</p>
+            if (Session["productos"] == null)
+            {
+                lista = new List&lt;Producto&gt;();
+            }
+            else
+            {
+                lista = (List&lt;Producto&gt;)Session["productos"];
+            }
 
-            <h3>4. El atributo <code>ID="..."</code></h3>
-            <p>Es el nombre con el que el código C# se refiere a esa etiqueta. Como el <code>id</code> de HTML, pero
-                usado desde el servidor.</p>
+            string cod = txtCodigo.Text.Trim();
+            string nom = txtNombre.Text.Trim();
+            double precio = 0;
+            double.TryParse(txtPrecio.Text.Trim(), out precio);
 
-            <div class="caja aviso">
-                <p><strong>Regla:</strong> si una etiqueta no tiene <code>runat="server"</code>, el código C# no puede
-                    verla ni modificarla. Es HTML puro y muere en el navegador.</p>
-            </div>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+            Producto nuevo = new Producto(cod, nom, precio);
+            lista.Add(nuevo);
 
-        <!-- 4 -->
-        <section id="controles">
-            <h2><span class="num">4</span> Los controles de servidor (asp:)</h2>
+            // Guardar o actualizar la variable de Session
+            Session["productos"] = lista;
+            Session["ultimo_codigo"] = cod;
 
-            <p>Son etiquetas que empiezan con <code>&lt;asp:</code>. El servidor las transforma en HTML. Siempre llevan
-                <code>runat="server"</code> y un <code>ID</code>.
-            </p>
+            lblMensaje.Text = "Producto guardado en Session[\"productos\"].";
+        }
 
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Control</th>
-                            <th>Se convierte en</th>
-                            <th>Propiedad para leer/escribir</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>&lt;asp:TextBox&gt;</code></td>
-                            <td><code>&lt;input type="text"&gt;</code></td>
-                            <td><code>.Text</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;asp:Button&gt;</code></td>
-                            <td><code>&lt;input type="submit"&gt;</code></td>
-                            <td><code>.Text</code>, evento <code>OnClick</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;asp:Label&gt;</code></td>
-                            <td><code>&lt;span&gt;</code></td>
-                            <td><code>.Text</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;asp:Panel&gt;</code></td>
-                            <td><code>&lt;div&gt;</code></td>
-                            <td><code>.Visible</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;asp:Repeater&gt;</code></td>
-                            <td>Lista repetida de HTML</td>
-                            <td><code>DataSource</code>, <code>DataBind()</code></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        protected void btnEliminarLista_Click(object sender, EventArgs e)
+        {
+            // Elimina únicamente la variable "productos"
+            Session.Remove("productos");
+            lblMensaje.Text = "Se eliminó Session[\"productos\"] con Session.Remove().";
+        }
 
-            <h3>Ejemplo: leer y escribir desde C#</h3>
-            <pre><code>string nombre = txtNombre.Text;                      // leer del TextBox
-lblResultado.Text = "Hola, " + nombre + "!";          // escribir en el Label</code></pre>
+        protected void btnLimpiarTodo_Click(object sender, EventArgs e)
+        {
+            // Elimina todas las variables de Session actuales
+            Session.Clear();
+            lblMensaje.Text = "Se limpiaron todas las variables de Session con Session.Clear().";
+        }
+    }
+}</code></pre>
+                </div>
+            </section>
 
-            <div class="nota">
-                <p><strong>Diferencia con HTML:</strong> en HTML, un <code>&lt;input&gt;</code> solo se lee con
-                    JavaScript o al enviar el formulario. Aquí, el control tiene una propiedad <code>.Text</code> que el
-                    servidor lee y escribe directamente.</p>
-            </div>
+            <section id="sec-2">
+                <h2>2. Cómo incluir CSS en ASP.NET Web Forms</h2>
+                <p>En un archivo <code class="inline">.aspx</code> puedes aplicar estilos mediante reglas embebidas,
+                    hojas de estilo externas o asignando clases desde C#.</p>
 
-            <h3>El evento OnClick</h3>
-            <p>En el botón:</p>
-            <pre><code>&lt;asp:Button ID="btnSaludar" runat="server" Text="Saludar" OnClick="btnSaludar_Click" /&gt;</code></pre>
-            <p><code>OnClick="btnSaludar_Click"</code> le dice al servidor: <strong>"cuando hagan clic, ejecuta el
-                    método C# llamado btnSaludar_Click"</strong>. Ese método va en el <code>.aspx.cs</code>.</p>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+                <h3>Paso 1: CSS embebido dentro de &lt;head&gt;</h3>
+                <p>Es práctico para pruebas rápidas o una sola página de laboratorio.</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>CSS embebido en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;head runat="server"&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;
+    &lt;title&gt;Catálogo en Web Forms&lt;/title&gt;
+    &lt;style type="text/css"&gt;
+        .tarjeta {
+            border: 1px solid #333333;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-family: Arial, sans-serif;
+        }
 
-        <!-- 5 -->
-        <section id="codebehind">
-            <h2><span class="num">5</span> El archivo .aspx.cs (la lógica)</h2>
+        .destacado {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;</code></pre>
+                </div>
 
-            <p>Cada <code>.aspx</code> tiene su <code>.aspx.cs</code>. Ahí va el código C#. La estructura es siempre
-                esta:</p>
+                <h3>Paso 2: Archivo CSS externo con ResolveUrl</h3>
+                <p>Crea una carpeta <code class="inline">Estilos</code> en el proyecto y agrega <code
+                        class="inline">site.css</code>. Luego enlázala con <code
+                        class="inline">ResolveUrl("~/...")</code> para mantener rutas válidas.</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Estilos/site.css</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>.contenedor {
+    max-width: 700px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
 
-            <pre><code>using System;
+.fila-item {
+    border-bottom: 1px solid #cccccc;
+    padding: 6px 0;
+}</code></pre>
+                </div>
 
-namespace MiPrimeraApp
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Enlace en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;link href='&lt;%= ResolveUrl("~/Estilos/site.css") %&gt;' rel="stylesheet" type="text/css" /&gt;</code></pre>
+                </div>
+
+                <h3>Paso 3: Aplicar clase CSS desde C# con CssClass</h3>
+                <p>En controles de servidor de ASP.NET (<code class="inline">TextBox</code>, <code
+                        class="inline">Button</code>, <code class="inline">Panel</code>, <code
+                        class="inline">Label</code>), puedes asignar clases desde el código detrás.</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Asignación desde C#</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>protected void Page_Load(object sender, EventArgs e)
+{
+    txtCodigo.CssClass = "tarjeta";
+    btnGuardar.CssClass = "tarjeta destacado";
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="sec-2b">
+                <h2>2.1 Cómo incluir Bootstrap compilado versión 5.3 de forma offline</h2>
+                <p>Para trabajar en laboratorios sin internet o evitar depender de redes externas (CDN), descarga el
+                    paquete compilado de <strong>Bootstrap 5.3</strong> (<em>Compiled CSS and JS</em>) y copia los
+                    archivos locales dentro de tu proyecto de Visual Studio.</p>
+
+                <h3>Paso 1: Estructura de carpetas local recomendada</h3>
+                <p>Dentro de tu proyecto <code class="inline">WebApplication1</code>, crea carpetas locales con los
+                    archivos compilados:</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Estructura de archivos locales</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>WebApplication1/
+├── Content/
+│   ├── bootstrap.min.css
+│   └── bootstrap.min.css.map
+├── Scripts/
+│   ├── bootstrap.bundle.min.js
+│   └── bootstrap.bundle.min.js.map
+└── Default.aspx</code></pre>
+                </div>
+
+                <div class="note">
+                    <strong>Importante:</strong> Usa <code class="inline">bootstrap.bundle.min.js</code> (que ya incluye
+                    Popper) y evita enlazar archivos <code class="inline">.map</code> directamente en etiquetas <code
+                        class="inline">&lt;link&gt;</code> o <code class="inline">&lt;script&gt;</code>; el navegador
+                    los solicita automáticamente solo si abre las herramientas de desarrollador.
+                </div>
+
+                <h3>Paso 2: Vincular Bootstrap 5.3 offline en el archivo .aspx</h3>
+                <p>Usa <code class="inline">ResolveUrl("~/...")</code> para referenciar los archivos compilados locales
+                    en <code class="inline">&lt;head&gt;</code> y al cierre de <code class="inline">&lt;body&gt;</code>.
+                </p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Inclusión de Bootstrap 5.3 Offline en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebApplication1.Default" %&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+    &lt;title&gt;Web Forms con Bootstrap 5.3 Offline&lt;/title&gt;
+
+    &lt;!-- CSS compilado de Bootstrap 5.3 (local) --&gt;
+    &lt;link href='&lt;%= ResolveUrl("~/Content/bootstrap.min.css") %&gt;' rel="stylesheet" type="text/css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server" class="container py-4"&gt;
+        &lt;h2 class="mb-3"&gt;Registro de Productos&lt;/h2&gt;
+
+        &lt;div class="mb-3"&gt;
+            &lt;asp:Label runat="server" AssociatedControlID="txtNombre" CssClass="form-label" Text="Nombre:" /&gt;
+            &lt;asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" /&gt;
+        &lt;/div&gt;
+
+        &lt;div class="mb-3"&gt;
+            &lt;asp:Label runat="server" AssociatedControlID="txtPrecio" CssClass="form-label" Text="Precio:" /&gt;
+            &lt;asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control" /&gt;
+        &lt;/div&gt;
+
+        &lt;asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" /&gt;
+    &lt;/form&gt;
+
+    &lt;!-- JS Bundle compilado de Bootstrap 5.3 (local, incluye Popper) --&gt;
+    &lt;script src='&lt;%= ResolveUrl("~/Scripts/bootstrap.bundle.min.js") %&gt;' type="text/javascript"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
+
+                <h3>Paso 3: Combinar Bootstrap 5.3 offline al recorrer una List&lt;Producto&gt;</h3>
+                <p>Al imprimir la lista en <code class="inline">.aspx</code>, puedes aplicar clases de tablas de
+                    Bootstrap 5.3 (<code class="inline">table</code>, <code class="inline">table-striped</code>, <code
+                        class="inline">table-bordered</code>).</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Tabla Bootstrap 5.3 con foreach en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%
+    if (Session["productos"] != null)
+    {
+        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
+            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
+%&gt;
+        &lt;div class="table-responsive mt-4"&gt;
+            &lt;table class="table table-striped table-bordered"&gt;
+                &lt;thead&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;Código&lt;/th&gt;
+                        &lt;th&gt;Nombre&lt;/th&gt;
+                        &lt;th&gt;Precio&lt;/th&gt;
+                    &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody&gt;
+&lt;%
+        foreach (WebApplication1.Producto p in lista)
+        {
+%&gt;
+                    &lt;tr&gt;
+                        &lt;td&gt;&lt;%= p.Codigo %&gt;&lt;/td&gt;
+                        &lt;td&gt;&lt;%= p.Nombre %&gt;&lt;/td&gt;
+                        &lt;td&gt;$&lt;%= p.Precio.ToString("0.00") %&gt;&lt;/td&gt;
+                    &lt;/tr&gt;
+&lt;%
+        }
+%&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/div&gt;
+&lt;%
+    }
+%&gt;</code></pre>
+                </div>
+            </section>
+
+            <section id="sec-3">
+                <h2>3. Cómo incluir y usar JavaScript en ASP.NET Web Forms</h2>
+                <p>Al trabajar con controles que tienen <code class="inline">runat="server"</code>, ASP.NET genera un ID
+                    en el HTML final. Usar <code class="inline">ClientIDMode="Static"</code> facilita localizar el
+                    elemento desde JavaScript con <code class="inline">document.getElementById</code>.</p>
+
+                <h3>Paso 1: Archivo JavaScript externo</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Scripts/validaciones.js</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>function confirmarLimpieza() {
+    return confirm("¿Deseas limpiar los campos del formulario?");
+}</code></pre>
+                </div>
+
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Inclusión en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;script src='&lt;%= ResolveUrl("~/Scripts/validaciones.js") %&gt;' type="text/javascript"&gt;&lt;/script&gt;</code></pre>
+                </div>
+
+                <h3>Paso 2: Leer un TextBox de servidor desde JavaScript</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>ClientIDMode="Static" en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;asp:TextBox ID="txtNombre" runat="server" ClientIDMode="Static" /&gt;
+&lt;button type="button" onclick="mostrarLongitud()"&gt;Contar letras&lt;/button&gt;
+
+&lt;script type="text/javascript"&gt;
+    function mostrarLongitud() {
+        var campo = document.getElementById("txtNombre");
+        alert("Caracteres escritos: " + campo.value.length);
+    }
+&lt;/script&gt;</code></pre>
+                </div>
+
+                <h3>Paso 3: Disparar JavaScript desde C# tras un evento</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>RegisterStartupScript en .aspx.cs</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>protected void btnGuardar_Click(object sender, EventArgs e)
+{
+    string script = "alert('Registro guardado correctamente.');";
+    ScriptManager.RegisterStartupScript(this, this.GetType(), "MsgGuardado", script, true);
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="sec-4">
+                <h2>4. Data Binding en ASP.NET Web Forms (paso a paso)</h2>
+                <p>El <strong>data binding</strong> consiste en llevar datos desde una estructura en C# (como <code
+                        class="inline">List&lt;Producto&gt;</code>) hacia la interfaz web para visualizarlos o
+                    enlazarlos.</p>
+
+                <h3>Enfoque A: Recorrer una List&lt;Producto&gt; en el .aspx con &lt;% ... %&gt; y &lt;%= ... %&gt;</h3>
+                <p>Este enfoque es directo y claro para mostrar campos públicos de objetos almacenados en <code
+                        class="inline">Session</code>.</p>
+
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Default.aspx.cs</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>using System;
+using System.Collections.Generic;
+using System.Web.UI;
+
+namespace WebApplication1
 {
     public partial class Default : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // se ejecuta cada vez que carga la página
-        }
+            if (!IsPostBack)
+            {
+                List&lt;Producto&gt; lista = new List&lt;Producto&gt;();
+                lista.Add(new Producto("P01", "Teclado USB", 15.0));
+                lista.Add(new Producto("P02", "Mouse Óptico", 8.5));
+                lista.Add(new Producto("P03", "Cable HDMI", 6.0));
 
-        protected void btnSaludar_Click(object sender, EventArgs e)
-        {
-            // se ejecuta al hacer clic en el botón
+                Session["productos"] = lista;
+            }
         }
     }
 }</code></pre>
+                </div>
 
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Parte</th>
-                            <th>Qué es</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>namespace MiPrimeraApp</code></td>
-                            <td>Agrupación del proyecto. Debe coincidir con <code>Inherits</code> del .aspx.</td>
-                        </tr>
-                        <tr>
-                            <td><code>public partial class Default</code></td>
-                            <td>La página es una clase. <code>partial</code>: está partida en dos archivos (.aspx y
-                                .aspx.cs).</td>
-                        </tr>
-                        <tr>
-                            <td><code>: System.Web.UI.Page</code></td>
-                            <td>Hereda de la clase base de toda página Web Forms.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Page_Load</code></td>
-                            <td>Evento que corre al cargar la página.</td>
-                        </tr>
-                        <tr>
-                            <td><code>btnSaludar_Click</code></td>
-                            <td>Método que corre al hacer clic en el botón con ese <code>OnClick</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>object sender</code></td>
-                            <td>El control que disparó el evento.</td>
-                        </tr>
-                        <tr>
-                            <td><code>EventArgs e</code></td>
-                            <td>Datos extra del evento (casi nunca se usan).</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Default.aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebApplication1.Default" %&gt;
 
-            <h3>Código funcional del botón</h3>
-            <pre><code>protected void btnSaludar_Click(object sender, EventArgs e)
-{
-    string nombre = txtNombre.Text;
-    lblResultado.Text = "Hola, " + nombre + ". ¡Esto es ASP.NET!";
-}</code></pre>
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;title&gt;Recorrer Lista en ASPX&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+        &lt;h3&gt;Listado de Productos&lt;/h3&gt;
 
-            <div class="caja mal">
-                <p><strong>En .NET 4.5 (C# 5) NO uses <code>$"Hola {nombre}"</code>.</strong> Eso es C# 6 y no compila.
-                    Usa concatenación con <code>+</code>.</p>
-            </div>
+        &lt;%
+            if (Session["productos"] != null)
+            {
+                System.Collections.Generic.List&lt;WebApplication1.Producto&gt; productos =
+                    (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
 
-            <p>Presiona <strong>F5</strong>, escribe un nombre, haz clic. El Label muestra el saludo.</p>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+                if (productos.Count == 0)
+                {
+        %&gt;
+                    &lt;p&gt;No hay productos registrados.&lt;/p&gt;
+        &lt;%
+                }
+                else
+                {
+        %&gt;
+                    &lt;table border="1" cellpadding="6" cellspacing="0"&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;Código&lt;/th&gt;
+                            &lt;th&gt;Nombre&lt;/th&gt;
+                            &lt;th&gt;Precio&lt;/th&gt;
+                        &lt;/tr&gt;
+        &lt;%
+                    foreach (WebApplication1.Producto p in productos)
+                    {
+        %&gt;
+                        &lt;tr&gt;
+                            &lt;td&gt;&lt;%= p.Codigo %&gt;&lt;/td&gt;
+                            &lt;td&gt;&lt;%= p.Nombre %&gt;&lt;/td&gt;
+                            &lt;td&gt;$&lt;%= p.Precio.ToString("0.00") %&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+        &lt;%
+                    }
+        %&gt;
+                    &lt;/table&gt;
+        &lt;%
+                }
+            }
+        %&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
 
-        <!-- 6 -->
-        <section id="eventos">
-            <h2><span class="num">6</span> Page_Load vs. Click</h2>
-
-            <p><code>Page_Load</code> se ejecuta <strong>en cada petición</strong>: al abrir la página y también en cada
-                clic de botón. <code>btn_Click</code> solo corre al hacer clic.</p>
-
-            <div class="caja mal">
-                <p><strong>Error típico:</strong> poner la lógica del botón en <code>Page_Load</code>.</p>
-                <pre style="margin-top:8px;"><code>protected void Page_Load(object sender, EventArgs e)
-{
-    // MAL: esto corre antes del clic y con datos viejos
-    lblResultado.Text = "Hola, " + txtNombre.Text;
-}</code></pre>
-            </div>
-
-            <div class="caja aviso">
-                <p><strong>Regla:</strong></p>
-                <p><code>Page_Load</code> → preparar cosas la primera vez.</p>
-                <p><code>btn_Click</code> → responder a un clic.</p>
-            </div>
-
-            <h3>IsPostBack</h3>
-            <p><code>IsPostBack</code> es <code>true</code> cuando la página viene de una interacción del usuario (un
-                clic). Sirve para que cierto código corra solo la primera vez:</p>
-
-            <pre><code>protected void Page_Load(object sender, EventArgs e)
+                <h3>Enfoque B: Enlazar controles con .DataSource y .DataBind()</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Enlace de lista simple en Page_Load</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>protected void Page_Load(object sender, EventArgs e)
 {
     if (!IsPostBack)
     {
-        // solo la primera vez que se abre la página
+        List&lt;string&gt; categorias = new List&lt;string&gt;();
+        categorias.Add("Periféricos");
+        categorias.Add("Cables");
+        categorias.Add("Almacenamiento");
+
+        ddlCategorias.DataSource = categorias;
+        ddlCategorias.DataBind();
     }
 }</code></pre>
+                </div>
+            </section>
 
-            <p><code>!IsPostBack</code> se lee: "si NO es una recarga por clic".</p>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+            <section id="sec-5">
+                <h2>5. Two-Way Data Binding (Flujo de ida y vuelta)</h2>
+                <p>El <strong>two-way data binding</strong> implica cargar datos hacia los controles de la vista (ida)
+                    y, tras la edición del usuario y el <em>postback</em>, capturar los cambios para actualizar el
+                    objeto y la lista en memoria (vuelta).</p>
 
-        <!-- 7 -->
-        <section id="session">
-            <h2><span class="num">7</span> Session</h2>
+                <h3>Método 1: Two-Way Binding explícito con Session y List&lt;Producto&gt;</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Editar.aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Editar.aspx.cs" Inherits="WebApplication1.Editar" %&gt;
 
-            <p><code>Session</code> guarda datos de un usuario mientras navega entre páginas. Es una bolsa con clave y
-                valor.</p>
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;title&gt;Two-Way Binding Paso a Paso&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+        &lt;h3&gt;Editar Producto (Ida y Vuelta)&lt;/h3&gt;
 
-            <pre><code>Session["UsuarioActual"] = "admin";                 // guardar
-string user = Session["UsuarioActual"].ToString();  // leer
-Session.Clear();                                    // borrar todo</code></pre>
+        &lt;asp:Label runat="server" Text="Código:" /&gt;
+        &lt;asp:TextBox ID="txtCodigo" runat="server" ReadOnly="true" /&gt;&lt;br /&gt;&lt;br /&gt;
 
-            <h3>Proteger una página</h3>
-            <p>Al inicio de <code>Page_Load</code>:</p>
-            <pre><code>if (Session["UsuarioActual"] == null)
+        &lt;asp:Label runat="server" Text="Nombre:" /&gt;
+        &lt;asp:TextBox ID="txtNombre" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
+
+        &lt;asp:Label runat="server" Text="Precio:" /&gt;
+        &lt;asp:TextBox ID="txtPrecio" runat="server" /&gt;&lt;br /&gt;&lt;br /&gt;
+
+        &lt;asp:Button ID="btnCargar" runat="server" Text="Cargar P01" OnClick="btnCargar_Click" /&gt;
+        &lt;asp:Button ID="btnActualizar" runat="server" Text="Guardar Cambios" OnClick="btnActualizar_Click" /&gt;
+
+        &lt;br /&gt;&lt;br /&gt;
+        &lt;asp:Label ID="lblEstado" runat="server" Text="" /&gt;
+
+        &lt;h4&gt;Lista Actualizada:&lt;/h4&gt;
+        &lt;%
+            if (Session["productos"] != null)
+            {
+                System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
+                    (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
+
+                foreach (WebApplication1.Producto item in lista)
+                {
+        %&gt;
+                    &lt;p&gt;&lt;%= item.Codigo %&gt; | &lt;%= item.Nombre %&gt; | $&lt;%= item.Precio.ToString("0.00") %&gt;&lt;/p&gt;
+        &lt;%
+                }
+            }
+        %&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
+
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Editar.aspx.cs</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>using System;
+using System.Collections.Generic;
+using System.Web.UI;
+
+namespace WebApplication1
 {
-    Response.Redirect("Login.aspx");
-    return;
+    public partial class Editar : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack &amp;&amp; Session["productos"] == null)
+            {
+                List&lt;Producto&gt; inicial = new List&lt;Producto&gt;();
+                inicial.Add(new Producto("P01", "Teclado USB", 15.0));
+                inicial.Add(new Producto("P02", "Mouse Óptico", 8.5));
+                Session["productos"] = inicial;
+            }
+        }
+
+        // IDA: de la lista hacia los TextBox
+        protected void btnCargar_Click(object sender, EventArgs e)
+        {
+            List&lt;Producto&gt; lista = (List&lt;Producto&gt;)Session["productos"];
+
+            foreach (Producto p in lista)
+            {
+                if (p.Codigo == "P01")
+                {
+                    txtCodigo.Text = p.Codigo;
+                    txtNombre.Text = p.Nombre;
+                    txtPrecio.Text = p.Precio.ToString();
+                    lblEstado.Text = "Producto P01 cargado en el formulario.";
+                    break;
+                }
+            }
+        }
+
+        // VUELTA: de los TextBox hacia el objeto y la lista
+        protected void btnActualizar_Click(object sender, EventArgs e)
+        {
+            if (Session["productos"] == null)
+            {
+                return;
+            }
+
+            List&lt;Producto&gt; lista = (List&lt;Producto&gt;)Session["productos"];
+            string codBuscado = txtCodigo.Text.Trim();
+
+            foreach (Producto p in lista)
+            {
+                if (p.Codigo == codBuscado)
+                {
+                    p.Nombre = txtNombre.Text.Trim();
+
+                    double nuevoPrecio = 0;
+                    if (double.TryParse(txtPrecio.Text.Trim(), out nuevoPrecio))
+                    {
+                        p.Precio = nuevoPrecio;
+                    }
+
+                    lblEstado.Text = "Cambios guardados en la lista.";
+                    break;
+                }
+            }
+
+            Session["productos"] = lista;
+        }
+    }
 }</code></pre>
+                </div>
 
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Qué hace</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>Session["clave"]</code></td>
-                            <td>Guarda un valor por usuario.</td>
-                        </tr>
-                        <tr>
-                            <td><code>== null</code></td>
-                            <td>Significa que el usuario no ha iniciado sesión.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Response.Redirect("...")</code></td>
-                            <td>Envía al navegador a otra página.</td>
-                        </tr>
-                        <tr>
-                            <td><code>return;</code></td>
-                            <td>Corta la ejecución para que no siga el resto del método.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
+                <h3>Método 2: Model Binding en .NET 4.5 (ItemType y BindItem)</h3>
+                <p>.NET Framework 4.5 incorpora enlace a modelos mediante <code class="inline">ItemType</code>, <code
+                        class="inline">SelectMethod</code>, <code class="inline">UpdateMethod</code> y <code
+                        class="inline">BindItem</code>.</p>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>FormView con BindItem en .NET 4.5</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;asp:FormView ID="fvProducto" runat="server"
+    ItemType="WebApplication1.Producto"
+    SelectMethod="ObtenerProducto"
+    UpdateMethod="ActualizarProducto"
+    DefaultMode="Edit"&gt;
+    &lt;EditItemTemplate&gt;
+        Código: &lt;asp:Label ID="lblCod" runat="server" Text='&lt;%# Item.Codigo %&gt;' /&gt;&lt;br /&gt;
+        Nombre: &lt;asp:TextBox ID="txtNom" runat="server" Text='&lt;%# BindItem.Nombre %&gt;' /&gt;&lt;br /&gt;
+        Precio: &lt;asp:TextBox ID="txtPre" runat="server" Text='&lt;%# BindItem.Precio %&gt;' /&gt;&lt;br /&gt;
+        &lt;asp:Button ID="btnUpdate" runat="server" CommandName="Update" Text="Actualizar" /&gt;
+    &lt;/EditItemTemplate&gt;
+&lt;/asp:FormView&gt;</code></pre>
+                </div>
+            </section>
 
-        <!-- 8 -->
-        <section id="list">
-            <h2><span class="num">8</span> List y Repeater</h2>
+            <section id="sec-6">
+                <h2>6. Ejemplos adicionales recorriendo listas en archivos .aspx</h2>
 
-            <p>Para mostrar varios elementos se usa una <code>List&lt;T&gt;</code> y un <code>Repeater</code>. El
-                Repeater repite un bloque de HTML por cada elemento de la lista.</p>
+                <h3>Ejemplo 1: Filtrar elementos con condicional if dentro de foreach</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Filtrado por precio en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%
+    if (Session["productos"] != null)
+    {
+        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
+            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
 
-            <h3>En el .aspx</h3>
-            <pre><code>&lt;asp:Repeater ID="rptProductos" runat="server"&gt;
-    &lt;ItemTemplate&gt;
+        double precioMinimo = 10.0;
+%&gt;
+        &lt;h4&gt;Productos con precio mayor a $&lt;%= precioMinimo.ToString("0.00") %&gt;&lt;/h4&gt;
+        &lt;ul&gt;
+&lt;%
+        foreach (WebApplication1.Producto item in lista)
+        {
+            if (item.Precio &gt; precioMinimo)
+            {
+%&gt;
+                &lt;li&gt;&lt;strong&gt;&lt;%= item.Nombre %&gt;&lt;/strong&gt; — $&lt;%= item.Precio.ToString("0.00") %&gt;&lt;/li&gt;
+&lt;%
+            }
+        }
+%&gt;
+        &lt;/ul&gt;
+&lt;%
+    }
+%&gt;</code></pre>
+                </div>
+
+                <h3>Ejemplo 2: Acumular un total durante el recorrido</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Total acumulado en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%
+    if (Session["productos"] != null)
+    {
+        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
+            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
+
+        double totalGeneral = 0;
+%&gt;
         &lt;div&gt;
-            &lt;h3&gt;&lt;%# Eval("Nombre") %&gt;&lt;/h3&gt;
-            &lt;p&gt;Precio: $&lt;%# Eval("Precio") %&gt;&lt;/p&gt;
+&lt;%
+        foreach (WebApplication1.Producto item in lista)
+        {
+            totalGeneral = totalGeneral + item.Precio;
+%&gt;
+            &lt;div class="fila-item"&gt;
+                &lt;span&gt;[&lt;%= item.Codigo %&gt;]&lt;/span&gt;
+                &lt;span&gt;&lt;%= item.Nombre %&gt;&lt;/span&gt;
+                &lt;span&gt;$&lt;%= item.Precio.ToString("0.00") %&gt;&lt;/span&gt;
+            &lt;/div&gt;
+&lt;%
+        }
+%&gt;
+            &lt;p&gt;&lt;strong&gt;Total acumulado: $&lt;%= totalGeneral.ToString("0.00") %&gt;&lt;/strong&gt;&lt;/p&gt;
         &lt;/div&gt;
-    &lt;/ItemTemplate&gt;
-&lt;/asp:Repeater&gt;</code></pre>
+&lt;%
+    }
+%&gt;</code></pre>
+                </div>
 
-            <h3>En el .aspx.cs</h3>
-            <pre><code>List&lt;Producto&gt; lista = new List&lt;Producto&gt;();
-lista.Add(new Producto { Nombre = "Teclado", Precio = 45 });
-lista.Add(new Producto { Nombre = "Mouse", Precio = 18 });
+                <h3>Ejemplo 3: Recorrer con ciclo for para numerar filas</h3>
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Recorrido con índice for en .aspx</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>&lt;%
+    if (Session["productos"] != null)
+    {
+        System.Collections.Generic.List&lt;WebApplication1.Producto&gt; lista =
+            (System.Collections.Generic.List&lt;WebApplication1.Producto&gt;)Session["productos"];
+%&gt;
+        &lt;table border="1" cellpadding="5" cellspacing="0"&gt;
+            &lt;tr&gt;
+                &lt;th&gt;#&lt;/th&gt;
+                &lt;th&gt;Código&lt;/th&gt;
+                &lt;th&gt;Nombre&lt;/th&gt;
+                &lt;th&gt;Precio&lt;/th&gt;
+            &lt;/tr&gt;
+&lt;%
+        for (int i = 0; i &lt; lista.Count; i++)
+        {
+            WebApplication1.Producto actual = lista[i];
+%&gt;
+            &lt;tr&gt;
+                &lt;td&gt;&lt;%= i + 1 %&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;%= actual.Codigo %&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;%= actual.Nombre %&gt;&lt;/td&gt;
+                &lt;td&gt;$&lt;%= actual.Precio.ToString("0.00") %&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+&lt;%
+        }
+%&gt;
+        &lt;/table&gt;
+&lt;%
+    }
+%&gt;</code></pre>
+                </div>
+            </section>
 
-rptProductos.DataSource = lista;
-rptProductos.DataBind();</code></pre>
+            <section id="sec-7">
+                <h2>7. Checklist rápido de errores comunes en clase</h2>
+                <ul>
+                    <li><strong>Mayúsculas y minúsculas en Session:</strong> Usar <code
+                            class="inline">"productos"</code> en un archivo y <code class="inline">"Productos"</code> en
+                        otro provoca que no se encuentre la clave.</li>
+                    <li><strong>Falta de !IsPostBack:</strong> Inicializar o vaciar la lista en <code
+                            class="inline">Page_Load</code> sin comprobar <code class="inline">if (!IsPostBack)</code>
+                        borra datos en cada clic de botón.</li>
+                    <li><strong>No actualizar Session tras modificar:</strong> Al agregar o editar elementos en una
+                        lista guardada en <code class="inline">Session</code>, mantén la referencia actualizada en la
+                        clave correspondiente.</li>
+                    <li><strong>Nombre completo o Import en .aspx:</strong> Dentro de bloques <code
+                            class="inline">&lt;% ... %&gt;</code>, usa nombres completos como <code
+                            class="inline">System.Collections.Generic.List&lt;WebApplication1.Producto&gt;</code> o
+                        declara la directiva <code class="inline">&lt;%@ Import Namespace="..." %&gt;</code>.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
 
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Qué hace</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>List&lt;Producto&gt;</code></td>
-                            <td>Lista de objetos <code>Producto</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;ItemTemplate&gt;</code></td>
-                            <td>El bloque de HTML que se repite por cada elemento.</td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;%# Eval("Nombre") %&gt;</code></td>
-                            <td>Toma la propiedad <code>Nombre</code> del elemento actual.</td>
-                        </tr>
-                        <tr>
-                            <td><code>DataSource = lista</code></td>
-                            <td>Le dice al Repeater de dónde sacar los datos.</td>
-                        </tr>
-                        <tr>
-                            <td><code>DataBind()</code></td>
-                            <td>Dibuja el Repeater. Sin esto no aparece nada.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <script>
+        function copiarCodigo(boton) {
+            var caja = boton.closest(".code-box");
+            if (!caja) return;
+            var codigoEl = caja.querySelector("pre code");
+            if (!codigoEl) return;
 
-            <div class="caja aviso">
-                <p><strong>Ojo:</strong> <code>Producto</code> es una clase que debes crear antes (con propiedades
-                    <code>Nombre</code> y <code>Precio</code>). Si no existe, el código no compila.
-                </p>
-            </div>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
-
-        <!-- 9 -->
-        <section id="errores">
-            <h2><span class="num">9</span> Errores comunes en 4.5</h2>
-
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Error</th>
-                            <th>Causa</th>
-                            <th>Solución</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>No compila <code>$"..."</code></td>
-                            <td>Interpolación es C# 6, no existe en 4.5</td>
-                            <td>Usar <code>"texto " + variable</code></td>
-                        </tr>
-                        <tr>
-                            <td>"No se encuentra el tipo Default"</td>
-                            <td><code>Inherits</code> no coincide con el namespace/clase</td>
-                            <td>Revisar que digan exactamente lo mismo</td>
-                        </tr>
-                        <tr>
-                            <td>El botón no hace nada</td>
-                            <td>Falta <code>runat="server"</code> en el form o en el botón</td>
-                            <td>Agregarlo</td>
-                        </tr>
-                        <tr>
-                            <td>El Label no muestra nada</td>
-                            <td>Falta <code>runat="server"</code> en el Label</td>
-                            <td>Agregarlo</td>
-                        </tr>
-                        <tr>
-                            <td>El Repeater sale vacío</td>
-                            <td>Falta <code>DataBind()</code></td>
-                            <td>Llamarlo después de asignar <code>DataSource</code></td>
-                        </tr>
-                        <tr>
-                            <td>Error al crear el proyecto</td>
-                            <td>No aparece .NET 4.5 en el desplegable</td>
-                            <td>Elegir .NET 4.0: el código funciona igual</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
-
-        <!-- 10 -->
-        <section id="referencia">
-            <h2><span class="num">10</span> Referencia rápida</h2>
-
-            <h3>Lo que se agrega al HTML en un .aspx</h3>
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Significado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>&lt;%@ Page %&gt;</code></td>
-                            <td>Directiva de página (primera línea).</td>
-                        </tr>
-                        <tr>
-                            <td><code>runat="server"</code></td>
-                            <td>El servidor procesa esa etiqueta.</td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;asp:...&gt;</code></td>
-                            <td>Control de servidor (no es HTML).</td>
-                        </tr>
-                        <tr>
-                            <td><code>ID="..."</code></td>
-                            <td>Nombre para usar el control desde C#.</td>
-                        </tr>
-                        <tr>
-                            <td><code>OnClick="..."</code></td>
-                            <td>Método C# que corre al hacer clic.</td>
-                        </tr>
-                        <tr>
-                            <td><code>&lt;%# Eval("...") %&gt;</code></td>
-                            <td>Propiedad del elemento actual en un Repeater.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Métodos y propiedades clave</h3>
-            <div class="scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Qué hace</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>.Text</code></td>
-                            <td>Leer o escribir el texto de un control.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Page_Load</code></td>
-                            <td>Evento al cargar la página.</td>
-                        </tr>
-                        <tr>
-                            <td><code>IsPostBack</code></td>
-                            <td>Indica si la página viene de un clic.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Session["clave"]</code></td>
-                            <td>Datos por usuario entre páginas.</td>
-                        </tr>
-                        <tr>
-                            <td><code>Response.Redirect("...")</code></td>
-                            <td>Redirige a otra página.</td>
-                        </tr>
-                        <tr>
-                            <td><code>DataBind()</code></td>
-                            <td>Dibuja un control con su DataSource.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <a class="arriba" href="#que-es">↑ Índice</a>
-        </section>
-
-    </main>
-
-    <footer>
-        ASP.NET Web Forms 4.5 · Visual Studio 2012 · Profesor: Ing.Robyir Loreto
-    </footer>
-
+            var texto = codigoEl.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texto).then(function () {
+                    var original = boton.textContent;
+                    boton.textContent = "Copiado";
+                    setTimeout(function () {
+                        boton.textContent = original;
+                    }, 1500);
+                });
+            }
+        }
+    </script>
 </body>
 
 </html>
