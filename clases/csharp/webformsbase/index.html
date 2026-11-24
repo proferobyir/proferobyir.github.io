@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Profesor Robyir Loreto" />
-    <title>Manual ASP.NET Web Forms: Controles Repetitivos, Eval, Session y Bootstrap 5.3 Offline</title>
+    <title>Manual ASP.NET Web Forms: PostBack, Repeater, Eval, Session y Bootstrap 5.3 Offline</title>
     <style>
         :root {
             --bg-page: #0f1318;
@@ -182,7 +182,8 @@
             color: var(--text-main);
         }
 
-        ul {
+        ul,
+        ol {
             margin: 0 0 1.25rem;
             padding-left: 1.35rem;
         }
@@ -267,6 +268,7 @@
             <p class="brand-title">ASP.NET Web Forms</p>
             <p class="brand-meta">Profesor Robyir Loreto · .NET 4.5 / VS 2012 / C# 5</p>
             <ul class="nav-list">
+                <li><a href="#sec-0">0. ¿Qué es un PostBack?</a></li>
                 <li><a href="#sec-1">1. Clase pública base</a></li>
                 <li><a href="#sec-1b">1.1 Variables de Session</a></li>
                 <li><a href="#sec-2">2. Incluir CSS</a></li>
@@ -281,23 +283,72 @@
 
         <main class="main-content">
             <header class="page-header">
-                <h1>Manual de ASP.NET Web Forms: Controles Repetitivos, &lt;%# Eval %&gt;, Session y Bootstrap 5.3
-                    Offline</h1>
-                <p>Guía práctica paso a paso con controles de servidor repetitivos (<code
-                        class="inline">&lt;asp:Repeater&gt;</code>, <code class="inline">&lt;asp:DataList&gt;</code>,
-                    <code class="inline">&lt;asp:ListView&gt;</code>), <code
-                        class="inline">&lt;%# Eval(...) %&gt;</code>, <code class="inline">Session</code>, clases
+                <h1>Manual de ASP.NET Web Forms: PostBack, Controles Repetitivos, &lt;%# Eval %&gt;, Session y Bootstrap
+                    5.3 Offline</h1>
+                <p>Guía práctica paso a paso sobre el ciclo de <strong>PostBack</strong>, controles de servidor
+                    repetitivos (<code class="inline">&lt;asp:Repeater&gt;</code>, <code
+                        class="inline">&lt;asp:DataList&gt;</code>, <code class="inline">&lt;asp:ListView&gt;</code>),
+                    <code class="inline">&lt;%# Eval(...) %&gt;</code>, <code class="inline">Session</code>, clases
                     públicas (<code class="inline">public</code>) y listas (<code class="inline">List&lt;T&gt;</code>).
                 </p>
                 <div class="badges">
                     <span class="badge">.NET Framework 4.5</span>
                     <span class="badge">Visual Studio 2012</span>
                     <span class="badge">C# 5</span>
+                    <span class="badge">PostBack &amp; IsPostBack</span>
                     <span class="badge">&lt;asp:Repeater&gt; / DataList / ListView</span>
-                    <span class="badge">&lt;%# Eval(...) %&gt;</span>
                     <span class="badge">Bootstrap 5.3 Offline</span>
                 </div>
             </header>
+
+            <section id="sec-0">
+                <h2>0. ¿Qué es un PostBack en ASP.NET Web Forms?</h2>
+                <p>Un <strong>postback</strong> (literalmente "reenvío hacia atrás") ocurre cuando el usuario interactúa
+                    en el navegador con un control de servidor (por ejemplo, al hacer clic en un <code
+                        class="inline">&lt;asp:Button&gt;</code> o cambiar una selección con <code
+                        class="inline">AutoPostBack="true"</code>) y el navegador envía los datos del formulario <code
+                        class="inline">&lt;form runat="server"&gt;</code> de vuelta <strong>hacia la misma página en el
+                        servidor</strong> para que C# procese el evento y devuelva el HTML actualizado.</p>
+
+                <h3>¿Qué sucede en cada postback?</h3>
+                <ol>
+                    <li><strong>Primera visita (no es postback):</strong> Entras a <code
+                            class="inline">Default.aspx</code>. El servidor crea una instancia de la página, ejecuta
+                        <code class="inline">Page_Load</code> con <code class="inline">IsPostBack == false</code> y
+                        envía el HTML al navegador.</li>
+                    <li><strong>Acción del usuario (se dispara un postback):</strong> Pulsas el botón <code
+                            class="inline">Guardar</code>. El navegador envía los valores de los campos hacia el
+                        servidor.</li>
+                    <li><strong>Nueva instancia en el servidor:</strong> ASP.NET crea una nueva instancia de la clase de
+                        la página para atender esa petición, ejecuta <code class="inline">Page_Load</code> (ahora con
+                        <code class="inline">IsPostBack == true</code>) y luego ejecuta el evento del control (como
+                        <code class="inline">btnGuardar_Click</code>).</li>
+                    <li><strong>Respuesta:</strong> El servidor genera el nuevo HTML y lo devuelve al navegador.</li>
+                </ol>
+
+                <div class="note">
+                    <strong>¿Por qué importa esto?</strong> Como cada petición crea una nueva instancia de la página en
+                    el servidor, las variables normales declaradas en la clase de la página se reinician en cada
+                    <em>postback</em>. Por eso usamos <code class="inline">if (!IsPostBack)</code> para inicializar
+                    datos solo la primera vez y usamos <code class="inline">Session</code> para conservar información
+                    entre <em>postbacks</em>.
+                </div>
+
+                <div class="code-box">
+                    <div class="code-header">
+                        <span>Uso de !IsPostBack en Page_Load</span>
+                        <button class="copy-btn" type="button" onclick="copiarCodigo(this)">Copiar</button>
+                    </div>
+                    <pre><code>protected void Page_Load(object sender, EventArgs e)
+{
+    // Solo se ejecuta cuando la página carga por primera vez (no en postbacks)
+    if (!IsPostBack)
+    {
+        lblMensaje.Text = "Bienvenido. Carga inicial completada.";
+    }
+}</code></pre>
+                </div>
+            </section>
 
             <section id="sec-1">
                 <h2>1. Estructura base y nuestra clase pública de ejemplo</h2>
@@ -344,10 +395,11 @@ namespace WebApplication1
 
             <section id="sec-1b">
                 <h2>1.1 Qué son las variables de Session, cómo crearlas y eliminarlas</h2>
-                <p>En ASP.NET Web Forms, cada <em>postback</em> crea una nueva instancia de la página y reinicia las
-                    variables normales de instancia. Una <strong>variable de Session</strong> (<code
-                        class="inline">Session["clave"]</code>) conserva datos en memoria del servidor para la sesión
-                    del usuario entre <em>postbacks</em> y páginas <code class="inline">.aspx</code>.</p>
+                <p>Dado que cada <em>postback</em> crea una nueva instancia de la página, una <strong>variable de
+                        Session</strong> (<code class="inline">Session["clave"]</code>) guarda datos en memoria del
+                    servidor asociados a la sesión del usuario mientras esté activa, permitiendo conservar listas como
+                    <code class="inline">List&lt;Producto&gt;</code> entre <em>postbacks</em> y páginas <code
+                        class="inline">.aspx</code>.</p>
 
                 <h3>Crear, leer y actualizar variables de Session</h3>
                 <div class="code-box">
@@ -440,7 +492,8 @@ protected void Page_Load(object sender, EventArgs e)
                 <h2>3. Cómo incluir y usar JavaScript en ASP.NET Web Forms</h2>
                 <p>Usa <code class="inline">ClientIDMode="Static"</code> en los controles de servidor cuando necesites
                     leerlos fácilmente desde JavaScript con <code class="inline">document.getElementById</code>, o
-                    dispara scripts desde C# con <code class="inline">ScriptManager.RegisterStartupScript</code>.</p>
+                    dispara scripts desde C# tras un <em>postback</em> con <code
+                        class="inline">ScriptManager.RegisterStartupScript</code>.</p>
 
                 <div class="code-box">
                     <div class="code-header">
@@ -591,9 +644,9 @@ namespace WebApplication1
             <section id="sec-5">
                 <h2>5. Two-Way Data Binding (Flujo de ida y vuelta)</h2>
                 <p>En Web Forms, el <strong>two-way data binding</strong> consiste en cargar valores hacia los controles
-                    de edición (ida) y, al enviar el formulario, capturar los cambios del usuario para actualizar el
-                    objeto y la lista en <code class="inline">Session</code> y volver a enlazar el control repetitivo
-                    (vuelta).</p>
+                    de edición (ida) y, al enviar el formulario mediante un <em>postback</em>, capturar los cambios del
+                    usuario para actualizar el objeto y la lista en <code class="inline">Session</code> y volver a
+                    enlazar el control repetitivo (vuelta).</p>
 
                 <div class="code-box">
                     <div class="code-header">
@@ -710,7 +763,8 @@ protected void btnActualizar_Click(object sender, EventArgs e)
                 <p>Al colocar un botón dentro de <code class="inline">&lt;ItemTemplate&gt;</code> con <code
                         class="inline">CommandName</code> y <code
                         class="inline">CommandArgument='&lt;%# Eval("Codigo") %&gt;'</code>, el evento <code
-                        class="inline">OnItemCommand</code> recibe qué fila disparó la acción.</p>
+                        class="inline">OnItemCommand</code> recibe qué fila disparó la acción al producirse el
+                    <em>postback</em>.</p>
                 <div class="code-box">
                     <div class="code-header">
                         <span>OnItemCommand en &lt;asp:Repeater&gt;</span>
