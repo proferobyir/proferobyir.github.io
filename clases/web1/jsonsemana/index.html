@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Profesor Robyir Loreto">
+    <title>Clase Magistral: Manejo de JSON y método .map() en JavaScript</title>
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-code: #0d1117;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #38bdf8;
+            --accent-secondary: #34d399;
+            --warning: #fbbf24;
+            --border: #333333;
+            --syntax-key: #79c0ff;
+            --syntax-str: #a5d6ff;
+            --syntax-kw: #ff7b72;
+            --syntax-fn: #d2a8ff;
+            --syntax-num: #79c0ff;
+            --syntax-comment: #8b949e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.7;
+            font-size: 18px;
+            padding: 1.25rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--border);
+            border-left: 6px solid var(--accent);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.75rem;
+            margin-bottom: 1.75rem;
+        }
+
+        h2 {
+            color: var(--accent);
+            font-size: 1.45rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--accent-secondary);
+            font-size: 1.15rem;
+            margin: 1.25rem 0 0.6rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code.inline {
+            background-color: #2d333b;
+            color: #f0883e;
+            padding: 0.15rem 0.45rem;
+            border-radius: 5px;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 0.95em;
+        }
+
+        .code-wrapper {
+            background-color: var(--bg-code);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: #161b22;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .dot.red {
+            background: #ff5f56;
+        }
+
+        .dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .dot.green {
+            background: #27c93f;
+        }
+
+        pre {
+            padding: 1.2rem;
+            overflow-x: auto;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: #e6edf3;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 0.85rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #262626;
+            color: var(--accent);
+        }
+
+        .alert-box {
+            background-color: rgba(251, 191, 36, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        /* Laboratorio Interactivo */
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 210px;
+            background-color: var(--bg-code);
+            color: #a5d6ff;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: "Consolas", monospace;
+            font-size: 0.92rem;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button.secondary {
+            background-color: var(--accent-secondary);
+        }
+
+        button.reset {
+            background-color: #4b5563;
+            color: #ffffff;
+        }
+
+        .console-output {
+            background-color: #090d12;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 210px;
+            font-family: "Consolas", monospace;
+            font-size: 0.92rem;
+            color: #34d399;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Syntax Highlighting Manual */
+        .kw {
+            color: var(--syntax-kw);
+            font-weight: bold;
+        }
+
+        .str {
+            color: var(--syntax-str);
+        }
+
+        .fn {
+            color: var(--syntax-fn);
+        }
+
+        .num {
+            color: var(--syntax-num);
+        }
+
+        .cm {
+            color: var(--syntax-comment);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+                padding: 0.85rem;
+            }
+
+            header {
+                padding: 1.35rem;
+            }
+
+            header h1 {
+                font-size: 1.55rem;
+            }
+
+            section {
+                padding: 1.25rem;
+            }
+
+            .lab-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <span class="badge">JavaScript Moderno &bull; Desarrollo Web</span>
+            <h1>Clase Magistral: Manejo de JSON y el Método <code class="inline">.map()</code></h1>
+            <p>De cadenas de texto plano a objetos manipulables en memoria y transformación funcional de arreglos.</p>
+        </header>
+
+        <!-- SECCIÓN 1 -->
+        <section>
+            <h2>1. ¿Qué es JSON y por qué debemos "parsearlo"?</h2>
+            <p>
+                <strong>JSON</strong> (<em>JavaScript Object Notation</em>) es un formato estándar de intercambio de
+                datos basado en texto plano. Cuando recibimos datos desde una API REST, un archivo o <code
+                    class="inline">localStorage</code>, JavaScript <strong>no recibe un objeto</strong>, sino una cadena
+                de texto (<code class="inline">string</code>).
+            </p>
+            <p>
+                Si intentas acceder directamente a una propiedad de un string JSON sin convertirlo primero, obtendrás
+                <code class="inline">undefined</code>:
+            </p>
+
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span
+                            class="dot green"></span></div>
+                    <span>problema-string.js</span>
+                </div>
+                <pre><span class="cm">// Esto es una cadena de texto (string), NO un objeto JavaScript</span>
+<span class="kw">const</span> respuestaAPI = <span class="str">'{"producto": "Monitor 24", "precio": 180}'</span>;
+
+console.<span class="fn">log</span>(<span class="kw">typeof</span> respuestaAPI); <span class="cm">// "string"</span>
+console.<span class="fn">log</span>(respuestaAPI.producto); <span class="cm">// undefined (Error lógico)</span></pre>
+            </div>
+
+            <div class="alert-box">
+                <strong>Reglas estrictas de sintaxis JSON:</strong><br>
+                1. Las claves y los textos deben usar obligatoriamente <strong>comillas dobles</strong> (<code
+                    class="inline">"clave"</code>). Las comillas simples son inválidas.<br>
+                2. No se permiten comas finales (<em>trailing commas</em>) después del último elemento.<br>
+                3. Solo admite tipos: <code class="inline">string</code>, <code class="inline">number</code>, <code
+                    class="inline">boolean</code>, <code class="inline">null</code>, <code class="inline">object</code>
+                y <code class="inline">array</code>.
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2 -->
+        <section>
+            <h2>2. Parseo y Serialización: <code class="inline">JSON.parse()</code> y <code
+                    class="inline">JSON.stringify()</code></h2>
+            <p>JavaScript integra el objeto nativo <code class="inline">JSON</code> con dos métodos fundamentales para
+                transformar datos:</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Método</th>
+                            <th>Conversión</th>
+                            <th>Uso Principal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline">JSON.parse(texto)</code></td>
+                            <td><code class="inline">String</code> &rarr; <code class="inline">Objeto / Array</code>
+                            </td>
+                            <td>Convierte una cadena JSON válida en una estructura nativa de JS para leer o modificar
+                                propiedades.</td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">JSON.stringify(dato)</code></td>
+                            <td><code class="inline">Objeto / Array</code> &rarr; <code class="inline">String</code>
+                            </td>
+                            <td>Convierte un objeto o arreglo de JS en texto JSON listo para enviarse por red o
+                                guardarse en <code class="inline">localStorage</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Flujo completo: Parsear, Manipular y Serializar</h3>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span
+                            class="dot green"></span></div>
+                    <span>ciclo-json.js</span>
+                </div>
+                <pre><span class="cm">// 1. String JSON recibido</span>
+<span class="kw">const</span> jsonCrudo = <span class="str">`{
+  "id": 101,
+  "usuario": "ana_dev",
+  "activo": true,
+  "habilidades": ["HTML", "CSS"]
+}`</span>;
+
+<span class="cm">// 2. PARSEO: Convertir string a objeto manipulable</span>
+<span class="kw">const</span> perfil = JSON.<span class="fn">parse</span>(jsonCrudo);
+
+<span class="cm">// 3. MANIPULACIÓN: Leer, modificar, agregar y eliminar</span>
+console.<span class="fn">log</span>(perfil.usuario);            <span class="cm">// "ana_dev"</span>
+perfil.usuario = <span class="str">"ana_fullstack"</span>;     <span class="cm">// Modificar valor</span>
+perfil.habilidades.<span class="fn">push</span>(<span class="str">"JavaScript"</span>); <span class="cm">// Agregar elemento al arreglo</span>
+perfil.rol = <span class="str">"Programadora"</span>;          <span class="cm">// Crear nueva propiedad</span>
+<span class="kw">delete</span> perfil.activo;                 <span class="cm">// Eliminar propiedad</span>
+
+<span class="cm">// 4. SERIALIZACIÓN: Volver a convertir en string JSON formateado (2 espacios)</span>
+<span class="kw">const</span> jsonFinal = JSON.<span class="fn">stringify</span>(perfil, <span class="kw">null</span>, <span class="num">2</span>);
+console.<span class="fn">log</span>(jsonFinal);</pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3 -->
+        <section>
+            <h2>3. Recorrer y Transformar Arreglos JSON con <code class="inline">.map()</code></h2>
+            <p>
+                En aplicaciones reales, los datos JSON suelen llegar como un <strong>arreglo de objetos</strong> (por
+                ejemplo, una lista de estudiantes o un catálogo de productos). Una vez aplicado <code
+                    class="inline">JSON.parse()</code>, el método <code class="inline">.map()</code> es la herramienta
+                ideal para recorrer cada objeto y generar un nuevo arreglo transformado.
+            </p>
+
+            <h3>Características clave de <code class="inline">.map()</code></h3>
+            <ul>
+                <li>Recorre todos los elementos del arreglo en orden.</li>
+                <li>Ejecuta una función callback por cada objeto y <strong>retorna un nuevo arreglo</strong> con la
+                    misma longitud.</li>
+                <li><strong>No muta</strong> (no altera) el arreglo original, lo que previene errores inesperados.</li>
+            </ul>
+
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span
+                            class="dot green"></span></div>
+                    <span>uso-map-json.js</span>
+                </div>
+                <pre><span class="cm">// String JSON que contiene un arreglo de productos</span>
+<span class="kw">const</span> jsonInventario = <span class="str">`[
+  {"id": 1, "nombre": "Teclado", "precio": 40},
+  {"id": 2, "nombre": "Mouse", "precio": 20},
+  {"id": 3, "nombre": "Laptop", "precio": 600}
+]`</span>;
+
+<span class="cm">// Paso 1: Parsear el string JSON a un Array de Objetos JS</span>
+<span class="kw">const</span> productos = JSON.<span class="fn">parse</span>(jsonInventario);
+
+<span class="cm">// Caso A: Extraer solo una lista de nombres (Array de strings)</span>
+<span class="kw">const</span> soloNombres = productos.<span class="fn">map</span>((item) => item.nombre);
+console.<span class="fn">log</span>(soloNombres); <span class="cm">// ["Teclado", "Mouse", "Laptop"]</span>
+
+<span class="cm">// Caso B: Transformar cada objeto calculando el IVA (16%)</span>
+<span class="kw">const</span> productosConIVA = productos.<span class="fn">map</span>((item) => {
+  <span class="kw">return</span> {
+    id: item.id,
+    producto: item.nombre.<span class="fn">toUpperCase</span>(),
+    precioBase: item.precio,
+    precioFinal: +(item.precio * <span class="num">1.16</span>).<span class="fn">toFixed</span>(<span class="num">2</span>)
+  };
+});
+
+console.<span class="fn">log</span>(productosConIVA);
+
+<span class="cm">// Caso C: Generar etiquetas HTML dinámicas para renderizar en el DOM</span>
+<span class="kw">const</span> tarjetasHTML = productos.<span class="fn">map</span>((item) => {
+  <span class="kw">return</span> <span class="str">`&lt;li&gt;${item.nombre} - $${item.precio}&lt;/li&gt;`</span>;
+}).<span class="fn">join</span>(<span class="str">""</span>);</pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4 -->
+        <section>
+            <h2>4. Manejo Seguro de Errores con <code class="inline">try...catch</code></h2>
+            <p>
+                Si <code class="inline">JSON.parse()</code> recibe un texto mal formado (por ejemplo, comillas simples o
+                una respuesta HTML de error del servidor), lanzará una excepción <code class="inline">SyntaxError</code>
+                y detendrá todo el programa. Siempre encapsula el parseo en un bloque <code
+                    class="inline">try...catch</code>:
+            </p>
+
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span
+                            class="dot green"></span></div>
+                    <span>seguridad-parse.js</span>
+                </div>
+                <pre><span class="kw">const</span> jsonInvalido = <span class="str">"{'nombre': 'Carlos'}"</span>; <span class="cm">// Error: usa comillas simples</span>
+
+<span class="kw">try</span> {
+  <span class="kw">const</span> datos = JSON.<span class="fn">parse</span>(jsonInvalido);
+  console.<span class="fn">log</span>(datos.nombre);
+} <span class="kw">catch</span> (error) {
+  console.<span class="fn">error</span>(<span class="str">"El formato JSON es inválido:"</span>, error.message);
+}</pre>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: LABORATORIO EN VIVO -->
+        <section>
+            <h2>5. Laboratorio Interactivo en Vivo</h2>
+            <p>Edita el string JSON de la izquierda y ejecuta las operaciones de parseo y transformación con <code
+                    class="inline">.map()</code> en tiempo real:</p>
+
+            <div class="btn-group">
+                <button type="button" onclick="ejecutarParseYManipular()">1. Parsear y Aumentar Nota (+2 pts)</button>
+                <button type="button" class="secondary" onclick="ejecutarMapReporte()">2. Transformar con .map()
+                    (Reporte)</button>
+                <button type="button" class="reset" onclick="restaurarJSON()">Restaurar JSON</button>
+            </div>
+
+            <div class="lab-grid">
+                <div>
+                    <label for="jsonInput"><strong>Entrada (String JSON):</strong></label>
+                    <textarea id="jsonInput" spellcheck="false">[
+  { "nombre": "Luis", "nota": 14 },
+  { "nombre": "María", "nota": 18 },
+  { "nombre": "Pedro", "nota": 11 }
+]</textarea>
+                </div>
+                <div>
+                    <strong>Salida en Consola (Resultado JS):</strong>
+                    <div id="consoleOutput" class="console-output">// Presiona un botón para ejecutar el código...</div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Material Didáctico de Programación Web &bull; Elaborado por <strong>Ing. Robyir Loreto</strong>
+        </footer>
+    </div>
+
+    <script>
+        const jsonInicial = `[
+  { "nombre": "Luis", "nota": 14 },
+  { "nombre": "María", "nota": 18 },
+  { "nombre": "Pedro", "nota": 11 }
+]`;
+
+        const inputEl = document.getElementById("jsonInput");
+        const outputEl = document.getElementById("consoleOutput");
+
+        function ejecutarParseYManipular() {
+            try {
+                // 1. Parsear el string del textarea
+                const estudiantes = JSON.parse(inputEl.value);
+
+                if (!Array.isArray(estudiantes)) {
+                    throw new Error("El JSON debe ser un arreglo de objetos.");
+                }
+
+                // 2. Manipular valores sumando 2 puntos (máximo 20)
+                const actualizados = estudiantes.map((est) => ({
+                    nombre: est.nombre,
+                    notaAnterior: est.nota,
+                    notaNueva: Math.min(20, est.nota + 2)
+                }));
+
+                outputEl.style.color = "#34d399";
+                outputEl.textContent = "✅ JSON parseado y manipulado con éxito:\n\n" + JSON.stringify(actualizados, null, 2);
+            } catch (err) {
+                outputEl.style.color = "#f87171";
+                outputEl.textContent = "❌ Error de sintaxis JSON:\n" + err.message;
+            }
+        }
+
+        function ejecutarMapReporte() {
+            try {
+                const estudiantes = JSON.parse(inputEl.value);
+
+                if (!Array.isArray(estudiantes)) {
+                    throw new Error("El JSON debe ser un arreglo de objetos.");
+                }
+
+                // Uso de .map() para generar un nuevo arreglo de strings formateados
+                const reporte = estudiantes.map((est, index) => {
+                    const estado = est.nota >= 12 ? "APROBADO" : "REPROBADO";
+                    return `${index + 1}. Estudiante: ${est.nombre} | Nota: ${est.nota} pts -> [${estado}]`;
+                });
+
+                outputEl.style.color = "#38bdf8";
+                outputEl.textContent = "📋 Resultado generado con .map():\n\n" + reporte.join("\n");
+            } catch (err) {
+                outputEl.style.color = "#f87171";
+                outputEl.textContent = "❌ Error de sintaxis JSON:\n" + err.message;
+            }
+        }
+
+        function restaurarJSON() {
+            inputEl.value = jsonInicial;
+            outputEl.style.color = "#34d399";
+            outputEl.textContent = "// JSON restaurado. Presiona un botón para probar.";
+        }
+    </script>
+</body>
+
+</html>
