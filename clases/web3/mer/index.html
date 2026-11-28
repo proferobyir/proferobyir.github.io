@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase Práctica: Modelado Entidad-Relación (MER)</title>
+    <style>
+        /* ==========================================================================
+       VARIABLES DE DISEÑO Y SISTEMA VISUAL (MINIMALISTA Y ACADÉMICO)
+       ========================================================================== */
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --border-strong: #cbd5e1;
+
+            /* Paleta Semántica para Elementos del MER */
+            --entidad-bg: #dbeafe;
+            --entidad-border: #2563eb;
+            --entidad-text: #1e40af;
+
+            --atributo-bg: #d1fae5;
+            --atributo-border: #059669;
+            --atributo-text: #065f46;
+
+            --relacion-bg: #fef3c7;
+            --relacion-border: #d97706;
+            --relacion-text: #92400e;
+
+            --cardinalidad-bg: #f3e8ff;
+            --cardinalidad-border: #7c3aed;
+            --cardinalidad-text: #5b21b6;
+
+            /* Acentos Institucionales */
+            --primary: #1e293b;
+            --primary-hover: #0f172a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success: #059669;
+
+            /* Tipografía del Sistema (Sin dependencias externas) */
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+        }
+
+        /* ==========================================================================
+       RESET Y ESTILOS BASE
+       ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 4rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        /* ==========================================================================
+       BARRA SUPERIOR DE CONTROL (MODO DOCENTE / ESTUDIANTE E IMPRESIÓN)
+       ========================================================================== */
+        .top-toolbar {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 0.75rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toolbar-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .course-tag {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .course-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: inline-block;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* ==========================================================================
+       BOTONES Y CONTROLES INTERACTIVOS
+       ========================================================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.55rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--bg-subtle);
+            border-color: var(--text-light);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.82rem;
+        }
+
+        /* ==========================================================================
+       ENCABEZADO DE LA CLASE Y CRONOGRAMA DE 1 HORA
+       ========================================================================== */
+        .hero-header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-top: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-session {
+            display: inline-block;
+            background-color: var(--entidad-bg);
+            color: var(--entidad-text);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .hero-header h1 {
+            font-size: clamp(1.5rem, 3vw, 2.15rem);
+            line-height: 1.2;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-objective {
+            font-size: 1.02rem;
+            color: var(--text-muted);
+            max-width: 820px;
+            margin-bottom: 1.75rem;
+        }
+
+        /* Cronograma de 1 Hora */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .timeline-item {
+            background-color: var(--bg-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .timeline-item:nth-child(2) {
+            border-left-color: var(--success);
+        }
+
+        .timeline-item:nth-child(3) {
+            border-left-color: var(--relacion-border);
+        }
+
+        .timeline-time {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-light);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* ==========================================================================
+       LEYENDA DE COLORES SEMÁNTICOS Y REGLAS DE ORO
+       ========================================================================== */
+        .legend-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem 1.25rem;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.88rem;
+        }
+
+        .legend-label {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.82rem;
+            border: 1px solid transparent;
+        }
+
+        .tag-entidad {
+            background-color: var(--entidad-bg);
+            color: var(--entidad-text);
+            border-color: #93c5fd;
+        }
+
+        .tag-atributo {
+            background-color: var(--atributo-bg);
+            color: var(--atributo-text);
+            border-color: #6ee7b7;
+        }
+
+        .tag-relacion {
+            background-color: var(--relacion-bg);
+            color: var(--relacion-text);
+            border-color: #fcd34d;
+        }
+
+        .tag-cardinalidad {
+            background-color: var(--cardinalidad-bg);
+            color: var(--cardinalidad-text);
+            border-color: #d8b4fe;
+        }
+
+        /* Resaltado dentro del texto del enunciado */
+        .hl-ent {
+            background-color: var(--entidad-bg);
+            color: var(--entidad-text);
+            padding: 0.08rem 0.35rem;
+            border-radius: 4px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--entidad-border);
+        }
+
+        .hl-atr {
+            background-color: var(--atributo-bg);
+            color: var(--atributo-text);
+            padding: 0.08rem 0.35rem;
+            border-radius: 4px;
+            font-weight: 500;
+            border-bottom: 2px solid var(--atributo-border);
+        }
+
+        .hl-rel {
+            background-color: var(--relacion-bg);
+            color: var(--relacion-text);
+            padding: 0.08rem 0.35rem;
+            border-radius: 4px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--relacion-border);
+        }
+
+        .hl-car {
+            background-color: var(--cardinalidad-bg);
+            color: var(--cardinalidad-text);
+            padding: 0.08rem 0.35rem;
+            border-radius: 4px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--cardinalidad-border);
+        }
+
+        /* ==========================================================================
+       SECCIONES Y TARJETAS DE CASOS DE ESTUDIO
+       ========================================================================== */
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            margin-top: 2.5rem;
+        }
+
+        .section-heading h2 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .card-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* Caja de Enunciado */
+        .statement-box {
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 1.35rem 1.5rem;
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+        }
+
+        .statement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .statement-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        /* Modo sin resaltado (cuando el usuario quiere leer el texto limpio) */
+        .statement-box.clean-text .hl-ent,
+        .statement-box.clean-text .hl-atr,
+        .statement-box.clean-text .hl-rel,
+        .statement-box.clean-text .hl-car {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-bottom: none;
+            font-weight: inherit;
+        }
+
+        /* ==========================================================================
+       PASOS DE RESOLUCIÓN (ACORDEÓN / PASOS PROGRESIVOS)
+       ========================================================================== */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .step-block {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background-color: var(--bg-card);
+        }
+
+        .step-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background-color: var(--bg-subtle);
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            transition: background-color 0.15s ease;
+        }
+
+        .step-header:hover {
+            background-color: #e2e8f0;
+        }
+
+        .step-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .step-toggle-icon {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .step-block.collapsed .step-body {
+            display: none;
+        }
+
+        .step-block.collapsed .step-header {
+            border-bottom: none;
+        }
+
+        .step-body {
+            padding: 1.25rem;
+        }
+
+        /* Cuadrícula de análisis dentro de los pasos */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        .entity-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            background-color: #fcfcfd;
+        }
+
+        .entity-card-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--entidad-text);
+            background-color: var(--entidad-bg);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 0.65rem;
+        }
+
+        .attr-list {
+            list-style: none;
+            font-size: 0.9rem;
+        }
+
+        .attr-list li {
+            padding: 0.25rem 0;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .attr-list li:last-child {
+            border-bottom: none;
+        }
+
+        .pk-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            background-color: #fef08a;
+            color: #854d0e;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #fde047;
+        }
+
+        .pk-text {
+            text-decoration: underline;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .fk-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* Tabla de Cardinalidades */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .rel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .rel-table th,
+        .rel-table td {
+            text-align: left;
+            padding: 0.75rem 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .rel-table th {
+            background-color: var(--bg-subtle);
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .card-pill {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.15rem 0.55rem;
+            border-radius: 4px;
+            background-color: var(--cardinalidad-bg);
+            color: var(--cardinalidad-text);
+            border: 1px solid #d8b4fe;
+        }
+
+        /* ==========================================================================
+       CONTENEDOR DE DIAGRAMAS MER VECTORIALES (SVG)
+       ========================================================================== */
+        .svg-wrapper {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .svg-wrapper svg {
+            width: 100%;
+            max-width: 880px;
+            height: auto;
+            display: block;
+        }
+
+        .svg-caption {
+            margin-top: 0.75rem;
+            font-size: 0.82rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* ==========================================================================
+       SECCIÓN DE PRÁCTICA GUIADA (CHECKLIST Y REVELACIÓN DE SOLUCIONES)
+       ========================================================================== */
+        .checklist-box {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.15rem 1.35rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .checklist-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .checklist-items {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 0.5rem 1.25rem;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .checklist-items li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .checklist-items input[type="checkbox"] {
+            margin-top: 0.25rem;
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .solution-drawer {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed var(--border-strong);
+            animation: fadeIn 0.25s ease;
+        }
+
+        .solution-drawer.is-open {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==========================================================================
+       NOTA PEDAGÓGICA / RECORDATORIO PARA ESTUDIANTES CON DIFICULTADES
+       ========================================================================== */
+        .tip-callout {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.25rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #1e3a8a;
+        }
+
+        .tip-callout strong {
+            display: block;
+            margin-bottom: 0.2rem;
+            color: #172554;
+        }
+
+        /* ==========================================================================
+       ESTILOS OPTIMIZADOS PARA IMPRESIÓN (@media print)
+       ========================================================================== */
+        @media print {
+            body {
+                background-color: #ffffff;
+                color: #000000;
+                padding-bottom: 0;
+                font-size: 11pt;
+            }
+
+            .top-toolbar,
+            .no-print {
+                display: none !important;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .hero-header,
+            .card,
+            .step-block {
+                box-shadow: none;
+                border: 1px solid #cbd5e1;
+                break-inside: avoid;
+            }
+
+            .step-block.collapsed .step-body {
+                display: block !important;
+            }
+
+            .svg-wrapper {
+                border: 1px solid #94a3b8;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Ajustes Responsivos Móvil */
+        @media (max-width: 640px) {
+
+            .hero-header,
+            .card {
+                padding: 1.25rem;
+            }
+
+            .statement-box {
+                padding: 1rem;
+                font-size: 0.96rem;
+            }
+
+            .step-header {
+                padding: 0.85rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BARRA SUPERIOR DE HERRAMIENTAS PARA EL AULA -->
+    <header class="top-toolbar no-print">
+        <div class="container toolbar-inner">
+            <div class="course-tag">
+                <span class="course-dot"></span>
+                <span>Bases de Datos I &middot; Taller de Refuerzo</span>
+            </div>
+            <div class="toolbar-actions">
+                <button type="button" class="btn btn-sm" id="btnToggleMode" onclick="toggleGlobalView()">
+                    Vista: Estudiante (Ocultar Soluciones)
+                </button>
+                <button type="button" class="btn btn-sm" onclick="window.print()">
+                    Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- 1. ENCABEZADO DE LA CLASE Y CRONOGRAMA DE 1 HORA -->
+        <section class="hero-header">
+            <span class="badge-session">Sesión Práctica &middot; Duración: 60 Minutos</span>
+            <h1>Modelado Entidad-Relación (MER): Del Enunciado al Diagrama</h1>
+            <p class="hero-objective">
+                <strong>Objetivo de la clase:</strong> Desarrollar una metodología sistemática de lectura analítica para
+                extraer entidades, atributos, claves primarias, relaciones y cardinalidades a partir de requerimientos
+                en lenguaje natural, transformándolos en un diagrama MER válido y sin ambigüedades.
+            </p>
+
+            <div class="timeline-grid">
+                <div class="timeline-item">
+                    <span class="timeline-time">Bloque 1 &middot; 15 Minutos</span>
+                    <div class="timeline-title">1. Análisis Guiado (Caso Modelo)</div>
+                    <p class="timeline-desc">Lectura por colores de un caso real junto al docente. Identificación paso a
+                        paso de sustantivos, verbos y reglas de negocio.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-time">Bloque 2 &middot; 35 Minutos</span>
+                    <div class="timeline-title">2. Práctica Activa (2 Problemas)</div>
+                    <p class="timeline-desc">Resolución individual o en parejas de dos enunciados progresivos (15 min
+                        Problema A + 20 min Problema B) usando la lista de verificación.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-time">Bloque 3 &middot; 10 Minutos</span>
+                    <div class="timeline-title">3. Puesta en Común y Cierre</div>
+                    <p class="timeline-desc">Proyección de las soluciones oficiales y diagramas MER vectorizados.
+                        Corrección de errores comunes en cardinalidades N:M.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEYENDA SEMÁNTICA DE EXTRACCIÓN -->
+        <div class="legend-bar" aria-label="Código de colores para análisis de texto">
+            <span class="legend-label">Código de Lectura:</span>
+            <span class="tag-pill tag-entidad">Entidades (Sustantivos principales)</span>
+            <span class="tag-pill tag-atributo">Atributos (Datos / Propiedades)</span>
+            <span class="tag-pill tag-relacion">Relaciones (Verbos de acción)</span>
+            <span class="tag-pill tag-cardinalidad">Cardinalidades (1:1, 1:N, N:M)</span>
+        </div>
+
+        <!-- ========================================================================
+         SECCIÓN 1: CASO MODELO RESUELTO PASO A PASO
+         ======================================================================== -->
+        <div class="section-heading">
+            <h2>Parte I: Ejemplo Guiado Resuelto Paso a Paso</h2>
+        </div>
+
+        <article class="card" id="caso-modelo">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Caso Modelo: Sistema de Gestión de Clínica Médica</h3>
+                    <p class="card-subtitle">Análisis completo desde la lectura del requerimiento hasta el modelo
+                        conceptual.</p>
+                </div>
+                <div class="no-print" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-sm" onclick="toggleHighlight('stmt-caso-0', this)">
+                        Ocultar Resaltado
+                    </button>
+                    <button type="button" class="btn btn-sm" onclick="toggleAllSteps('caso-0-steps')">
+                        Expandir / Contraer Pasos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enunciado Analizado -->
+            <div class="statement-box" id="stmt-caso-0">
+                <div class="statement-header">
+                    <span class="statement-label">Enunciado del Problema</span>
+                </div>
+                <p>
+                    Una clínica médica desea diseñar una base de datos para controlar sus consultas. De cada <span
+                        class="hl-ent">Paciente</span> se registra su <span class="hl-atr">cédula de identidad</span>,
+                    <span class="hl-atr">nombre completo</span>, <span class="hl-atr">fecha de nacimiento</span> y <span
+                        class="hl-atr">teléfono</span>. Por otro lado, la clínica cuenta con varios <span
+                        class="hl-ent">Médicos</span>, de quienes interesa almacenar su <span class="hl-atr">código de
+                        colegiado</span>, <span class="hl-atr">nombre</span> y <span class="hl-atr">especialidad</span>.
+                    <br><br>
+                    Un <span class="hl-ent">Paciente</span> <span class="hl-rel">agenda</span> <span
+                        class="hl-car">múltiples</span> <span class="hl-ent">Citas Médicas</span> a lo largo del tiempo,
+                    pero cada <span class="hl-ent">Cita</span> <span class="hl-rel">pertenece</span> a <span
+                        class="hl-car">un único</span> <span class="hl-ent">Paciente</span> y es <span
+                        class="hl-rel">atendida</span> por <span class="hl-car">un solo</span> <span
+                        class="hl-ent">Médico</span> (aunque un <span class="hl-ent">Médico</span> <span
+                        class="hl-rel">atiende</span> <span class="hl-car">muchas</span> <span
+                        class="hl-ent">Citas</span>). De cada <span class="hl-ent">Cita</span> se guarda su <span
+                        class="hl-atr">número de cita</span>, <span class="hl-atr">fecha</span>, <span
+                        class="hl-atr">hora</span> y <span class="hl-atr">diagnóstico</span>. Finalmente, en una <span
+                        class="hl-ent">Cita</span> se pueden <span class="hl-rel">recetar</span> <span
+                        class="hl-car">varios</span> <span class="hl-ent">Medicamentos</span>, y un mismo <span
+                        class="hl-ent">Medicamento</span> puede ser <span class="hl-rel">recetado</span> en <span
+                        class="hl-car">distintas</span> <span class="hl-ent">Citas</span> (indicando en cada caso la
+                    <span class="hl-atr">dosis</span>). De cada <span class="hl-ent">Medicamento</span> se conoce su
+                    <span class="hl-atr">código</span>, <span class="hl-atr">nombre comercial</span> y <span
+                        class="hl-atr">presentación</span>.
+                </p>
+            </div>
+
+            <!-- Contenedor de los 4 Pasos -->
+            <div class="steps-container" id="caso-0-steps">
+
+                <!-- PASO 1 -->
+                <div class="step-block">
+                    <button type="button" class="step-header" onclick="toggleStep(this)">
+                        <div class="step-title-group">
+                            <span class="step-number">1</span>
+                            <span class="step-title">Identificación de Entidades (Sustantivos Clave)</span>
+                        </div>
+                        <span class="step-toggle-icon">Ocultar ▲</span>
+                    </button>
+                    <div class="step-body">
+                        <p style="margin-bottom: 0.85rem; color: var(--text-muted);">
+                            Buscamos objetos físicos o conceptuales del mundo real sobre los cuales necesitamos guardar
+                            información propia. Descartamos la palabra <em>"Clínica"</em> porque representa el sistema
+                            completo (solo hay una clínica).
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+                            <span class="tag-pill tag-entidad">1. PACIENTE</span>
+                            <span class="tag-pill tag-entidad">2. MÉDICO</span>
+                            <span class="tag-pill tag-entidad">3. CITA_MÉDICA</span>
+                            <span class="tag-pill tag-entidad">4. MEDICAMENTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 2 -->
+                <div class="step-block">
+                    <button type="button" class="step-header" onclick="toggleStep(this)">
+                        <div class="step-title-group">
+                            <span class="step-number">2</span>
+                            <span class="step-title">Atributos y Selección de Claves Primarias (PK)</span>
+                        </div>
+                        <span class="step-toggle-icon">Ocultar ▲</span>
+                    </button>
+                    <div class="step-body">
+                        <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                            Asignamos a cada entidad sus propiedades y elegimos un atributo identificador único e
+                            irrepetible como <strong>Clave Primaria (PK)</strong>, que representaremos subrayado.
+                        </p>
+                        <div class="analysis-grid">
+                            <div class="entity-card">
+                                <div class="entity-card-title">PACIENTE</div>
+                                <ul class="attr-list">
+                                    <li><span class="pk-text">cedula</span> <span class="pk-badge">PK</span></li>
+                                    <li><span>nombre_completo</span></li>
+                                    <li><span>fecha_nacimiento</span></li>
+                                    <li><span>telefono</span></li>
+                                </ul>
+                            </div>
+                            <div class="entity-card">
+                                <div class="entity-card-title">MÉDICO</div>
+                                <ul class="attr-list">
+                                    <li><span class="pk-text">cod_colegiado</span> <span class="pk-badge">PK</span></li>
+                                    <li><span>nombre</span></li>
+                                    <li><span>especialidad</span></li>
+                                </ul>
+                            </div>
+                            <div class="entity-card">
+                                <div class="entity-card-title">CITA_MÉDICA</div>
+                                <ul class="attr-list">
+                                    <li><span class="pk-text">num_cita</span> <span class="pk-badge">PK</span></li>
+                                    <li><span>fecha</span></li>
+                                    <li><span>hora</span></li>
+                                    <li><span>diagnostico</span></li>
+                                </ul>
+                            </div>
+                            <div class="entity-card">
+                                <div class="entity-card-title">MEDICAMENTO</div>
+                                <ul class="attr-list">
+                                    <li><span class="pk-text">cod_medicamento</span> <span class="pk-badge">PK</span>
+                                    </li>
+                                    <li><span>nombre_comercial</span></li>
+                                    <li><span>presentacion</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 3 -->
+                <div class="step-block">
+                    <button type="button" class="step-header" onclick="toggleStep(this)">
+                        <div class="step-title-group">
+                            <span class="step-number">3</span>
+                            <span class="step-title">Relaciones y Análisis de Cardinalidades (1:1, 1:N, N:M)</span>
+                        </div>
+                        <span class="step-toggle-icon">Ocultar ▲</span>
+                    </button>
+                    <div class="step-body">
+                        <div class="table-responsive">
+                            <table class="rel-table">
+                                <thead>
+                                    <tr>
+                                        <th>Entidades Involucradas</th>
+                                        <th>Relación (Verbo)</th>
+                                        <th>Cardinalidad</th>
+                                        <th>Justificación (Regla de Negocio)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>PACIENTE</strong> &mdash; <strong>CITA_MÉDICA</strong></td>
+                                        <td><span class="tag-pill tag-relacion">Agenda</span></td>
+                                        <td><span class="card-pill">1 : N</span></td>
+                                        <td>Un paciente puede agendar <strong>muchas (N)</strong> citas, pero cada cita
+                                            pertenece a <strong>un solo (1)</strong> paciente.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MÉDICO</strong> &mdash; <strong>CITA_MÉDICA</strong></td>
+                                        <td><span class="tag-pill tag-relacion">Atiende</span></td>
+                                        <td><span class="card-pill">1 : N</span></td>
+                                        <td>Un médico atiende <strong>muchas (N)</strong> citas, pero cada cita es
+                                            atendida por <strong>un único (1)</strong> médico.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CITA_MÉDICA</strong> &mdash; <strong>MEDICAMENTO</strong></td>
+                                        <td><span class="tag-pill tag-relacion">Receta</span></td>
+                                        <td><span class="card-pill">N : M</span></td>
+                                        <td>En una cita se recetan <strong>varios (M)</strong> medicamentos y un
+                                            medicamento puede recetarse en <strong>muchas (N)</strong> citas. <em>Nota:
+                                                La "dosis" es un atributo propio de la relación.</em></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 4 -->
+                <div class="step-block">
+                    <button type="button" class="step-header" onclick="toggleStep(this)">
+                        <div class="step-title-group">
+                            <span class="step-number">4</span>
+                            <span class="step-title">Diagrama Entidad-Relación (MER) Vectorizado</span>
+                        </div>
+                        <span class="step-toggle-icon">Ocultar ▲</span>
+                    </button>
+                    <div class="step-body">
+                        <div class="svg-wrapper">
+                            <!-- DIAGRAMA MER VECTORIZADO CASO 0: CLÍNICA MÉDICA -->
+                            <svg viewBox="0 0 880 510" xmlns="http://www.w3.org/2000/svg" role="img"
+                                aria-label="Diagrama MER Clínica Médica">
+                                <defs>
+                                    <filter id="shadow0" x="-5%" y="-5%" width="110%" height="110%">
+                                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a"
+                                            flood-opacity="0.08" />
+                                    </filter>
+                                </defs>
+
+                                <!-- Fondo sutil de cuadrícula académica -->
+                                <rect width="880" height="510" fill="#ffffff" rx="8" />
+
+                                <!-- LÍNEAS DE CONEXIÓN ENTRE ENTIDADES Y RELACIONES -->
+                                <!-- Paciente (150, 120) -> Rombo Agenda (340, 120) -->
+                                <line x1="230" y1="120" x2="290" y2="120" stroke="#334155" stroke-width="2" />
+                                <!-- Rombo Agenda (340, 120) -> Cita Médica (540, 120) -->
+                                <line x1="390" y1="120" x2="450" y2="120" stroke="#334155" stroke-width="2" />
+
+                                <!-- Cita Médica (540, 195) -> Rombo Atiende (540, 275) -->
+                                <line x1="540" y1="195" x2="540" y2="235" stroke="#334155" stroke-width="2" />
+                                <!-- Rombo Atiende (540, 275) -> Médico (540, 395) -->
+                                <line x1="540" y1="315" x2="540" y2="355" stroke="#334155" stroke-width="2" />
+
+                                <!-- Cita Médica (630, 120) -> Rombo Receta (715, 120) -->
+                                <line x1="630" y1="120" x2="665" y2="120" stroke="#334155" stroke-width="2" />
+                                <!-- Rombo Receta (715, 120) -> Medicamento (715, 395) -->
+                                <line x1="715" y1="160" x2="715" y2="355" stroke="#334155" stroke-width="2" />
+
+                                <!-- Línea del atributo de relación 'dosis' hacia Rombo Receta -->
+                                <line x1="765" y1="120" x2="800" y2="75" stroke="#059669" stroke-width="1.5"
+                                    stroke-dasharray="4,3" />
+
+                                <!-- ENTIDAD 1: PACIENTE -->
+                                <g filter="url(#shadow0)">
+                                    <rect x="40" y="45" width="190" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                                        stroke-width="2" />
+                                    <rect x="40" y="45" width="190" height="34" rx="6" fill="#2563eb" />
+                                    <rect x="40" y="70" width="190" height="9" fill="#2563eb" />
+                                    <text x="135" y="67" font-family="sans-serif" font-size="13" font-weight="bold"
+                                        fill="#ffffff" text-anchor="middle">PACIENTE</text>
+                                    <text x="54" y="100" font-family="monospace" font-size="12" font-weight="bold"
+                                        fill="#0f172a" text-decoration="underline">PK: cedula</text>
+                                    <text x="54" y="122" font-family="sans-serif" font-size="12"
+                                        fill="#334155">nombre_completo</text>
+                                    <text x="54" y="144" font-family="sans-serif" font-size="12"
+                                        fill="#334155">fecha_nacimiento</text>
+                                    <text x="54" y="166" font-family="sans-serif" font-size="12"
+                                        fill="#334155">telefono</text>
+                                </g>
+
+                                <!-- RELACIÓN 1: AGENDA (1:N) -->
+                                <polygon points="340,80 390,120 340,160 290,120" fill="#fef3c7" stroke="#d97706"
+                                    stroke-width="2" />
+                                <text x="340" y="124" font-family="sans-serif" font-size="12" font-weight="bold"
+                                    fill="#92400e" text-anchor="middle">Agenda</text>
+                                <!-- Cardinalidades -->
+                                <rect x="242" y="96" width="22" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                                    stroke-width="1" />
+                                <text x="253" y="110" font-family="monospace" font-size="12" font-weight="bold"
+                                    fill="#5b21b6" text-anchor="middle">1</text>
+                                <rect x="412" y="96" width="22" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                                    stroke-width="1" />
+                                <text x="423" y="110" font-family="monospace" font-size="12" font-weight="bold"
+                                    fill="#5b21b6" text-anchor="middle">N</text>
+
+                                <!-- ENTIDAD 2: CITA_MÉDICA -->
+                                <g filter="url(#shadow0)">
+                                    <rect x="450" y="45" width="180" height="150" rx="6" fill="#eff6ff" stroke="#2563eb"
+                                        stroke-width="2" />
+                                    <rect x="450" y="45" width="180" height="34" rx="6" fill="#2563eb" />
+                                    <rect x="450" y="70" width="180" height="9" fill="#2563eb" />
+                                    <text x="540" y="67" font-family="sans-serif" font-size="13" font-weight="bold"
+                                        fill="#ffffff" text-anchor="middle">CITA_MÉDICA</text>
+                                    <text x="464" y="100" font-family="monospace" font-size="12" font-weight="bold"
+                                        fill="#0f172a" text-decoration="underline">PK: num_cita</text>
+                                    <text x="464" y="122" font-family="sans-serif" font-size="12"
+                                        fill="#334155">fecha</text>
+                                    <text x="464" y="144" font-family="sans-serif" font-size="12"
+                                        fill="#334155">hora</text>
+                                    <text x="464" y="166" font-family="sans-serif" font-size="12"
+                                        fill="#334155">diagnostico</text>
+                                </g>
+
+                                <!-- RELACIÓN 2: ATIENDE (1:N) -->
+                                <polygon points="540,235 590,275 540,315 490,275" fill="#fef3c7" stroke="#d97706"
+                                    stroke-width="2" />
+                                <text x="540" y="279" font-family="sans-serif" font-size="12" font-weight="bold"
+                                    fill="#92400e" text-anchor="middle">Atiende</text>
+                                <!-- Cardinalidades -->
+                                <rect x="548" y="204" width="22" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                                    stroke-width="1" />
+                                <text x="559" y="218" font-family="monospace" font-size="12" font-weight="bold"
+                                    fill="#5b21b6" text-anchor="middle">N</text>
+                                <rect x="548" y="324" width="22" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                                    stroke-width="1" />
+                                <text x="559" y="338" font-family="monospace" font-size="12" font-weight="bold"
+                                    fill="#5b21b6" text-anchor="middle">1</text>
+
+                                <!-- ENTIDAD 3: MÉDICO -->
+                                <g filter="url(#shadow0)">
+                                    <rect x="445" y="355" width="190" height="125" rx="6" fill="#eff6ff"
+                                        stroke="#2563eb" stroke-width="2" />
+                                    <rect x="445" y="355" width="190" height="34" rx="6" fill="#2563eb" />
+                                    <rect x="445" y="380" width="190" height="9" fill="#2563eb" />
+                                    <text x="540" y="377" font-family="sans-serif" font-size="13" font-weight="bold"
+                                        fill="#ffffff" text-anchor="middle">MÉDICO</text>
+                                    <text x="459" y="410" font-family="monospace" font-size="12" font-weight="bold"
+                                        fill="#0f172a" text-decoration="underline">PK: cod_colegiado</text>
+                                    <text x="459" y="432" font-family="sans-serif" font-size="12"
+                                        fill="#334155">nombre</text>
+                                    <text x="459" y="454" font-family="sans-serif" font-size="12"
+                                        fill="#334155">especialidad</text>
+                                </g>
+
+                                <!-- RELACIÓN 3: RECETA (N:M) -->
+                                <polygon points="715,80 765,120 715,160 665,120" fill="#fef3c7" stroke="#d97706"
+                                    stroke-width="2" />
+                                <text x="715" y="124" font-family="sans-serif" font-size="12" font-weight="bold"
+                                    fill="#92400e" text-anchor="middle">Receta</text>
+                                <!-- Atributo de relación: dosis -->
+                                <ellipse cx="818" cy="62" rx="42" ry="20" fill="#d1fae5" stroke="#059669"
+                                    stroke-width="1.5" />
+                                <text x="818" y="66" font-family="sans-serif" font-size="12" font-weight="bold"
+                                    fill="#065f46" text-anchor="middle">dosis</text>
+
+                                <!-- Cardinalidades Receta (N:M) -->
+                                <rect x="636" y="94" width="22" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                                    stroke-width="1" />
+                                <text x="647" y="108" font-family="monospace" font-size="12" font-weight="bold"
+                                    fill="#5b21b6" text-anchor="middle">N</text>
+                                <rect x="724" y="324" width="22" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                                    stroke-width="1" />
+                                <text x="735" y="338" font-family="monospace" font-size="12" font-weight="bold"
+                                    fill="#5b21b6" text-anchor="middle">M</text>
+
+                                <!-- ENTIDAD 4: MEDICAMENTO -->
+                                <g filter="url(#shadow0)">
+                                    <rect x="665" y="355" width="195" height="125" rx="6" fill="#eff6ff"
+                                        stroke="#2563eb" stroke-width="2" />
+                                    <rect x="665" y="355" width="195" height="34" rx="6" fill="#2563eb" />
+                                    <rect x="665" y="380" width="195" height="9" fill="#2563eb" />
+                                    <text x="762" y="377" font-family="sans-serif" font-size="13" font-weight="bold"
+                                        fill="#ffffff" text-anchor="middle">MEDICAMENTO</text>
+                                    <text x="679" y="410" font-family="monospace" font-size="12" font-weight="bold"
+                                        fill="#0f172a" text-decoration="underline">PK: cod_medicamento</text>
+                                    <text x="679" y="432" font-family="sans-serif" font-size="12"
+                                        fill="#334155">nombre_comercial</text>
+                                    <text x="679" y="454" font-family="sans-serif" font-size="12"
+                                        fill="#334155">presentacion</text>
+                                </g>
+
+                                <!-- Leyenda interna dentro del lienzo SVG -->
+                                <g transform="translate(40, 365)">
+                                    <rect x="0" y="0" width="355" height="115" rx="6" fill="#f8fafc" stroke="#cbd5e1"
+                                        stroke-width="1" />
+                                    <text x="14" y="22" font-family="sans-serif" font-size="11" font-weight="bold"
+                                        fill="#334155">NOTACIÓN DEL DIAGRAMA MER:</text>
+                                    <rect x="14" y="34" width="18" height="12" rx="2" fill="#2563eb" />
+                                    <text x="40" y="44" font-family="sans-serif" font-size="11"
+                                        fill="#475569">Rectángulo: Entidad fuerte con PK subrayada</text>
+                                    <polygon points="23,55 32,62 23,69 14,62" fill="#fef3c7" stroke="#d97706"
+                                        stroke-width="1.5" />
+                                    <text x="40" y="66" font-family="sans-serif" font-size="11" fill="#475569">Rombo:
+                                        Relación (verbo) entre entidades</text>
+                                    <ellipse cx="23" cy="83" rx="10" ry="6" fill="#d1fae5" stroke="#059669"
+                                        stroke-width="1.5" />
+                                    <text x="40" y="87" font-family="sans-serif" font-size="11" fill="#475569">Óvalo:
+                                        Atributo propio de una relación N:M</text>
+                                    <text x="14" y="105" font-family="monospace" font-size="11" font-weight="bold"
+                                        fill="#5b21b6">[1], [N], [M]: Cardinalidad máxima de participación</text>
+                                </g>
+                            </svg>
+                            <span class="svg-caption">Figura 1. Diagrama Entidad-Relación (MER) del Caso Modelo: Clínica
+                                Médica.</span>
+                        </div>
+
+                        <div class="tip-callout">
+                            <strong>Regla de Oro para Estudiantes:</strong>
+                            Cuando encuentres una relación Muchos a Muchos (<strong>N:M</strong>) como <em>Cita &mdash;
+                                Receta &mdash; Medicamento</em>, verifica siempre si existe un dato que dependa de ambos
+                            a la vez (en este caso, la <em>dosis</em> no pertenece solo al medicamento ni solo a la
+                            cita, sino a la combinación de ambos).
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </article>
+
+        <!-- ========================================================================
+         SECCIÓN 2: PRÁCTICA GUIADA DE 1 HORA (2 PROBLEMAS PROGRESIVOS)
+         ======================================================================== -->
+        <div class="section-heading">
+            <h2>Parte II: Ejercicios de Práctica en Clase (35 Minutos)</h2>
+        </div>
+
+        <!-- PROBLEMA A: NIVEL BÁSICO - INTERMEDIO -->
+        <article class="card" id="problema-a">
+            <div class="card-header">
+                <div>
+                    <span class="badge-session"
+                        style="background-color: var(--atributo-bg); color: var(--atributo-text); margin-bottom: 0.4rem;">Problema
+                        A &middot; Tiempo sugerido: 15 min</span>
+                    <h3 class="card-title">Plataforma de Cursos Online (Academia Digital)</h3>
+                    <p class="card-subtitle">Enfoque: Identificación de entidades independientes, relaciones 1:N y
+                        relación N:M con atributos.</p>
+                </div>
+            </div>
+
+            <!-- Enunciado limpio para el estudiante -->
+            <div class="statement-box" id="stmt-prob-a">
+                <div class="statement-header">
+                    <span class="statement-label">Enunciado para el Estudiante</span>
+                </div>
+                <p>
+                    Una academia educativa desea crear una base de datos para gestionar sus cursos virtuales. De cada
+                    <strong>Instructor</strong> se almacena su cédula, nombre completo, correo electrónico y
+                    especialidad profesional. La academia ofrece diversos <strong>Cursos</strong>, de los cuales se
+                    registra el código del curso, título, nivel de dificultad y duración en horas.
+                    <br><br>
+                    Un <strong>Instructor</strong> puede impartir varios <strong>Cursos</strong>, pero cada
+                    <strong>Curso</strong> es dictado por un único <strong>Instructor</strong> responsable. Por otra
+                    parte, los <strong>Estudiantes</strong> (de quienes se guarda su número de matrícula, nombre,
+                    apellido y país) pueden inscribirse en múltiples <strong>Cursos</strong> distintos, y un mismo
+                    <strong>Curso</strong> puede tener inscritos a muchos <strong>Estudiantes</strong>. Cada vez que un
+                    estudiante se inscribe en un curso, el sistema debe registrar la fecha de inscripción y la
+                    calificación final obtenida.
+                </p>
+            </div>
+
+            <!-- Checklist interactivo para guiar al estudiante -->
+            <div class="checklist-box">
+                <div class="checklist-title">
+                    <span>Lista de Verificación antes de ver la solución:</span>
+                </div>
+                <ul class="checklist-items">
+                    <li><label><input type="checkbox"> Subrayé los 3 sustantivos principales (Entidades).</label></li>
+                    <li><label><input type="checkbox"> Definí una Clave Primaria (PK) única para cada entidad.</label>
+                    </li>
+                    <li><label><input type="checkbox"> Identifiqué la relación 1:N entre Instructor y Curso.</label>
+                    </li>
+                    <li><label><input type="checkbox"> Identifiqué la relación N:M entre Estudiante y Curso y ubiqué sus
+                            2 atributos propios.</label></li>
+                </ul>
+            </div>
+
+            <!-- Botón para revelar solución -->
+            <div class="no-print">
+                <button type="button" class="btn btn-accent" id="btn-sol-a"
+                    onclick="toggleSolution('sol-a', 'btn-sol-a')">
+                    Mostrar Solución y Diagrama MER
+                </button>
+            </div>
+
+            <!-- Cajón de Solución Oculto por Defecto -->
+            <div class="solution-drawer" id="sol-a">
+                <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent);">
+                    Solución Oficial &mdash; Problema A (Academia Digital)
+                </h4>
+
+                <!-- Enunciado con etiquetas de color -->
+                <div class="statement-box" style="margin-bottom: 1.25rem;">
+                    <div class="statement-header">
+                        <span class="statement-label">Lectura Analítica Resaltada</span>
+                    </div>
+                    <p>
+                        De cada <span class="hl-ent">Instructor</span> se almacena su <span
+                            class="hl-atr">cédula</span>, <span class="hl-atr">nombre completo</span>, <span
+                            class="hl-atr">correo electrónico</span> y <span class="hl-atr">especialidad
+                            profesional</span>. La academia ofrece diversos <span class="hl-ent">Cursos</span>, de los
+                        cuales se registra el <span class="hl-atr">código del curso</span>, <span
+                            class="hl-atr">título</span>, <span class="hl-atr">nivel de dificultad</span> y <span
+                            class="hl-atr">duración en horas</span>. Un <span class="hl-ent">Instructor</span> puede
+                        <span class="hl-rel">impartir</span> <span class="hl-car">varios</span> <span
+                            class="hl-ent">Cursos</span>, pero cada <span class="hl-ent">Curso</span> es <span
+                            class="hl-rel">dictado</span> por <span class="hl-car">un único</span> <span
+                            class="hl-ent">Instructor</span>. Los <span class="hl-ent">Estudiantes</span> (<span
+                            class="hl-atr">número de matrícula</span>, <span class="hl-atr">nombre</span>, <span
+                            class="hl-atr">apellido</span> y <span class="hl-atr">país</span>) pueden <span
+                            class="hl-rel">inscribirse</span> en <span class="hl-car">múltiples</span> <span
+                            class="hl-ent">Cursos</span>, y un <span class="hl-ent">Curso</span> tiene <span
+                            class="hl-car">muchos</span> <span class="hl-ent">Estudiantes</span> (registrando <span
+                            class="hl-atr">fecha de inscripción</span> y <span class="hl-atr">calificación
+                            final</span>).
+                    </p>
+                </div>
+
+                <!-- Resumen de Entidades y Relaciones -->
+                <div class="analysis-grid" style="margin-bottom: 1.5rem;">
+                    <div class="entity-card">
+                        <div class="entity-card-title">INSTRUCTOR</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">cedula_instructor</span> <span class="pk-badge">PK</span></li>
+                            <li><span>nombre_completo</span></li>
+                            <li><span>correo</span></li>
+                            <li><span>especialidad</span></li>
+                        </ul>
+                    </div>
+                    <div class="entity-card">
+                        <div class="entity-card-title">CURSO</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">cod_curso</span> <span class="pk-badge">PK</span></li>
+                            <li><span>titulo</span></li>
+                            <li><span>nivel</span></li>
+                            <li><span>duracion_horas</span></li>
+                        </ul>
+                    </div>
+                    <div class="entity-card">
+                        <div class="entity-card-title">ESTUDIANTE</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">num_matricula</span> <span class="pk-badge">PK</span></li>
+                            <li><span>nombre</span></li>
+                            <li><span>apellido</span></li>
+                            <li><span>pais</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="margin-bottom: 1.5rem;">
+                    <table class="rel-table">
+                        <thead>
+                            <tr>
+                                <th>Relación</th>
+                                <th>Entidades</th>
+                                <th>Cardinalidad</th>
+                                <th>Explicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag-pill tag-relacion">Imparte</span></td>
+                                <td>INSTRUCTOR &mdash; CURSO</td>
+                                <td><span class="card-pill">1 : N</span></td>
+                                <td>1 instructor imparte muchos (N) cursos; 1 curso tiene 1 solo instructor responsable.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag-pill tag-relacion">Inscribe</span></td>
+                                <td>ESTUDIANTE &mdash; CURSO</td>
+                                <td><span class="card-pill">N : M</span></td>
+                                <td>Muchos estudiantes se inscriben en muchos cursos. Los atributos
+                                    <strong>fecha_inscripcion</strong> y <strong>calificacion_final</strong> pertenecen
+                                    a la relación.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SVG MER PROBLEMA A -->
+                <div class="svg-wrapper">
+                    <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img"
+                        aria-label="Diagrama MER Academia Digital">
+                        <rect width="880" height="340" fill="#ffffff" rx="8" />
+
+                        <!-- Líneas de conexión -->
+                        <!-- Instructor (215, 165) -> Imparte (285, 165) -->
+                        <line x1="215" y1="165" x2="245" y2="165" stroke="#334155" stroke-width="2" />
+                        <!-- Imparte (335, 165) -> Curso (375, 165) -->
+                        <line x1="335" y1="165" x2="375" y2="165" stroke="#334155" stroke-width="2" />
+
+                        <!-- Curso (555, 165) -> Inscribe (605, 165) -->
+                        <line x1="555" y1="165" x2="595" y2="165" stroke="#334155" stroke-width="2" />
+                        <!-- Inscribe (685, 165) -> Estudiante (715, 165) -->
+                        <line x1="685" y1="165" x2="715" y2="165" stroke="#334155" stroke-width="2" />
+
+                        <!-- Líneas hacia atributos de relación Inscribe (640, 165) -->
+                        <line x1="640" y1="125" x2="595" y2="68" stroke="#059669" stroke-width="1.5"
+                            stroke-dasharray="4,3" />
+                        <line x1="640" y1="205" x2="640" y2="258" stroke="#059669" stroke-width="1.5"
+                            stroke-dasharray="4,3" />
+
+                        <!-- ENTIDAD: INSTRUCTOR -->
+                        <rect x="25" y="90" width="190" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="25" y="90" width="190" height="34" rx="6" fill="#2563eb" />
+                        <rect x="25" y="115" width="190" height="9" fill="#2563eb" />
+                        <text x="120" y="112" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">INSTRUCTOR</text>
+                        <text x="38" y="145" font-family="monospace" font-size="11.5" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: cedula_instructor</text>
+                        <text x="38" y="167" font-family="sans-serif" font-size="12"
+                            fill="#334155">nombre_completo</text>
+                        <text x="38" y="189" font-family="sans-serif" font-size="12" fill="#334155">correo</text>
+                        <text x="38" y="211" font-family="sans-serif" font-size="12" fill="#334155">especialidad</text>
+
+                        <!-- RELACIÓN: IMPARTE -->
+                        <polygon points="290,125 335,165 290,205 245,165" fill="#fef3c7" stroke="#d97706"
+                            stroke-width="2" />
+                        <text x="290" y="169" font-family="sans-serif" font-size="12" font-weight="bold" fill="#92400e"
+                            text-anchor="middle">Imparte</text>
+                        <rect x="220" y="138" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="230" y="152" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">1</text>
+                        <rect x="344" y="138" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="354" y="152" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">N</text>
+
+                        <!-- ENTIDAD: CURSO -->
+                        <rect x="375" y="90" width="180" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="375" y="90" width="180" height="34" rx="6" fill="#2563eb" />
+                        <rect x="375" y="115" width="180" height="9" fill="#2563eb" />
+                        <text x="465" y="112" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">CURSO</text>
+                        <text x="388" y="145" font-family="monospace" font-size="12" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: cod_curso</text>
+                        <text x="388" y="167" font-family="sans-serif" font-size="12" fill="#334155">titulo</text>
+                        <text x="388" y="189" font-family="sans-serif" font-size="12" fill="#334155">nivel</text>
+                        <text x="388" y="211" font-family="sans-serif" font-size="12"
+                            fill="#334155">duracion_horas</text>
+
+                        <!-- RELACIÓN: INSCRIBE (N:M) -->
+                        <polygon points="640,125 685,165 640,205 595,165" fill="#fef3c7" stroke="#d97706"
+                            stroke-width="2" />
+                        <text x="640" y="169" font-family="sans-serif" font-size="12" font-weight="bold" fill="#92400e"
+                            text-anchor="middle">Inscribe</text>
+                        <rect x="564" y="138" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="574" y="152" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">M</text>
+                        <rect x="690" y="138" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="700" y="152" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">N</text>
+
+                        <!-- Atributos de la relación Inscribe -->
+                        <ellipse cx="590" cy="48" rx="64" ry="20" fill="#d1fae5" stroke="#059669" stroke-width="1.5" />
+                        <text x="590" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#065f46"
+                            text-anchor="middle">fecha_inscripcion</text>
+
+                        <ellipse cx="640" cy="278" rx="64" ry="20" fill="#d1fae5" stroke="#059669" stroke-width="1.5" />
+                        <text x="640" y="282" font-family="sans-serif" font-size="11" font-weight="bold" fill="#065f46"
+                            text-anchor="middle">calificacion_final</text>
+
+                        <!-- ENTIDAD: ESTUDIANTE -->
+                        <rect x="715" y="90" width="145" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="715" y="90" width="145" height="34" rx="6" fill="#2563eb" />
+                        <rect x="715" y="115" width="145" height="9" fill="#2563eb" />
+                        <text x="787" y="112" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">ESTUDIANTE</text>
+                        <text x="725" y="145" font-family="monospace" font-size="11" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: num_matricula</text>
+                        <text x="725" y="167" font-family="sans-serif" font-size="12" fill="#334155">nombre</text>
+                        <text x="725" y="189" font-family="sans-serif" font-size="12" fill="#334155">apellido</text>
+                        <text x="725" y="211" font-family="sans-serif" font-size="12" fill="#334155">pais</text>
+                    </svg>
+                    <span class="svg-caption">Figura 2. Diagrama MER resuelto del Problema A: Plataforma de Cursos
+                        Online.</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- PROBLEMA B: NIVEL INTERMEDIO - COMPLETO -->
+        <article class="card" id="problema-b">
+            <div class="card-header">
+                <div>
+                    <span class="badge-session"
+                        style="background-color: var(--relacion-bg); color: var(--relacion-text); margin-bottom: 0.4rem;">Problema
+                        B &middot; Tiempo sugerido: 20 min</span>
+                    <h3 class="card-title">Sistema de Gestión de Taller Mecánico Automotriz</h3>
+                    <p class="card-subtitle">Enfoque: Cadena de entidades (Cliente &rarr; Vehículo &rarr; Orden de
+                        Servicio) y relación N:M con repuestos.</p>
+                </div>
+            </div>
+
+            <!-- Enunciado limpio para el estudiante -->
+            <div class="statement-box" id="stmt-prob-b">
+                <div class="statement-header">
+                    <span class="statement-label">Enunciado para el Estudiante</span>
+                </div>
+                <p>
+                    Un taller mecánico necesita informatizar el control de sus reparaciones. En el taller se registran
+                    los <strong>Clientes</strong> con su documento de identidad, nombre completo, teléfono y dirección.
+                    Cada <strong>Cliente</strong> puede ser propietario de uno o varios <strong>Vehículos</strong>, pero
+                    cada <strong>Vehículo</strong> pertenece a un único <strong>Cliente</strong>. De cada
+                    <strong>Vehículo</strong> se guarda su número de placa (matrícula), marca, modelo y año.
+                    <br><br>
+                    Cuando un vehículo ingresa al taller, se abre una <strong>Orden de Servicio</strong>, identificada
+                    por un número de orden, fecha de ingreso, falla reportada y estado (en proceso o finalizado). Un
+                    <strong>Vehículo</strong> puede tener múltiples <strong>Órdenes de Servicio</strong> a lo largo de
+                    su vida útil, pero cada <strong>Orden</strong> corresponde a un único <strong>Vehículo</strong>.
+                    Además, cada <strong>Orden de Servicio</strong> es asignada a un único <strong>Mecánico</strong>
+                    jefe (aunque un <strong>Mecánico</strong> supervisa muchas <strong>Órdenes</strong>). De cada
+                    <strong>Mecánico</strong> se registra su código de empleado, nombre y turno de trabajo.
+                    <br><br>
+                    Finalmente, para completar una <strong>Orden de Servicio</strong> se pueden utilizar varios
+                    <strong>Repuestos</strong> distintos, y un mismo tipo de <strong>Repuesto</strong> puede emplearse
+                    en múltiples <strong>Órdenes de Servicio</strong>, debiendo anotar la cantidad de unidades
+                    utilizadas en cada orden. De cada <strong>Repuesto</strong> se almacena su código de inventario,
+                    descripción y precio unitario.
+                </p>
+            </div>
+
+            <!-- Checklist interactivo para guiar al estudiante -->
+            <div class="checklist-box">
+                <div class="checklist-title">
+                    <span>Lista de Verificación antes de ver la solución:</span>
+                </div>
+                <ul class="checklist-items">
+                    <li><label><input type="checkbox"> Identifiqué las 5 entidades principales del sistema.</label></li>
+                    <li><label><input type="checkbox"> Comprendí por qué la Orden se relaciona con Vehículo (y no
+                            directamente con Cliente).</label></li>
+                    <li><label><input type="checkbox"> Diferencié las 3 relaciones 1:N de la relación N:M.</label></li>
+                    <li><label><input type="checkbox"> Ubiqué el atributo "cantidad" en la relación entre Orden y
+                            Repuesto.</label></li>
+                </ul>
+            </div>
+
+            <!-- Botón para revelar solución -->
+            <div class="no-print">
+                <button type="button" class="btn btn-accent" id="btn-sol-b"
+                    onclick="toggleSolution('sol-b', 'btn-sol-b')">
+                    Mostrar Solución y Diagrama MER
+                </button>
+            </div>
+
+            <!-- Cajón de Solución Oculto por Defecto -->
+            <div class="solution-drawer" id="sol-b">
+                <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent);">
+                    Solución Oficial &mdash; Problema B (Taller Mecánico)
+                </h4>
+
+                <!-- Enunciado con etiquetas de color -->
+                <div class="statement-box" style="margin-bottom: 1.25rem;">
+                    <div class="statement-header">
+                        <span class="statement-label">Lectura Analítica Resaltada</span>
+                    </div>
+                    <p>
+                        Se registran los <span class="hl-ent">Clientes</span> (<span class="hl-atr">documento de
+                            identidad</span>, <span class="hl-atr">nombre completo</span>, <span
+                            class="hl-atr">teléfono</span>, <span class="hl-atr">dirección</span>). Un <span
+                            class="hl-ent">Cliente</span> <span class="hl-rel">posee</span> <span class="hl-car">uno o
+                            varios</span> <span class="hl-ent">Vehículos</span> (<span class="hl-atr">placa</span>,
+                        <span class="hl-atr">marca</span>, <span class="hl-atr">modelo</span>, <span
+                            class="hl-atr">año</span>), y cada <span class="hl-ent">Vehículo</span> pertenece a <span
+                            class="hl-car">un único</span> <span class="hl-ent">Cliente</span>.
+                        <br><br>
+                        Un <span class="hl-ent">Vehículo</span> <span class="hl-rel">genera</span> <span
+                            class="hl-car">múltiples</span> <span class="hl-ent">Órdenes de Servicio</span> (<span
+                            class="hl-atr">número de orden</span>, <span class="hl-atr">fecha de ingreso</span>, <span
+                            class="hl-atr">falla reportada</span>, <span class="hl-atr">estado</span>), pero cada <span
+                            class="hl-ent">Orden</span> corresponde a <span class="hl-car">un único</span> <span
+                            class="hl-ent">Vehículo</span> y es <span class="hl-rel">supervisada</span> por <span
+                            class="hl-car">un único</span> <span class="hl-ent">Mecánico</span> (<span
+                            class="hl-atr">código de empleado</span>, <span class="hl-atr">nombre</span>, <span
+                            class="hl-atr">turno</span>). Finalmente, en una <span class="hl-ent">Orden de
+                            Servicio</span> se <span class="hl-rel">utilizan</span> <span class="hl-car">varios</span>
+                        <span class="hl-ent">Repuestos</span> (<span class="hl-atr">código de inventario</span>, <span
+                            class="hl-atr">descripción</span>, <span class="hl-atr">precio unitario</span>) y un <span
+                            class="hl-ent">Repuesto</span> se usa en <span class="hl-car">múltiples</span> <span
+                            class="hl-ent">Órdenes</span> (anotando la <span class="hl-atr">cantidad</span>).
+                    </p>
+                </div>
+
+                <!-- Resumen de Entidades -->
+                <div class="analysis-grid" style="margin-bottom: 1.5rem;">
+                    <div class="entity-card">
+                        <div class="entity-card-title">CLIENTE</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">doc_identidad</span> <span class="pk-badge">PK</span></li>
+                            <li><span>nombre_completo</span></li>
+                            <li><span>telefono</span></li>
+                            <li><span>direccion</span></li>
+                        </ul>
+                    </div>
+                    <div class="entity-card">
+                        <div class="entity-card-title">VEHÍCULO</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">placa</span> <span class="pk-badge">PK</span></li>
+                            <li><span>marca</span></li>
+                            <li><span>modelo</span></li>
+                            <li><span>anio</span></li>
+                        </ul>
+                    </div>
+                    <div class="entity-card">
+                        <div class="entity-card-title">ORDEN_SERVICIO</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">num_orden</span> <span class="pk-badge">PK</span></li>
+                            <li><span>fecha_ingreso</span></li>
+                            <li><span>falla_reportada</span></li>
+                            <li><span>estado</span></li>
+                        </ul>
+                    </div>
+                    <div class="entity-card">
+                        <div class="entity-card-title">MECÁNICO</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">cod_empleado</span> <span class="pk-badge">PK</span></li>
+                            <li><span>nombre</span></li>
+                            <li><span>turno</span></li>
+                        </ul>
+                    </div>
+                    <div class="entity-card">
+                        <div class="entity-card-title">REPUESTO</div>
+                        <ul class="attr-list">
+                            <li><span class="pk-text">cod_repuesto</span> <span class="pk-badge">PK</span></li>
+                            <li><span>descripcion</span></li>
+                            <li><span>precio_unitario</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tabla de Cardinalidades -->
+                <div class="table-responsive" style="margin-bottom: 1.5rem;">
+                    <table class="rel-table">
+                        <thead>
+                            <tr>
+                                <th>Relación</th>
+                                <th>Entidades</th>
+                                <th>Cardinalidad</th>
+                                <th>Explicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag-pill tag-relacion">Posee</span></td>
+                                <td>CLIENTE &mdash; VEHÍCULO</td>
+                                <td><span class="card-pill">1 : N</span></td>
+                                <td>Un cliente posee varios (N) vehículos; cada vehículo pertenece a 1 solo cliente.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag-pill tag-relacion">Genera</span></td>
+                                <td>VEHÍCULO &mdash; ORDEN_SERVICIO</td>
+                                <td><span class="card-pill">1 : N</span></td>
+                                <td>Un vehículo entra varias veces al taller (N órdenes); cada orden es para 1 vehículo
+                                    específico.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag-pill tag-relacion">Supervisa</span></td>
+                                <td>MECÁNICO &mdash; ORDEN_SERVICIO</td>
+                                <td><span class="card-pill">1 : N</span></td>
+                                <td>Un mecánico supervisa muchas (N) órdenes; cada orden tiene 1 mecánico jefe asignado.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag-pill tag-relacion">Utiliza</span></td>
+                                <td>ORDEN_SERVICIO &mdash; REPUESTO</td>
+                                <td><span class="card-pill">N : M</span></td>
+                                <td>Una orden usa varios repuestos y un repuesto se usa en varias órdenes. Atributo
+                                    propio: <strong>cantidad</strong>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SVG MER PROBLEMA B -->
+                <div class="svg-wrapper">
+                    <svg viewBox="0 0 880 520" xmlns="http://www.w3.org/2000/svg" role="img"
+                        aria-label="Diagrama MER Taller Mecánico">
+                        <rect width="880" height="520" fill="#ffffff" rx="8" />
+
+                        <!-- LÍNEAS DE CONEXIÓN -->
+                        <!-- Cliente (185, 115) -> Posee (250, 115) -->
+                        <line x1="185" y1="115" x2="215" y2="115" stroke="#334155" stroke-width="2" />
+                        <!-- Posee (295, 115) -> Vehículo (330, 115) -->
+                        <line x1="295" y1="115" x2="330" y2="115" stroke="#334155" stroke-width="2" />
+
+                        <!-- Vehículo (485, 115) -> Genera (555, 115) -->
+                        <line x1="485" y1="115" x2="515" y2="115" stroke="#334155" stroke-width="2" />
+                        <!-- Genera (595, 115) -> Orden Servicio (635, 115) -->
+                        <line x1="595" y1="115" x2="635" y2="115" stroke="#334155" stroke-width="2" />
+
+                        <!-- Orden Servicio (735, 190) -> Utiliza (735, 275) -->
+                        <line x1="735" y1="190" x2="735" y2="235" stroke="#334155" stroke-width="2" />
+                        <!-- Utiliza (735, 315) -> Repuesto (735, 365) -->
+                        <line x1="735" y1="315" x2="735" y2="365" stroke="#334155" stroke-width="2" />
+
+                        <!-- Línea atributo cantidad -> Utiliza -->
+                        <line x1="690" y1="275" x2="625" y2="275" stroke="#059669" stroke-width="1.5"
+                            stroke-dasharray="4,3" />
+
+                        <!-- Orden Servicio (635, 165) -> Supervisa (490, 275) -> Mecánico (410, 365) -->
+                        <polyline points="635,165 490,165 490,235" fill="none" stroke="#334155" stroke-width="2" />
+                        <line x1="490" y1="315" x2="490" y2="365" stroke="#334155" stroke-width="2" />
+
+                        <!-- ENTIDAD 1: CLIENTE -->
+                        <rect x="20" y="45" width="165" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="20" y="45" width="165" height="34" rx="6" fill="#2563eb" />
+                        <rect x="20" y="70" width="165" height="9" fill="#2563eb" />
+                        <text x="102" y="67" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">CLIENTE</text>
+                        <text x="32" y="100" font-family="monospace" font-size="11.5" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: doc_identidad</text>
+                        <text x="32" y="122" font-family="sans-serif" font-size="12"
+                            fill="#334155">nombre_completo</text>
+                        <text x="32" y="144" font-family="sans-serif" font-size="12" fill="#334155">telefono</text>
+                        <text x="32" y="166" font-family="sans-serif" font-size="12" fill="#334155">direccion</text>
+
+                        <!-- RELACIÓN: POSEE (1:N) -->
+                        <polygon points="255,78 295,115 255,152 215,115" fill="#fef3c7" stroke="#d97706"
+                            stroke-width="2" />
+                        <text x="255" y="119" font-family="sans-serif" font-size="12" font-weight="bold" fill="#92400e"
+                            text-anchor="middle">Posee</text>
+                        <rect x="191" y="90" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="201" y="104" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">1</text>
+                        <rect x="302" y="90" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="312" y="104" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">N</text>
+
+                        <!-- ENTIDAD 2: VEHÍCULO -->
+                        <rect x="330" y="45" width="155" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="330" y="45" width="155" height="34" rx="6" fill="#2563eb" />
+                        <rect x="330" y="70" width="155" height="9" fill="#2563eb" />
+                        <text x="407" y="67" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">VEHÍCULO</text>
+                        <text x="342" y="100" font-family="monospace" font-size="12" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: placa</text>
+                        <text x="342" y="122" font-family="sans-serif" font-size="12" fill="#334155">marca</text>
+                        <text x="342" y="144" font-family="sans-serif" font-size="12" fill="#334155">modelo</text>
+                        <text x="342" y="166" font-family="sans-serif" font-size="12" fill="#334155">anio</text>
+
+                        <!-- RELACIÓN: GENERA (1:N) -->
+                        <polygon points="555,78 595,115 555,152 515,115" fill="#fef3c7" stroke="#d97706"
+                            stroke-width="2" />
+                        <text x="555" y="119" font-family="sans-serif" font-size="12" font-weight="bold" fill="#92400e"
+                            text-anchor="middle">Genera</text>
+                        <rect x="491" y="90" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="501" y="104" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">1</text>
+                        <rect x="605" y="90" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="615" y="104" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">N</text>
+
+                        <!-- ENTIDAD 3: ORDEN_SERVICIO -->
+                        <rect x="635" y="45" width="215" height="145" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="635" y="45" width="215" height="34" rx="6" fill="#2563eb" />
+                        <rect x="635" y="70" width="215" height="9" fill="#2563eb" />
+                        <text x="742" y="67" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">ORDEN_SERVICIO</text>
+                        <text x="648" y="100" font-family="monospace" font-size="12" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: num_orden</text>
+                        <text x="648" y="122" font-family="sans-serif" font-size="12"
+                            fill="#334155">fecha_ingreso</text>
+                        <text x="648" y="144" font-family="sans-serif" font-size="12"
+                            fill="#334155">falla_reportada</text>
+                        <text x="648" y="166" font-family="sans-serif" font-size="12" fill="#334155">estado</text>
+
+                        <!-- RELACIÓN: SUPERVISA (1:N) -->
+                        <polygon points="490,235 538,275 490,315 442,275" fill="#fef3c7" stroke="#d97706"
+                            stroke-width="2" />
+                        <text x="490" y="279" font-family="sans-serif" font-size="11.5" font-weight="bold"
+                            fill="#92400e" text-anchor="middle">Supervisa</text>
+                        <rect x="498" y="202" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="508" y="216" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">N</text>
+                        <rect x="498" y="330" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="508" y="344" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">1</text>
+
+                        <!-- ENTIDAD 4: MECÁNICO -->
+                        <rect x="395" y="365" width="190" height="125" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="395" y="365" width="190" height="34" rx="6" fill="#2563eb" />
+                        <rect x="395" y="390" width="190" height="9" fill="#2563eb" />
+                        <text x="490" y="387" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">MECÁNICO</text>
+                        <text x="408" y="420" font-family="monospace" font-size="12" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: cod_empleado</text>
+                        <text x="408" y="442" font-family="sans-serif" font-size="12" fill="#334155">nombre</text>
+                        <text x="408" y="464" font-family="sans-serif" font-size="12" fill="#334155">turno</text>
+
+                        <!-- RELACIÓN: UTILIZA (N:M) -->
+                        <polygon points="735,235 780,275 735,315 690,275" fill="#fef3c7" stroke="#d97706"
+                            stroke-width="2" />
+                        <text x="735" y="279" font-family="sans-serif" font-size="12" font-weight="bold" fill="#92400e"
+                            text-anchor="middle">Utiliza</text>
+                        <rect x="745" y="202" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="755" y="216" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">N</text>
+                        <rect x="745" y="330" width="20" height="20" rx="4" fill="#f3e8ff" stroke="#7c3aed"
+                            stroke-width="1" />
+                        <text x="755" y="344" font-family="monospace" font-size="12" font-weight="bold" fill="#5b21b6"
+                            text-anchor="middle">M</text>
+
+                        <!-- Atributo de relación: cantidad -->
+                        <ellipse cx="585" cy="275" rx="42" ry="18" fill="#d1fae5" stroke="#059669" stroke-width="1.5" />
+                        <text x="585" y="279" font-family="sans-serif" font-size="11.5" font-weight="bold"
+                            fill="#065f46" text-anchor="middle">cantidad</text>
+
+                        <!-- ENTIDAD 5: REPUESTO -->
+                        <rect x="645" y="365" width="195" height="125" rx="6" fill="#eff6ff" stroke="#2563eb"
+                            stroke-width="2" />
+                        <rect x="645" y="365" width="195" height="34" rx="6" fill="#2563eb" />
+                        <rect x="645" y="390" width="195" height="9" fill="#2563eb" />
+                        <text x="742" y="387" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff"
+                            text-anchor="middle">REPUESTO</text>
+                        <text x="658" y="420" font-family="monospace" font-size="12" font-weight="bold" fill="#0f172a"
+                            text-decoration="underline">PK: cod_repuesto</text>
+                        <text x="658" y="442" font-family="sans-serif" font-size="12" fill="#334155">descripcion</text>
+                        <text x="658" y="464" font-family="sans-serif" font-size="12"
+                            fill="#334155">precio_unitario</text>
+
+                        <!-- Nota de diseño en lienzo -->
+                        <g transform="translate(20, 365)">
+                            <rect x="0" y="0" width="335" height="125" rx="6" fill="#f8fafc" stroke="#cbd5e1"
+                                stroke-width="1" />
+                            <text x="14" y="24" font-family="sans-serif" font-size="11.5" font-weight="bold"
+                                fill="#1e293b">CLAVE DE DISEÑO (TRANSITIVIDAD):</text>
+                            <text x="14" y="46" font-family="sans-serif" font-size="11" fill="#475569">&bull; No se
+                                conecta CLIENTE con ORDEN_SERVICIO</text>
+                            <text x="14" y="64" font-family="sans-serif" font-size="11" fill="#475569"> directamente
+                                para evitar redundancia.</text>
+                            <text x="14" y="86" font-family="sans-serif" font-size="11" fill="#475569">&bull; Al saber
+                                qué VEHÍCULO generó la orden, ya</text>
+                            <text x="14" y="104" font-family="sans-serif" font-size="11" fill="#475569"> conocemos quién
+                                es su CLIENTE propietario.</text>
+                        </g>
+                    </svg>
+                    <span class="svg-caption">Figura 3. Diagrama MER resuelto del Problema B: Sistema de Gestión de
+                        Taller Mecánico.</span>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <script>
+        /**
+         * Alterna el resaltado semántico en el enunciado del Caso Modelo
+         */
+        function toggleHighlight(statementId, btnElement) {
+            const box = document.getElementById(statementId);
+            if (!box) return;
+            box.classList.toggle('clean-text');
+            const isClean = box.classList.contains('clean-text');
+            btnElement.textContent = isClean ? 'Mostrar Resaltado' : 'Ocultar Resaltado';
+        }
+
+        /**
+         * Expande o contrae un paso individual en el análisis guiado
+         */
+        function toggleStep(headerBtn) {
+            const stepBlock = headerBtn.closest('.step-block');
+            const iconSpan = headerBtn.querySelector('.step-toggle-icon');
+            stepBlock.classList.toggle('collapsed');
+            const isCollapsed = stepBlock.classList.contains('collapsed');
+            iconSpan.textContent = isCollapsed ? 'Mostrar ▼' : 'Ocultar ▲';
+        }
+
+        /**
+         * Expande o contrae todos los pasos de un contenedor
+         */
+        function toggleAllSteps(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const blocks = container.querySelectorAll('.step-block');
+            const anyCollapsed = Array.from(blocks).some(b => b.classList.contains('collapsed'));
+
+            blocks.forEach(block => {
+                const iconSpan = block.querySelector('.step-toggle-icon');
+                if (anyCollapsed) {
+                    block.classList.remove('collapsed');
+                    if (iconSpan) iconSpan.textContent = 'Ocultar ▲';
+                } else {
+                    block.classList.add('collapsed');
+                    if (iconSpan) iconSpan.textContent = 'Mostrar ▼';
+                }
+            });
+        }
+
+        /**
+         * Muestra u oculta la solución y diagrama MER de un ejercicio práctico
+         */
+        function toggleSolution(drawerId, btnId) {
+            const drawer = document.getElementById(drawerId);
+            const btn = document.getElementById(btnId);
+            if (!drawer || !btn) return;
+
+            drawer.classList.toggle('is-open');
+            const isOpen = drawer.classList.contains('is-open');
+
+            if (isOpen) {
+                btn.textContent = 'Ocultar Solución y Diagrama MER';
+                btn.classList.remove('btn-accent');
+            } else {
+                btn.textContent = 'Mostrar Solución y Diagrama MER';
+                btn.classList.add('btn-accent');
+            }
+            syncGlobalButtonText();
+        }
+
+        /**
+         * Modo Docente vs Modo Estudiante:
+         * Permite revelar u ocultar todas las soluciones de práctica con un solo clic
+         */
+        let isTeacherMode = false;
+
+        function toggleGlobalView() {
+            isTeacherMode = !isTeacherMode;
+            const drawers = [
+                { drawerId: 'sol-a', btnId: 'btn-sol-a' },
+                { drawerId: 'sol-b', btnId: 'btn-sol-b' }
+            ];
+
+            drawers.forEach(item => {
+                const drawer = document.getElementById(item.drawerId);
+                const btn = document.getElementById(item.btnId);
+                if (!drawer || !btn) return;
+
+                if (isTeacherMode) {
+                    drawer.classList.add('is-open');
+                    btn.textContent = 'Ocultar Solución y Diagrama MER';
+                    btn.classList.remove('btn-accent');
+                } else {
+                    drawer.classList.remove('is-open');
+                    btn.textContent = 'Mostrar Solución y Diagrama MER';
+                    btn.classList.add('btn-accent');
+                }
+            });
+
+            syncGlobalButtonText();
+        }
+
+        function syncGlobalButtonText() {
+            const globalBtn = document.getElementById('btnToggleMode');
+            const solA = document.getElementById('sol-a').classList.contains('is-open');
+            const solB = document.getElementById('sol-b').classList.contains('is-open');
+
+            if (solA && solB) {
+                isTeacherMode = true;
+                globalBtn.textContent = 'Vista: Docente (Soluciones Visibles)';
+                globalBtn.classList.add('btn-primary');
+            } else {
+                isTeacherMode = false;
+                globalBtn.textContent = 'Vista: Estudiante (Ocultar Soluciones)';
+                globalBtn.classList.remove('btn-primary');
+            }
+        }
+    </script>
+</body>
+
+</html>
